@@ -85,13 +85,7 @@
 <style lang="less" rel="stylesheet/less">
   @import "../../common/css/index";
   @import "../../common/css/modal";
-  .mint-swipe {
-    height: 280px;
-    .img {
-      width: 100%;
-      height: 280px;
-    }
-  }
+
   .m-recommend{
     width: 100%;
     background-color: #F9F9F9;
