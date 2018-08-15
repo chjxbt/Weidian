@@ -3,10 +3,11 @@
       <navbar></navbar>
 
       <!--每日10荐-->
-      <!--<every></every>-->
+      <every></every>
       <!--素材圈-->
       <!--<fodder></fodder>-->
-
+      <!--公告-->
+      <!--<annoucement></annoucement>-->
 
       <div class="m-modal" v-if="show_modal">
         <div class="m-modal-state">
@@ -37,6 +38,8 @@
   import navbar from '../../components/common/navbar';
   import every from './component/everyTen';
   import fodder from './component/fodder';
+  import annoucement from './component/announcement';
+  import iconList from'../../components/common/iconList';
     export default {
         data() {
             return {
@@ -46,7 +49,9 @@
         components: {
           navbar,
           fodder,
-          every
+          every,
+          annoucement,
+          iconList
         },
         methods: {},
         created() {

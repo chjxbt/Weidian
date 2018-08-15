@@ -86,6 +86,7 @@
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/css/index";
   .m-discover-every{
+    font-size: 26px;
     .m-swipe-box{
       margin-top: 30px;
       padding: 0 45px;

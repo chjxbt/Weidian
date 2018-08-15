@@ -74,7 +74,8 @@
       margin-right: 30px;
     }
     .m-section-content{
-      width: 570px;
+      width: 85%;
+      font-size: 28px;
       .m-section-title{
         .flex-row(space-between);
         line-height: 36px;

@@ -108,7 +108,8 @@
           margin-right: 30px;
         }
         .m-section-content{
-          width: 570px;
+          width: 85%;
+          font-size: 28px;
           .m-section-title{
             .flex-row(space-between);
             line-height: 36px;
@@ -130,6 +131,7 @@
           .m-section-text{
             text-align: left;
             p{
+              text-indent: 0;
               margin: 10px 0;
             }
             .m-section-more{
