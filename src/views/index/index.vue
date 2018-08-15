@@ -53,7 +53,7 @@
         data() {
             return {
               show_modal: false,
-              show_fixed:true,
+              show_fixed:false,
               items: [{
                 title: '你的名字',
                 href: 'http://google.com',   url: 'http://www.baidu.com/img/bd_logo1.png'
@@ -92,9 +92,6 @@
       height: 280px;
     }
   }
-.m-top{
-  padding: 0 18px;
-}
   .m-recommend{
     width: 100%;
     background-color: #F9F9F9;

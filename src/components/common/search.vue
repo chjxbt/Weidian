@@ -12,7 +12,8 @@
 
 <style lang="less" rel="stylesheet/less" scoped>
   .m-search{
-    width: 100%;
+    /*width: 100%;*/
+    padding: 0 18px;
     input{
       width: 94%;
       height: 72px;

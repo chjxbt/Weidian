@@ -1,23 +1,16 @@
 <template>
 
-      <mt-tabbar v-model="selected" :fixed="true">
-        <mt-tab-item id="外卖">
-          <img slot="icon" src="">
-          外卖
+
+    <mt-tabbar v-model="selected" :fixed="true">
+      <template v-for="(item,index) in tabbar" >
+        <mt-tab-item :id="item.name" @click="tabbarClick(item)">
+          <img slot="icon" :src="item.icon">
+          {{item.name}}
         </mt-tab-item>
-        <mt-tab-item id="订单">
-          <img slot="icon" src="">
-          订单
-        </mt-tab-item>
-        <mt-tab-item id="发现">
-          <img slot="icon" src="">
-          发现
-        </mt-tab-item>
-        <mt-tab-item id="我的">
-          <img slot="icon" src="">
-          我的
-        </mt-tab-item>
-      </mt-tabbar>
+      </template>
+    </mt-tabbar>
+
+
 
 </template>
 
@@ -26,12 +19,40 @@
         data() {
             return {
                 name: '',
-              selected:'我的'
+              selected:this.$store.state.tabbar[0].name,
+              tabbar:this.$store.state.tabbar
             }
         },
         components: {},
-        methods: {},
-        created() {
+        methods: {
+          tabbarClick(v){
+            console.log(v)
+          }
+        },
+      watch: {
+        selected: function (val, oldVal) {
+          this.$store.state.tabbar_select = val;
+          switch(val){
+            case '首页':
+              this.$router.push('/index');
+              break;
+            case '客服':
+              this.$router.push('/service');
+              break;
+            case '发现':
+              this.$router.push('/discover');
+              break;
+            case '购物车':
+              this.$router.push('/shopping');
+              break;
+            case '我的':
+              this.$router.push('/personal');
+              break;
+          }
+        }
+      },
+
+      created() {
 
         }
     }

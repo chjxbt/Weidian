@@ -1,6 +1,6 @@
 <template>
   <div class="hello">
-    <mt-header title="name">
+    <mt-header :title="$store.state.tabbar_select">
       <router-link to="/" slot="left">
         <mt-button icon="back"></mt-button>
       </router-link>

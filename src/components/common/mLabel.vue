@@ -20,11 +20,11 @@
     width: 70px;
     height: 70px;
     .m-text{
-      font-size: 14px;
+      font-size: 10px;
      z-index: 100;
       position: absolute;
       top:0;
-      right: 14px;
+      right: 12px;
       color: #fff;
     }
     .m-triangle{

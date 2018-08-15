@@ -9,6 +9,28 @@ let store= new Vuex.Store({
     route: null,
     now:null,
     token:'',
+    tabbar:[{
+      name:'首页',
+      icon:'',
+      url:'index'
+    },{
+      name:'客服',
+      icon:'',
+      url:'service'
+    },{
+      name:'发现',
+      icon:'',
+      url:'discover'
+    },{
+      name:'购物车',
+      icon:'',
+      url:'shopping'
+    },{
+      name:'我的',
+      icon:'',
+      url:'personal'
+    }],
+    tabbar_select:'首页'
   },
   mutations: {
     add(state,route) {

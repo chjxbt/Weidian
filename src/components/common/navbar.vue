@@ -23,7 +23,12 @@
 
 <script>
     export default {
-        name: "navbar"
+        name: "navbar",
+      data(){
+          return{
+
+          }
+      }
     }
 </script>
 
@@ -31,6 +36,8 @@
   @import "../../common/css/index";
   .m-navbar{
     margin-top: 10px;
+    padding: 0 18px;
+    border-bottom: 1px solid @borderColor;
     ul{
       display: flex;
       flex-flow: row;
