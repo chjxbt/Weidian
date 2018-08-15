@@ -2,7 +2,7 @@
     <div>
       <div class="m-top">
         <search></search>
-        <navbar></navbar>
+        <navbar :list="nav_list" @navClick="navClick"></navbar>
       </div>
 
       <mt-swipe :auto="2000">
@@ -60,7 +60,30 @@
               }, {
                 title: '我的名字',
                 href: 'http://baidu.com',   url: 'http://www.baidu.com/img/bd_logo1.png'
-              }]
+              }],
+              nav_list:[
+                {
+                  name:'上新',
+                  url:'',
+                  dot:false,
+                  click:true
+                },{
+                  name:'特卖',
+                  url:'',
+                  dot:false,
+                  click:false
+                },{
+                  name:'爆款',
+                  url:'',
+                  dot:true,
+                  click:false
+                },{
+                  name:'预告',
+                  url:'',
+                  dot:true,
+                  click:false
+                }
+              ]
             }
         },
         components: {
@@ -75,6 +98,12 @@
           },
           fixedClick(){
             this.show_fixed = false;
+          },
+          navClick(v){
+            for(let i=0;i<this.nav_list.length;i++){
+              this.nav_list[i].click = false;
+            }
+            this.nav_list[v].click = true;
           }
         },
         created() {

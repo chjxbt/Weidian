@@ -1,33 +1,37 @@
 <template>
   <div class="m-navbar">
     <ul>
-      <li  class="active">
-        <span class="m-navbar-text">上新</span>
-        <span class="m-dot"></span>
-      </li>
-      <li>
-        <span class="m-navbar-text">上新</span>
-        <span class="m-dot"></span>
-      </li>
-      <li>
-        <span class="m-navbar-text">上新</span>
-        <span class="m-dot"></span>
-      </li>
-      <li>
-        <span class="m-navbar-text">上新</span>
-        <span class="m-dot"></span>
+      <li v-for="(item,index) in list" :class="item.click?'active':''" @click="navClick(index)">
+        <span class="m-navbar-text">{{item.name}}</span>
+        <span class="m-dot" v-if="item.dot"></span>
       </li>
     </ul>
   </div>
 </template>
 
 <script>
+  import common from '../../common/js/common';
     export default {
         name: "navbar",
       data(){
           return{
 
           }
+      },
+      props:{
+          list:{
+            type:Array,
+            default:null
+          }
+      },
+      methods:{
+        navClick(v){
+          if(this.list[v].click){
+            return false;
+          }
+          common.changeTitle(this.list[v].name);
+          this.$emit('navClick',v)
+        }
       }
     }
 </script>

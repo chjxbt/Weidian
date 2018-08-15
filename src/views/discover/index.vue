@@ -1,13 +1,13 @@
 <template>
     <div class="m-discover">
-      <navbar></navbar>
+      <navbar :list="nav_list" @navClick="navClick"></navbar>
 
       <!--每日10荐-->
-      <every></every>
+      <every v-if="nav_select == 'every'"></every>
       <!--素材圈-->
-      <!--<fodder></fodder>-->
+      <fodder v-if="nav_select == 'fodder'"></fodder>
       <!--公告-->
-      <!--<annoucement></annoucement>-->
+      <announcement v-if="nav_select == 'announcement'"></announcement>
 
       <div class="m-modal" v-if="show_modal">
         <div class="m-modal-state">
@@ -38,22 +38,54 @@
   import navbar from '../../components/common/navbar';
   import every from './component/everyTen';
   import fodder from './component/fodder';
-  import annoucement from './component/announcement';
+  import announcement from './component/announcement';
   import iconList from'../../components/common/iconList';
     export default {
         data() {
             return {
-              show_modal:false
+              show_modal:false,
+              nav_list:[
+                {
+                  name:'每日10荐',
+                  url:'every',
+                  dot:false,
+                  click:true
+                },{
+                  name:'素材圈',
+                  url:'fodder',
+                  dot:false,
+                  click:false
+                },{
+                  name:'公告',
+                  url:'announcement',
+                  dot:true,
+                  click:false
+                },{
+                  name:'教程',
+                  url:'announcement',
+                  dot:true,
+                  click:false
+                }
+              ],
+              nav_select:'every'
             }
         },
         components: {
           navbar,
           fodder,
           every,
-          annoucement,
+          announcement,
           iconList
         },
-        methods: {},
+        methods: {
+          navClick(v){
+            for(let i=0;i<this.nav_list.length;i++){
+              this.nav_list[i].click = false;
+            }
+            this.nav_list[v].click = true;
+            this.nav_select = this.nav_list[v].url
+          }
+        },
         created() {
 
         }
