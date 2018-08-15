@@ -23,11 +23,12 @@ class SActivity(SBase):
     @close_session
     def get_activity_by_topnavid(self, navid):
         """根据导航的id获取活动"""
-        return self.session.query(Activity.ACid, Activity.GOid, Activity.ACtype, Activity.ACtext,
+        acvitity_list = self.session.query(Activity.ACid, Activity.GOid, Activity.ACtype, Activity.ACtext,
                                   Activity.AClikenum, Activity.AClikeFakeNum, Activity.ACbrowsenum,
                                   Activity.ACforwardnum, Activity.ACProductsSoldFakeNum, Activity.ACcreatetime,
                                   Activity.ACstarttime, Activity.ACendtime, Activity.ACistop).filter_by(
-            ACisdelete=False, TopnavId=navid).all()
+            ACisdelete=False, TopnavId=navid).order_by(Activity.ACcreatetime.desc()).all()
+        acvitity_list
 
     @close_session
     def get_lasting_activity_by_topnavid(self, navid):
