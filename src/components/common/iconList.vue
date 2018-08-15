@@ -1,23 +1,49 @@
 <template>
   <ul class="m-icon-list">
-    <li>
-      <img src="/static/images/icon-like.jpg" class="m-icon" alt="">
-      1219
+
+
+    <li v-for="(item,index) in list" @click="iconClick(index)">
+      <img :src="'/static/images/' + item.src +'.jpg'" class="m-icon" alt="">
+      {{item.name}}
     </li>
-    <li >
-      <img src="/static/images/icon-lian.jpg" class="m-icon" alt="">
-      复制链接
-    </li>
-    <li>
-      <img src="/static/images/icon-share.jpg" class="m-icon" alt="">
-      转发
-    </li>
+
   </ul>
 </template>
 
 <script>
     export default {
-        name: "icon-list"
+        data(){
+          return{
+
+          }
+        },
+      props:{
+          list:{
+            type:Array,
+            default: [
+                  {
+                    src:'icon-like',
+                    name:'1',
+                    url:'icon-like'
+                  },
+                  {
+                    src:'icon-lian',
+                    name:'复制链接',
+                    url:'icon-lian'
+                  },
+                  {
+                    src:'icon-share',
+                    name:'转发',
+                    url:'icon-share'
+                  }
+                ]
+          }
+      },
+      methods:{
+        iconClick(v){
+          this.$emit('iconClick',v)
+        }
+      }
     }
 </script>
 

@@ -40,29 +40,46 @@
                 <div>805人已发圈</div>
               </div>
               <div>
-                <icon-list></icon-list>
+                <icon-list :list="icon_list" @iconClick="iconClick"></icon-list>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+    <share v-if="show_fixed"  @fixedClick="fixedClick"></share>
   </div>
 
 </template>
 
 <script type="text/ecmascript-6">
   import iconList from '../../../components/common/iconList';
+  import share from '../../../components/common/share';
     export default {
         data() {
             return {
-                name: ''
+              show_fixed:false,
+              icon_list:[
+                {
+                  src:'icon-share',
+                  name:'转发',
+                  url:'icon-share'
+                }
+              ]
             }
         },
         components: {
-          'icon-list':iconList
+          'icon-list':iconList,
+          share
         },
-        methods: {},
+        methods: {
+          iconClick(v){
+              this.show_fixed = true;
+          },
+          fixedClick(){
+            this.show_fixed = false;
+          },
+        },
         created() {
 
         }

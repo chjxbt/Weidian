@@ -19,7 +19,7 @@
       </div>
 
       <div class="m-index-section">
-        <ctx></ctx>
+        <ctx :icon="icon_list" @iconClick="iconClick"></ctx>
         <ctx></ctx>
       </div>
       <div class="m-modal" v-if="show_modal">
@@ -83,6 +83,23 @@
                   dot:true,
                   click:false
                 }
+              ],
+              icon_list:[
+                {
+                  src:'icon-like',
+                  name:'123123',
+                  url:'icon-like'
+                },
+                {
+                  src:'icon-lian',
+                  name:'复制链接',
+                  url:'icon-lian'
+                },
+                {
+                  src:'icon-share',
+                  name:'转发',
+                  url:'icon-share'
+                }
               ]
             }
         },
@@ -104,6 +121,18 @@
               this.nav_list[i].click = false;
             }
             this.nav_list[v].click = true;
+          },
+          iconClick(v){
+            switch (v){
+              case 0:
+                break;
+              case 1:
+                this.show_modal = true;
+                break;
+              case 2:
+                this.show_fixed = true;
+                break;
+            }
           }
         },
         created() {

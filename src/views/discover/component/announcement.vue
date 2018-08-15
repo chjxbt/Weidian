@@ -26,7 +26,7 @@
               </div>
             </div>
             <div>
-              <icon-list></icon-list>
+              <icon-list :list="icon_list" @iconClick="iconClick"></icon-list>
             </div>
           </div>
 
@@ -51,13 +51,28 @@
     export default {
         data() {
             return {
-                name: ''
+              icon_list:[
+                {
+                  src:'icon-share',
+                  name:'转发',
+                  url:'icon-share'
+                },
+                {
+                  src:'icon-lian',
+                  name:'评论',
+                  url:'icon-lian'
+                }
+              ]
             }
         },
         components: {
           iconList
         },
-        methods: {},
+        methods: {
+          iconClick(v){
+
+          }
+        },
         created() {
 
         }

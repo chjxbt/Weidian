@@ -33,7 +33,7 @@
             <div class="m-red m-ft-22">距活动结束仅剩2天10小时</div>
           </div>
           <div>
-            <icon-list></icon-list>
+            <icon-list :list="icon" @iconClick="iconClick"></icon-list>
           </div>
         </div>
       </div>
@@ -51,10 +51,21 @@
 
         }
       },
+      props:{
+        icon:{
+          type:Array,
+          default:null
+        }
+      },
       components: {
         'm-label':mLabel,
         'icon-list':iconList
       },
+      methods:{
+        iconClick(v){
+          this.$emit('iconClick',v)
+        }
+      }
     }
 </script>
 
