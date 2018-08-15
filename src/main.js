@@ -53,6 +53,9 @@ axios.interceptors.response.use(data => {// 响应成功关闭loading
   return Promise.reject(error)
 })
 
+//引入微信
+import 'weixin-js-sdk';
+
 import store from './vuex'
 /* eslint-disable no-new */
 new Vue({

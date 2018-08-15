@@ -1,6 +1,5 @@
 <template>
 
-
     <mt-tabbar v-model="selected" :fixed="true">
       <template v-for="(item,index) in tabbar" >
         <mt-tab-item :id="item.name" @click="tabbarClick(item)">
@@ -11,10 +10,10 @@
     </mt-tabbar>
 
 
-
 </template>
 
 <script type="text/ecmascript-6">
+  import common from '../../common/js/common';
     export default {
         data() {
             return {
@@ -32,6 +31,7 @@
       watch: {
         selected: function (val, oldVal) {
           this.$store.state.tabbar_select = val;
+          common.changeTitle(val);
           switch(val){
             case '首页':
               this.$router.push('/index');
