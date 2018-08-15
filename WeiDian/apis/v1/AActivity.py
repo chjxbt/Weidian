@@ -1,6 +1,9 @@
 # *- coding:utf8 *-
 import sys
 import os
+
+from flask import jsonify
+
 sys.path.append(os.path.dirname(os.getcwd()))
 from flask_restful import Resource
 
@@ -16,5 +19,7 @@ class AActivity(Resource):
         apis = {
             "get_all": "self.control_activity.get_all()",
         }
-        res = apis[activity]
-        return res
+        res = eval(apis[activity])
+        return jsonify({
+            "data": res
+        })

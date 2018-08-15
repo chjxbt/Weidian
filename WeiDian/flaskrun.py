@@ -2,7 +2,7 @@
 import flask_restful
 from flask import Flask
 
-from WeiDian.apis.AActivity import AActivity
+from WeiDian.apis.v1.AActivity import AActivity
 
 wd = Flask(__name__)
 api = flask_restful.Api(wd)

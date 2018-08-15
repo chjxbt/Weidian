@@ -19,21 +19,34 @@ class CActivity():
         self.salike = SActivityLike()
         from WeiDian.service.SUser import SUser
         self.suser = SUser()
+        from WeiDian.service.SActivityMedia import SActivityMedia
+        self.smedia = SActivityMedia()
+        from WeiDian.service.SActivityTag import SActivityTag
+        self.stags = SActivityTag()
+        from WeiDian.service.SActivityFoward import SActivityFoward
+        self.foward = SActivityFoward()
 
     def get_all(self):
         args = request.args.to_dict()
         navid = args.get('navid')
         if navid:
-            activity_list_without_user = self.sactivity.get_activity_by_topnavid(navid)
-            activity_list_fill_user = map(self.fill_user, activity_list_without_user)
-            activity_list = get_model_return_list(activity_list_fill_user)
+            activity_list = self.sactivity.get_activity_by_topnavid(navid)
+            activity_list_fill_detail = map(self.fill_detail, activity_list)
+            # activity_list = get_model_return_list(activity_list_fill_detail)
+            return activity_list_fill_detail
         else:
-            pass
-        return activity_list
+            return 'pass'
 
-    def fill_user(self, act):
-        if 'USid' in act:
-            act['user'] = self.suser.get_user_by_activity_id(act['ACid'])
+    def fill_detail(self, act):
+        import ipdb
+        # ipdb.set_trace()
+        acid = act.ACid
+        act.user = self.suser.get_user_by_user_id(act.USid)
+        del act.USid
+        act.media = self.smedia.get_media_by_acid(acid)
+        act.stags = self.stags.get_tags_by_acid(acid)
+        act.foward_num = self.foward.get_fowardnum_by_acid(acid)
+        return act
 
 
 

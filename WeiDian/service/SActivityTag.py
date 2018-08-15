@@ -1,0 +1,15 @@
+# *- coding:utf8 *-
+import sys
+import os
+
+sys.path.append(os.path.dirname(os.getcwd()))
+from SBase import SBase, close_session
+from WeiDian.models.model import ActivityTag, Activity
+
+
+class SActivityTag(SBase):
+
+    @close_session
+    def get_tags_by_acid(self, acid):
+        """该活动的显示状态的角标"""
+        return self.session.query(ActivityTag.ATid, ActivityTag.ATname).filter_by(ACid=acid).all()

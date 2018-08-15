@@ -14,8 +14,8 @@ class Activity(Base):
     """
     __tablename__ = 'activity'
     ACid = Column(String(64), primary_key=True)
-    PRid = Column(Integer, nullable=False)  # 活动商品
-    USid = Column(Integer, nullable=False)  # 发布者
+    PRid = Column(String(64), nullable=False)  # 活动商品
+    USid = Column(String(64), nullable=False)  # 发布者
     ACtype = Column(Integer, default=0)  # 活动分类, 具体分类如下
     # {0 普通动态, 1 满减, 2 满赠, 3 优惠券, 4 砍价, 5 拼团, 6 单品优惠券, 7 一元秒杀, 8 前几分钟半价, 9 限时抢, 10 X元X件}
     TopnavId = Column(String(64))  # 对应上层导航栏

@@ -2,6 +2,9 @@
 # 兼容linux系统
 import sys
 import os
+
+from sqlalchemy.orm import scoped_session, sessionmaker
+
 import model
 import pymysql
 
@@ -15,6 +18,9 @@ info_count = 22  # 需要插入的数据库条数
 class MakeData():
     def __init__(self):
         self.act = SActivity()
+        self.session = scoped_session(sessionmaker(autocommit=False,
+                                         autoflush=False,
+                                         bind=model.mysql_engine))
 
     # def make_id(self):
     #     import uuid
@@ -26,14 +32,18 @@ class MakeData():
     #     return user_ids
 
     def add_activity(self):
-        for i in range(info_count):
+        for i in range(1000, 1010):
             activity_model = model.Activity()
-            activity_model.ACid = "i"
+            activity_model.ACid = str(i)
             activity_model.ACtype = "2"
             activity_model.ACtext = "活动活动活动"
             activity_model.ACbrowsenum = "20"
             activity_model.AClikeFakeNum = "20"
-            self.add_activity(activity_model)
+            activity_model.PRid = 'this is prid'
+            activity_model.USid = 'this is usid'
+            activity_model.TopnavId = 'q'
+            self.session.add(activity_model)
+            self.session.commit()
 
 
     #
@@ -115,10 +125,11 @@ if __name__ == "__main__":
         drop()
 
     else:
-        create()
-        # data = MakeData()
+        # create()
+        data = MakeData()
         # tshop_ids = data.make_id()
         # data.add_shops(tshop_ids)
         # data.add_products(tshop_ids)
         # data.add_conpons(tshop_ids)
-        print("over")
+        # print("over")
+        data.add_activity()
