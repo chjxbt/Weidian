@@ -28,7 +28,7 @@ class Activity(Base):
     ACcreatetime = Column(String(14))  # 活动的发布时间
     ACstarttime = Column(String(14))  # 活动开始时间
     ACendtime = Column(String(14))  # 活动结束时间
-    ACisdelte = Column(Boolean, default=False)  # 是否删除
+    ACisdelete = Column(Boolean, default=False)  # 是否删除
     ACistop = Column(Boolean, default=False)  # 是否置顶
 
 
@@ -43,6 +43,7 @@ class ActivityComment(Base):
     USid = Column(String(64), nullable=False)  # 发布评论的用户
     ACtext = Column(String(255), nullable=False)  # 评论内容
     ACOcreatetime = Column(String(64))  # 时间
+    ACisdelete = Column(Boolean, default=False)  # 是否删除
 
 
 class ActivityLike(Base):
@@ -77,6 +78,15 @@ class ActivityTag(Base):
     ACid = Column(String(64), nullable=False)  # 活动
     ATname = Column(String(8), nullable=False)  # 角标文字
     ATstate = Column(Integer, default=1)  # 显示状态: {1 显示, 0 隐藏}
+
+
+class ActivityFoward(Base):
+    """
+    活动转发
+    """
+    AFid = Column(String(64), primary_key=True)
+    USid = Column(String(64))  # 用户
+    ACid = Column(String(64))  # 活动
 
 
 class Product(Base):

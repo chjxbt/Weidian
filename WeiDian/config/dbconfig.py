@@ -1,7 +1,7 @@
 database = "weidian"
-host = "120.79.182.43"
+host = "127.0.0.1"
 port = "3306"
-username = "root"
-password = ""
+username = "username"
+password = "password"
 charset = "utf8"
 sqlenginename = 'mysql+pymysql'

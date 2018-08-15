@@ -56,7 +56,7 @@ class databse_deal():
         self.cursor = self.conn.cursor()
 
     def create_database(self):
-        sql = "create database if not exists {0} DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ;".format(
+        sql = "create database if not exists {0} DEFAULT CHARACTER SET utf8 COLLATE utf8_gyeneral_ci ;".format(
             model.cfg.database)
         print sql
         try:
