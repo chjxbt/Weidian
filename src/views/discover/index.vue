@@ -8,6 +8,8 @@
       <fodder v-if="nav_select == 'fodder'"></fodder>
       <!--公告-->
       <announcement v-if="nav_select == 'announcement'"></announcement>
+      <!--教程-->
+      <course v-if="nav_select == 'course'"></course>
 
       <div class="m-modal" v-if="show_modal">
         <div class="m-modal-state">
@@ -39,6 +41,7 @@
   import every from './component/everyTen';
   import fodder from './component/fodder';
   import announcement from './component/announcement';
+  import course from './component/course';
   import iconList from'../../components/common/iconList';
     export default {
         data() {
@@ -62,7 +65,7 @@
                   click:false
                 },{
                   name:'教程',
-                  url:'announcement',
+                  url:'course',
                   dot:true,
                   click:false
                 }
@@ -75,6 +78,7 @@
           fodder,
           every,
           announcement,
+          course,
           iconList
         },
         methods: {
