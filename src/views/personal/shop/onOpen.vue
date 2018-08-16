@@ -2,7 +2,9 @@
     <div class="m-onOpen">
       <div class="m-shop-top">
         <div class="m-flex-between">
-          <span>账号设置</span>
+          <router-link to="/setUp" tag="span">
+            <span>账号设置</span>
+          </router-link>
           <span>等级规则</span>
         </div>
         <div class="m-flex-start m-shop">
@@ -107,7 +109,7 @@
               part_tilt_one:{
                 name:'我的收益',
                 value:'查看更多',
-                url:''
+                url:'details'
               },
               part_tilt_two:{
                 name:'',
@@ -124,7 +126,7 @@
                   }
                 ],
                 value:'查看更多',
-                url:''
+                url:'order'
               }
             }
         },

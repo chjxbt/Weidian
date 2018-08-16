@@ -65,17 +65,17 @@
               part_title:{
                 name:'我的订单',
                 value:'更多',
-                url:''
+                url:'order'
               },
                 cell_list:[
                   {
                     name:'收藏夹',
                     value:'',
-                    url:''
+                    url:'collect'
                   },
                   {
                     name:'快速投诉通道',
-                    value:'',
+                    value:'complain',
                     url:''
                   },
                   {

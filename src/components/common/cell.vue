@@ -31,7 +31,9 @@
         },
         methods: {
           cellClick(v){
-
+            if (v.url){
+              this.$router.push('/'+v.url)
+            }
           },
           cellNav(v){
             this.$emit('cellNav',v)

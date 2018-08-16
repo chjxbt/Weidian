@@ -81,9 +81,37 @@ export const constantRouterMap = [
       meta: { title: 'personal', icon: 'personal', noCache: true }
     }
     ],
-
   },
 
+//  我的
+ /*账号设置*/
+  { path: '/setUp', component: () => import('../views/personal/setUp/index'), hidden: true },
+  { path: '/bankCard', component: () => import('../views/personal/setUp/bankCard'), hidden: true },
+  { path: '/editAddress', component: () => import('../views/personal/setUp/editAddress'), hidden: true },
+  { path: '/addBankCard', component: () => import('../views/personal/setUp/addBankCard'), hidden: true },
+  { path: '/receiverAddress', component: () => import('../views/personal/setUp/receiverAddress'), hidden: true },
+  { path: '/result', component: () => import('../views/personal/setUp/result'), hidden: true },
+
+  /*邀请专属粉丝*/
+  { path: '/inviteFans', component: () => import('../views/personal/inviteFans/index'), hidden: true },
+  { path: '/fansManagement', component: () => import('../views/personal/inviteFans/fansManagement'), hidden: true },
+  { path: '/poster', component: () => import('../views/personal/inviteFans/poster'), hidden: true },
+
+  /*邀请开店*/
+  { path: '/inviteStore', component: () => import('../views/personal/inviteStore/index'), hidden: true },
+  { path: '/invitationLetter', component: () => import('../views/personal/inviteStore/invitationLetter'), hidden: true },
+
+  /*收支明细*/
+  { path: '/details', component: () => import('../views/personal/details/index'), hidden: true },
+  { path: '/applyWithdrawal', component: () => import('../views/personal/details/applyWithdrawal'), hidden: true },
+  { path: '/withdrawalDetail', component: () => import('../views/personal/details/withdrawalDetail'), hidden: true },
+
+  /*订单*/
+  { path: '/order', component: () => import('../views/personal/order/index'), hidden: true },
+  /*投诉*/
+  { path: '/complain', component: () => import('../views/personal/order/complain'), hidden: true },
+  /*收藏*/
+  { path: '/collect', component: () => import('../views/personal/collect'), hidden: true },
 ]
 
 export default new Router({
