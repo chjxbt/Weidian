@@ -1,10 +1,10 @@
 # *- coding:utf8 *-
 import flask_restful
-from flask import Flask
+from WeiDian import create_app
 
-from WeiDian.apis.v1.AActivity import AActivity
+from WeiDian.apis.v1 import AActivity
 
-wd = Flask(__name__)
+wd = create_app()
 api = flask_restful.Api(wd)
 api.add_resource(AActivity, "/activity/<string:activity>")
 

@@ -12,14 +12,19 @@ class SActivityComment(SBase):
     @close_session
     def get_comment_by_activity_id(self, acid):
         """通过活动id获取下面的评论"""
+        # return self.session.query(
+        #     ActivityComment.ACOid,
+        #     ActivityComment.ACid,
+        #     ActivityComment.USid,
+        #     ActivityComment.ACOcreatetime,
+        #     ActivityComment.ACOparentid,
+        #     ActivityComment.ACtext,
+        # ).filter_by(ACid=acid).all()
+
         return self.session.query(
-            ActivityComment.ACOid,
-            ActivityComment.ACid,
-            ActivityComment.USid,
-            ActivityComment.ACOcreatetime,
-            ActivityComment.ACOparentid,
-            ActivityComment.ACtext,
+            ActivityComment
         ).filter_by(ACid=acid).all()
+
 
     @close_session
     def delete_comment_by_acoid(self, acoid):

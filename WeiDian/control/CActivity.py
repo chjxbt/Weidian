@@ -1,6 +1,8 @@
 import sys
 import os
 
+from sqlalchemy.orm import session, Session
+
 from WeiDian.common.get_model_return_list import get_model_return_list
 
 sys.path.append(os.path.dirname(os.getcwd()))
@@ -25,12 +27,14 @@ class CActivity():
         self.stags = SActivityTag()
         from WeiDian.service.SActivityFoward import SActivityFoward
         self.foward = SActivityFoward()
+        self.session = Session()
 
     def get_all(self):
         args = request.args.to_dict()
         navid = args.get('navid')
         if navid:
             activity_list = self.sactivity.get_activity_by_topnavid(navid)
+            # activity_list = self.session.merge(activity_list)
             activity_list_fill_detail = map(self.fill_detail, activity_list)
             # activity_list = get_model_return_list(activity_list_fill_detail)
             return activity_list_fill_detail
@@ -39,8 +43,9 @@ class CActivity():
 
     def fill_detail(self, act):
         import ipdb
-        # ipdb.set_trace()
+        ipdb.set_trace()
         acid = act.ACid
+
         act.user = self.suser.get_user_by_user_id(act.USid)
         del act.USid
         act.media = self.smedia.get_media_by_acid(acid)

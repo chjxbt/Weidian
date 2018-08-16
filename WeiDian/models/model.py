@@ -1,14 +1,16 @@
 # *- coding:utf8 *-
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, create_engine, Integer, String, Text, Float, Boolean
+from sqlalchemy import Column, create_engine, Integer, String, Text, Float, Boolean, orm
 from WeiDian.config import dbconfig as cfg
+from WeiDian.models.base_model import BaseModel
+
 DB_PARAMS = "{0}://{1}:{2}@{3}/{4}?charset={5}".format(
     cfg.sqlenginename, cfg.username, cfg.password, cfg.host, cfg.database, cfg.charset)
 mysql_engine = create_engine(DB_PARAMS, echo=False)
 Base = declarative_base()
 
 
-class Activity(Base):
+class Activity(Base, BaseModel):
     """
     活动
     """
@@ -31,6 +33,12 @@ class Activity(Base):
     ACisdelete = Column(Boolean, default=False)  # 是否删除
     ACistop = Column(Boolean, default=False)  # 是否置顶
 
+    @orm.reconstructor
+    def __init__(self):
+        self.fields = ('ACid', 'USid', 'PRid', 'ACtype', 'ACtext',
+                       'ACbrowsenum', 'ACforwardnum', 'ACcreatetime',
+                       'ACstarttime', 'ACendtime', 'ACistop')
+
 
 class ActivityComment(Base):
     """
@@ -44,6 +52,10 @@ class ActivityComment(Base):
     ACtext = Column(String(255), nullable=False)  # 评论内容
     ACOcreatetime = Column(String(64))  # 时间
     ACisdelete = Column(Boolean, default=False)  # 是否删除
+
+    @orm.reconstructor
+    def __init__(self):
+        self.fields = ('ACOid', 'ACid', 'USid', 'ACOcreatetime', 'ACOparentid', 'ACtext')
 
 
 class ActivityLike(Base):
@@ -68,6 +80,9 @@ class ActivityMedia(Base):
     AMvideo = Column(String(64))  # 视频地址
     AMsort = Column(Integer)  # 图片的顺序, 用于表明图片的位置
 
+    @orm.reconstructor
+    def __init__(self):
+        self.fields = ('AMid', 'ACid', 'AMimage', 'AMvideo', 'AMsort')
 
 class ActivityTag(Base):
     """
@@ -95,7 +110,7 @@ class Product(Base):
     商品
     """
     __tablename__ = 'product'
-    PRid = Column(String(64), primary_key=True) 
+    PRid = Column(String(64), primary_key=True)
     PRname = Column(String(64), nullable=False)  # 名称
     PRinfo = Column(Text)  # 具体详情
     PRimage = Column(String(64), nullable=False)  # 商品主图
@@ -141,20 +156,20 @@ class Brands(Base):
     BRid = Column(String(64), primary_key=True)
     BRparentid = Column(String(64), nullable=False)  # 父节点id，如果没有父节点则为0
     BRvalue = Column(String(128), nullable=False)  # 属性值
-    BRkey = Column(String(128), nullable=False)    # 属性类型
+    BRkey = Column(String(128), nullable=False)  # 属性类型
 
 
 class ProductsBrands(Base):
     __tablename__ = "ProductsBrands"
     PBid = Column(String(64), primary_key=True)
-    PRid = Column(String(64), nullable=False)        # 商品id
-    BRid = Column(String(64), nullable=False)        # 叶子类目id
-    PBstatus = Column(Integer, default=201)          # 商品状态 {201:在售状态 202:下架状态, 203: 预售}
+    PRid = Column(String(64), nullable=False)  # 商品id
+    BRid = Column(String(64), nullable=False)  # 叶子类目id
+    PBstatus = Column(Integer, default=201)  # 商品状态 {201:在售状态 202:下架状态, 203: 预售}
     PBsalesvolume = Column(Integer, nullable=False)  # 商品销量
-    PBscore = Column(Float, nullable=True)           # 商品评分
-    PBimage = Column(Text, nullable=False)           # 商品图片存放地址
-    PBmarkingPrice = Column(Float)                   # 商品划线价格
-    PBprice = Column(Float, nullable=Float)          # 商品价格
+    PBscore = Column(Float, nullable=True)  # 商品评分
+    PBimage = Column(Text, nullable=False)  # 商品图片存放地址
+    PBmarkingPrice = Column(Float)  # 商品划线价格
+    PBprice = Column(Float, nullable=Float)  # 商品价格
 
 
 class ProductImage(Base):
@@ -244,7 +259,7 @@ class User(Base):
     USid = Column(String(64), primary_key=True)
     USname = Column(String(64), nullable=False)  # 用户名
     USphone = Column(String(16))  # 手机号
-    UShader = Column(String(255))   # 头像
+    UShader = Column(String(255))  # 头像
     USgender = Column(String(64))  # 性别
     USage = Column(Integer)  # 年龄
     USlastlogin = Column(String(64))  # 用户上次登录时间
@@ -302,5 +317,3 @@ class OrderInfo(Base):
     pass
 
 """
-
-
