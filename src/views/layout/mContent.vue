@@ -21,7 +21,7 @@
 </script>
 <style lang="less" rel="stylesheet/less">
 .m-content{
-  padding: 10px 0;
+  /*padding: 10px 0;*/
   margin-bottom: 120px;
 }
 </style>
