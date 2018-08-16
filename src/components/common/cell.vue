@@ -1,7 +1,15 @@
 <template>
-  <div class="m-cell">
-    <span class="m-cell-name">收藏夹</span>
+  <div class="m-cell" @click="cellClick(item)">
+    <span class="m-cell-name" v-if="item.name">{{item.name}}</span>
+    <span class="m-cell-nav" v-if="item.nav">
+      <template v-for="(i,j) in item.nav">
+              <span :class="i.click?'active':''" @click="cellNav(j)">{{i.name}}</span>
+      </template>
+
+    </span>
     <span>
+      <span v-if="item.value">{{item.value}}</span>
+
       <span class="m-cell-icon"></span>
     </span>
   </div>
@@ -15,8 +23,20 @@
                 name: ''
             }
         },
-        components: {},
-        methods: {},
+        props:{
+          item:{
+            type:Object,
+            default:null
+          }
+        },
+        methods: {
+          cellClick(v){
+
+          },
+          cellNav(v){
+            this.$emit('cellNav',v)
+          }
+        },
         created() {
 
         }

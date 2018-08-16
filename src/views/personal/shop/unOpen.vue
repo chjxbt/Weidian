@@ -18,13 +18,7 @@
       </div>
       <div class="m-order-box">
         <div class="m-part-one">
-          <div class="m-cell">
-            <span class="m-cell-name">我的订单</span>
-            <span>
-              <span>更多</span>
-              <span class="m-cell-icon"></span>
-            </span>
-          </div>
+         <cell :item="part_title" ></cell>
           <ul class="m-part-list">
             <li>
               <span class="m-part-list-icon"></span>
@@ -47,24 +41,10 @@
       </div>
 
       <div class="m-cell-box">
-        <div class="m-cell">
-          <span class="m-cell-name">收藏夹</span>
-          <span>
-              <span class="m-cell-icon"></span>
-            </span>
-        </div>
-        <div class="m-cell">
-          <span class="m-cell-name">快速投诉通道</span>
-          <span>
-              <span class="m-cell-icon"></span>
-            </span>
-        </div>
-        <div class="m-cell">
-          <span class="m-cell-name">关注公众号</span>
-          <span>
-              <span class="m-cell-icon"></span>
-            </span>
-        </div>
+        <template v-for="(item,index) in cell_list">
+          <cell :item="item" ></cell>
+        </template>
+
       </div>
       <div class="m-short-bannar">
 
@@ -77,15 +57,43 @@
 </template>
 
 <script type="text/ecmascript-6">
+  import cell from '../../../components/common/cell';
     export default {
         data() {
             return {
                 name: '',
-
+              part_title:{
+                name:'我的订单',
+                value:'更多',
+                url:''
+              },
+                cell_list:[
+                  {
+                    name:'收藏夹',
+                    value:'',
+                    url:''
+                  },
+                  {
+                    name:'快速投诉通道',
+                    value:'',
+                    url:''
+                  },
+                  {
+                    name:'关注公众号',
+                    value:'',
+                    url:''
+                  }
+                ]
             }
         },
-        components: {},
-        methods: {},
+        components: {
+          cell
+        },
+        methods: {
+          cellClick(v){
+
+          }
+        },
         created() {
 
         }
@@ -139,6 +147,7 @@
       background-color: #a4a4a4;
 
     }
+
   }
 
 </style>

@@ -22,13 +22,7 @@
       </div>
       <div>
         <div class="m-part-one">
-          <div class="m-cell">
-            <span class="m-cell-name">我的收益</span>
-            <span>
-              <span>查看更多</span>
-              <span class="m-cell-icon"></span>
-            </span>
-          </div>
+         <cell :item="part_tilt_one" ></cell>
           <ul class="m-part-list">
             <li>
               <span>今日销售额</span>
@@ -52,16 +46,7 @@
 
         <div class="m-part-one">
           <div class="m-name">我的订单</div>
-          <div class="m-cell">
-            <span class="m-cell-nav">
-              <span class="active">销售订单</span>
-              <span>自买订单</span>
-            </span>
-            <span>
-              <span>查看更多</span>
-              <span class="m-cell-icon"></span>
-            </span>
-          </div>
+         <cell :item="part_tilt_two" @cellNav="cellNav" ></cell>
           <ul class="m-part-list">
             <li>
               <span class="m-part-list-icon"></span>
@@ -114,14 +99,46 @@
 </template>
 
 <script type="text/ecmascript-6">
+  import cell from '../../../components/common/cell';
     export default {
         data() {
             return {
-                name: ''
+                name: '',
+              part_tilt_one:{
+                name:'我的收益',
+                value:'查看更多',
+                url:''
+              },
+              part_tilt_two:{
+                name:'',
+                nav:[
+                  {
+                    name:'销售订单',
+                    url:'',
+                    click:true
+                  },
+                  {
+                    name:'自买订单',
+                    url:'',
+                    click:false
+                  }
+                ],
+                value:'查看更多',
+                url:''
+              }
             }
         },
-        components: {},
-        methods: {},
+        components: {
+          cell
+        },
+        methods: {
+          cellNav(v){
+            for(let i=0;i<this.part_tilt_two.nav.length;i++){
+              this.part_tilt_two.nav[i].click = false;
+            }
+            this.part_tilt_two.nav[v].click = true;
+          }
+        },
         created() {
 
         }
@@ -183,6 +200,9 @@
     }
     .m-part-one{
       border-bottom: 1px solid @borderColor;
+    }
+    .m-cell{
+      border-bottom: none;
     }
   }
 
