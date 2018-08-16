@@ -29,8 +29,17 @@
     color: @grey;
     padding: 20px 32px;
     border-bottom: 1px solid @borderColor;
+    .m-cell-nav{
+      span{
+        display: inline-block;
+        padding: 0 20px;
+        &.active{
+          color: #666;
+        }
+      }
+    }
     .m-cell-name{
-      color: #000;
+      color: #666;
     }
     .m-cell-icon{
       display: inline-block;
