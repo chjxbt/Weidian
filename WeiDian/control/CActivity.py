@@ -40,6 +40,9 @@ class CActivity():
         navid = args.get('navid')  # 导航id
         usid = args.get('usid')  # 用户id
         lasting = args.get('lasting', 'false')  # 是否正在进行的活动
+        start = args.get('start', 0)  # 起始位置
+        count = args.get('count', 10)  # 结束位置
+        end = start + count
 
         if navid:
             activity_list = self.sactivity.get_activity_by_topnavid(navid)
@@ -49,8 +52,11 @@ class CActivity():
             now_time = datetime.strftime(datetime.now(), format_for_db)
             activity_list = filter(lambda act: True if act.ACstarttime < now_time < act.ACendtime else False, activity_list)
         print activity_list
+        len_aclist = len(activity_list)
+        end = end if end < len_aclist else len_aclist
         activity_list = map(dict, activity_list)
         activity_list = map(self.fill_detail, activity_list)
+        activity_list = activity_list[start:end]
         data = import_status("get_activity_list_success", "OK")
         data["data"] = activity_list
         return data
@@ -67,7 +73,7 @@ class CActivity():
         activity = dict(activity)
         activity = self.fill_detail(activity)
         activity = self.fill_comment(activity)
-        data = import_status("get_activity_success", "OK")
+        data = import_status("get_activity_info_success", "OK")
         data["data"] = activity
         return data
 
