@@ -35,9 +35,9 @@ class Activity(Base, BaseModel):
 
     @orm.reconstructor
     def __init__(self):
-        self.fields = ('ACid', 'USid', 'PRid', 'ACtype', 'ACtext',
+        self.fields = ['ACid', 'USid', 'PRid', 'ACtype', 'ACtext',
                        'ACbrowsenum', 'ACforwardnum', 'ACcreatetime',
-                       'ACstarttime', 'ACendtime', 'ACistop')
+                       'ACstarttime', 'ACendtime', 'ACistop']
 
 
 class ActivityComment(Base):
@@ -58,7 +58,7 @@ class ActivityComment(Base):
         self.fields = ('ACOid', 'ACid', 'USid', 'ACOcreatetime', 'ACOparentid', 'ACtext')
 
 
-class ActivityLike(Base):
+class ActivityLike(Base, BaseModel):
     """
     点赞
     """
@@ -68,8 +68,12 @@ class ActivityLike(Base):
     USid = Column(String(64), nullable=False)  # 用户
     ALcreatetime = Column(String(64))  # 时间
 
+    @orm.reconstructor
+    def __init__(self):
+        self.fields = ('ACOALidid', 'ACid', 'USid', 'ALcreatetime')
 
-class ActivityMedia(Base):
+
+class ActivityMedia(Base, BaseModel):
     """
     活动图片/视频
     """
@@ -82,7 +86,8 @@ class ActivityMedia(Base):
 
     @orm.reconstructor
     def __init__(self):
-        self.fields = ('AMid', 'ACid', 'AMimage', 'AMvideo', 'AMsort')
+        self.fields = ['AMid', 'ACid', 'AMimage', 'AMvideo', 'AMsort']
+
 
 class ActivityTag(Base):
     """

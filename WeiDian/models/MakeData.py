@@ -1,5 +1,6 @@
 # *- coding:utf8 *-
 # 兼容linux系统
+import random
 import sys
 import os
 
@@ -32,7 +33,7 @@ class MakeData():
     #     return user_ids
 
     def add_activity(self):
-        for i in range(1000, 1010):
+        for i in range(2000, 2501):
             activity_model = model.Activity()
             activity_model.ACid = str(i)
             activity_model.ACtype = "2"
@@ -44,6 +45,19 @@ class MakeData():
             activity_model.TopnavId = 'q'
             self.session.add(activity_model)
             self.session.commit()
+
+    def add_media(self):
+        for i in range(1500, 2500):
+            media = model.ActivityMedia()
+            media.AMid = str(i)
+            media.ACid = str(random.randint(2000, 2500))
+            # tem = random.randint(1, 2)
+
+            media.AMimage = 'http://www.thisimage'
+            media.AMsort = random.randint(1, 9)
+            self.session.add(media)
+            self.session.commit()
+
 
 
     #
@@ -133,3 +147,4 @@ if __name__ == "__main__":
         # data.add_conpons(tshop_ids)
         # print("over")
         data.add_activity()
+        data.add_media()

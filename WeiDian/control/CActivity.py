@@ -1,9 +1,9 @@
+# *- coding:utf8 *-
 import sys
 import os
 
-from sqlalchemy.orm import session, Session
+from sqlalchemy.orm import Session
 
-from WeiDian.common.get_model_return_list import get_model_return_list
 
 sys.path.append(os.path.dirname(os.getcwd()))
 from flask import request
@@ -31,26 +31,25 @@ class CActivity():
 
     def get_all(self):
         args = request.args.to_dict()
-        navid = args.get('navid')
+        navid = args.get('navid')  # 导航id
+        usid = args.get('usid')  # 用户id
         if navid:
             activity_list = self.sactivity.get_activity_by_topnavid(navid)
-            # activity_list = self.session.merge(activity_list)
-            activity_list_fill_detail = map(self.fill_detail, activity_list)
-            # activity_list = get_model_return_list(activity_list_fill_detail)
-            return activity_list_fill_detail
+        if usid:
+            activity_list = self.sactivity.get_activity_by_usid(usid)
         else:
-            return 'pass'
+            activity_list = {'data': 'data'}
+        activity_list = map(dict, activity_list)
+        activity_list_fill_detail = map(self.fill_detail, activity_list)
+        return activity_list_fill_detail
 
     def fill_detail(self, act):
-        import ipdb
-        ipdb.set_trace()
-        acid = act.ACid
-
-        act.user = self.suser.get_user_by_user_id(act.USid)
-        del act.USid
-        act.media = self.smedia.get_media_by_acid(acid)
-        act.stags = self.stags.get_tags_by_acid(acid)
-        act.foward_num = self.foward.get_fowardnum_by_acid(acid)
+        acid = act['ACid']
+        act['user'] = self.suser.get_user_by_user_id(act['USid'])
+        act['media'] = self.smedia.get_media_by_acid(acid)
+        act['tags'] = self.stags.get_tags_by_acid(acid)
+        act['foward'] = self.foward.get_fowardnum_by_acid(acid)
+        # act.remove('USid')
         return act
 
 

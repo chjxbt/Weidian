@@ -44,8 +44,7 @@ class SActivity(SBase):
     @close_session
     def get_activity_by_topnavid(self, navid):
         """根据导航的id获取活动"""
-        acvitity_list = self.session.query(Activity).filter_by(ACisdelete=False, TopnavId=navid).order_by(
-            Activity.ACcreatetime.desc()).all()
+        acvitity_list = self.session.query(Activity).filter_by(ACisdelete=False, TopnavId=navid).order_by(Activity.ACcreatetime.desc()).all()
         # acvitity_list = self.session.query(Activity.ACid,
         #                                    Activity.PRid,
         #                                    Activity.ACtype,
@@ -61,7 +60,11 @@ class SActivity(SBase):
         #                                    Activity.ACendtime,
         #                                    Activity.ACistop).filter_by(
         #     ACisdelete=False, TopnavId=navid).order_by(Activity.ACcreatetime.desc()).all()
-        print acvitity_list
+        return acvitity_list
+
+    @close_session
+    def get_activity_by_usid(self, usid):
+        acvitity_list = self.session.query(Activity).filter_by(ACisdelete=False, USid=usid).order_by(Activity.ACcreatetime.desc()).all()
         return acvitity_list
 
     @close_session
@@ -69,21 +72,22 @@ class SActivity(SBase):
         """该导航下的所有正在进行的活动"""
         now_time = datetime.strftime(datetime.now(), '%Y%m%d%H%M%S')
         all_activity = self.session.query(Activity).filter_by(ACisdelete=False, TopnavId=navid)
-        # all_activity = self.session.query(Activity.ACid,
-        #                                   Activity.PRid,
-        #                                   Activity.ACtype,
-        #                                   Activity.ACtext,
-        #                                   Activity.USid,
-        #                                   Activity.AClikenum,
-        #                                   Activity.AClikeFakeNum,
-        #                                   Activity.ACbrowsenum,
-        #                                   Activity.ACforwardnum,
-        #                                   Activity.ACProductsSoldFakeNum,
-        #                                   Activity.ACcreatetime,
-        #                                   Activity.ACstarttime,
-        #                                   Activity.ACendtime,
-        #                                   Activity.ACistop).filter_by(
-        #     ACisdelete=False, TopnavId=navid)
+        all_activity = self.session.query(Activity.ACid,
+                                          Activity.PRid,
+                                          Activity.ACtype,
+                                          Activity.ACtext,
+                                          Activity.USid,
+                                          Activity.AClikenum,
+                                          Activity.AClikeFakeNum,
+                                          Activity.ACbrowsenum,
+                                          Activity.ACforwardnum,
+                                          Activity.ACProductsSoldFakeNum,
+                                          Activity.ACcreatetime,
+                                          Activity.ACstarttime,
+                                          Activity.ACendtime,
+                                          Activity.ACistop).filter_by(
+            ACisdelete=False, TopnavId=navid)
+
         all_lasting_activity = all_activity.filter(now_time < Activity.ACendtime, now_time > Activity.ACstarttime).all()
         print all_lasting_activity
         return all_lasting_activity
