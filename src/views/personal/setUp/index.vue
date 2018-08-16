@@ -1,24 +1,18 @@
 <template>
     <div>
-      <on-open v-if="isOpen"></on-open>
-      <un-open v-else></un-open>
+      账号设置
     </div>
 
 </template>
 
 <script type="text/ecmascript-6">
-  import onOpen from './shop/onOpen';
-  import unOpen from './shop/unOpen';
     export default {
         data() {
             return {
-                isOpen:false
+                name: ''
             }
         },
-        components: {
-          onOpen,
-          unOpen
-        },
+        components: {},
         methods: {},
         created() {
 
