@@ -51,12 +51,13 @@ class CActivity():
         print activity_list
         activity_list = map(dict, activity_list)
         activity_list = map(self.fill_detail, activity_list)
-        data = import_status("get_product_list_success", "OK")
+        data = import_status("get_activity_list_success", "OK")
         data["data"] = activity_list
         return data
 
     def get_one(self):
-        """通过id获取活动及活动下的评论"""
+        """通过id获取活动及活动下的评论
+        http://127.0.0.1:5000/activity/get_one?acid=2020"""
         args = request.args.to_dict()
         acid = args.get('acid')  # 活动id
         if acid:
@@ -66,10 +67,12 @@ class CActivity():
         activity = dict(activity)
         activity = self.fill_detail(activity)
         activity = self.fill_comment(activity)
-        data = import_status("get_product_list_success", "OK")
+        data = import_status("get_activity_success", "OK")
         data["data"] = activity
         return data
 
+    def add_one(self):
+        pass
 
     def fill_detail(self, act):
         """填充一些关联活动的信息"""
