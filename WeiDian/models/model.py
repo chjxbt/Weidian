@@ -25,7 +25,7 @@ class Activity(Base, BaseModel):
     AClikenum = Column(Integer, default=0)  # 喜欢数
     AClikeFakeNum = Column(Integer)  # 可编辑的喜欢数量, 如果留空, 则使用实际的喜欢数量
     ACbrowsenum = Column(Integer, default=0)  # 浏览数
-    ACforwardnum = Column(Integer, default=0)  # 转发数
+    ACforwardFakenum = Column(Integer, default=0)  # 虚假转发数
     ACProductsSoldFakeNum = Column(Integer)  # 可编辑的商品销量, 如果留空,  则使用实际的销量
     ACcreatetime = Column(String(14))  # 活动的发布时间
     ACstarttime = Column(String(14))  # 活动开始时间
@@ -36,11 +36,11 @@ class Activity(Base, BaseModel):
     @orm.reconstructor
     def __init__(self):
         self.fields = ['ACid', 'USid', 'PRid', 'ACtype', 'ACtext',
-                       'ACbrowsenum', 'ACforwardnum', 'ACcreatetime',
+                       'ACbrowsenum', 'ACcreatetime',
                        'ACstarttime', 'ACendtime', 'ACistop']
 
 
-class ActivityComment(Base):
+class ActivityComment(Base, BaseModel):
     """
     活动评论
     """
@@ -89,7 +89,7 @@ class ActivityMedia(Base, BaseModel):
         self.fields = ['AMid', 'ACid', 'AMimage', 'AMvideo', 'AMsort']
 
 
-class ActivityTag(Base):
+class ActivityTag(Base, BaseModel):
     """
     活动右上角标
     """
@@ -98,6 +98,10 @@ class ActivityTag(Base):
     ACid = Column(String(64), nullable=False)  # 活动
     ATname = Column(String(8), nullable=False)  # 角标文字
     ATstate = Column(Integer, default=1)  # 显示状态: {1 显示, 0 隐藏}
+
+    @orm.reconstructor
+    def __init__(self):
+        self.fields = ['ATid', 'ATname', ]
 
 
 class ActivityFoward(Base):

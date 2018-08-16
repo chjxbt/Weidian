@@ -3,6 +3,7 @@
 import random
 import sys
 import os
+from datetime import datetime
 
 from sqlalchemy.orm import scoped_session, sessionmaker
 
@@ -39,7 +40,9 @@ class MakeData():
             activity_model.ACtype = "2"
             activity_model.ACtext = "活动活动活动"
             activity_model.ACbrowsenum = "20"
-            activity_model.AClikeFakeNum = "20"
+            activity_model.AClikeFakeNum = str(random.randint(0, 500))
+            activity_model.ACstarttime = str(random.randint(2017, 2019))+'0510000000'
+            activity_model.ACendtime = str( random.randint(2017, 2019))+'0510000000'
             activity_model.PRid = 'this is prid'
             activity_model.USid = 'this is usid'
             activity_model.TopnavId = 'q'
@@ -57,6 +60,37 @@ class MakeData():
             media.AMsort = random.randint(1, 9)
             self.session.add(media)
             self.session.commit()
+
+    def add_comment(self):
+        from model import ActivityComment
+        for i in range(1500, 2000):
+            comment = ActivityComment()
+            comment.ACOid = str(i)
+            tem = random.randint(1, 2)
+            if tem == 1:
+                comment.ACid = str(random.randint(1500, 2500))
+                comment.ACtext = '这是评论' + str(i)
+            else:
+                comment.ACOparentid = str(random.randint(1500, 2500))
+                comment.ACtext = '这是回复' + str(i)
+            comment.USid = 'this is usid'
+            self.session.add(comment)
+            self.session.commit()
+
+    def add_tags(self):
+        from model import ActivityTag
+        for i in range(1500, 2000):
+            tag = ActivityTag()
+            tag.ATid = str(i)
+            tag.ACid = str(random.randint(1500, 2500))
+            tag.ATname = random.choice(['活动', '爆款', '其他'])
+            self.session.add(tag)
+            self.session.commit()
+
+
+
+
+    # def update_activity(self, ):
 
 
 
@@ -146,5 +180,7 @@ if __name__ == "__main__":
         # data.add_products(tshop_ids)
         # data.add_conpons(tshop_ids)
         # print("over")
-        data.add_activity()
-        data.add_media()
+        # data.add_activity()
+        # data.add_media()
+        # data.add_comment()
+        data.add_tags()

@@ -18,8 +18,7 @@ class AActivity(Resource):
         print activity
         apis = {
             "get_all": "self.control_activity.get_all()",
+            "get_one": "self.control_activity.get_one()"
         }
         res = eval(apis[activity])
-        return jsonify({
-            "data": res
-        })
+        return jsonify(res)

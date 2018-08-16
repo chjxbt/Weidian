@@ -15,8 +15,7 @@ class SActivityLike(SBase):
         cur_activity = self.session.query(Activity).filter_by(ACid=acid).first()
         if cur_activity.AClikeFakeNum:
             return cur_activity.AClikeFakeNum
-        else:
-            return self.session.query(Activity).filter_by(ACid=acid).count()
+        return self.session.query(Activity).filter_by(ACid=acid).count()
 
     @close_session
     def add_like(self, aclike):

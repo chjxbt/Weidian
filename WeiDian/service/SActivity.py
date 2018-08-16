@@ -72,21 +72,21 @@ class SActivity(SBase):
         """该导航下的所有正在进行的活动"""
         now_time = datetime.strftime(datetime.now(), '%Y%m%d%H%M%S')
         all_activity = self.session.query(Activity).filter_by(ACisdelete=False, TopnavId=navid)
-        all_activity = self.session.query(Activity.ACid,
-                                          Activity.PRid,
-                                          Activity.ACtype,
-                                          Activity.ACtext,
-                                          Activity.USid,
-                                          Activity.AClikenum,
-                                          Activity.AClikeFakeNum,
-                                          Activity.ACbrowsenum,
-                                          Activity.ACforwardnum,
-                                          Activity.ACProductsSoldFakeNum,
-                                          Activity.ACcreatetime,
-                                          Activity.ACstarttime,
-                                          Activity.ACendtime,
-                                          Activity.ACistop).filter_by(
-            ACisdelete=False, TopnavId=navid)
+        # all_activity = self.session.query(Activity.ACid,
+        #                                   Activity.PRid,
+        #                                   Activity.ACtype,
+        #                                   Activity.ACtext,
+        #                                   Activity.USid,
+        #                                   Activity.AClikenum,
+        #                                   Activity.AClikeFakeNum,
+        #                                   Activity.ACbrowsenum,
+        #                                   Activity.ACforwardnum,
+        #                                   Activity.ACProductsSoldFakeNum,
+        #                                   Activity.ACcreatetime,
+        #                                   Activity.ACstarttime,
+        #                                   Activity.ACendtime,
+        #                                   Activity.ACistop).filter_by(
+        #     ACisdelete=False, TopnavId=navid)
 
         all_lasting_activity = all_activity.filter(now_time < Activity.ACendtime, now_time > Activity.ACstarttime).all()
         print all_lasting_activity
@@ -108,20 +108,21 @@ class SActivity(SBase):
     @close_session
     def get_activity_by_acid(self, acid):
         """根据id获取活动"""
-        return self.session.query(
-            Activity.ACid,
-            Activity.GOid,
-            Activity.ACtype,
-            Activity.ACtext,
-            Activity.AClikenum,
-            Activity.AClikeFakeNum,
-            Activity.ACbrowsenum,
-            Activity.ACforwardnum,
-            Activity.ACProductsSoldFakeNum,
-            Activity.ACcreatetime,
-            Activity.ACstarttime,
-            Activity.ACendtime,
-            Activity.ACistop).filter_by(ACid=acid, ACisdelete=False).first()
+        return self.session.query(Activity).filter_by(ACid=acid, ACisdelete=False).first()
+        # return self.session.query(
+        #     Activity.ACid,
+        #     Activity.GOid,
+        #     Activity.ACtype,
+        #     Activity.ACtext,
+        #     Activity.AClikenum,
+        #     Activity.AClikeFakeNum,
+        #     Activity.ACbrowsenum,
+        #     Activity.ACforwardnum,
+        #     Activity.ACProductsSoldFakeNum,
+        #     Activity.ACcreatetime,
+        #     Activity.ACstarttime,
+        #     Activity.ACendtime,
+        #     Activity.ACistop).filter_by(ACid=acid, ACisdelete=False).first()
 
     @close_session
     def update_activity(self, activity):
