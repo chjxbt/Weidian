@@ -240,7 +240,7 @@ class Banner(Base, BaseModel):
 
     @orm.reconstructor
     def __init__(self):
-        self.fields = '__all__'
+        self.fields = self.all
 
 
 # 可能用不到

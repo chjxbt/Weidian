@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db
+from WeiDian.control.BaseControl import BaseActivityControl
 
 sys.path.append(os.path.dirname(os.getcwd()))
 from flask import request
@@ -14,7 +15,7 @@ import json
 import uuid
 
 
-class CActivity():
+class CActivity(BaseActivityControl):
     def __init__(self):
         from WeiDian.service.SActivity import SActivity
         self.sactivity = SActivity()
@@ -67,7 +68,7 @@ class CActivity():
 
     def get_one(self):
         """通过id获取活动及活动下的评论
-        http://127.0.0.1:5000/activity/get_one?acid=2020"""
+        http://127.0.0.1:5000/activity/get_one?acid=2"""
         args = request.args.to_dict()
         acid = args.get('acid')  # 活动id
         if acid:
@@ -83,25 +84,5 @@ class CActivity():
 
     def add_one(self):
         pass
-
-    def fill_detail(self, act):
-        """填充一些关联活动的信息"""
-        acid = act['ACid']
-        act['user'] = self.suser.get_user_by_user_id(act['USid'])
-        act['media'] = self.smedia.get_media_by_acid(acid)  # 图片或视频
-        act['tags'] = self.stags.get_show_tags_by_acid(acid)  # 右上角tag
-        act['foward'] = self.foward.get_fowardnum_by_acid(acid)  # 转发数
-        act['likenum'] = self.salike.get_likenum_by_acid(acid)  # 喜欢数
-        act['soldnum'] = self.sactivity.get_product_soldnum_by_acid(acid)  # 销量
-        return act
-
-    def fill_comment(self, act):
-        acid = act['ACid']
-        act['comment'] = self.sacomment.get_comment_by_activity_id(acid)
-        return act
-
-
-
-
 
 

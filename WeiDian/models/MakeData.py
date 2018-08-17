@@ -34,26 +34,26 @@ class MakeData():
     #     return user_ids
 
     def add_activity(self):
-        for i in range(2000, 2501):
+        for i in range(info_count):
             activity_model = model.Activity()
             activity_model.ACid = str(i)
             activity_model.ACtype = "2"
             activity_model.ACtext = "活动活动活动"
             activity_model.ACbrowsenum = "20"
-            activity_model.AClikeFakeNum = str(random.randint(0, 500))
+            activity_model.AClikeFakeNum = str(random.randint(0, info_count-1))
             activity_model.ACstarttime = str(random.randint(2017, 2019))+'0510000000'
             activity_model.ACendtime = str( random.randint(2017, 2019))+'0510000000'
-            activity_model.PRid = 'this is prid'
-            activity_model.USid = 'this is usid'
+            activity_model.PRid = random.randint(0, info_count)
+            activity_model.USid = random.randint(0, info_count)
             activity_model.TopnavId = 'q'
             self.session.add(activity_model)
             self.session.commit()
 
     def add_media(self):
-        for i in range(1500, 2500):
+        for i in range(info_count):
             media = model.ActivityMedia()
             media.AMid = str(i)
-            media.ACid = str(random.randint(2000, 2500))
+            media.ACid = str(random.randint(0, info_count))
             # tem = random.randint(1, 2)
 
             media.AMimage = 'http://www.thisimage'
@@ -63,15 +63,15 @@ class MakeData():
 
     def add_comment(self):
         from model import ActivityComment
-        for i in range(1500, 2000):
+        for i in range(info_count):
             comment = ActivityComment()
             comment.ACOid = str(i)
             tem = random.randint(1, 2)
             if tem == 1:
-                comment.ACid = str(random.randint(1500, 2500))
+                comment.ACid = str(random.randint(0, info_count))
                 comment.ACtext = '这是评论' + str(i)
             else:
-                comment.ACOparentid = str(random.randint(1500, 2500))
+                comment.ACOparentid = str(random.randint(0, info_count))
                 comment.ACtext = '这是回复' + str(i)
             comment.USid = 'this is usid'
             self.session.add(comment)
@@ -79,17 +79,17 @@ class MakeData():
 
     def add_tags(self):
         from model import ActivityTag
-        for i in range(1500, 2000):
+        for i in range(info_count):
             tag = ActivityTag()
             tag.ATid = str(i)
-            tag.ACid = str(random.randint(1500, 2500))
+            tag.ACid = str(random.randint(0, info_count))
             tag.ATname = random.choice(['活动', '爆款', '其他'])
             self.session.add(tag)
             self.session.commit()
 
     def add_hotmessage(self):
         from model import HotMessage
-        for i in range(1500, 2000):
+        for i in range(info_count):
             hm = HotMessage()
             hm.HMid = str(i)
             hm.PRid = 'this is prid'
@@ -102,15 +102,34 @@ class MakeData():
 
     def add_product(self):
         from model import Product
-        for i in range(1500, 2000):
+        for i in range(info_count):
             pr = Product()
             pr.PRid = str(i)
-            pr.USid = str(random.randint(1500, 2000))
+            pr.USid = str(random.randint(0, info_count))
             pr.PAid = str(random.randint(1, 10))
             pr.PRalias = '这是别名' + str(i)
             pr.PRscore = random.randint(1, 10)
-            pr.PRsalesvolume = random.randint(1000, 2000)
-            pr.PRstock = random.randint(1000, 2000)
+            pr.PRsalesvolume = random.randint(0, info_count)
+            pr.PRstock = random.randint(0, info_count)
+            pr.PRimage = '这是主图' + str(i)
+            pr.PRname = '这是商品名字' + str(i)
+            self.session.add(pr)
+            self.session.commit()
+
+
+    def add_banner(self):
+        from model import Banner
+        for i in range(info_count):
+            ba = Banner()
+            ba.BAid = str(i)
+            ba.ACid = random.randint(0, info_count)
+            ba.BAsort = random.randint(1, 300)
+            ba.BAstarttime = str(random.randint(2017, 2019))+'0510000000'
+            ba.BAendtime = str(random.randint(2017, 2019))+'0510000000'
+            ba.BAimage = '这是轮播图片' + str(i)
+            self.session.add(ba)
+            self.session.commit()
+
 
 
 
@@ -208,4 +227,6 @@ if __name__ == "__main__":
         # data.add_media()
         # data.add_comment()
         # data.add_tags()
-        data.add_hotmessage()
+        # data.add_hotmessage()
+        # data.add_banner()
+        data.add_product()

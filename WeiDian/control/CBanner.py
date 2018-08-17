@@ -18,7 +18,7 @@ class CBanner():
         from WeiDian.service.SBanner import SBnner
         self.sbanner = SBnner()
         from WeiDian.service.SActivity import SActivity
-
+        self.sactivity = SActivity()
 
     def get_all(self):
         args = request.args.to_dict()
@@ -37,11 +37,19 @@ class CBanner():
         if baid:
             banner = self.sbanner.get_one_by_baid(baid)
             if banner:
+                banner = self.fill_activity(banner)
                 data = import_status("get_activity_info_success", "OK")
                 data['data'] = banner
                 return data
             else:
                 pass
+
+    def fill_activity(self, banner):
+        acid = banner.ACid
+        activity = self.sactivity.get_activity_by_acid(acid)
+        banner.activity = activity
+        banner.add('activity')
+        return banner
 
 
 

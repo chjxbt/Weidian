@@ -8,22 +8,6 @@ from SBase import SBase, close_session
 from WeiDian.models.model import Activity, Product
 
 
-# ActivityNameTuple = namedtuple('ActivityNameTuple', ['ACid',
-#                                                'PRid',
-#                                                'ACtype',
-#                                                'ACtext',
-#                                                'USid',
-#                                                'AClikenum',
-#                                                'AClikeFakeNum',
-#                                                'ACbrowsenum',
-#                                                'ACforwardnum',
-#                                                'ACProductsSoldFakeNum',
-#                                                'ACcreatetime',
-#                                                'ACstarttime',
-#                                                'ACendtime',
-#                                                'ACistop', 'user', 'media', 'stags', 'foward_num'])
-
-
 class SActivity(SBase):
 
     @close_session
@@ -31,12 +15,6 @@ class SActivity(SBase):
         """所有活动
         返回活动对象列表"""
         activity_list = self.session.query(Activity).filter_by(ACisdelete=False).all()
-        # activity_list = self.session.query(Activity.ACid, Activity.PRid, Activity.ACtype, Activity.TopnavId,
-        #                                    Activity.ACtext,
-        #                                    Activity.AClikenum, Activity.AClikeFakeNum, Activity.ACbrowsenum,
-        #                                    Activity.ACforwardnum, Activity.ACProductsSoldFakeNum, Activity.ACcreatetime,
-        #                                    Activity.ACstarttime, Activity.ACendtime, Activity.ACistop).filter_by(
-        #     ACisdelete=False).all()
         return activity_list
 
     @close_session
