@@ -23,6 +23,12 @@ class AHotMessage(Resource):
         res = eval(apis[hotmessage])
         return jsonify(res)
 
+    def post(self, hotmessage):
+        print hotmessage
+        apis = {
+            'delete_one': self.control_hotmessage
+        }
+
 
 
 

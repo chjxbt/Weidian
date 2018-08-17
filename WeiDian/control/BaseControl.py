@@ -19,5 +19,6 @@ class BaseActivityControl():
     def fill_comment(self, act):
         acid = act.ACid
         act.comment= self.sacomment.get_comment_by_activity_id(acid)
+        act.add('comment')
         return act
 

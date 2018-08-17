@@ -28,6 +28,7 @@ class AActivity(Resource):
         print activity
         apis = {
             "add_one": 'self.control_activity.add_one()',
+
         }
         res = eval(apis[activity])
         return res

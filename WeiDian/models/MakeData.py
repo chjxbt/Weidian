@@ -3,7 +3,6 @@
 import random
 import sys
 import os
-from datetime import datetime
 
 from sqlalchemy.orm import scoped_session, sessionmaker
 
@@ -67,10 +66,9 @@ class MakeData():
             comment = ActivityComment()
             comment.ACOid = str(i)
             tem = random.randint(1, 2)
+            comment.ACid = str(random.randint(0, info_count))
+            comment.ACtext = '这是评论' + str(i)
             if tem == 1:
-                comment.ACid = str(random.randint(0, info_count))
-                comment.ACtext = '这是评论' + str(i)
-            else:
                 comment.ACOparentid = str(random.randint(0, info_count))
                 comment.ACtext = '这是回复' + str(i)
             comment.USid = 'this is usid'

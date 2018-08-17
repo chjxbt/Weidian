@@ -7,6 +7,8 @@ from sqlalchemy.orm import Session
 
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db
+from WeiDian.config.messages import delete_activity_success
+from WeiDian.config.response import PARAMS_MISS
 from WeiDian.control.BaseControl import BaseActivityControl
 
 sys.path.append(os.path.dirname(os.getcwd()))
@@ -45,21 +47,21 @@ class CActivity(BaseActivityControl):
         lasting = args.get('lasting', 'true')  # 是否正在进行的活动
         start = args.get('start', 0)  # 起始位置
         count = args.get('count', 15)  # 取出活动条数
-        if count > 30:
-            count = 30
-        end = start + count
-
+        if not (navid or usid):
+            return PARAMS_MISS
         if navid:
             activity_list = self.sactivity.get_activity_by_topnavid(navid)
         if usid:
             activity_list = self.sactivity.get_activity_by_usid(usid)
         if lasting == 'true':
             now_time = datetime.strftime(datetime.now(), format_for_db)
-            activity_list = filter(lambda act: act.ACstarttime < now_time < act.ACendtime, activity_list)
-        print activity_list
+            activity_list = filter(lambda act: act.ACstarttime < now_time < act.ACendtime and not act.ACisended, activity_list)
         len_aclist = len(activity_list)
-        end = end if end < len_aclist else len_aclist
-        # activity_list = map(dict, activity_list)
+        if count > 30:
+            count = 30
+        end = start + count
+        if end > len_aclist:
+            end = len_aclist
         activity_list = map(self.fill_detail, activity_list)
         activity_list = activity_list[start:end]
         data = import_status("get_activity_list_success", "OK")
@@ -67,24 +69,38 @@ class CActivity(BaseActivityControl):
         return data
 
     def get_one(self):
-        """通过id获取活动及活动下的评论
-        http://127.0.0.1:5000/activity/get_one?acid=2"""
+        """通过acid获取活动及活动下的评论
+        http://127.0.0.1:5000/activity/get_one?acid=2
+        """
         args = request.args.to_dict()
         acid = args.get('acid')  # 活动id
-        if acid:
-            activity = self.sactivity.get_activity_by_acid(acid)
-            # activity = dict(activity)
-            activity = self.fill_detail(activity)
-            activity = self.fill_comment(activity)
-            data = import_status("get_activity_info_success", "OK")
-            data["data"] = activity
-            return data
-        else:
+        if not acid:
+            return PARAMS_MISS
+        activity = self.sactivity.get_activity_by_acid(acid)
+        activity = self.fill_detail(activity)
+        activity = self.fill_comment(activity)
+        data = import_status("get_activity_info_success", "OK")
+        data["data"] = activity
+        return data
+
+    def delete_one(self):
+        """删除一个活动, 需要用户模块"""
+        data = request.json
+        acid = data.get('acid')
+        if not acid:
+            return PARAMS_MISS
+        try:
+            self.sactivity.delete_activity(acid)
+        except Exception, e:
             pass
+        return import_status('return import_status()', 'ok')
+
+    def end_one(self):
+        """手动截止活动"""
+        pass
 
     def add_one(self):
         data = request.json
-
         pass
 
 

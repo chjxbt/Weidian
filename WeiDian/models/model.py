@@ -30,6 +30,7 @@ class Activity(Base, BaseModel):
     ACcreatetime = Column(String(14))  # 活动的发布时间
     ACstarttime = Column(String(14))  # 活动开始时间
     ACendtime = Column(String(14))  # 活动结束时间
+    ACisended = Column(Boolean, default=False)  # 是否被手动截止
     ACisdelete = Column(Boolean, default=False)  # 是否删除
     ACistop = Column(Boolean, default=False)  # 是否置顶
 
@@ -38,17 +39,17 @@ class Activity(Base, BaseModel):
     def __init__(self):
         self.fields = ['ACid', 'USid', 'PRid', 'ACtype', 'ACtext',
                        'ACbrowsenum', 'ACcreatetime',
-                       'ACstarttime', 'ACendtime', 'ACistop']
+                       'ACstarttime', 'ACendtime', 'ACistop', 'ACisended']
 
 
 class ActivityComment(Base, BaseModel):
     """
-    活动评论
+    活动评论, 以及评论回复
     """
     __tablename__ = 'activitycomment'
     ACOid = Column(String(64), primary_key=True)
-    ACid = Column(String(64))  # 评论对应的活动(可以为空)
-    ACOparentid = Column(String(64))  # 所回复的评论(可以为空, 与ACid不可以同时为空)
+    ACid = Column(String(64), nullable=False)  # 评论对应的活动)
+    ACOparentid = Column(String(64))  # 所回复的评论(可以为空, 为空代表是评论)
     USid = Column(String(64), nullable=False)  # 发布评论的用户
     ACtext = Column(String(255), nullable=False)  # 评论内容
     ACOcreatetime = Column(String(64))  # 时间
