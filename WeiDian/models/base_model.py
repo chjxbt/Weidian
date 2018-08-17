@@ -1,3 +1,4 @@
+# *- coding:utf8 *-
 from datetime import datetime
 
 from WeiDian.common.timeformat import format_for_db
@@ -10,7 +11,22 @@ class BaseModel:
     def keys(self):
         return self.fields
 
-    def __init__(self):
-        self.create_time = datetime.strftime(datetime.now(), format_for_db)
+    def hide(self, *keys):
+        for key in keys:
+            self.fields.remove(key)
+        return self
 
+    def add(self, *keys):
+        for key in keys:
+            self.fields.append(key)
+
+    # 自动设置创建时间, 无效代码, 待改进
+    def __init__(self):
+        createtimes = map(lambda k: 'createtime' in k, self.__dict__.keys())
+        import ipdb
+        ipdb.set_trace()
+        if createtimes:
+            createtime = createtimes[0]
+            # self.createtime = datetime.strftime(datetime.now(), format_for_db)
+            setattr(self, createtime, datetime.strftime(datetime.now(), format_for_db))
 

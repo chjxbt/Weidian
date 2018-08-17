@@ -15,12 +15,12 @@ class AHotMessage(Resource):
     def __init__(self):
         self.control_hotmessage = CHotMessage()
 
-    def get(self, activity):
-        print activity
+    def get(self, hotmessage):
+        print hotmessage
         apis = {
             'get_all': 'self.control_hotmessage.get_all()'
         }
-        res = eval(apis[activity])
+        res = eval(apis[hotmessage])
         return jsonify(res)
 
 

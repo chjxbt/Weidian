@@ -240,7 +240,7 @@ class HotMessage(Base, BaseModel):
 
     @orm.reconstructor
     def __init__(self):
-        self.fields = ['HMid', 'HMtext', 'PRid', 'HMcreatetime', 'HMstarttime', 'HMendtime', 'PRsort']
+        self.fields = ['HMid', 'HMtext', 'PRid', 'HMcreatetime', 'HMstarttime', 'HMendtime', 'HMsort']
 
 
 class Banner(Base):

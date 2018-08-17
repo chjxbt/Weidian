@@ -45,21 +45,8 @@ class SActivity(SBase):
     def get_activity_by_topnavid(self, navid):
         """根据导航的id获取活动"""
         acvitity_list = self.session.query(Activity).filter_by(ACisdelete=False, TopnavId=navid).order_by(Activity.ACcreatetime.desc()).all()
-        # acvitity_list = self.session.query(Activity.ACid,
-        #                                    Activity.PRid,
-        #                                    Activity.ACtype,
-        #                                    Activity.ACtext,
-        #                                    Activity.USid,
-        #                                    Activity.AClikenum,
-        #                                    Activity.AClikeFakeNum,
-        #                                    Activity.ACbrowsenum,
-        #                                    Activity.ACforwardnum,
-        #                                    Activity.ACProductsSoldFakeNum,
-        #                                    Activity.ACcreatetime,
-        #                                    Activity.ACstarttime,
-        #                                    Activity.ACendtime,
-        #                                    Activity.ACistop).filter_by(
-        #     ACisdelete=False, TopnavId=navid).order_by(Activity.ACcreatetime.desc()).all()
+        import ipdb
+        ipdb.set_trace()
         return acvitity_list
 
     @close_session

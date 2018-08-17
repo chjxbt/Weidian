@@ -95,6 +95,11 @@ class MakeData():
             hm.PRid = 'this is prid'
             hm.HMstarttime = str(random.randint(2017, 2019))+'0510000000'
             hm.HMendtime = str( random.randint(2017, 2019))+'0510000000'
+            hm.HMtext = 'hello 这是热文' + str(i)
+            hm.HMsort = random.randint(1, 30)
+            self.session.add(hm)
+            self.session.commit()
+
 
 
 
@@ -185,11 +190,9 @@ if __name__ == "__main__":
         # create()
         data = MakeData()
         # tshop_ids = data.make_id()
-        # data.add_shops(tshop_ids)
-        # data.add_products(tshop_ids)
-        # data.add_conpons(tshop_ids)
         # print("over")
         # data.add_activity()
         # data.add_media()
         # data.add_comment()
-        data.add_tags()
+        # data.add_tags()
+        data.add_hotmessage()
