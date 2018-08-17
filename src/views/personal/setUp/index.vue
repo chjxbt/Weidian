@@ -23,9 +23,9 @@
         <div class="m-row">
           <span class="m-form-label">银行卡</span>
           <input type="text" class="m-setUp-input" placeholder="6222222222222222222">
-          <router-link to="/bankCard" tag="span">
-            <span class="m-row-btn">更换</span>
-          </router-link>
+          <!--<router-link to="/bankCard" tag="span">-->
+            <span class="m-row-btn" @click="barkChange">更换</span>
+          <!--</router-link>-->
         </div>
       </div>
 
@@ -47,6 +47,10 @@
         methods: {
           addressClick(){
             this.$router.push('/receiverAddress');
+          },
+          barkChange(){
+            // this.$router.push('/bankCard');
+            this.$router.push('/addBankCard');
           }
         },
         created() {
