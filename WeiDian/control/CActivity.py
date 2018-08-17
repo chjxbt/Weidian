@@ -59,7 +59,7 @@ class CActivity(BaseActivityControl):
         print activity_list
         len_aclist = len(activity_list)
         end = end if end < len_aclist else len_aclist
-        activity_list = map(dict, activity_list)
+        # activity_list = map(dict, activity_list)
         activity_list = map(self.fill_detail, activity_list)
         activity_list = activity_list[start:end]
         data = import_status("get_activity_list_success", "OK")
@@ -73,7 +73,7 @@ class CActivity(BaseActivityControl):
         acid = args.get('acid')  # 活动id
         if acid:
             activity = self.sactivity.get_activity_by_acid(acid)
-            activity = dict(activity)
+            # activity = dict(activity)
             activity = self.fill_detail(activity)
             activity = self.fill_comment(activity)
             data = import_status("get_activity_info_success", "OK")

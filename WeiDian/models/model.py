@@ -280,6 +280,7 @@ class UserAddress(Base):
     UAtext = Column(String(255), nullable=False)  # 具体地址
     UAphone = Column(String(16), nullable=False)  # 电话
     UAname = Column(String(16), nullable=False)  # 收货人姓名
+    # Upassword = co
 
 
 class SearchField(Base):

@@ -5,6 +5,7 @@ from sqlalchemy import orm
 
 from WeiDian.common.timeformat import format_for_db
 
+
 def auto_createtime(f):
     def inner(self, *args, **kwargs):
         res = f(self, *args, **kwargs)
