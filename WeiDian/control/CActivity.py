@@ -7,7 +7,6 @@ from sqlalchemy.orm import Session
 
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db
-from WeiDian.config.messages import delete_activity_success
 from WeiDian.config.response import PARAMS_MISS
 from WeiDian.control.BaseControl import BaseActivityControl
 
@@ -93,7 +92,7 @@ class CActivity(BaseActivityControl):
             self.sactivity.delete_activity(acid)
         except Exception, e:
             pass
-        return import_status('return import_status()', 'ok')
+        return
 
     def end_one(self):
         """手动截止活动"""

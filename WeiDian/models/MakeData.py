@@ -48,6 +48,7 @@ class MakeData():
             self.session.add(activity_model)
             self.session.commit()
 
+
     def add_media(self):
         for i in range(info_count):
             media = model.ActivityMedia()
@@ -62,7 +63,7 @@ class MakeData():
 
     def add_comment(self):
         from model import ActivityComment
-        for i in range(info_count):
+        for i in range(100, 200):
             comment = ActivityComment()
             comment.ACOid = str(i)
             tem = random.randint(1, 2)

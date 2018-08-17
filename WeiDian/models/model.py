@@ -203,14 +203,21 @@ class ProductFowardInfo(Base):
     PFIimage = Column(String(255))  # 转发显示图片, 为空则使用商品主图
 
 
-class TopNav(Base):
+class TopNav(Base, BaseModel):
     """
     上导航栏
     """
     __tablename__ = 'topnav'
     TNid = Column(String(64), primary_key=True)
     TNname = Column(String(8), nullable=False)  # 导航文字
-    TNurl = Column(String(255))  # 跳转链接
+    Tisdelte = Column(Boolean, default=False)  # 是否删除
+    TSort = Column(Integer)  # 顺序标志
+    TNurl = Column(String(255))  # 跳转链接, 可能需要
+
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = ['TNid', 'TNname', 'TSort']
 
 
 class HotMessage(Base, BaseModel):
