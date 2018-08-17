@@ -2,12 +2,13 @@
 import flask_restful
 from WeiDian import create_app
 
-from WeiDian.apis.v1 import AActivity, AHotMessage
+from WeiDian.apis.v1 import AActivity, AHotMessage, ABanner
 
 wd = create_app()
 api = flask_restful.Api(wd)
 api.add_resource(AActivity, '/activity/<string:activity>')
 api.add_resource(AHotMessage, '/hotmessage/<string:hotmessage>')
+api.add_resource(ABanner, '/banner/<string:banner>')
 
 
 if __name__ == '__main__':

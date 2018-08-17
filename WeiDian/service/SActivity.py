@@ -75,7 +75,10 @@ class SActivity(SBase):
     @close_session
     def get_activity_by_acid(self, acid):
         """根据id获取活动"""
-        return self.session.query(Activity).filter_by(ACid=acid, ACisdelete=False).first()
+        activity = self.session.query(Activity).filter_by(ACid=acid, ACisdelete=False).first()
+        # if not activity:
+        #     raise ApiException()
+        return activity
 
     @close_session
     def get_product_soldnum_by_acid(self, acid):

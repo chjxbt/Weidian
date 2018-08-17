@@ -35,7 +35,9 @@ class Activity(Base, BaseModel):
 
     @orm.reconstructor
     def __init__(self):
-        self.fields = '__all__'
+        self.fields = ['ACid', 'USid', 'PRid', 'ACtype', 'ACtext',
+                       'ACbrowsenum', 'ACcreatetime',
+                       'ACstarttime', 'ACendtime', 'ACistop']
 
 
 class ActivityComment(Base, BaseModel):
@@ -53,7 +55,7 @@ class ActivityComment(Base, BaseModel):
 
     @orm.reconstructor
     def __init__(self):
-        self.fields = ('ACOid', 'ACid', 'USid', 'ACOcreatetime', 'ACOparentid', 'ACtext')
+        self.fields = ['ACOid', 'ACid', 'USid', 'ACOcreatetime', 'ACOparentid', 'ACtext']
 
 
 class ActivityLike(Base, BaseModel):
@@ -68,7 +70,7 @@ class ActivityLike(Base, BaseModel):
 
     @orm.reconstructor
     def __init__(self):
-        self.fields = ('ACOALidid', 'ACid', 'USid', 'ALcreatetime')
+        self.fields = ['ACOALidid', 'ACid', 'USid', 'ALcreatetime']
 
 
 class ActivityMedia(Base, BaseModel):
@@ -137,25 +139,6 @@ class Product(Base, BaseModel):
     PRscore = Column(Float, nullable=True)  # 商品评分
     PRcreatetime = Column(String(64))  # 上架时间
     PRstatuss = Column(Integer, default=1)  # 商品状态: {0 删除, 1 正常, 2 禁用}
-
-
-"""
-class ProductSelector(Base):
-    # 商品的选项名
-    __tablename__ = 'productselect'
-    PSid = Column(String(64), primary_key=True)
-    PRid = Column(String(64), nullable=False)  # 所属于的商品
-    PSname = Column(String(16))  # 可供选择的类别, 比如'颜色', '尺码'
-
-
-class ProductSelectorInfo(Base):
-    # 具体选项
-    __tablename__ = 'productselectorinfo'
-    PSIid = Column(String(64), primary_key=True)  
-    PSid = Column(String(64), nullable=False)  # 所属于的选项
-    PSItext = Column(String(64), nullable=False)  # 可供选择的选项的文本信息, 比如'xxl', 'M', '红色'
-    PSIStock = Column(Integer)  # 该选项(尺码, 或者颜色)的库存
-"""
 
 
 class Brands(Base):
@@ -242,19 +225,25 @@ class HotMessage(Base, BaseModel):
         # self.fields = '__all__'
 
 
-class Banner(Base):
+class Banner(Base, BaseModel):
     """
     轮播图
     """
     __tablename__ = 'banner'
     BAid = Column(String(64), primary_key=True)
     BAimage = Column(String(64))  # 图片
+    ACid = Column(String(64))  # 轮播图对应的活动
     BAcreatetime = Column(String(64))  # 创建时间
     BAstarttime = Column(String(64))  # 上线时间
     BAendtime = Column(String(64))  # 下线时间
     BAsort = Column(Integer)  # 顺序标志
 
+    @orm.reconstructor
+    def __init__(self):
+        self.fields = '__all__'
 
+
+# 可能用不到
 class SpicialActivity(Base):
     """
     轮播对应的专场活动
@@ -328,4 +317,24 @@ class OrderInfo(Base):
     
     pass
 
+"""
+
+
+
+"""
+class ProductSelector(Base):
+    # 商品的选项名
+    __tablename__ = 'productselect'
+    PSid = Column(String(64), primary_key=True)
+    PRid = Column(String(64), nullable=False)  # 所属于的商品
+    PSname = Column(String(16))  # 可供选择的类别, 比如'颜色', '尺码'
+
+
+class ProductSelectorInfo(Base):
+    # 具体选项
+    __tablename__ = 'productselectorinfo'
+    PSIid = Column(String(64), primary_key=True)  
+    PSid = Column(String(64), nullable=False)  # 所属于的选项
+    PSItext = Column(String(64), nullable=False)  # 可供选择的选项的文本信息, 比如'xxl', 'M', '红色'
+    PSIStock = Column(Integer)  # 该选项(尺码, 或者颜色)的库存
 """

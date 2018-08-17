@@ -7,7 +7,7 @@ from flask import jsonify
 sys.path.append(os.path.dirname(os.getcwd()))
 from flask_restful import Resource
 
-from WeiDian.control.CHotMessage import CHotMessage
+from WeiDian.control import CHotMessage
 
 
 class AHotMessage(Resource):

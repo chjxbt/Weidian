@@ -7,7 +7,7 @@ from flask import jsonify, request
 sys.path.append(os.path.dirname(os.getcwd()))
 from flask_restful import Resource
 
-from WeiDian.control.CActivity import CActivity
+from WeiDian.control import CActivity
 
 
 class AActivity(Resource):

@@ -3,14 +3,13 @@ from datetime import datetime
 
 from WeiDian.common.timeformat import format_for_db
 
-
 class BaseModel:
     def __getitem__(self, item):
         return getattr(self, item)
 
     def keys(self):
         if self.fields == '__all__':
-            self.fields =  self.__dict__.keys()
+            self.fields = self.__dict__.keys()
             self.fields.remove('_sa_instance_state')
             self.fields.remove('fields')
         return self.fields

@@ -17,6 +17,7 @@ def close_session(fn):
         except Exception as e:
             print("DBERROR" + e.message)
             self.session.rollback()
+            # raise e
             raise dberror(e.message)
         finally:
             self.session.close()
@@ -29,6 +30,7 @@ class SBase(object):
         try:
             self.session = DBSession.db_session()
         except Exception as e:
+            # raise e
             print(e.message)
 
     @close_session
