@@ -30,6 +30,8 @@ class CActivity():
         self.stags = SActivityTag()
         from WeiDian.service.SActivityFoward import SActivityFoward
         self.foward = SActivityFoward()
+        # from WeiDian.service.SProduct import SProduct
+        # self.sproduct = SProduct()
         self.session = Session()
 
     def get_all(self):
@@ -39,9 +41,11 @@ class CActivity():
         args = request.args.to_dict()
         navid = args.get('navid')  # 导航id
         usid = args.get('usid')  # 用户id
-        lasting = args.get('lasting', 'false')  # 是否正在进行的活动
+        lasting = args.get('lasting', 'true')  # 是否正在进行的活动
         start = args.get('start', 0)  # 起始位置
-        count = args.get('count', 10)  # 结束位置
+        count = args.get('count', 15)  # 结束位置
+        if count > 30:
+            count = 30
         end = start + count
 
         if navid:
@@ -50,7 +54,7 @@ class CActivity():
             activity_list = self.sactivity.get_activity_by_usid(usid)
         if lasting == 'true':
             now_time = datetime.strftime(datetime.now(), format_for_db)
-            activity_list = filter(lambda act: True if act.ACstarttime < now_time < act.ACendtime else False, activity_list)
+            activity_list = filter(lambda act: act.ACstarttime < now_time < act.ACendtime, activity_list)
         print activity_list
         len_aclist = len(activity_list)
         end = end if end < len_aclist else len_aclist
@@ -88,6 +92,7 @@ class CActivity():
         act['tags'] = self.stags.get_show_tags_by_acid(acid)  # 右上角tag
         act['foward'] = self.foward.get_fowardnum_by_acid(acid)  # 转发数
         act['likenum'] = self.salike.get_likenum_by_acid(acid)  # 喜欢数
+        act['soldnum'] = self.sactivity.get_product_soldnum_by_acid(acid)  # 销量
         return act
 
     def fill_comment(self, act):

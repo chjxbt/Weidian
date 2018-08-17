@@ -87,6 +87,15 @@ class MakeData():
             self.session.add(tag)
             self.session.commit()
 
+    def add_hotmessage(self):
+        from model import HotMessage
+        for i in range(1500, 2000):
+            hm = HotMessage()
+            hm.HMid = str(i)
+            hm.PRid = 'this is prid'
+            hm.HMstarttime = str(random.randint(2017, 2019))+'0510000000'
+            hm.HMendtime = str( random.randint(2017, 2019))+'0510000000'
+
 
 
 

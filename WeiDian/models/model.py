@@ -225,7 +225,7 @@ class TopNav(Base):
     TNurl = Column(String(255))  # 跳转链接
 
 
-class HotMessage(Base):
+class HotMessage(Base, BaseModel):
     """
     热文
     """
@@ -236,7 +236,11 @@ class HotMessage(Base):
     HMcreatetime = Column(String(64))  # 创建时间
     HMstarttime = Column(String(64))  # 上线时间
     HMendtime = Column(String(64))  # 下线时间
-    PRsort = Column(Integer)  # 热文的顺序标志
+    HMsort = Column(Integer)  # 热文的顺序标志
+
+    @orm.reconstructor
+    def __init__(self):
+        self.fields = ['HMid', 'HMtext', 'PRid', 'HMcreatetime', 'HMstarttime', 'HMendtime', 'PRsort']
 
 
 class Banner(Base):

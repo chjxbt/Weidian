@@ -6,7 +6,7 @@ from datetime import datetime
 
 sys.path.append(os.path.dirname(os.getcwd()))
 from SBase import SBase, close_session
-from WeiDian.models.model import Activity
+from WeiDian.models.model import Activity, Product
 from WeiDian.common.filter_lasting import filter_lasting
 
 
@@ -109,20 +109,21 @@ class SActivity(SBase):
     def get_activity_by_acid(self, acid):
         """根据id获取活动"""
         return self.session.query(Activity).filter_by(ACid=acid, ACisdelete=False).first()
-        # return self.session.query(
-        #     Activity.ACid,
-        #     Activity.GOid,
-        #     Activity.ACtype,
-        #     Activity.ACtext,
-        #     Activity.AClikenum,
-        #     Activity.AClikeFakeNum,
-        #     Activity.ACbrowsenum,
-        #     Activity.ACforwardnum,
-        #     Activity.ACProductsSoldFakeNum,
-        #     Activity.ACcreatetime,
-        #     Activity.ACstarttime,
-        #     Activity.ACendtime,
-        #     Activity.ACistop).filter_by(ACid=acid, ACisdelete=False).first()
+
+    @close_session
+    def get_product_soldnum_by_acid(self, acid):
+        """根据活动获取对应商品的销量"""
+        cur_activity = self.session.query(Activity).filter_by(ACid=acid).first()
+        if cur_activity.ACProductsSoldFakeNum:
+            return cur_activity.ACProductsSoldFakeNum
+        else:
+            prid = cur_activity.PRid
+            product = self.session.query(Product).filter_by(PRid=prid).first()
+            if product:
+                return product.PRsalesvolume
+            else:
+                print '无此商品, 销量查询无效'
+                return 0
 
     @close_session
     def update_activity(self, activity):

@@ -24,6 +24,6 @@ class AActivity(Resource):
         return jsonify(res)
 
     def post(self, activity):
-        import ipdb
-        ipdb.set_trace()
+        """添加活动"""
         pass
+

@@ -53,6 +53,7 @@ messages_get_carpkg_success = "获取数据成功"
 error_messages_no_pid = "商品已下架"
 get_activity_list_success = "获取成功"
 get_activity_info_success = "获取成功"
+get_hotmessage_list_success = '获取成功'
 ERROR_MESSAGE_WRONG_TELCODE = "未知验证码"
 SUCCESS_MESSAGE_GET_VOTE = "获取问卷成功"
 SUCCESS_MESSAGE_NEW_VOTE = "填写问卷成功"
