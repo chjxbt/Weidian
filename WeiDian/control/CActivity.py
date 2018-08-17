@@ -73,16 +73,18 @@ class CActivity(BaseActivityControl):
         acid = args.get('acid')  # 活动id
         if acid:
             activity = self.sactivity.get_activity_by_acid(acid)
+            activity = dict(activity)
+            activity = self.fill_detail(activity)
+            activity = self.fill_comment(activity)
+            data = import_status("get_activity_info_success", "OK")
+            data["data"] = activity
+            return data
         else:
             pass
-        activity = dict(activity)
-        activity = self.fill_detail(activity)
-        activity = self.fill_comment(activity)
-        data = import_status("get_activity_info_success", "OK")
-        data["data"] = activity
-        return data
 
     def add_one(self):
+        data = request.json
+
         pass
 
 

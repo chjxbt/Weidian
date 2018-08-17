@@ -1,7 +1,16 @@
 # *- coding:utf8 *-
 from datetime import datetime
 
+from sqlalchemy import orm
+
 from WeiDian.common.timeformat import format_for_db
+
+def auto_createtime(f):
+    def inner(self, *args, **kwargs):
+        res = f(self, *args, **kwargs)
+        self.auto_creatdatatime()
+        return res
+    return inner
 
 
 class BaseModel:
@@ -30,13 +39,15 @@ class BaseModel:
             self.fields.remove('fields')
         return self.fields
 
-    # 自动设置创建时间, 无效代码, 待改进
-    def auto_creatdatatime(self):
-        createtimes = map(lambda k: 'createtime' in k, self.__dict__.keys())
+    @auto_createtime
+    @orm.reconstructor
+    def __init__(self):
+        pass
 
+    def auto_creatdatatime(self):
+        createtimes = filter(lambda k: 'createtime' in k, dir(self))
         if createtimes:
             createtime = createtimes[0]
-            # self.createtime = datetime.strftime(datetime.now(), format_for_db)
             setattr(self, createtime, datetime.strftime(datetime.now(), format_for_db))
 
 

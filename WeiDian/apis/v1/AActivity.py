@@ -18,12 +18,17 @@ class AActivity(Resource):
         print activity
         apis = {
             "get_all": "self.control_activity.get_all()",
-            "get_one": "self.control_activity.get_one()"
+            "get_one": "self.control_activity.get_one()",
         }
         res = eval(apis[activity])
         return jsonify(res)
 
     def post(self, activity):
         """添加活动"""
-        pass
+        print activity
+        apis = {
+            "add_one": 'self.control_activity.add_one()',
+        }
+        res = eval(apis[activity])
+        return res
 

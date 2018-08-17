@@ -2,7 +2,7 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, create_engine, Integer, String, Text, Float, Boolean, orm
 from WeiDian.config import dbconfig as cfg
-from WeiDian.models.base_model import BaseModel
+from WeiDian.models.base_model import BaseModel, auto_createtime
 
 DB_PARAMS = "{0}://{1}:{2}@{3}/{4}?charset={5}".format(
     cfg.sqlenginename, cfg.username, cfg.password, cfg.host, cfg.database, cfg.charset)
@@ -34,6 +34,7 @@ class Activity(Base, BaseModel):
     ACistop = Column(Boolean, default=False)  # 是否置顶
 
     @orm.reconstructor
+    @auto_createtime
     def __init__(self):
         self.fields = ['ACid', 'USid', 'PRid', 'ACtype', 'ACtext',
                        'ACbrowsenum', 'ACcreatetime',
@@ -54,6 +55,7 @@ class ActivityComment(Base, BaseModel):
     ACisdelete = Column(Boolean, default=False)  # 是否删除
 
     @orm.reconstructor
+    @auto_createtime
     def __init__(self):
         self.fields = ['ACOid', 'ACid', 'USid', 'ACOcreatetime', 'ACOparentid', 'ACtext']
 
@@ -69,6 +71,7 @@ class ActivityLike(Base, BaseModel):
     ALcreatetime = Column(String(64))  # 时间
 
     @orm.reconstructor
+    @auto_createtime
     def __init__(self):
         self.fields = ['ACOALidid', 'ACid', 'USid', 'ALcreatetime']
 
@@ -85,6 +88,7 @@ class ActivityMedia(Base, BaseModel):
     AMsort = Column(Integer)  # 图片的顺序, 用于表明图片的位置
 
     @orm.reconstructor
+    @auto_createtime
     def __init__(self):
         self.fields = ['AMid', 'ACid', 'AMimage', 'AMvideo', 'AMsort']
 
@@ -100,6 +104,7 @@ class ActivityTag(Base, BaseModel):
     ATstate = Column(Integer, default=1)  # 显示状态: {1 显示, 0 隐藏}
 
     @orm.reconstructor
+    @auto_createtime
     def __init__(self):
         self.fields = ['ATid', 'ATname', ]
 
@@ -139,6 +144,7 @@ class Product(Base, BaseModel):
     PRscore = Column(Float, nullable=True)  # 商品评分
     PRcreatetime = Column(String(64))  # 上架时间
     PRstatuss = Column(Integer, default=1)  # 商品状态: {0 删除, 1 正常, 2 禁用}
+
 
 
 class Brands(Base):
@@ -220,10 +226,9 @@ class HotMessage(Base, BaseModel):
     HMsort = Column(Integer)  # 热文的顺序标志
 
     @orm.reconstructor
+    @auto_createtime
     def __init__(self):
         self.fields = ['HMid', 'HMtext', 'PRid', 'HMcreatetime', 'HMstarttime', 'HMendtime', 'HMsort']
-        # self.fields = '__all__'
-
 
 class Banner(Base, BaseModel):
     """
@@ -239,6 +244,7 @@ class Banner(Base, BaseModel):
     BAsort = Column(Integer)  # 顺序标志
 
     @orm.reconstructor
+    @auto_createtime
     def __init__(self):
         self.fields = self.all
 
