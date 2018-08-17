@@ -1,5 +1,7 @@
 <template>
-    <div>收货地址</div>
+    <div class="m-receiverAddress">
+
+    </div>
 
 </template>
 
