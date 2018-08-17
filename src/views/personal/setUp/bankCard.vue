@@ -1,5 +1,15 @@
 <template>
-    <div>银行卡</div>
+    <div class="m-bankCard">
+      <div class="m-bankCard-box">
+        <div class="m-one-card">
+          <div class="m-bankCard-name">农业银行</div>
+          <div class="m-bankCard-type">储蓄卡</div>
+          <div class="m-bankCard-num">******* ***** ***** ***354</div>
+          <span class="m-bankCard-cancel">解除绑定</span>
+        </div>
+      </div>
+
+    </div>
 
 </template>
 
@@ -17,6 +27,44 @@
         }
     }
 </script>
-<style lang="less" rel="stylesheet/less" scoped>
+<style lang="less" rel="stylesheet/less" >
+.m-bankCard{
+  background-color: #f2f5f7;
+  height: 100%;
+  padding: 0 35px;
+  .m-bankCard-box{
+    padding: 40px 0;
+    .m-one-card{
+      width: 680px;
+      height: 207px;
+      border-radius: 10px;
+      padding: 20px 0;
+      background-image: linear-gradient(to right, #37df8e, #12cca2);
+      box-shadow: 0 5px 13px 0 rgba(66, 66, 66, 0.43);
+      color: #fff;
+      position: relative;
+      div{
+        padding: 0 33px;
+        text-align: left;
+        line-height: 29px;
+        &.m-bankCard-name{
+          font-size: 26px;
+        }
+        &.m-bankCard-type{
+          font-size: 18px;
+          margin: 10px 0;
+        }
+        &.m-bankCard-num{
+          font-size: 30px;
+        }
+      }
+      .m-bankCard-cancel{
+        position: absolute;
+        right: 26px;
+        bottom: 20px;
+      }
+    }
+  }
 
+}
 </style>
