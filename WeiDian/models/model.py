@@ -302,6 +302,12 @@ class SearchField(Base):
     SFstarttime = Column(String(64))  # 上线时间
     SFendtime = Column(String(64))  # 下线时间
     SFsort = Column(Integer)  # 顺序
+    ACisended = Column(Boolean, default=False)  # 是否被手动截止
+
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = ['SFid', 'SFtext',  'SFsort']
 
 
 class IndexAdAlert(Base):
