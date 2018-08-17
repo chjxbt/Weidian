@@ -1,13 +1,11 @@
 # *- coding:utf8 *-
 import sys
 import os
-from collections import namedtuple
 from datetime import datetime
 
 sys.path.append(os.path.dirname(os.getcwd()))
 from SBase import SBase, close_session
 from WeiDian.models.model import Activity, Product
-from WeiDian.common.filter_lasting import filter_lasting
 
 
 # ActivityNameTuple = namedtuple('ActivityNameTuple', ['ACid',
@@ -45,8 +43,6 @@ class SActivity(SBase):
     def get_activity_by_topnavid(self, navid):
         """根据导航的id获取活动"""
         acvitity_list = self.session.query(Activity).filter_by(ACisdelete=False, TopnavId=navid).order_by(Activity.ACcreatetime.desc()).all()
-        import ipdb
-        ipdb.set_trace()
         return acvitity_list
 
     @close_session

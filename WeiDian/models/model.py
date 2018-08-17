@@ -35,9 +35,7 @@ class Activity(Base, BaseModel):
 
     @orm.reconstructor
     def __init__(self):
-        self.fields = ['ACid', 'USid', 'PRid', 'ACtype', 'ACtext',
-                       'ACbrowsenum', 'ACcreatetime',
-                       'ACstarttime', 'ACendtime', 'ACistop']
+        self.fields = '__all__'
 
 
 class ActivityComment(Base, BaseModel):
@@ -114,7 +112,7 @@ class ActivityFoward(Base):
     ACid = Column(String(64))  # 活动
 
 
-class Product(Base):
+class Product(Base, BaseModel):
     """
     商品
     """
@@ -241,6 +239,7 @@ class HotMessage(Base, BaseModel):
     @orm.reconstructor
     def __init__(self):
         self.fields = ['HMid', 'HMtext', 'PRid', 'HMcreatetime', 'HMstarttime', 'HMendtime', 'HMsort']
+        # self.fields = '__all__'
 
 
 class Banner(Base):

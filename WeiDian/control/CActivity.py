@@ -43,7 +43,7 @@ class CActivity():
         usid = args.get('usid')  # 用户id
         lasting = args.get('lasting', 'true')  # 是否正在进行的活动
         start = args.get('start', 0)  # 起始位置
-        count = args.get('count', 15)  # 结束位置
+        count = args.get('count', 15)  # 取出活动条数
         if count > 30:
             count = 30
         end = start + count

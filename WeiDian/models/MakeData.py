@@ -100,6 +100,19 @@ class MakeData():
             self.session.add(hm)
             self.session.commit()
 
+    def add_product(self):
+        from model import Product
+        for i in range(1500, 2000):
+            pr = Product()
+            pr.PRid = str(i)
+            pr.USid = str(random.randint(1500, 2000))
+            pr.PAid = str(random.randint(1, 10))
+            pr.PRalias = '这是别名' + str(i)
+            pr.PRscore = random.randint(1, 10)
+            pr.PRsalesvolume = random.randint(1000, 2000)
+            pr.PRstock = random.randint(1000, 2000)
+
+
 
 
 
