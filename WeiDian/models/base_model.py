@@ -49,8 +49,7 @@ class BaseModel:
         createtimes = filter(lambda k: 'createtime' in k, dir(self))
         if createtimes:
             createtime = createtimes[0]
-            setattr(self, createtime, datetime.strftime(datetime.now(), format_for_db))
-
-
-
+            exists_time = getattr(self, createtime)
+            if not exists_time:
+                setattr(self, createtime, datetime.strftime(datetime.now(), format_for_db))
 

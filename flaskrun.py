@@ -14,4 +14,4 @@ api.add_resource(ASearchField, '/searchfield/<string:searchfield>')
 
 
 if __name__ == '__main__':
-    wd.run(debug=True, )
+    wd.run(debug=True)
