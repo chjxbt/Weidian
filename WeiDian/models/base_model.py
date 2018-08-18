@@ -43,7 +43,7 @@ class BaseModel:
     @auto_createtime
     @orm.reconstructor
     def __init__(self):
-        pass
+        self.fields = []
 
     def auto_creatdatatime(self):
         createtimes = filter(lambda k: 'createtime' in k, dir(self))
