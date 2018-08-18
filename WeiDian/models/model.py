@@ -270,6 +270,9 @@ class SpicialActivity(Base):
 
 
 class User(Base):
+    """
+    普通用户
+    """
     __tablename__ = 'user'
     USid = Column(String(64), primary_key=True)
     USname = Column(String(64), nullable=False)  # 用户名
@@ -279,6 +282,28 @@ class User(Base):
     USage = Column(Integer)  # 年龄
     USlastlogin = Column(String(64))  # 用户上次登录时间
     USlevel = Column(Integer, default=0)  # 用户级别: {0 普通用户, 1 普通合伙人, 2 中级合伙人, 3 高级合伙人}
+
+
+class UserLoginTime(Base):
+    """
+    用来记录用户的登录时间
+    """
+    __tablename__ = 'userlogintime'
+    ULTid = Column(String(64), primary_key=True)
+    Usid = Column(String(64), nullable=False)  # 用户id
+    USTcreatetime = Column(String(64))  # 登录时间
+    USTip = Column(String(64))  # 登录ip地址
+
+
+class SuperUser(Base, BaseModel):
+    """
+    超级用户
+    """
+    __tablename__ = 'superuser'
+    SUid = Column(String(64), primary_key=True)
+    SUname = Column(String(64), nullable=False)
+    SUheader = Column(String(64))  # 用户头像, 可以设置一个默认值
+    
 
 
 class UserAddress(Base):
