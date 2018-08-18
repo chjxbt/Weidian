@@ -32,6 +32,9 @@ class MakeData():
     #         i = i + 1
     #     return user_ids
 
+    def add_super(self):
+        pass
+
     def add_activity(self):
         for i in range(info_count):
             activity_model = model.Activity()
