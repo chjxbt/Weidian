@@ -17,7 +17,7 @@ class Activity(Base, BaseModel):
     __tablename__ = 'activity'
     ACid = Column(String(64), primary_key=True)
     PRid = Column(String(64), nullable=False)  # 活动商品
-    USid = Column(String(64), nullable=False)  # 发布者
+    SUid = Column(String(64), nullable=False)  # 发布者(超级用户才可以发布)
     ACtype = Column(Integer, default=0)  # 活动分类, 具体分类如下
     # {0 普通动态, 1 满减, 2 满赠, 3 优惠券, 4 砍价, 5 拼团, 6 单品优惠券, 7 一元秒杀, 8 前几分钟半价, 9 限时抢, 10 X元X件}
     TopnavId = Column(String(64))  # 对应上层导航栏
@@ -37,7 +37,7 @@ class Activity(Base, BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['ACid', 'USid', 'PRid', 'ACtype', 'ACtext',
+        self.fields = ['ACid', 'PRid', 'ACtype', 'ACtext',
                        'ACbrowsenum', 'ACcreatetime',
                        'ACstarttime', 'ACendtime', 'ACistop', 'ACisended']
 
@@ -91,7 +91,7 @@ class ActivityMedia(Base, BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['AMid', 'ACid', 'AMimage', 'AMvideo', 'AMsort']
+        self.fields = ['AMid', 'ACid', 'AMsort']
 
 
 class ActivityTag(Base, BaseModel):
@@ -284,7 +284,7 @@ class User(Base):
     USlevel = Column(Integer, default=0)  # 用户级别: {0 普通用户, 1 普通合伙人, 2 中级合伙人, 3 高级合伙人}
 
 
-class UserLoginTime(Base):
+class UserLoginTime(Base, BaseModel):
     """
     用来记录用户的登录时间
     """
@@ -301,9 +301,17 @@ class SuperUser(Base, BaseModel):
     """
     __tablename__ = 'superuser'
     SUid = Column(String(64), primary_key=True)
-    SUname = Column(String(64), nullable=False)
+    SUname = Column(String(64), nullable=False)  # 超级用户名
+    # SUpassword = Column(String(255), nullable=False)  # 密码
     SUheader = Column(String(64))  # 用户头像, 可以设置一个默认值
-    
+    SUcreatetime = Column(String(64))  # 创建时间
+    SUidfreeze = Column(Boolean, default=False)  # 是否被冻结
+    SUisdelete = Column(Boolean, default=False)  # 是否被删除
+
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = ['SUid', 'SUname', 'SUheader']
 
 
 class UserAddress(Base):
@@ -313,7 +321,6 @@ class UserAddress(Base):
     UAtext = Column(String(255), nullable=False)  # 具体地址
     UAphone = Column(String(16), nullable=False)  # 电话
     UAname = Column(String(16), nullable=False)  # 收货人姓名
-    # Upassword = co
 
 
 class SearchField(Base):

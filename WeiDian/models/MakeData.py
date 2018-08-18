@@ -33,7 +33,13 @@ class MakeData():
     #     return user_ids
 
     def add_super(self):
-        pass
+        from WeiDian.models.model import SuperUser
+        super = SuperUser()
+        super.SUid = 'superusername_uid'
+        super.header = 'useperuser_header'
+        super.SUname = 'superuser_name'
+        self.session.add(super)
+        self.session.commit()
 
     def add_activity(self):
         for i in range(info_count):
@@ -46,7 +52,7 @@ class MakeData():
             activity_model.ACstarttime = str(random.randint(2017, 2019))+'0510000000'
             activity_model.ACendtime = str( random.randint(2017, 2019))+'0510000000'
             activity_model.PRid = random.randint(0, info_count)
-            activity_model.USid = random.randint(0, info_count)
+            activity_model.SUid = 'superusername_uid'
             activity_model.TopnavId = 'q'
             self.session.add(activity_model)
             self.session.commit()
@@ -57,9 +63,15 @@ class MakeData():
             media = model.ActivityMedia()
             media.AMid = str(i)
             media.ACid = str(random.randint(0, info_count))
-            # tem = random.randint(1, 2)
-
-            media.AMimage = 'http://www.thisimage'
+            tem = random.randint(1, 2)
+            if tem == 1:
+                media.AMimage = 'http://www.thisimage'
+            else:
+                is_exists = self.session.query(model.ActivityMedia).filter_by(ACid=media.ACid).first()
+                if not is_exists:
+                    media.AMvideo = 'http://www.thisvideo'
+                else:
+                    media.AMimage = 'http://www.thisimage1'
             media.AMsort = random.randint(1, 9)
             self.session.add(media)
             self.session.commit()
@@ -232,3 +244,4 @@ if __name__ == "__main__":
         data.add_hotmessage()
         data.add_banner()
         data.add_product()
+        data.add_super()

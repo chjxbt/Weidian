@@ -17,13 +17,12 @@ class SActivityMedia(SBase):
         如果是视频, 返回一个单视频列表
         如果是图片, 返回图片列表"""
         cur_medias = self.session.query(ActivityMedia).filter_by(ACid=acid).order_by(ActivityMedia.AMsort)
-        if cur_medias.count == 1 and cur_medias.first().AMvideo:
-            cur_media = cur_medias.first()
-            return [{'amid': cur_media.AMid, 'video':cur_media.AMvideo, 'sort': cur_media.AMsort}]
-        else:
-            return [{'amid': cur_media.AMid, 'images': cur_media.AMimage, 'sort': cur_media.AMsort} for cur_media in cur_medias]
-
-
-
-
-
+        exists = cur_medias.first()
+        if exists:
+            cur_medias = cur_medias.all()
+            """是有视频的活动"""
+            cur_medias = filter(lambda x: x.AMimage or x.AMvideo, cur_medias)  # 过滤无效的记录
+            map(lambda x: x.add('AMvideo') if x.AMvideo else x.add('AMimage'), cur_medias)  # 添加转字典需要的字段
+            return cur_medias
+        return []
+        

@@ -24,8 +24,8 @@ class CActivity(BaseActivityControl):
         self.sacomment = SActivityComment()
         from WeiDian.service.SActivityLike import SActivityLike
         self.salike = SActivityLike()
-        from WeiDian.service.SUser import SUser
-        self.suser = SUser()
+        from WeiDian.service.SSuperUser import SSuperUser
+        self.ssuperuser = SSuperUser()
         from WeiDian.service.SActivityMedia import SActivityMedia
         self.smedia = SActivityMedia()
         from WeiDian.service.SActivityTag import SActivityTag
