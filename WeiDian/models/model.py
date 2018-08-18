@@ -58,7 +58,7 @@ class ActivityComment(Base, BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['ACOid', 'ACid', 'USid', 'ACOcreatetime', 'ACOparentid', 'ACtext']
+        self.fields = ['USid', 'ACOcreatetime', 'ACtext']
 
 
 class ActivityLike(Base, BaseModel):
@@ -74,7 +74,7 @@ class ActivityLike(Base, BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['ACOALidid', 'ACid', 'USid', 'ALcreatetime']
+        self.fields = ['ACid', 'USid', 'ALcreatetime']
 
 
 class ActivityMedia(Base, BaseModel):

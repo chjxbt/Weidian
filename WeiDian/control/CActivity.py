@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db
 from WeiDian.config.response import PARAMS_MISS
-from WeiDian.control.BaseControl import BaseActivityControl
+from WeiDian.control.BaseControl import BaseControl
 
 sys.path.append(os.path.dirname(os.getcwd()))
 from flask import request
@@ -16,7 +16,7 @@ import json
 import uuid
 
 
-class CActivity(BaseActivityControl):
+class CActivity(BaseControl):
     def __init__(self):
         from WeiDian.service.SActivity import SActivity
         self.sactivity = SActivity()

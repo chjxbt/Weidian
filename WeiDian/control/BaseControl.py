@@ -1,5 +1,5 @@
 # *- coding:utf8 *-
-class BaseActivityControl():
+class BaseControl():
 
     def get_one_activity(self):
         pass
@@ -20,5 +20,15 @@ class BaseActivityControl():
         acid = act.ACid
         act.comment = self.sacomment.get_comment_by_activity_id(acid)
         act.add('comment')
+        map(self.fill_comment_apply_for, act.comment)
         return act
+
+    def fill_comment_apply_for(self, comment):
+        """"如果既是评论又是回复则添加一个'所回复用户'字段"""
+        acoid = comment.ACOid
+        if not comment.ACOparentid:
+            return comment  # 如果ACOid没有值, 说明这不是回复的内容
+        comment.parent_apply_user = self.sacomment.get_apply_for_by_acoid(acoid)
+        comment.add('parent_apply_user')
+        return comment
 
