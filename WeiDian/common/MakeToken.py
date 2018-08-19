@@ -7,12 +7,14 @@ from flask import current_app, request
 User = namedtuple("User", ['USid', 'Scope', 'time'])
 
 
-def usid_to_token(usid, scope='user', expiration=current_app['TOKEN_EXPIRATION']):
+def usid_to_token(usid, scope='user', expiration=''):
         """生成令牌
         usid: 用户USid
         scope: 用户类型(user 或者 superuser)
         expiration: 过期时间
         """
+        if not expiration:
+            expiration = current_app.config['TOKEN_EXPIRATION']
         s = Serializer(current_app.config['SECRET_KEY'], expires_in=expiration)
         time_now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         return s.dumps({
@@ -61,4 +63,11 @@ def verify_token_decorator(func):
         request.user = user
         return func(self, *args, **kwargs)
     return inner
+
+
+# if __name__ == '__main__':
+#     from WeiDian import create_app
+#     app = create_app()
+#     res = usid_to_token('6882ad09-bf5f-4607-8ad1-1cd46b6158e0', current_app=app)
+#     print(res)
 
