@@ -1,11 +1,9 @@
-
-from flask import request, json, jsonify
-from flask._compat import implements_to_string
+from flask import request, json
 from werkzeug.exceptions import HTTPException
 
 
 class ApiException(HTTPException):
-    code = 200
+    code = 500
     msg = 'sorry, we make a mistake'
     error_code = 999
 
@@ -22,7 +20,6 @@ class ApiException(HTTPException):
         body = dict(
             msg=self.msg,
             error_code=self.error_code,
-            # request="POST v1/client/register"
             request=request.method + ' ' + self.get_url_no_param()
         )
         text = json.dumps(body)
@@ -31,14 +28,8 @@ class ApiException(HTTPException):
     def get_headers(self, environ=None):
         return [('Content-Type', 'application/json')]
 
-    def get_response(self, environ=None):
-        from werkzeug.wrappers import Response
-        headers = self.get_headers(environ)
-        return Response(self.get_body(environ), self.code, headers)
-
     @staticmethod
     def get_url_no_param():
         full_url = str(request.full_path)
         main_path = full_url.split('?')
         return main_path[0]
-
