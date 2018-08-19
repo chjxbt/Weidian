@@ -3,7 +3,9 @@ import sys
 import os
 from datetime import datetime
 
+from werkzeug.security import generate_password_hash, check_password_hash
 from WeiDian.common.timeformat import format_for_db
+
 
 sys.path.append(os.path.dirname(os.getcwd()))
 from SBase import SBase, close_session
@@ -24,3 +26,10 @@ class SSuperUser(SBase):
         if super:
             return super
 
+    @close_session
+    def verify_super(self, suname, supassword):
+        """通过用户名和密码验证"""
+        super = self.session.query(SuperUser).filter_by(SUname=suname).first()
+        if super:
+            if check_password_hash(super.SUpassword, supassword):
+                return super

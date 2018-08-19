@@ -24,8 +24,8 @@ class SActivity(SBase):
         return acvitity_list
 
     @close_session
-    def get_activity_by_usid(self, usid):
-        acvitity_list = self.session.query(Activity).filter_by(ACisdelete=False, USid=usid).order_by(Activity.ACcreatetime.desc()).all()
+    def get_activity_by_suid(self, suid):
+        acvitity_list = self.session.query(Activity).filter_by(ACisdelete=False, SUid=suid).order_by(Activity.ACcreatetime.desc()).all()
         return acvitity_list
 
     @close_session

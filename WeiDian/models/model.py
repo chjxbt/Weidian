@@ -302,7 +302,7 @@ class SuperUser(Base, BaseModel):
     __tablename__ = 'superuser'
     SUid = Column(String(64), primary_key=True)
     SUname = Column(String(64), nullable=False)  # 超级用户名
-    # SUpassword = Column(String(255), nullable=False)  # 密码
+    SUpassword = Column(String(255), nullable=False)  # 密码
     SUheader = Column(String(64))  # 用户头像, 可以设置一个默认值
     SUcreatetime = Column(String(64))  # 创建时间
     SUidfreeze = Column(Boolean, default=False)  # 是否被冻结

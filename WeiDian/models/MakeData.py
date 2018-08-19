@@ -38,10 +38,13 @@ class MakeData():
 
     def add_super(self):
         from WeiDian.models.model import SuperUser
+        from werkzeug.security import generate_password_hash
         super = SuperUser()
-        super.SUid = self.user_id[0]
+        # super.SUid = self.user_id[0]
+        super.SUid = '6882ad09-bf5f-4607-8ad1-1cd46b6158e0'
         super.header = '这是头像图片'
         super.SUname = '这是用户名称'
+        super.SUpassword = generate_password_hash('hello')  # 密码是hello
         self.session.add(super)
         self.session.commit()
 

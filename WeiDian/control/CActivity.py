@@ -45,16 +45,16 @@ class CActivity(BaseControl):
         """
         args = request.args.to_dict()
         navid = args.get('navid')  # 导航id
-        usid = args.get('usid')  # 用户id
+        suid = args.get('suid')  # 管理员id
         lasting = args.get('lasting', 'true')  # 是否正在进行的活动
         start = args.get('start', 0)  # 起始位置
         count = args.get('count', 15)  # 取出活动条数
-        if not (navid or usid):
+        if not (navid or suid):
             return PARAMS_MISS
         if navid:
             activity_list = self.sactivity.get_activity_by_topnavid(navid)
-        if usid:
-            activity_list = self.sactivity.get_activity_by_usid(usid)
+        if suid:
+            activity_list = self.sactivity.get_activity_by_suid(suid)
         if lasting == 'true':
             now_time = datetime.strftime(datetime.now(), format_for_db)
             activity_list = filter(lambda act: act.ACstarttime < now_time < act.ACendtime and not act.ACisended, activity_list)
