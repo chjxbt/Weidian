@@ -11,5 +11,13 @@ class SProduct(SBase):
 
     @close_session
     def get_soldnum_by_pid(self, prid):
+        """获取销售总量, 真实的"""
         product = self.session.query(Product).filter_by(PRid=prid).first()
         return product.PRsalesvolume
+
+    @close_session
+    def get_product_by_prid(self, prid):
+        """根据商品id获取商品"""
+        product = self.session.query(Product).filter_by(PRid=prid).first()
+        return product
+
