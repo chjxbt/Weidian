@@ -5,6 +5,17 @@ PARAMS_MISS = {
     "message": "参数缺失"
 }
 
+TOKEN_ERROR = {
+    "status": 405,
+    "status_code": 405001,
+    "message": "未登录"
+}
+
+AUTHORITY_ERROR = {
+    "status": 405,
+    "status_code": 405001,
+    "message": "无权限"
+}
 SYSTEM_ERROR = {
     "status": 404,
     "message": "系统异常"
