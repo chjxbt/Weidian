@@ -5,9 +5,11 @@ from datetime import datetime, timedelta
 
 from sqlalchemy.orm import Session
 
+from WeiDian.common.MakeToken import verify_token_decorator
+from WeiDian.common.TransformToList import add_model
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db
-from WeiDian.config.response import PARAMS_MISS
+from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR
 from WeiDian.config.activitytype import activity_type
 from WeiDian.control.BaseControl import BaseControl
 
@@ -33,8 +35,8 @@ class CActivity(BaseControl):
         self.stags = SActivityTag()
         from WeiDian.service.SActivityFoward import SActivityFoward
         self.foward = SActivityFoward()
-        # from WeiDian.service.SProduct import SProduct
-        # self.sproduct = SProduct()
+        from WeiDian.service.SProduct import SProduct
+        self.sproduct = SProduct()
         self.session = Session()
 
     def get_all(self):
@@ -99,19 +101,88 @@ class CActivity(BaseControl):
         """手动截止活动"""
         pass
 
+    @verify_token_decorator
     def add_one(self):
+        """添加一个活动, 需要管理员的登录状态"""
+        if not hasattr(request, 'user'):
+            return TOKEN_ERROR  # 未登录, 或token错误
+        if request.user.scope != 'SuperUser':
+            return AUTHORITY_ERROR  # 权限不足
         data = request.json
         now_time = datetime.strftime(datetime.now(), format_for_db)
+        # 7天以后
         seven_days_later = datetime.strftime(datetime.now() + timedelta(days=7), format_for_db)
-        starttime = data.get('acstarttime', now_time)  # 活动开始时间, 默认当前时间
-        endtime = data.get('acendtime', seven_days_later)  # 活动结束时间, 默认7天以后
-        text = data.get('actext')  # 文字内容
+        acstarttime = data.get('acstarttime', now_time)  # 活动开始时间, 默认当前时间
+        acendtime = data.get('acendtime', seven_days_later)  # 活动结束时间, 默认7天以后
+        actext = data.get('actext')  # 文字内容
         actype = data.get('actype')  # 类型
-        forward = data.get('foward')  # 转发数量
-        likenum = data.get('likenum')  # 喜欢数
+        forwardnum = data.get('fowardnum', 0)  # 转发数量
+        likenum = data.get('likenum', 0)  # 喜欢数
+        acbrowenum = data.get('browsenum', 0)  # 浏览数
+        soldfakenum = data.get('soldnum', 0)   # 商品的销售量
+        istop = data.get('acistop')
         prid = data.get('prid')  # 商品id
         media = data.get('media')  # 多媒体
-        if actype != 0 and not media:  # 如果是活动, 但是没有图片(视频)
+        tags = data.get('tags')  # 右上角tag标签
+        topnavid = data.get('topnavid')
+        if not media or not actext or not prid or not topnavid:
             return PARAMS_MISS
+        relation_product = self.sproduct.get_product_by_prid(prid)  # 关联的商品
+        if not relation_product:  # 如果没有该商品
+            return SYSTEM_ERROR
+        # 创建活动
+        acid = str(uuid.uuid1())
+        add_model('Activity', **{
+            'ACid': acid,
+            'PRid': relation_product.PRid,
+            'SUid': request.user.id,
+            'ACtype': actype,
+            'TopnavId': topnavid,
+            'ACtext': actext,
+            'AClikeFakeNum': likenum,
+            'ACbrowsenum': acbrowenum,
+            'ACforwardFakenum': forwardnum,
+            'ACProductsSoldFakeNum': soldfakenum,
+            'ACstarttime': acstarttime,
+            'ACendtime': acendtime,
+            'ACistop': istop,
+        })
+        # 创建media
+        image_num = 0  # 标志用来限制图片或视频的数量
+        for img_or_vido in media:
+            img_or_vido_keys = img_or_vido.keys()
+            if 'amimage' in img_or_vido_keys and 'amvideo' not in img_or_vido_keys:
+                """图片"""
+                add_model('ActivityMedia', **{
+                    'AMid': str(uuid.uuid1()),
+                    'ACid': acid,
+                    'AMimage': img_or_vido.get('amimage'),
+                    'AMsort': img_or_vido.get('amsort', 1)
+                })
+                image_num += 1
+                if image_num >= 9:
+                    break
+            elif 'amimage' not in img_or_vido_keys and 'amvideo' in img_or_vido_keys:
+                """视频"""
+                if image_num < 1:
+                    add_model('ActivityMedia', **{
+                        'AMid': str(uuid.uuid1()),
+                        'ACid': acid,
+                        'AMvideo': media.get('amvideo')
+                    })
+
+        # 创建tag
+        if tags:
+            for tag in tags:
+                add_model('ActivityTag', **{
+                    'ATid': str(uuid.uuid1()),
+                    'ACid': acid,
+                    'ATname': tag.get('atname'),
+                })
+        response_make_activity = import_status('add_activity_success', 'OK')
+        response_make_activity['data'] = {}
+        response_make_activity['data']['acid'] = acid
+        return response_make_activity
+
 
         
