@@ -3,6 +3,7 @@
 import random
 import sys
 import os
+import uuid
 
 from sqlalchemy.orm import scoped_session, sessionmaker
 
@@ -22,47 +23,50 @@ class MakeData():
         self.session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=model.mysql_engine))
+        self.user_id = self.generic_uuid()
+        self.activity_id = self.generic_uuid() 
+        self.media_id = self.generic_uuid()
+        self.comment_id = self.generic_uuid()
+        self.tag_id = self.generic_uuid()
+        self.banner_id = self.generic_uuid()
+        self.product_id = self.generic_uuid()
+        self.hotmessege_id = self.generic_uuid()
+        self.topnav_id = self.generic_uuid()[:4]
 
-    # def make_id(self):
-    #     import uuid
-    #     user_ids = []
-    #     i = 0
-    #     while i < info_count:
-    #         user_ids.append(str(uuid.uuid4()))
-    #         i = i + 1
-    #     return user_ids
+    def generic_uuid(self):
+        return [str(uuid.uuid4()) for i in range(info_count)]
 
     def add_super(self):
         from WeiDian.models.model import SuperUser
         super = SuperUser()
-        super.SUid = 'superusername_uid'
-        super.header = 'useperuser_header'
-        super.SUname = 'superuser_name'
+        super.SUid = self.user_id[0]
+        super.header = '这是头像图片'
+        super.SUname = '这是用户名称'
         self.session.add(super)
         self.session.commit()
 
     def add_activity(self):
-        for i in range(info_count):
+        for i in self.activity_id:
             activity_model = model.Activity()
             activity_model.ACid = str(i)
             activity_model.ACtype = "2"
-            activity_model.ACtext = "活动活动活动"
-            activity_model.ACbrowsenum = "20"
-            activity_model.AClikeFakeNum = str(random.randint(0, info_count-1))
+            activity_model.ACtext = "活动活动活动" + str(i)
+            activity_model.ACbrowsenum = random.randint(10, 200)
+            activity_model.AClikeFakeNum = random.randint(10, 200)
             activity_model.ACstarttime = str(random.randint(2017, 2019))+'0510000000'
-            activity_model.ACendtime = str( random.randint(2017, 2019))+'0510000000'
-            activity_model.PRid = random.randint(0, info_count)
-            activity_model.SUid = 'superusername_uid'
-            activity_model.TopnavId = 'q'
+            activity_model.ACendtime = str(random.randint(2017, 2019))+'0510000000'
+            activity_model.PRid = random.choice(self.product_id)
+            activity_model.SUid = self.user_id[0]
+            activity_model.TopnavId = random.choice(self.topnav_id)
             self.session.add(activity_model)
             self.session.commit()
 
 
     def add_media(self):
-        for i in range(info_count):
+        for i in self.media_id:
             media = model.ActivityMedia()
             media.AMid = str(i)
-            media.ACid = str(random.randint(0, info_count))
+            media.ACid = random.choice(self.activity_id)
             tem = random.randint(1, 2)
             if tem == 1:
                 media.AMimage = 'http://www.thisimage'
@@ -78,11 +82,11 @@ class MakeData():
 
     def add_comment(self):
         from model import ActivityComment
-        for i in range(100, 200):
+        for i in self.comment_id:
             comment = ActivityComment()
             comment.ACOid = str(i)
             tem = random.randint(1, 2)
-            comment.ACid = str(random.randint(0, info_count))
+            comment.ACid = random.choice(self.activity_id)
             comment.ACtext = '这是评论' + str(i)
             if tem == 1:
                 comment.ACOparentid = str(random.randint(0, info_count))
@@ -93,20 +97,20 @@ class MakeData():
 
     def add_tags(self):
         from model import ActivityTag
-        for i in range(info_count):
+        for i in self.tag_id:
             tag = ActivityTag()
             tag.ATid = str(i)
-            tag.ACid = str(random.randint(0, info_count))
+            tag.ACid = random.choice(self.activity_id)
             tag.ATname = random.choice(['活动', '爆款', '其他'])
             self.session.add(tag)
             self.session.commit()
 
     def add_hotmessage(self):
         from model import HotMessage
-        for i in range(info_count):
+        for i in self.hotmessege_id: 
             hm = HotMessage()
             hm.HMid = str(i)
-            hm.PRid = 'this is prid'
+            hm.PRid = random.choice(self.product_id) 
             hm.HMstarttime = str(random.randint(2017, 2019))+'0510000000'
             hm.HMendtime = str( random.randint(2017, 2019))+'0510000000'
             hm.HMtext = 'hello 这是热文' + str(i)
@@ -116,10 +120,10 @@ class MakeData():
 
     def add_product(self):
         from model import Product
-        for i in range(info_count):
+        for i in self.product_id:
             pr = Product()
             pr.PRid = str(i)
-            pr.USid = str(random.randint(0, info_count))
+            pr.USid = self.user_id[0]
             pr.PAid = str(random.randint(1, 10))
             pr.PRalias = '这是别名' + str(i)
             pr.PRscore = random.randint(1, 10)
@@ -133,10 +137,10 @@ class MakeData():
 
     def add_banner(self):
         from model import Banner
-        for i in range(info_count):
+        for i in self.banner_id:
             ba = Banner()
             ba.BAid = str(i)
-            ba.ACid = random.randint(0, info_count)
+            ba.ACid = random.choice(self.activity_id)
             ba.BAsort = random.randint(1, 300)
             ba.BAstarttime = str(random.randint(2017, 2019))+'0510000000'
             ba.BAendtime = str(random.randint(2017, 2019))+'0510000000'
@@ -144,15 +148,7 @@ class MakeData():
             self.session.add(ba)
             self.session.commit()
 
-
-
-
-
-
-
     # def update_activity(self, ):
-
-
 
     #
     # def add_shops(self, tshop_ids):

@@ -91,7 +91,7 @@ class ActivityMedia(Base, BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['AMid', 'ACid', 'AMsort']
+        self.fields = ['AMid']
 
 
 class ActivityTag(Base, BaseModel):

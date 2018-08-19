@@ -22,7 +22,7 @@ class SActivityMedia(SBase):
             cur_medias = cur_medias.all()
             """是有视频的活动"""
             cur_medias = filter(lambda x: x.AMimage or x.AMvideo, cur_medias)  # 过滤无效的记录
-            map(lambda x: x.add('AMvideo') if x.AMvideo else x.add('AMimage'), cur_medias)  # 添加转字典需要的字段
+            map(lambda x: x.add('AMvideo') if x.AMvideo else x.add('AMimage', 'AMsort'), cur_medias)  # 添加转字典需要的字段
             return cur_medias
         return []
         

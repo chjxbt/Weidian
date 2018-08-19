@@ -1,13 +1,14 @@
 # *- coding:utf8 *-
 import sys
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from sqlalchemy.orm import Session
 
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db
 from WeiDian.config.response import PARAMS_MISS
+from WeiDian.config.activitytype import activity_type
 from WeiDian.control.BaseControl import BaseControl
 
 sys.path.append(os.path.dirname(os.getcwd()))
@@ -100,6 +101,17 @@ class CActivity(BaseControl):
 
     def add_one(self):
         data = request.json
-        pass
+        now_time = datetime.strftime(datetime.now(), format_for_db)
+        seven_days_later = datetime.strftime(datetime.now() + timedelta(days=7), format_for_db)
+        starttime = data.get('acstarttime', now_time)  # 活动开始时间, 默认当前时间
+        endtime = data.get('acendtime', seven_days_later)  # 活动结束时间, 默认7天以后
+        text = data.get('actext')  # 文字内容
+        actype = data.get('actype')  # 类型
+        forward = data.get('foward')  # 转发数量
+        likenum = data.get('likenum')  # 喜欢数
+        prid = data.get('prid')  # 商品id
+        media = data.get('media')  # 多媒体
+        if actype != 0 and not media:  # 如果是活动, 但是没有图片(视频)
+            return PARAMS_MISS
 
-
+        

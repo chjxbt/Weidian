@@ -27,4 +27,5 @@ class Flask(_Flask):
 
 def create_app():
     app = Flask(__name__)
+    app.config.from_object('WeiDian.config.setting')
     return app
