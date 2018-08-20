@@ -47,7 +47,9 @@ class SActivity(SBase):
         根据活动id删除
         """
         cur_activity = self.session.query(Activity).filter_by(ACid=acid).first()
-        cur_activity.ACisdelte = True
+        cur_activity.ACisdelete = True
+        import ipdb
+        ipdb.set_trace()
         self.session.add(cur_activity)
 
     @close_session
