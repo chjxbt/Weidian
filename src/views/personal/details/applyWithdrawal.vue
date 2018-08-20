@@ -14,14 +14,29 @@
         </div>
       </div>
       <div class="m-apply-withdrawal-btn">
-        <span>提现到银行卡</span></div>
+        <span @click="applyClick">提现到银行卡</span></div>
       <div class="m-apply-withdrawal-btn m-apply-withdrawal-btn-two">
-        <span class="active">提现到银行卡</span>
-        <span>提现到微信</span>
+        <span class="active" @click="applyClick">提现到银行卡</span>
+        <span @click="applyClick">提现到微信</span>
       </div>
       <div class="m-tel-info">
         <p>如果遇到问题，请随时联系我们！</p>
           <p>联系电话：12345678912</p>
+      </div>
+
+      <div class="m-modal" v-if="show_modal">
+        <div class="m-modal-state">
+          <div class="m-modal-content">
+            <img src="" class="m-apply-success" alt="">
+            <p class="m-ft-30 m-ft-b">提交成功</p>
+            <div class="m-apply-result-info">
+              已成功提交提现申请，我们将在3个工作日内完成审核，请及时关注您的账户余额。
+            </div>
+            <div class="m-apply-result-btn">
+              <span @click="knownClick">我知道了</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -31,11 +46,19 @@
     export default {
         data() {
             return {
-                name: ''
+                name: '',
+              show_modal:false
             }
         },
         components: {},
-        methods: {},
+        methods: {
+          knownClick(){
+            this.show_modal = false;
+          },
+          applyClick(){
+            this.show_modal = true;
+          }
+        },
         created() {
 
         }
@@ -43,6 +66,7 @@
 </script>
 <style lang="less" rel="stylesheet/less" >
   @import "../../../common/css/index";
+  @import "../../../common/css/modal";
 .m-apply-withdrawal{
   .m-amount{
     padding: 33px 25px 0;
@@ -107,6 +131,44 @@
       font-size: 24px;
       color: #666;
       line-height: 32px;
+    }
+  }
+  .m-modal{
+    .m-modal-state{
+      width: 520px;
+      height: 600px;
+      border-radius: 30px;
+      .m-modal-content{
+        padding-top: 120px;
+        p{
+          color: #000;
+        }
+        .m-apply-success{
+          display: inline-block;
+          width: 85px;
+          height: 85px;
+          background-color: #a4a4a4;
+          margin-bottom: 36px;
+        }
+        .m-apply-result-info{
+          margin: 40px 0;
+          font-size: 24px;
+          line-height: 35px;
+        }
+        .m-apply-result-btn{
+          span{
+            display: inline-block;
+            width: 250px;
+            height: 70px;
+            line-height: 70px;
+            background-color: @mainColor;
+            color: #fff;
+            border-radius: 50px;
+            box-shadow: 2px 8px 8px 0 rgba(0, 0, 0, 0.16);
+          }
+        }
+      }
+
     }
   }
 }
