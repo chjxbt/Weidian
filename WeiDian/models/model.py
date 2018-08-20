@@ -39,7 +39,7 @@ class Activity(Base, BaseModel):
     def __init__(self):
         self.fields = ['ACid', 'PRid', 'ACtype', 'ACtext',
                        'ACbrowsenum', 'ACcreatetime',
-                       'ACstarttime', 'ACendtime', 'ACistop', 'ACisended']
+                       'ACstarttime', 'ACendtime', 'ACistop', 'ACisended', 'TopnavId']
 
 
 class ActivityComment(Base, BaseModel):
@@ -130,6 +130,8 @@ class Product(Base, BaseModel):
     PRinfo = Column(Text)  # 具体详情
     PRimage = Column(String(64), nullable=False)  # 商品主图
     PRalias = Column(String(64))  # 别名
+    # PRprice = Column(Float)  # 显示价格
+    # PRoldprice = Column(Float)  # 原价
     PRishot = Column(Boolean, default=False)  # 是否热卖
     PReditstate = Column(Integer, default=1)  # 商品编辑状态: {1 完成商品信息, 2 完成产品详情信息, 3, 完成??}
     PRcollectnum = Column(Integer, default=0)  # 收藏数量
@@ -142,10 +144,10 @@ class Product(Base, BaseModel):
     PRstock = Column(Integer)  # 商品详情页库存
     PRstatus = Column(Integer, default=1)  # 状态: {1:在售状态 2:下架状态}
     PRsalesvolume = Column(Integer, nullable=False)  # 商品销量
+    # PRsalefakenum = Column(Integer)  # 商品自定义销量
     PRscore = Column(Float, nullable=True)  # 商品评分
     PRcreatetime = Column(String(64))  # 上架时间
     PRstatuss = Column(Integer, default=1)  # 商品状态: {0 删除, 1 正常, 2 禁用}
-
 
 
 class Brands(Base):

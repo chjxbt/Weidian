@@ -47,8 +47,8 @@ class CActivity(BaseControl):
         navid = args.get('navid')  # 导航id
         suid = args.get('suid')  # 管理员id
         lasting = args.get('lasting', 'true')  # 是否正在进行的活动
-        start = args.get('start', 0)  # 起始位置
-        count = args.get('count', 15)  # 取出活动条数
+        start = int(args.get('start', 0))  # 起始位置
+        count = int(args.get('count', 15))  # 取出活动条数
         if not (navid or suid):
             return PARAMS_MISS
         if navid:
@@ -65,6 +65,7 @@ class CActivity(BaseControl):
         if end > len_aclist:
             end = len_aclist
         activity_list = map(self.fill_detail, activity_list)
+        map(self.fill_comment, activity_list)
         activity_list = activity_list[start:end]
         data = import_status("get_activity_list_success", "OK")
         data["data"] = activity_list
