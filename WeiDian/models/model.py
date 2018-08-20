@@ -149,7 +149,7 @@ class Product(Base, BaseModel):
     PRchannelid = Column(String(64))  # 渠道商id, 暂未设置, 默认空
     PRsalesvolume = Column(Integer, nullable=False)  # 商品销量
     PRsalefakenum = Column(Integer)  # 商品自定义销量
-    PRvipprice = Column(float)  # 会员价格
+    PRvipprice = Column(Float)  # 会员价格
     PRishhare = Column(Boolean, default=True)  # 是否共享
     SUid = Column(String(64))  # 发布者, 创建人
     PRcreatetime = Column(String(64))  # 创建时间
@@ -188,7 +188,7 @@ class ProductSkuValue(Base, BaseModel):
     PSVpropervalue = Column(Text, nullable=False)  # 商品sku的属性, json
 
 
-class ProductImage(Base, BaseModel)
+class ProductImage(Base, BaseModel):
     __tablename__ = 'productimage'
     PIid = Column(String(64), primary_key=True)
     PRid = Column(String(64), nullable=False)  # 商品id
