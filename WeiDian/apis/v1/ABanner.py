@@ -26,7 +26,7 @@ class ABanner(Resource):
         """添加首页轮播图"""
         print banner
         apis = {
-            "add_one": 'self.cbanner.add_one()'
+            'add_one': 'self.cbanner.add_one()'
         }
         res = eval(apis[banner])
         return res

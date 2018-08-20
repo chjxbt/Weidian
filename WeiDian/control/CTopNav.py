@@ -1,14 +1,14 @@
 # *- coding:utf8 *-
 import sys
 import os
-from datetime import datetime
 
+from WeiDian.common.MakeToken import verify_token_decorator
+from WeiDian.common.TransformToList import add_model
 from WeiDian.common.import_status import import_status
-from WeiDian.config.response import PARAMS_MISS
+from WeiDian.config.response import PARAMS_MISS, AUTHORITY_ERROR, TOKEN_ERROR
 
 sys.path.append(os.path.dirname(os.getcwd()))
 from flask import request
-import json
 import uuid
 
 
@@ -22,3 +22,26 @@ class CTopNav():
         data = import_status('get_nav_list_success', "OK")
         data['data'] = res
         return data
+
+    @verify_token_decorator
+    def add_one(self):
+        """添加一个首页上部导航, 需要管理员的登录状态"""
+        if not hasattr(request, 'user'):
+            return TOKEN_ERROR  # 未登录, 或token错误
+        if request.user.scope != 'SuperUser':
+            return AUTHORITY_ERROR  # 权限不足
+        data = request.json
+        tnid = str(uuid.uuid1())
+        tnname = data.get('tnname')
+        tsort = data.get('tsort')
+        if not tnid or not tnname:
+            return PARAMS_MISS
+        add_model('TopNav', **{
+            'TNid': tnid,
+            'TNname': tnname,
+            'TSort': tsort
+        })
+        response_make_topnav = import_status('add_topnav_success', 'OK')
+        response_make_topnav['data'] = {'tnid': tnid}
+        return response_make_topnav
+
