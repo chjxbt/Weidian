@@ -2,8 +2,6 @@
 import sys
 import os
 
-from flask import jsonify
-
 sys.path.append(os.path.dirname(os.getcwd()))
 from flask_restful import Resource
 
@@ -22,4 +20,11 @@ class ATopNav(Resource):
         res = eval(apis[topnav])
         return res
 
-
+    def post(self, topnav):
+        """添加首页上部导航"""
+        print topnav
+        apis = {
+            'add_one': 'self.ctopnav.add_one()'
+        }
+        res = eval(apis[topnav])
+        return res
