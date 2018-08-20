@@ -19,6 +19,6 @@ class CSearchField():
         sf_list = self.s_searchfield.get_all_searchfield()
         if lasting == 'true':
             sf_list = self.s_searchfield.get_lasting_searchfield()
-        data = import_status("get_hotmessage_list_success", "OK")
+        data = import_status("get_serachfield_success", "OK")
         data['data'] = sf_list
         return data
