@@ -1,23 +1,22 @@
 # *- coding:utf8 *-
-import sys
-import os
-from datetime import datetime
+import uuid
+from datetime import datetime, timedelta
 
-from sqlalchemy.orm import Session
+from flask import request
 
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db
-
-sys.path.append(os.path.dirname(os.getcwd()))
-from flask import request
-import json
-import uuid
+from WeiDian.common.MakeToken import verify_token_decorator
+from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR
+from WeiDian.common.TransformToList import add_model
 
 
 class CHotMessage():
     def __init__(self):
         from WeiDian.service.SHotMessage import SHotMessage
         self.s_hotmessage = SHotMessage()
+        from WeiDian.service.SProduct import SProduct
+        self.sproduct = SProduct()
 
     def get_all(self):
         """活动所有热文"""
@@ -29,3 +28,37 @@ class CHotMessage():
         data = import_status("get_hotmessage_list_success", "OK")
         data['data'] = hot_list
         return data
+    
+    @verify_token_decorator
+    def add_one(self):
+        """添加活动热文, 需要管理员登录"""
+        if not hasattr(request, 'user'):
+            return TOKEN_ERROR  # 未登录, 或token错误
+        if request.user.scope != 'SuperUser':
+            return AUTHORITY_ERROR  # 权限不足
+        data = request.json
+        now_time = datetime.strftime(datetime.now(), format_for_db)
+        hmstarttime = data.get('hmstarttime', now_time)  # 热文开始时间
+        hmstarttime_str_to_time = datetime.strptime(hmstarttime, format_for_db)
+        # 7天以后
+        seven_days_later = datetime.strftime(hmstarttime_str_to_time + timedelta(days=7), format_for_db)
+        hmendtime = data.get('hmendtime', seven_days_later)  # 热文结束时间, 默认7天以后
+        hmtext = data.get('hmtext') 
+        prid = data.get('prid')
+        hmsort = data.get('hmsort')
+        if not hmtext or not prid:
+            return PARAMS_MISS
+        if not self.sproduct.get_product_by_prid(prid):
+            return SYSTEM_ERROR
+        hmid = str(uuid.uuid1())
+        add_model('HotMessage', **{
+            'HMid': hmid,
+            'HMtext': hmtext,
+            'PRid': prid,
+            'HMstarttime': hmstarttime,
+            'HMendtime': hmendtime,
+            'HMsort': hmsort
+        }) 
+        response_make_hotmesasge = import_status('add_hotmessage_success', 'OK')
+        response_make_hotmesasge['data'] = {'hmid': hmid}
+        return response_make_hotmesasge

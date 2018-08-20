@@ -24,7 +24,7 @@ class CSuperUser():
         suuser = self.ssuperuser.verify_super(suname, supassword)
         if not suuser:
             return SYSTEM_ERROR
-        token = usid_to_token(suuser.SUid)
+        token = usid_to_token(suuser.SUid, 'SuperUser')
         token_data = {'token': token}
         data = import_status('generic_token_success', 'OK')
         data['data'] = token_data

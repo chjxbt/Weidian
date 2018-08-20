@@ -25,3 +25,8 @@ class SHotMessage(SBase):
     def get_all_hot(self):
         hots = self.session.query(HotMessage).order_by(HotMessage.HMsort).all()
         return hots
+
+    @close_session
+    def add_one_hot(self, hot):
+        self.session.add(hot)
+
