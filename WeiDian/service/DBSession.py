@@ -8,6 +8,7 @@ sys.path.append(os.path.dirname(os.getcwd()))
 from sqlalchemy.orm import sessionmaker
 from WeiDian.models import model
 
+# from sqlalchemy.orm import Query as _Query
 # db_session = sessionmaker(bind=model.mysql_engine, query_cls=Query)
 db_session = sessionmaker(bind=model.mysql_engine)
 

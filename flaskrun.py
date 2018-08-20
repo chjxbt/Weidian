@@ -3,7 +3,7 @@ import flask_restful
 from WeiDian import create_app
 
 from WeiDian.apis.v1 import AActivity, AHotMessage, ABanner, ASearchField, ATopNav, ASuperUser
-from WeiDian.apis.v1.test_maketoken import TestToken
+from test.test_maketoken import create_test_url
 
 wd = create_app()
 api = flask_restful.Api(wd)
@@ -15,9 +15,8 @@ api.add_resource(ASearchField, '/searchfield/<string:searchfield>')
 api.add_resource(ASuperUser, '/super/<string:super>')
 
 
-wd.add_url_rule('/token', view_func=TestToken.as_view('token'))
-
-# wd.register_blueprint(blue)
+# 测试
+create_test_url(wd)
 
 
 if __name__ == '__main__':
