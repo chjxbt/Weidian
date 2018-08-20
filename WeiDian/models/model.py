@@ -147,7 +147,7 @@ class Product(Base, BaseModel):
     PRoldprice = Column(Float)  # 原价
     PRchannelname = Column(String(64))  # 渠道商名称, 暂未设置, 默认空
     PRchannelid = Column(String(64))  # 渠道商id, 暂未设置, 默认空
-    PRsalesvolume = Column(Integer, nullable=False)  # 商品销量
+    PRsalesvolume = Column(Integer, default=0)  # 商品销量
     PRsalefakenum = Column(Integer)  # 商品自定义销量
     PRvipprice = Column(Float)  # 会员价格
     PRishhare = Column(Boolean, default=True)  # 是否共享
