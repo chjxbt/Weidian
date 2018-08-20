@@ -2,7 +2,7 @@
 import flask_restful
 from WeiDian import create_app
 
-from WeiDian.apis.v1 import AActivity, AHotMessage, ABanner, ASearchField, ATopNav, ASuperUser
+from WeiDian.apis.v1 import AActivity, AHotMessage, ABanner, ASearchField, ATopNav, ASuperUser, AProduct
 from test.test_maketoken import create_test_url
 
 wd = create_app()
@@ -13,6 +13,7 @@ api.add_resource(ABanner, '/banner/<string:banner>')
 api.add_resource(ATopNav, '/topnav/<string:topnav>')
 api.add_resource(ASearchField, '/searchfield/<string:searchfield>')
 api.add_resource(ASuperUser, '/super/<string:super>')
+api.add_resource(AProduct, '/product/<string:product>')
 
 
 # 测试

@@ -1,4 +1,4 @@
-# *- coding:utf8 *-
+# *- coding:utf8 *   -
 class BaseControl():
 
     def get_one_activity(self):
