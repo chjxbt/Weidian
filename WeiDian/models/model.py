@@ -5,7 +5,12 @@ from WeiDian.config import dbconfig as cfg
 from WeiDian.models.base_model import BaseModel, auto_createtime
 
 DB_PARAMS = "{0}://{1}:{2}@{3}/{4}?charset={5}".format(
-    cfg.sqlenginename, cfg.username, cfg.password, cfg.host, cfg.database, cfg.charset)
+    cfg.sqlenginename,
+    cfg.username,
+    cfg.password,
+    cfg.host,
+    cfg.database,
+    cfg.charset)
 mysql_engine = create_engine(DB_PARAMS, echo=False)
 Base = declarative_base()
 
@@ -131,7 +136,8 @@ class Product(Base, BaseModel):
     PRimage = Column(String(64), nullable=False)  # 商品主图
     PRalias = Column(String(64))  # 别名
     PRishot = Column(Boolean, default=False)  # 是否热卖
-    PReditstate = Column(Integer, default=1)  # 商品编辑状态: {1 完成商品信息, 2 完成产品详情信息, 3, 完成??}
+    # 商品编辑状态: {1 完成商品信息, 2 完成产品详情信息, 3, 完成??}
+    PReditstate = Column(Integer, default=1)
     PRcollectnum = Column(Integer, default=0)  # 收藏数量
     PRviewnum = Column(Integer, default=0)  # 浏览量
     PRchannelname = Column(String(64))  # 渠道商名称, 暂未设置, 默认空
@@ -147,7 +153,6 @@ class Product(Base, BaseModel):
     PRstatuss = Column(Integer, default=1)  # 商品状态: {0 删除, 1 正常, 2 禁用}
 
 
-
 class Brands(Base):
     __tablename__ = "Brands"
     BRid = Column(String(64), primary_key=True)
@@ -161,7 +166,8 @@ class ProductsBrands(Base):
     PBid = Column(String(64), primary_key=True)
     PRid = Column(String(64), nullable=False)  # 商品id
     BRid = Column(String(64), nullable=False)  # 叶子类目id
-    PBstatus = Column(Integer, default=201)  # 商品状态 {201:在售状态 202:下架状态, 203: 预售}
+    # 商品状态 {201:在售状态 202:下架状态, 203: 预售}
+    PBstatus = Column(Integer, default=201)
     PBsalesvolume = Column(Integer, nullable=False)  # 商品销量
     PBscore = Column(Float, nullable=True)  # 商品评分
     PBimage = Column(Text, nullable=False)  # 商品图片存放地址
@@ -236,7 +242,15 @@ class HotMessage(Base, BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['HMid', 'HMtext', 'PRid', 'HMcreatetime', 'HMstarttime', 'HMendtime', 'HMsort']
+        self.fields = [
+            'HMid',
+            'HMtext',
+            'PRid',
+            'HMcreatetime',
+            'HMstarttime',
+            'HMendtime',
+            'HMsort']
+
 
 class Banner(Base, BaseModel):
     """
@@ -281,7 +295,8 @@ class User(Base):
     USgender = Column(String(64))  # 性别
     USage = Column(Integer)  # 年龄
     USlastlogin = Column(String(64))  # 用户上次登录时间
-    USlevel = Column(Integer, default=0)  # 用户级别: {0 普通用户, 1 普通合伙人, 2 中级合伙人, 3 高级合伙人}
+    # 用户级别: {0 普通用户, 1 普通合伙人, 2 中级合伙人, 3 高级合伙人}
+    USlevel = Column(Integer, default=0)
 
 
 class UserLoginTime(Base, BaseModel):
@@ -323,7 +338,7 @@ class UserAddress(Base):
     UAname = Column(String(16), nullable=False)  # 收货人姓名
 
 
-class SearchField(Base):
+class SearchField(Base, BaseModel):
     """
     输入框
     """
@@ -339,7 +354,7 @@ class SearchField(Base):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['SFid', 'SFtext',  'SFsort']
+        self.fields = ['SFid', 'SFtext', 'SFsort']
 
 
 class IndexAdAlert(Base):
@@ -350,7 +365,8 @@ class IndexAdAlert(Base):
     IAid = Column(String(64), primary_key=True)
     IAimage = Column(String(64))  # 图片
     IAurl = Column(String(128))  # 暂存url(点击弹窗后的效果未知)
-    IAtype = Column(Integer, default=0)  # 弹窗所针对的用户: {0 普通用户, 1 普通合伙人, 2 中级合伙人, 4 高级合伙人, 5 全部}
+    # 弹窗所针对的用户: {0 普通用户, 1 普通合伙人, 2 中级合伙人, 4 高级合伙人, 5 全部}
+    IAtype = Column(Integer, default=0)
 
 
 # 交易相关
@@ -367,11 +383,10 @@ class OrderInfo(Base):
 
 class OrderInfo(Base):
     订单内的商品详情
-    
+
     pass
 
 """
-
 
 
 """
@@ -386,7 +401,7 @@ class ProductSelector(Base):
 class ProductSelectorInfo(Base):
     # 具体选项
     __tablename__ = 'productselectorinfo'
-    PSIid = Column(String(64), primary_key=True)  
+    PSIid = Column(String(64), primary_key=True)
     PSid = Column(String(64), nullable=False)  # 所属于的选项
     PSItext = Column(String(64), nullable=False)  # 可供选择的选项的文本信息, 比如'xxl', 'M', '红色'
     PSIStock = Column(Integer)  # 该选项(尺码, 或者颜色)的库存

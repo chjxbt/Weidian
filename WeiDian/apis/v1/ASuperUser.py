@@ -12,8 +12,7 @@ class ASuperUser(Resource):
     def post(self, super):
         print super
         apis = {
-            'login': 'self.csuperuser.login()', 
+            'login': 'self.csuperuser.login()',
         }
         res = eval(apis[super])
         return jsonify(res)
-

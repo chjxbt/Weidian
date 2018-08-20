@@ -185,5 +185,3 @@ class CActivity(BaseControl):
         response_make_activity['data']['acid'] = acid
         return response_make_activity
 
-
-        

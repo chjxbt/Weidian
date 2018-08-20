@@ -9,20 +9,20 @@ from WeiDian.service.DBSession import db_session
 
 
 def usid_to_token(id, model='User', expiration=''):
-        """生成令牌
-        id: 用户id
-        scope: 用户类型(user 或者 superuser)
-        expiration: 过期时间
-        """
-        if not expiration:
-            expiration = current_app.config['TOKEN_EXPIRATION']
-        s = Serializer(current_app.config['SECRET_KEY'], expires_in=expiration)
-        time_now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        return s.dumps({
-            'id': id,
-            'model': model,
-            'time': time_now
-        })
+    """生成令牌
+    id: 用户id
+    scope: 用户类型(user 或者 superuser)
+    expiration: 过期时间
+    """
+    if not expiration:
+        expiration = current_app.config['TOKEN_EXPIRATION']
+    s = Serializer(current_app.config['SECRET_KEY'], expires_in=expiration)
+    time_now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    return s.dumps({
+        'id': id,
+        'model': model,
+        'time': time_now
+    })
 
 
 def token_to_usid(token):
@@ -43,6 +43,7 @@ def token_to_usid(token):
 
 def verify_token_decorator(func):
     """验证token装饰器, 并将用户对象放入request.user中"""
+
     def inner(self, *args, **kwargs):
         parameter = request.args.to_dict()
         token = parameter.get('token')
@@ -55,7 +56,7 @@ def verify_token_decorator(func):
         except SignatureExpired as e:
             # 过期的token
             return func(self, *args, **kwargs)
-        except Exception, e:
+        except Exception as e:
             # 无法解析的token
             return func(self, *args, **kwargs)
         id = data['id']
@@ -90,4 +91,3 @@ def verify_token_decorator(func):
 #     app = create_app()
 #     res = usid_to_token('6882ad09-bf5f-4607-8ad1-1cd46b6158e0', current_app=app)
 #     print(res)
-
