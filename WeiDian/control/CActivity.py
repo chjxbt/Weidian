@@ -3,6 +3,7 @@ import sys
 import os
 from datetime import datetime, timedelta
 
+from WeiDian.config.messages import delete_activity_success
 from sqlalchemy.orm import Session
 
 from WeiDian.common.MakeToken import verify_token_decorator
@@ -15,7 +16,6 @@ from WeiDian.control.BaseControl import BaseControl
 
 sys.path.append(os.path.dirname(os.getcwd()))
 from flask import request
-import json
 import uuid
 
 
@@ -86,17 +86,23 @@ class CActivity(BaseControl):
         data["data"] = activity
         return data
 
+    @verify_token_decorator
     def delete_one(self):
-        """删除一个活动, 需要用户模块"""
+        """删除一个活动, 需要管理员的登录状态"""
+        if not hasattr(request, 'user'):
+            return TOKEN_ERROR  # 未登录, 或token错误
+        if request.user.scope != 'SuperUser':
+            return AUTHORITY_ERROR  # 权限不足
         data = request.json
         acid = data.get('acid')
         if not acid:
             return PARAMS_MISS
         try:
             self.sactivity.delete_activity(acid)
-        except Exception, e:
+            return delete_activity_success
+        except Exception as e:
             pass
-        return
+    # TODO 删除有问题，待修改
 
     def end_one(self):
         """手动截止活动"""
