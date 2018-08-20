@@ -271,7 +271,7 @@ class Banner(Base, BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = self.all
+        self.fields = self.Bannerall
 
 
 # 可能用不到

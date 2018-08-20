@@ -11,3 +11,5 @@ add_hotmessage_success = '添加热文成功'
 get_serachfield_success = '获取搜索推荐成功'
 add_banner_success = '添加首页轮播图成功'
 add_topnav_success = '添加首页上部导航成功'
+update_hotmessage_success = '更新热文成功'
+

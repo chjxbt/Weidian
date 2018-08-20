@@ -7,6 +7,7 @@ from flask import request
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db
 from WeiDian.common.MakeToken import verify_token_decorator
+from WeiDian.config.messages import update_hotmessage_success
 from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR
 from WeiDian.common.TransformToList import add_model
 
@@ -62,3 +63,24 @@ class CHotMessage():
         response_make_hotmesasge = import_status('add_hotmessage_success', 'OK')
         response_make_hotmesasge['data'] = {'hmid': hmid}
         return response_make_hotmesasge
+
+    @verify_token_decorator
+    def update_one(self):
+        """热文修改"""
+
+        if not hasattr(request, 'user'):
+            return TOKEN_ERROR  # 未登录, 或token错误
+        if request.user.scope != 'SuperUser':
+            return AUTHORITY_ERROR  # 权限不足
+        data = request.json
+        hmid = data.pop('hmid')
+        if not hmid:
+            return PARAMS_MISS
+        res = self.s_hotmessage.update_one_hot(hmid, **data)
+        if not res:
+            return SYSTEM_ERROR
+        return update_hotmessage_success
+
+
+
+

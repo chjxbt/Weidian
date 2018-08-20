@@ -27,6 +27,7 @@ class AHotMessage(Resource):
         print hotmessage
         apis = {
             'add_one': self.control_hotmessage.add_one(),
+            'update_one': self.control_hotmessage.update_one()
         }
         return apis[hotmessage]
 

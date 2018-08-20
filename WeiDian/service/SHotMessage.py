@@ -30,3 +30,22 @@ class SHotMessage(SBase):
     def add_one_hot(self, hot):
         self.session.add(hot)
 
+    @close_session
+    def update_one_hot(self, hmid, **kwargs):
+        hotmessage = self.session.query(HotMessage).filter_by(HMid=hmid).first()
+        if hotmessage:
+            if 'hmtext' in kwargs.keys():
+                hotmessage.HMtext = kwargs['hmtext']
+            if 'prid' in kwargs.keys():
+                hotmessage.PRid = kwargs['prid']
+            if 'hmstarttime' in kwargs.keys():
+                hotmessage.HMstarttime = kwargs['hmstarttime']
+            if 'hmendtime' in kwargs.keys():
+                hotmessage.HMendtime = kwargs['hmendtime']
+            if 'hmsort' in kwargs.keys():
+                hotmessage.HMsort = kwargs['hmsort']
+            self.session.add(hotmessage)
+            return True
+
+
+
