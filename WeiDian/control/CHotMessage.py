@@ -73,13 +73,15 @@ class CHotMessage():
         if request.user.scope != 'SuperUser':
             return AUTHORITY_ERROR  # 权限不足
         data = request.json
-        hmid = data.pop('hmid')
-        if not hmid:
+        if not 'hmid' in data.keys():
             return PARAMS_MISS
+        hmid = data.pop('hmid')
         res = self.s_hotmessage.update_one_hot(hmid, **data)
         if not res:
             return SYSTEM_ERROR
-        return update_hotmessage_success
+        response_update_hotmessage = import_status('update_hotmessage_success', 'OK')
+        response_update_hotmessage['data'] = {'hmid': hmid}
+        return response_update_hotmessage
 
 
 

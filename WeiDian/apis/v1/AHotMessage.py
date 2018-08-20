@@ -26,8 +26,8 @@ class AHotMessage(Resource):
     def post(self, hotmessage):
         print hotmessage
         apis = {
-            'add_one': self.control_hotmessage.add_one(),
-            'update_one': self.control_hotmessage.update_one()
+            'add_one': 'self.control_hotmessage.add_one()',
+            'update_one': 'self.control_hotmessage.update_one()'
         }
-        return apis[hotmessage]
+        return eval(apis[hotmessage])
 
