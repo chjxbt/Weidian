@@ -1,4 +1,5 @@
 # *- coding:utf8 *-
+from sqlalchemy.dialects.mysql import LONGTEXT
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, create_engine, Integer, String, Text, Float, Boolean, orm
 from WeiDian.config import dbconfig as cfg
@@ -131,63 +132,68 @@ class Product(Base, BaseModel):
     """
     __tablename__ = 'product'
     PRid = Column(String(64), primary_key=True)
+    PRdetail = Column(LONGTEXT)  # 商品详情, 大文本
+    PRmainpic = Column(String(64), nullable=False)  # 商品主图
+    PRactivityid = Column(String(64))  # 活动id, 可能不需要
+    Makalias = Column(String(64))  # 店铺别名
+    PRalias = Column(String(64))  # 别名
+    PRimporturl = Column(String(255))  # 外部导入商品的url
+    PRishot = Column(Boolean, default=False)  # 是否热卖
+    PRtitle = Column(String(255))  # 商品标题
     PRname = Column(String(64), nullable=False)  # 名称
     PRinfo = Column(Text)  # 具体详情
-    PRimage = Column(String(64), nullable=False)  # 商品主图
-    PRalias = Column(String(64))  # 别名
-    # PRprice = Column(Float)  # 显示价格
-    # PRoldprice = Column(Float)  # 原价
-    PRishot = Column(Boolean, default=False)  # 是否热卖
-    # 商品编辑状态: {1 完成商品信息, 2 完成产品详情信息, 3, 完成??}
-    PReditstate = Column(Integer, default=1)
+    PReditstate = Column(Integer, default=1)  # 商品编辑状态: {1 完成商品信息, 2 完成产品详情信息, 3, 完成??}
     PRcollectnum = Column(Integer, default=0)  # 收藏数量
-    PRviewnum = Column(Integer, default=0)  # 浏览量
+    PRoldprice = Column(Float)  # 原价
     PRchannelname = Column(String(64))  # 渠道商名称, 暂未设置, 默认空
     PRchannelid = Column(String(64))  # 渠道商id, 暂未设置, 默认空
+    PRsalesvolume = Column(Integer, nullable=False)  # 商品销量
+    PRsalefakenum = Column(Integer)  # 商品自定义销量
+    PRvipprice = Column(float)  # 会员价格
+    PRishhare = Column(Boolean, default=True)  # 是否共享
+    SUid = Column(String(64))  # 发布者, 创建人
+    PRcreatetime = Column(String(64))  # 创建时间
+    SUmodifyid = Column(String(64))  # 修改人id
+    PRmodifytime = Column(String(64))  # 修改时间
+    PRstatuss = Column(Integer, default=1)  # 商品状态: {0 删除, 1 正常, 2 禁用}
+    PRprice = Column(Float)  # 显示价格
+    PRisdelete = Column(Boolean, default=False)
+    # 以下
+    PRviewnum = Column(Integer, default=0)  # 浏览量
     PAid = Column(String(64))  # 类目id
     USid = Column(String(64))  # 发布者
     PRlogisticsfee = Column(Float)  # 物流费
     PRstock = Column(Integer)  # 商品详情页库存
-    PRstatus = Column(Integer, default=1)  # 状态: {1:在售状态 2:下架状态}
-    PRsalesvolume = Column(Integer, nullable=False)  # 商品销量
-    # PRsalefakenum = Column(Integer)  # 商品自定义销量
-    PRscore = Column(Float, nullable=True)  # 商品评分
-    PRcreatetime = Column(String(64))  # 上架时间
-    PRstatuss = Column(Integer, default=1)  # 商品状态: {0 删除, 1 正常, 2 禁用}
 
 
-class Brands(Base):
-    __tablename__ = "Brands"
-    BRid = Column(String(64), primary_key=True)
-    BRparentid = Column(String(64), nullable=False)  # 父节点id，如果没有父节点则为0
-    BRvalue = Column(String(128), nullable=False)  # 属性值
-    BRkey = Column(String(128), nullable=False)  # 属性类型
-
-
-class ProductsBrands(Base):
-    __tablename__ = "ProductsBrands"
-    PBid = Column(String(64), primary_key=True)
+class ProductSkuKey(Base, BaseModel):
+    """sku属性名"""
+    __tablename__ = 'productskukey'
+    PSKid = Column(String(64), primary_key=True)
     PRid = Column(String(64), nullable=False)  # 商品id
-    BRid = Column(String(64), nullable=False)  # 叶子类目id
-    # 商品状态 {201:在售状态 202:下架状态, 203: 预售}
-    PBstatus = Column(Integer, default=201)
-    PBsalesvolume = Column(Integer, nullable=False)  # 商品销量
-    PBscore = Column(Float, nullable=True)  # 商品评分
-    PBimage = Column(Text, nullable=False)  # 商品图片存放地址
-    PBmarkingPrice = Column(Float)  # 商品划线价格
-    PBprice = Column(Float, nullable=Float)  # 商品价格
+    PSVid = Column(String(64), nullable=False)  # 商品sku属性的value
+    PSKproperkey = Column(Text, nullable=False)  # 商品sku属性的key, json
+    PSKproductnum = Column(Integer, nullable=False)  # 库存
+    PSKalias = Column(String(64), nullable=False)  # 商品别名
+    PSKprice = Column(Float, default=0.00)  # 价格
+    PSKpostfee = Column(Float, nullable=False)  # 物流费
+    PSKactiviyid = Column(String(64))  # 活动id, 不知用处
 
 
-class ProductImage(Base):
-    """
-    商品上方图片
-    """
+class ProductSkuValue(Base, BaseModel):
+    """sku属性值"""
+    __tablename__ = 'productskuvalue'
+    PSVid = Column(String(64), primary_key=True)
+    PRid = Column(String(64), nullable=False)  # 关联商品
+    PSVpropervalue = Column(Text, nullable=False)  # 商品sku的属性, json
+
+
+class ProductImage(Base, BaseModel)
     __tablename__ = 'productimage'
     PIid = Column(String(64), primary_key=True)
-    PRid = Column(String(64), nullable=False)  # 图片对应的商品
-    PIisbase = Column(Boolean, default=False)  # 是否是主图
-    PIimage = Column(String(64), nullable=False)  # 商品图片url
-    PIsort = Column(Integer)  # 用于标明图片位置
+    PRid = Column(String(64), nullable=False)  # 商品id
+    PIurl = Column(String(50), nullable=False)  # 图片链接(七牛云)
+    PIsort = Column(Integer)  # 图片顺序
 
 
 class ProductCategory(Base):
