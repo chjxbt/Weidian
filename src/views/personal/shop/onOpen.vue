@@ -19,8 +19,8 @@
         </div>
       </div>
       <div class="m-invite-box">
-        <span class="m-invite-fans">邀请专属粉丝</span>
-        <span class="m-invite-store">邀请购买开店大礼包</span>
+        <span class="m-invite-fans" @click="invite('fans')">邀请专属粉丝</span>
+        <span class="m-invite-store" @click="invite('store')">邀请购买开店大礼包</span>
       </div>
       <div>
         <div class="m-part-one">
@@ -139,6 +139,13 @@
               this.part_tilt_two.nav[i].click = false;
             }
             this.part_tilt_two.nav[v].click = true;
+          },
+          invite(v){
+            if(v == 'fans'){
+              this.$router.push('/inviteFans')
+            }else if(v == 'store'){
+              this.$router.push('/inviteStore')
+            }
           }
         },
         created() {

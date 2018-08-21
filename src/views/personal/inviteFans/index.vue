@@ -1,5 +1,7 @@
 <template>
-    <div>邀请专属粉丝</div>
+    <div @click="fansClick">邀请专属粉丝
+
+    </div>
 
 </template>
 
@@ -11,7 +13,11 @@
             }
         },
         components: {},
-        methods: {},
+        methods: {
+          fansClick(){
+            this.$router.push('/fansManagement')
+          }
+        },
         created() {
 
         }
