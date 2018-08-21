@@ -141,7 +141,6 @@ class Product(Base, BaseModel):
     PRishot = Column(Boolean, default=False)  # 是否热卖
     PRtitle = Column(String(255))  # 商品标题
     PRname = Column(String(64), nullable=False)  # 名称
-    PRinfo = Column(Text)  # 具体详情
     PReditstate = Column(Integer, default=1)  # 商品编辑状态: {1 完成商品信息, 2 完成产品详情信息, 3, 完成??}
     PRcollectnum = Column(Integer, default=0)  # 收藏数量
     PRoldprice = Column(Float)  # 原价
@@ -161,9 +160,13 @@ class Product(Base, BaseModel):
     # 以下
     PRviewnum = Column(Integer, default=0)  # 浏览量
     PAid = Column(String(64))  # 类目id
-    USid = Column(String(64))  # 发布者
     PRlogisticsfee = Column(Float)  # 物流费
     PRstock = Column(Integer)  # 商品详情页库存
+
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = self.all
 
 
 class ProductSkuKey(Base, BaseModel):

@@ -18,3 +18,5 @@ stop_activity_success = '手动停止活动成功'
 delete_hotmessage_success = '删除热文成功'
 delete_banner_success = '删除首页轮播图成功'
 delete_topnav_success = '删除上部导航成功'
+add_product_list_success = '批量添加商品成功'
+
