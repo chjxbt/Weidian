@@ -1,6 +1,7 @@
 <template>
     <div class="m-receiverAddress">
-      <div class="m-one-address" @click="addressClick">
+      <div v-if="have_address">
+        <div class="m-one-address" @click="addressClick">
           <span class="m-check-icon"></span>
           <div class="m-address-info">
             <div class="m-address-row m-address-row1 ">
@@ -16,38 +17,41 @@
             </div>
           </div>
         </div>
-      <div class="m-one-address">
-        <span class="m-check-icon"></span>
-        <div class="m-address-info">
-          <div class="m-address-row m-address-row1 ">
-            <span>小白</span>
-            <span>18210036741</span>
-          </div>
-          <div class="m-address-row">
-            <div class="tl m-address">
-              <span class="m-mo">[ 默认地址 ]</span>
-              <span>上京新航线304楼4单元702室上京新航线4楼4单元702室内</span>
+        <div class="m-one-address">
+          <span class="m-check-icon"></span>
+          <div class="m-address-info">
+            <div class="m-address-row m-address-row1 ">
+              <span>小白</span>
+              <span>18210036741</span>
             </div>
-            <span class="m-edit">编辑</span>
+            <div class="m-address-row">
+              <div class="tl m-address">
+                <span>上京新航线304楼4单元702室上京新航线4楼4单元702室内</span>
+              </div>
+              <span class="m-edit">编辑</span>
+            </div>
+          </div>
+        </div>
+        <div class="m-one-address">
+          <span class="m-check-icon"></span>
+          <div class="m-address-info">
+            <div class="m-address-row m-address-row1 ">
+              <span>小白</span>
+              <span>18210036741</span>
+            </div>
+            <div class="m-address-row">
+              <div class="tl m-address">
+                <span>上京新航线304楼4单元702室上京新航线4楼4单元702室内</span>
+              </div>
+              <span class="m-edit">编辑</span>
+            </div>
           </div>
         </div>
       </div>
-      <div class="m-one-address">
-        <span class="m-check-icon"></span>
-        <div class="m-address-info">
-          <div class="m-address-row m-address-row1 ">
-            <span>小白</span>
-            <span>18210036741</span>
-          </div>
-          <div class="m-address-row">
-            <div class="tl m-address">
-              <span class="m-mo">[ 默认地址 ]</span>
-              <span>上京新航线304楼4单元702室上京新航线4楼4单元702室内</span>
-            </div>
-            <span class="m-edit">编辑</span>
-          </div>
-        </div>
+      <div class="m-no-address" v-else>
+        <img src="" class="m-no-address-img" alt="">
       </div>
+
       <div class="m-address-btn" @click="addressClick">添加新地址</div>
     </div>
 
@@ -57,7 +61,7 @@
     export default {
         data() {
             return {
-                name: ''
+              have_address:false
             }
         },
         components: {},
@@ -128,6 +132,18 @@
       background-color: @mainColor;
       color: #fff;
       font-size: 34px;
+    }
+    .m-no-address{
+      height: 890px;
+      background-color: #f1f1f1;
+      padding-top: 332px;
+      padding-left: 137px;
+      .m-no-address-img{
+        display: block;
+        width: 431px;
+        height: 268px;
+        background-color: #9fd0bf;
+      }
     }
   }
 </style>
