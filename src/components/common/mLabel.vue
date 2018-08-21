@@ -6,35 +6,29 @@
 </template>
 
 <script>
-    export default {
-        name: "m-label"
-    }
+  export default {
+    name: "m-label"
+  }
 </script>
 
 <style lang="less" rel="stylesheet/less" >
   .m-label{
     position: absolute;
-    top:0;
+    top: 0.8rem;
     right: 0;
-    transform: rotate(40deg);
-    width: 70px;
-    height: 70px;
-    .m-text{
-      font-size: 10px;
-     z-index: 100;
-      position: absolute;
-      top:0;
-      right: 12px;
-      color: #fff;
-    }
+    width: 0.9rem;
+    height: 0.9rem;
     .m-triangle{
+      border-top: 0.8rem solid red;
+      border-left: 0.9rem solid transparent;
+    }
+    .m-text{
+      z-index: 100;
       position: absolute;
-      top:0;
-      right: 0;
-      transform: rotate(-40deg);
-      width: 70px;
-      height: 70px;
-      background: url("/static/images/icon-label.jpg");
+      top: -0.75rem;
+      right: 0.05rem;
+      color: #fff;
+      transform: rotate(40deg);
     }
   }
 </style>
