@@ -166,7 +166,7 @@ class Product(Base, BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = self.all
+        self.fields = ['PRid', 'PRmainpic', 'PRimporturl', 'PRishot', 'PRtitle', 'PRname', 'PRcollectnum', 'PRsalesvolume', 'PRprice', 'PRviewnum']
 
 
 class ProductSkuKey(Base, BaseModel):
@@ -182,6 +182,11 @@ class ProductSkuKey(Base, BaseModel):
     PSKpostfee = Column(Float, nullable=False)  # 物流费
     PSKactiviyid = Column(String(64))  # 活动id, 不知用处
 
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = self.all
+
 
 class ProductSkuValue(Base, BaseModel):
     """sku属性值, 每一个商品对应一个此表"""
@@ -189,6 +194,11 @@ class ProductSkuValue(Base, BaseModel):
     PSVid = Column(String(64), primary_key=True)
     PRid = Column(String(64), nullable=False)  # 关联商品
     PSVpropervalue = Column(Text, nullable=False)  # 商品sku的属性, json
+
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = self.all
 
 
 class ProductImage(Base, BaseModel):
