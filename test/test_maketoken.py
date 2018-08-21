@@ -7,7 +7,7 @@ from flask.views import MethodView
 
 from WeiDian.common.MakeToken import verify_token_decorator
 from WeiDian.common.timeformat import format_for_db
-from WeiDian.common.base_error import ApiException
+from WeiDian.common.base_error import BaseError
 from WeiDian.config.response import TOKEN_ERROR, PARAMS_MISS, SYSTEM_ERROR
 
 
@@ -15,13 +15,13 @@ class TestToken(MethodView):
     def post(self):
         """generic token test"""
         usid = '6882ad09-bf5f-4607-8ad1-1cd46b6158e0'
-        raise ApiException()
+        raise BaseError()
 
     @verify_token_decorator
     def get(self):
         """verfity token test"""
         from flask import request
-        raise ApiException
+        raise BaseError
 
     @verify_token_decorator
     def put(self):

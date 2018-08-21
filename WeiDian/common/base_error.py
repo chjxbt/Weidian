@@ -3,7 +3,7 @@ from flask import request, json
 from werkzeug.exceptions import HTTPException
 
 
-class ApiException(HTTPException):
+class BaseError(HTTPException):
     code = 200
     message = '系统错误'
     status = 404
@@ -17,7 +17,7 @@ class ApiException(HTTPException):
             self.status_code = status_code
         if status:
             self.status = status
-        super(ApiException, self).__init__(message, None)
+        super(BaseError, self).__init__(message, None)
 
     def get_body(self, environ=None):
         if hasattr(self, 'status_code'):
