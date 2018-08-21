@@ -163,6 +163,11 @@ class Product(Base, BaseModel):
     PRlogisticsfee = Column(Float)  # 物流费
     PRstock = Column(Integer)  # 商品详情页库存
 
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = self.all
+
 
 class ProductSkuKey(Base, BaseModel):
     """sku属性名"""
