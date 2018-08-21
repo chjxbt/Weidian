@@ -16,6 +16,8 @@ class CProduct(BaseProductControl):
         self.sproduct = SProduct()
         from WeiDian.service.SProductSkuValue import SProductSkuValue
         self.sproductskuvalue = SProductSkuValue()
+        from WeiDian.service.SProductImage import SProductImage
+        self.sproductimage = SProductImage()
 
     @verify_token_decorator
     def add_product_list(self):
@@ -42,7 +44,8 @@ class CProduct(BaseProductControl):
         end = start + count
         if end > len_product_list:
             end = len_product_list
-        len_product_list = len_product_list[start: end]
+        product_list = product_list[start: end]
 
-    def fill_images(self):
-        pass
+    def fill_images(self, product):
+        prid = product.PRid
+

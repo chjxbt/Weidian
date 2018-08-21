@@ -44,5 +44,4 @@ class SBase(object):
         for key in model_bean.__table__.columns.keys():
             if key in kwargs:
                 setattr(model_bean, key, kwargs.get(key))
-
         self.session.add(model_bean)

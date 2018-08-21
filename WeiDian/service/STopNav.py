@@ -24,7 +24,5 @@ class STopNav(SBase):
         top = self.session.query(TopNav).filter_by(TNid=tnid).first()
         if top:
             top.delete()
-        else:
-            raise SYSTEM_ERROR
-        # TODO 有问题
+            return True
 

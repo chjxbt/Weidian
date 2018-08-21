@@ -6,7 +6,7 @@ from WeiDian.common.MakeToken import verify_token_decorator
 from WeiDian.common.TransformToList import add_model
 from WeiDian.common.import_status import import_status
 from WeiDian.config.messages import delete_topnav_success
-from WeiDian.config.response import PARAMS_MISS, AUTHORITY_ERROR, TOKEN_ERROR
+from WeiDian.config.response import PARAMS_MISS, AUTHORITY_ERROR, TOKEN_ERROR, SYSTEM_ERROR
 
 sys.path.append(os.path.dirname(os.getcwd()))
 from flask import request
@@ -58,6 +58,7 @@ class CTopNav():
         tnid = data.get('tnid')
         if not tnid:
             return PARAMS_MISS
-
-        self.s_topnav.del_topnav(tnid)
+        res = self.s_topnav.del_topnav(tnid)
+        if not res:
+            return SYSTEM_ERROR
         return delete_topnav_success

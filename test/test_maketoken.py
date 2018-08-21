@@ -15,13 +15,13 @@ class TestToken(MethodView):
     def post(self):
         """generic token test"""
         usid = '6882ad09-bf5f-4607-8ad1-1cd46b6158e0'
-        raise BaseError()
+        raise SYSTEM_ERROR(message='测试信d息')
 
     @verify_token_decorator
     def get(self):
         """verfity token test"""
         from flask import request
-        raise BaseError
+        raise BaseError()
 
     @verify_token_decorator
     def put(self):
