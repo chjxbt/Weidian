@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 
 from WeiDian.config.response import TOKEN_ERROR, PARAMS_MISS, AUTHORITY_ERROR, SYSTEM_ERROR
 from WeiDian.common.import_status import import_status
+from WeiDian.config.messages import delete_banner_success
 from WeiDian.common.MakeToken import verify_token_decorator
 from WeiDian.common.TransformToList import add_model
 
@@ -32,7 +33,7 @@ class CBanner():
             banner_list = self.sbanner.get_all_lasting_banner()
         else:
             banner_list = self.sbanner.get_all_banner()
-        data = import_status("get_hotmessage_list_success", "OK")
+        data = import_status("get_banner_success", "OK")
         data['data'] = banner_list
         return data
 
@@ -43,7 +44,7 @@ class CBanner():
             banner = self.sbanner.get_one_by_baid(baid)
             if banner:
                 banner = self.fill_activity(banner)
-                data = import_status("get_activity_info_success", "OK")
+                data = import_status("get_banner_success", "OK")
                 data['data'] = banner
                 return data
             else:
@@ -83,6 +84,21 @@ class CBanner():
         response_make_banner['data'] = {'baid': baid}
         return response_make_banner
 
+    @verify_token_decorator
+    def del_one(self):
+        if not hasattr(request, 'user'):
+            return TOKEN_ERROR  # 未登录, 或token错误
+        if request.user.scope != 'SuperUser':
+            return AUTHORITY_ERROR  # 权限不足
+        data = request.json
+        baid = data.get('baid')
+        if not baid:
+            return PARAMS_MISS
+        try:
+            self.sbanner.del_banner(baid)
+            return delete_banner_success
+        except Exception as e:
+            pass
 
     def fill_activity(self, banner):
         acid = banner.ACid

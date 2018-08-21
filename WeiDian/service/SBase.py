@@ -12,7 +12,7 @@ def close_session(fn):
         try:
             result = fn(self, *args, **kwargs)
 
-            if not 'update' in fn.__name__ and not 'delete'and not 'stop' in fn.__name__:
+            if not 'update' in fn.__name__ and not 'delete'in fn.__name__ and not 'stop' in fn.__name__:
                 self.session.expunge_all()
             self.session.commit()
             return result

@@ -17,16 +17,18 @@ class ABanner(Resource):
     def get(self, banner):
         print banner
         apis = {
-            'get_all': 'self.cbanner.get_all()',
-            'get_one': 'self.cbanner.get_one()'
+            "get_all": "self.cbanner.get_all()",
+            "get_one": "self.cbanner.get_one()"
         }
         res = eval(apis[banner])
         return jsonify(res)
+
     def post(self, banner):
         """添加首页轮播图"""
         print banner
         apis = {
-            'add_one': 'self.cbanner.add_one()'
+            "add_one": "self.cbanner.add_one()",
+            "del_one": "self.cbanner.del_one()"
         }
         res = eval(apis[banner])
         return res
