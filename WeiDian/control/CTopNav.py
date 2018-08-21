@@ -58,8 +58,6 @@ class CTopNav():
         tnid = data.get('tnid')
         if not tnid:
             return PARAMS_MISS
-        try:
-            self.s_topnav.del_topnav(tnid)
-            return delete_topnav_success
-        except Exception as e:
-            pass
+
+        self.s_topnav.del_topnav(tnid)
+        return delete_topnav_success

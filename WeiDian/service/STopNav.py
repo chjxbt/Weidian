@@ -2,6 +2,8 @@
 import sys
 import os
 
+from WeiDian.config.response import SYSTEM_ERROR
+
 sys.path.append(os.path.dirname(os.getcwd()))
 from SBase import SBase, close_session
 from WeiDian.models.model import TopNav
@@ -19,5 +21,10 @@ class STopNav(SBase):
 
     @close_session
     def del_topnav(self, tnid):
-        self.session.query(TopNav).filter_by(TNid=tnid).delete()
+        top = self.session.query(TopNav).filter_by(TNid=tnid).first()
+        if top:
+            top.delete()
+        else:
+            raise SYSTEM_ERROR
+        # TODO 有问题
 

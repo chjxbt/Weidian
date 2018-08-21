@@ -21,7 +21,9 @@ class AUTHORITY_ERROR(BaseError):
 
 
 class SYSTEM_ERROR(BaseError):
-    pass
+    code = 200
+    message = '系统错误'
+    status = 404
 
 
 class APIS_WRONG(BaseError):
