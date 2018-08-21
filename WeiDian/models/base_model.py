@@ -40,16 +40,16 @@ class BaseModel:
             self.fields.remove('fields')
         return self.fields
 
-    @auto_createtime
     @orm.reconstructor
+    @auto_createtime
     def __init__(self):
         self.fields = []
 
     def auto_creatdatatime(self):
-        createtimes = filter(lambda k: 'createtime' in k, dir(self))
+        createtimes = filter(lambda k: 'createtime' in k, self.__table__.columns.keys())
         if createtimes:
             createtime = createtimes[0]
-            exists_time = getattr(self, createtime)
-            if not exists_time:
+            existsed_time = getattr(self, createtime)
+            if not existsed_time:
                 setattr(self, createtime, datetime.strftime(datetime.now(), format_for_db))
 

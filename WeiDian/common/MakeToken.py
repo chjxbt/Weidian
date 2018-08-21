@@ -12,7 +12,7 @@ def usid_to_token(id, model='User', expiration=''):
     """生成令牌
     id: 用户id
     scope: 用户类型(user 或者 superuser)
-    expiration: 过期时间
+    expiration: 过期时间, 默认20个小时, 在setting中修改
     """
     if not expiration:
         expiration = current_app.config['TOKEN_EXPIRATION']
