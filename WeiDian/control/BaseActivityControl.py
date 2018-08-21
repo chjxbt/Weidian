@@ -50,7 +50,7 @@ class BaseActivityControl():
 class BaseProductControl():
  
     def fix_product_list(self, items):
-        """传入json数据列表,"""
+        """调整传入json数据列表,"""
         self.prid_list = []
         for item in items:
             prid = str(uuid.uuid4())  # 生成商品id

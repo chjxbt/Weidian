@@ -21,3 +21,9 @@ class SProduct(SBase):
         product = self.session.query(Product).filter_by(PRid=prid).first()
         return product
 
+    @close_session
+    def get_all(self):
+        """获取所有商品"""
+        product_list = self.session.query(Product).filter_by(PRstatuss=1)
+        return product_list
+

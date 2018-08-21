@@ -199,6 +199,10 @@ class ProductImage(Base, BaseModel):
     PIurl = Column(String(50), nullable=False)  # 图片链接(七牛云)
     PIsort = Column(Integer)  # 图片顺序
 
+    @orm.reconstructor
+    def __init__(self):
+        self.fields = self.all
+
 
 class ProductCategory(Base):
     """
