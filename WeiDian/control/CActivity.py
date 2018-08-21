@@ -82,6 +82,8 @@ class CActivity(BaseActivityControl):
         if not acid:
             return PARAMS_MISS
         activity = self.sactivity.get_activity_by_acid(acid)
+        if not activity:
+            return SYSTEM_ERROR
         activity = self.fill_detail(activity)
         activity = self.fill_comment(activity)
         data = import_status("get_activity_info_success", "OK")
