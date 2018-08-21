@@ -49,7 +49,7 @@ class SHotMessage(SBase):
 
     @close_session
     def del_one_hot(self, hmid):
-        self.session.query(HotMessage).filter(HMid=hmid).delete()
+        self.session.query(HotMessage).filter(HotMessage.HMid == hmid).delete()
 
 
 

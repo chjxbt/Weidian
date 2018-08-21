@@ -34,9 +34,8 @@ class SBnner(SBase):
         self.session.add(banner)
 
     @close_session
-    def update_banner(self, banner):
-        self.session.add(banner)
-
+    def del_banner(self, baid):
+        self.session.query(Banner).filter(Banner.BAid == baid).delete()
 
 
 

@@ -11,9 +11,13 @@ class STopNav(SBase):
 
     @close_session
     def get_all(self):
-        return self.session.query(TopNav).filter_by(Tisdelte=False).order_by(TopNav.TSort).all()
+        return self.session.query(TopNav).filter_by(Tisdelete=False).order_by(TopNav.TSort).all()
 
     @close_session
     def add_one(self, topnav):
         self.session.add(topnav)
+
+    @close_session
+    def del_topnav(self, tnid):
+        self.session.query(TopNav).filter_by(TNid=tnid).delete()
 

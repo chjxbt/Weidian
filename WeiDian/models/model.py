@@ -233,7 +233,7 @@ class TopNav(Base, BaseModel):
     __tablename__ = 'topnav'
     TNid = Column(String(64), primary_key=True)
     TNname = Column(String(8), nullable=False)  # 导航文字
-    Tisdelte = Column(Boolean, default=False)  # 是否删除
+    Tisdelete = Column(Boolean, default=False)  # 是否删除
     TSort = Column(Integer)  # 顺序标志
     TNurl = Column(String(255))  # 跳转链接, 可能需要
 
