@@ -3,7 +3,7 @@ import sys
 import os
 from datetime import datetime, timedelta
 
-from WeiDian.config.messages import delete_activity_success
+from WeiDian.config.messages import delete_activity_success, stop_activity_success
 from sqlalchemy.orm import Session
 
 from WeiDian.common.MakeToken import verify_token_decorator
@@ -57,7 +57,9 @@ class CActivity(BaseControl):
             activity_list = self.sactivity.get_activity_by_suid(suid)
         if lasting == 'true':
             now_time = datetime.strftime(datetime.now(), format_for_db)
-            activity_list = filter(lambda act: act.ACstarttime < now_time < act.ACendtime and not act.ACisended, activity_list)
+            activity_list = filter(
+                lambda act: act.ACstarttime < now_time < act.ACendtime and not act.ACisended,
+                activity_list)
         len_aclist = len(activity_list)
         if count > 30:
             count = 30
@@ -102,11 +104,23 @@ class CActivity(BaseControl):
             return delete_activity_success
         except Exception as e:
             pass
-    # TODO 删除有问题，待修改
 
-    def end_one(self):
+    @verify_token_decorator
+    def stop_one(self):
         """手动截止活动"""
-        pass
+        if not hasattr(request, 'user'):
+            return TOKEN_ERROR  # 未登录, 或token错误
+        if request.user.scope != 'SuperUser':
+            return AUTHORITY_ERROR  # 权限不足
+        data = request.json
+        acid = data.get('acid')
+        if not acid:
+            return PARAMS_MISS
+        try:
+            self.sactivity.stop_activity(acid)
+            return stop_activity_success
+        except Exception as e:
+            pass
 
     @verify_token_decorator
     def add_one(self):
@@ -120,7 +134,11 @@ class CActivity(BaseControl):
         acstarttime = data.get('acstarttime', now_time)  # 活动开始时间, 默认当前时间
         asstarttime_str_to_time = datetime.strptime(acstarttime, format_for_db)
         # 7天以后
-        seven_days_later = datetime.strftime(asstarttime_str_to_time + timedelta(days=7), format_for_db)
+        seven_days_later = datetime.strftime(
+            asstarttime_str_to_time +
+            timedelta(
+                days=7),
+            format_for_db)
         acendtime = data.get('acendtime', seven_days_later)  # 活动结束时间, 默认7天以后
         actext = data.get('actext')  # 文字内容
         actype = data.get('actype')  # 类型
@@ -191,4 +209,3 @@ class CActivity(BaseControl):
         response_make_activity['data'] = {}
         response_make_activity['data']['acid'] = acid
         return response_make_activity
-

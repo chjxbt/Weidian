@@ -47,5 +47,9 @@ class SHotMessage(SBase):
             self.session.add(hotmessage)
             return True
 
+    @close_session
+    def del_one_hot(self, hmid):
+        self.session.query(HotMessage).filter(HMid=hmid).delete()
+
 
 

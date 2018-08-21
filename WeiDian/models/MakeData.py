@@ -132,7 +132,7 @@ class MakeData():
             pr.PRscore = random.randint(1, 10)
             pr.PRsalesvolume = random.randint(0, info_count)
             pr.PRstock = random.randint(0, info_count)
-            pr.PRimage = '这是主图' + str(i)
+            pr.PRmainpic = '这是主图' + str(i)
             pr.PRname = '这是商品名字' + str(i)
             self.session.add(pr)
             self.session.commit()
@@ -185,7 +185,7 @@ class databse_deal():
         self.cursor = self.conn.cursor()
 
     def create_database(self):
-        sql = "create database if not exists {0} DEFAULT CHARACTER SET utf8 COLLATE utf8_gyeneral_ci ;".format(
+        sql = "create database if not exists {0} DEFAULT CHARACTER SET 'utf8' COLLATE 'utf8_general_ci' ;".format(
             model.cfg.database)
         print sql
         try:

@@ -27,8 +27,9 @@ class AActivity(Resource):
         """添加活动"""
         print activity
         apis = {
-            "add_one": 'self.control_activity.add_one()',
-            "del_one": "self.control_activity.delete_one()"
+            "add_one": "self.control_activity.add_one()",
+            "del_one": "self.control_activity.delete_one()",
+            "stop_one": "self.control_activity.stop_one()"
         }
         res = eval(apis[activity])
         return res

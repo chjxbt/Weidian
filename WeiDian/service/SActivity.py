@@ -47,7 +47,16 @@ class SActivity(SBase):
         根据活动id删除
         """
         cur_activity = self.session.query(Activity).filter_by(ACid=acid).first()
-        cur_activity.ACisdelte = True
+        cur_activity.ACisdelete = True
+        self.session.add(cur_activity)
+
+    @close_session
+    def stop_activity(self, acid):
+        """
+        手动停止活动
+        """
+        cur_activity = self.session.query(Activity).filter_by(ACid=acid).first()
+        cur_activity.ACisended = True
         self.session.add(cur_activity)
 
     @close_session

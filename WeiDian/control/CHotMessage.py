@@ -7,7 +7,7 @@ from flask import request
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db
 from WeiDian.common.MakeToken import verify_token_decorator
-from WeiDian.config.messages import update_hotmessage_success
+from WeiDian.config.messages import update_hotmessage_success, delete_hotmessage_success
 from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR
 from WeiDian.common.TransformToList import add_model
 
@@ -82,6 +82,24 @@ class CHotMessage():
         response_update_hotmessage = import_status('update_hotmessage_success', 'OK')
         response_update_hotmessage['data'] = {'hmid': hmid}
         return response_update_hotmessage
+
+    @verify_token_decorator
+    def del_one(self):
+        """删除一条热文, 需要管理员的登录状态"""
+        if not hasattr(request, 'user'):
+            return TOKEN_ERROR  # 未登录, 或token错误
+        if request.user.scope != 'SuperUser':
+            return AUTHORITY_ERROR  # 权限不足
+        data = request.json
+        hmid = data.get('hmid')
+        if not hmid:
+            return PARAMS_MISS
+        try:
+            self.s_hotmessage.del_one_hot(hmid)
+            return delete_hotmessage_success
+        except Exception as e:
+            pass
+
 
 
 
