@@ -91,7 +91,6 @@ export const constantRouterMap = [
   { path: '/addBankCard', component: () => import('../views/personal/setUp/addBankCard'), hidden: true },
   { path: '/receiverAddress', component: () => import('../views/personal/setUp/receiverAddress'), hidden: true },
   { path: '/result', component: () => import('../views/personal/setUp/result'), hidden: true },
-
   /*邀请专属粉丝*/
   { path: '/inviteFans', component: () => import('../views/personal/inviteFans/index'), hidden: true },
   { path: '/fansManagement', component: () => import('../views/personal/inviteFans/fansManagement'), hidden: true },
