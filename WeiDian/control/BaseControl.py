@@ -101,6 +101,6 @@ class BaseProductControl():
         productskuvalue = {}
         productskuvalue['psvid'] = psvid
         productskuvalue['prid'] = prid
-        productskuvalue['psvidpropervalue'] = sku_value
+        productskuvalue['psvpropervalue'] = str(sku_value)
         return productskuvalue
 
