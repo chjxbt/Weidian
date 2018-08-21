@@ -209,3 +209,15 @@ class CActivity(BaseActivityControl):
         response_make_activity['data'] = {}
         response_make_activity['data']['acid'] = acid
         return response_make_activity
+
+    @verify_token_decorator
+    def update_act(self):
+        if not hasattr(request, 'user'):
+            return TOKEN_ERROR  # 未登录, 或token错误
+        if request.user.scope != 'SuperUser':
+            return AUTHORITY_ERROR  # 权限不足
+        data = request.json
+        acid = data.get('acid')
+        if not 'acid' in data.keys():
+            return PARAMS_MISS
+        acid = data.pop('adid')

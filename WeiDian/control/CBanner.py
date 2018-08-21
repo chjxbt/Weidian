@@ -94,11 +94,13 @@ class CBanner():
         baid = data.get('baid')
         if not baid:
             return PARAMS_MISS
-        try:
-            self.sbanner.del_banner(baid)
-            return delete_banner_success
-        except Exception as e:
-            pass
+        res = self.sbanner.del_banner(baid)
+        if not res:
+            return SYSTEM_ERROR
+        response_make_banner = import_status('delete_banner_success', 'OK')
+        response_make_banner['data'] = {'baid': baid}
+        return response_make_banner
+
 
     def fill_activity(self, banner):
         acid = banner.ACid

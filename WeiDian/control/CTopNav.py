@@ -61,4 +61,6 @@ class CTopNav():
         res = self.s_topnav.del_topnav(tnid)
         if not res:
             return SYSTEM_ERROR
-        return delete_topnav_success
+        response_make_topnav = import_status('delete_topnav_success', 'OK')
+        response_make_topnav['data'] = {'tnid': tnid}
+        return response_make_topnav

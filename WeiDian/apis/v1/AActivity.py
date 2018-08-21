@@ -29,7 +29,8 @@ class AActivity(Resource):
         apis = {
             "add_one": "self.control_activity.add_one()",
             "del_one": "self.control_activity.delete_one()",
-            "stop_one": "self.control_activity.stop_one()"
+            "stop_one": "self.control_activity.stop_one()",
+            "update_act": "self.control_activity.update_act"
         }
         res = eval(apis[activity])
         return res

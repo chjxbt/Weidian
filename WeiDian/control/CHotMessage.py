@@ -78,7 +78,7 @@ class CHotMessage():
         hmid = data.pop('hmid')
         res = self.s_hotmessage.update_one_hot(hmid, **data)
         if not res:
-            raise SYSTEM_ERROR(message="修改失败")
+            return SYSTEM_ERROR
         response_update_hotmessage = import_status('update_hotmessage_success', 'OK')
         response_update_hotmessage['data'] = {'hmid': hmid}
         return response_update_hotmessage
@@ -94,11 +94,13 @@ class CHotMessage():
         hmid = data.get('hmid')
         if not hmid:
             return PARAMS_MISS
-        try:
-            self.s_hotmessage.del_one_hot(hmid)
-            return delete_hotmessage_success
-        except Exception as e:
-            pass
+        res = self.s_hotmessage.del_one_hot(hmid)
+        if not res:
+            return SYSTEM_ERROR
+        response_update_hotmessage = import_status('delete_hotmessage_success', 'OK')
+        response_update_hotmessage['data'] = {'hmid': hmid}
+        return response_update_hotmessage
+
 
 
 
