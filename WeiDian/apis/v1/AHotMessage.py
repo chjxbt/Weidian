@@ -3,8 +3,6 @@ import sys
 import os
 
 from flask import jsonify
-
-sys.path.append(os.path.dirname(os.getcwd()))
 from flask_restful import Resource
 
 from WeiDian.control import CHotMessage

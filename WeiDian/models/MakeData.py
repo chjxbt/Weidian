@@ -134,6 +134,11 @@ class MakeData():
             pr.PRstock = random.randint(0, info_count)
             pr.PRmainpic = '这是主图' + str(i)
             pr.PRname = '这是商品名字' + str(i)
+            pr.PRdetail = '这是一个超级大的文本'
+            pr.PRtitle = '{hello 这是一个标题'
+            pr.PRoldprice = 100.25
+            pr.PRsalesvolume = 100
+            pr.suid = 'suid'
             self.session.add(pr)
             self.session.commit()
 

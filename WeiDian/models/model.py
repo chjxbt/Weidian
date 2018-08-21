@@ -135,7 +135,7 @@ class Product(Base, BaseModel):
     PRdetail = Column(LONGTEXT)  # 商品详情, 大文本
     PRmainpic = Column(String(64), nullable=False)  # 商品主图
     PRactivityid = Column(String(64))  # 活动id, 可能不需要
-    Makalias = Column(String(64))  # 店铺别名
+    Maketlias = Column(String(64))  # 店铺别名
     PRalias = Column(String(64))  # 别名
     PRimporturl = Column(String(255))  # 外部导入商品的url
     PRishot = Column(Boolean, default=False)  # 是否热卖
@@ -147,7 +147,7 @@ class Product(Base, BaseModel):
     PRoldprice = Column(Float)  # 原价
     PRchannelname = Column(String(64))  # 渠道商名称, 暂未设置, 默认空
     PRchannelid = Column(String(64))  # 渠道商id, 暂未设置, 默认空
-    PRsalesvolume = Column(Integer, nullable=False)  # 商品销量
+    PRsalesvolume = Column(Integer, default=0)  # 商品销量
     PRsalefakenum = Column(Integer)  # 商品自定义销量
     PRvipprice = Column(Float)  # 会员价格
     PRishhare = Column(Boolean, default=True)  # 是否共享
@@ -181,7 +181,7 @@ class ProductSkuKey(Base, BaseModel):
 
 
 class ProductSkuValue(Base, BaseModel):
-    """sku属性值"""
+    """sku属性值, 每一个商品对应一个此表"""
     __tablename__ = 'productskuvalue'
     PSVid = Column(String(64), primary_key=True)
     PRid = Column(String(64), nullable=False)  # 关联商品
@@ -189,6 +189,7 @@ class ProductSkuValue(Base, BaseModel):
 
 
 class ProductImage(Base, BaseModel):
+    """商品展示图片"""
     __tablename__ = 'productimage'
     PIid = Column(String(64), primary_key=True)
     PRid = Column(String(64), nullable=False)  # 商品id

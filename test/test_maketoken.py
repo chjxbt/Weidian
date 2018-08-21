@@ -23,7 +23,6 @@ class TestToken(MethodView):
         """verfity token test"""
         from flask import request
         raise ApiException
-        return 'fsfd'
 
     @verify_token_decorator
     def put(self):
