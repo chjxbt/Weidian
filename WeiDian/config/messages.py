@@ -19,4 +19,6 @@ delete_hotmessage_success = '删除热文成功'
 delete_banner_success = '删除首页轮播图成功'
 delete_topnav_success = '删除上部导航成功'
 add_product_list_success = '批量添加商品成功'
+get_product_list_success = '获取商品列表成功'
+get_product_success = '获取商品成功'
 

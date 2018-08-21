@@ -48,7 +48,7 @@ class BaseActivityControl():
 
 
 class BaseProductControl():
- 
+
     def fix_product_list(self, items):
         """调整传入json数据列表,"""
         self.prid_list = []
@@ -103,4 +103,33 @@ class BaseProductControl():
         productskuvalue['prid'] = prid
         productskuvalue['psvpropervalue'] = str(sku_value)
         return productskuvalue
+
+    def fill_images(self, product):
+        prid = product.PRid
+        images_list = self.sproductimage.get_images_by_prid(prid)
+        product.images = images_list
+        product.add('images')
+        return product
+
+    def fill_product_sku_key(self, product):
+        prid = product.PRid
+        sku_list = self.sproductskukey.get_psk_by_pid(prid)
+        if not sku_list:
+            return
+        for sku in sku_list:
+            sku.PSKproperkey = eval(sku.PSKproperkey)
+        product.sku = sku_list
+        product.add('sku')
+        return product
+
+    def fill_product_sku_value(self, product):
+        prid = product.PRid
+        sku_value = self.sproductskuvalue.get_skvalue_by_prid(prid)
+        if not sku_value:
+            return
+        sku_value.PSVpropervalue = eval(sku_value.PSVpropervalue)
+        product.sku_value = sku_value
+        product.add('sku_value')
+        return product
+
 

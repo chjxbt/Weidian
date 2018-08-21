@@ -6,7 +6,7 @@ from flask import request
 from WeiDian.common.MakeToken import verify_token_decorator
 from WeiDian.common.TransformToList import list_add_models, dict_add_models
 from WeiDian.common.import_status import import_status
-from WeiDian.config.response import TOKEN_ERROR, AUTHORITY_ERROR
+from WeiDian.config.response import TOKEN_ERROR, AUTHORITY_ERROR, PARAMS_MISS, SYSTEM_ERROR
 from WeiDian.control.BaseActivityControl import BaseProductControl
 
 
@@ -18,6 +18,8 @@ class CProduct(BaseProductControl):
         self.sproductskuvalue = SProductSkuValue()
         from WeiDian.service.SProductImage import SProductImage
         self.sproductimage = SProductImage()
+        from WeiDian.service.SProductSkuKey import SProductSkuKey
+        self.sproductskukey = SProductSkuKey()
 
     @verify_token_decorator
     def add_product_list(self):
@@ -45,7 +47,26 @@ class CProduct(BaseProductControl):
         if end > len_product_list:
             end = len_product_list
         product_list = product_list[start: end]
+        data = import_status('get_product_list_success', 'OK')
+        data['data'] = product_list
+        return data
 
-    def fill_images(self, product):
-        prid = product.PRid
+    def get_product_one(self):
+        args = request.args.to_dict()
+        prid = args.get('prid')
+        if not prid:
+            return PARAMS_MISS
+        product = self.sproduct.get_product_by_prid(prid)
+        if not product:
+            return SYSTEM_ERROR
+        product.fields = product.all
+        product.hide('PRsalefakenum', '')
+        self.fill_images(product)
+        self.fill_product_sku_key(product)
+        self.fill_product_sku_value(product)
+        data = import_status('get_product_success', 'OK')
+        data['data'] = product
+        return data
+
+
 

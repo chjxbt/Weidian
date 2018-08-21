@@ -24,7 +24,8 @@ class BaseModel:
 
     def hide(self, *keys):
         for key in keys:
-            self.fields.remove(key)
+            if key in self.fields:
+                self.fields.remove(key)
         return self
 
     def add(self, *keys):
