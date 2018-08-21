@@ -12,14 +12,14 @@ from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db
 from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR
 from WeiDian.config.activitytype import activity_type
-from WeiDian.control.BaseControl import BaseControl
+from WeiDian.control.BaseActivityControl import BaseActivityControl
 
 sys.path.append(os.path.dirname(os.getcwd()))
 from flask import request
 import uuid
 
 
-class CActivity(BaseControl):
+class CActivity(BaseActivityControl):
     def __init__(self):
         from WeiDian.service.SActivity import SActivity
         self.sactivity = SActivity()
