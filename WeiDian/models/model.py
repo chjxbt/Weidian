@@ -44,9 +44,18 @@ class Activity(Base, BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['ACid', 'PRid', 'ACtype', 'ACtext',
-                       'ACbrowsenum', 'ACcreatetime',
-                       'ACstarttime', 'ACendtime', 'ACistop', 'ACisended', 'TopnavId']
+        self.fields = [
+            'ACid',
+            'PRid',
+            'ACtype',
+            'ACtext',
+            'ACbrowsenum',
+            'ACcreatetime',
+            'ACstarttime',
+            'ACendtime',
+            'ACistop',
+            'ACisended',
+            'TopnavId']
 
 
 class ActivityComment(Base, BaseModel):
@@ -142,7 +151,8 @@ class Product(Base, BaseModel):
     PRishot = Column(Boolean, default=False)  # 是否热卖
     PRtitle = Column(String(255))  # 商品标题
     PRname = Column(String(64), nullable=False)  # 名称
-    PReditstate = Column(Integer, default=1)  # 商品编辑状态: {1 完成商品信息, 2 完成产品详情信息, 3, 完成??}
+    # 商品编辑状态: {1 完成商品信息, 2 完成产品详情信息, 3, 完成??}
+    PReditstate = Column(Integer, default=1)
     PRoldprice = Column(Float)  # 原价
     PRchannelname = Column(String(64))  # 渠道商名称, 暂未设置, 默认空
     PRchannelid = Column(String(64))  # 渠道商id, 暂未设置, 默认空
@@ -168,7 +178,19 @@ class Product(Base, BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['PRid', 'PRmainpic', 'PRimporturl', 'PRishot', 'PRtitle', 'PRname', 'PRprice', 'PRoldprice', 'PRchannelname', 'PRchannelid', 'SUid', 'PRstock']
+        self.fields = [
+            'PRid',
+            'PRmainpic',
+            'PRimporturl',
+            'PRishot',
+            'PRtitle',
+            'PRname',
+            'PRprice',
+            'PRoldprice',
+            'PRchannelname',
+            'PRchannelid',
+            'SUid',
+            'PRstock']
 
 
 class ProductSkuKey(Base, BaseModel):
@@ -223,7 +245,7 @@ class ProductLike(Base, BaseModel):
     USid = Column(String(64), nullable=False)  # 用户
     PRid = Column(String(64), nullable=False)  # 商品
     PLcreatetime = Column(String(64))  # 创建时间
-    
+
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
@@ -251,7 +273,8 @@ class OrderInfo(Base):
     OIsn = Column(String(64))  # 订单号
     USid = Column(String(64))  # 用户
     OItradenum = Column(String(125))  # 交易号, (如果有)
-    OIpaystatus = Column(Integer, default=0)  # 订单状态: {0: 待支付, 1: 支付成功, 2: 超时关闭, 3: 支付关闭}
+    # 订单状态: {0: 待支付, 1: 支付成功, 2: 超时关闭, 3: 支付关闭}
+    OIpaystatus = Column(Integer, default=0)
     OIpaytype = Column(Integer)  # 支付类型: {0: 银行卡支付, 1: 微信支付}
     OIleavetext = Column(String(255))  # 订单留言
     OImount = Column(Float)  # 金额
@@ -311,7 +334,7 @@ class TopNav(Base, BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['TNid', 'TNname', 'TSort']
+        self.fields = ['TNid', 'TNname', 'TSort', 'TNtype']
 
 
 class HotMessage(Base, BaseModel):
@@ -337,7 +360,8 @@ class HotMessage(Base, BaseModel):
             'HMcreatetime',
             'HMstarttime',
             'HMendtime',
-            'HMsort']
+            'HMsort'
+        ]
 
 
 class Banner(Base, BaseModel):
