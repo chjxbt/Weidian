@@ -4,7 +4,7 @@ import os
 
 sys.path.append(os.path.dirname(os.getcwd()))
 from SBase import SBase, close_session
-from WeiDian.models.model import Product, Activity
+from WeiDian.models.model import Product, ProductLike
 
 
 class SProduct(SBase):

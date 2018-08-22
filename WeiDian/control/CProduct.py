@@ -20,6 +20,8 @@ class CProduct(BaseProductControl):
         self.sproductskukey = SProductSkuKey()
         from WeiDian.service.SActivity import SActivity
         self.sactivity = SActivity()
+        from WeiDian.service.SProductLike import SProductLike
+        self.sproductlike = SProductLike()
 
     @verify_token_decorator
     def add_product_list(self):
@@ -51,6 +53,7 @@ class CProduct(BaseProductControl):
         data['data'] = product_list
         return data
 
+    @verify_token_decorator
     def get_product_one(self):
         args = request.args.to_dict()
         prid = args.get('prid')
@@ -59,8 +62,18 @@ class CProduct(BaseProductControl):
         product = self.sproduct.get_product_by_prid(prid)
         if not product:
             return SYSTEM_ERROR
-        product.fields = product.all
-        product.hide('PRsalefakenum', '')
+        # 是管理员则显示全部信息
+        if hasattr(request, 'user') and request.user.scope == 'SuperUser':
+            product.fields = product.all
+        else:
+            # 如果是游客, 或者用户的不是合伙人
+            if not hasattr(request, 'user') or request.user.level == 0:
+                product = self.trans_product_for_fans(product)
+            else:
+                # 合伙人
+                product = self.trans_product_for_shopkeeper(product)
+            product = self.fill_product_nums(product)
+        # 填充一些都需要的信息
         self.fill_images(product)
         self.fill_product_sku_key(product)
         self.fill_product_sku_value(product)
@@ -70,9 +83,25 @@ class CProduct(BaseProductControl):
 
     def trans_product_for_fans(self, product):
         """调整为粉丝版本"""
-        product.fields = ['PRid', 'PRdetail', 'PRmainpic', 'Maketlias', 'PRalias', ]
+        # 粉丝页面显示本身价格和店主价, 以及相关商品推荐(规则?)
+        product.add('PRvipprice')
+        return product
 
     def trans_product_for_shopkeeper(self, product):
         """调整为店主版本"""
-        pass
-        
+        # 店主页面需要显示赚多少, '买'和'卖'分别省多少和赚多少(10%)
+        # 暂定为赚取金额为店主价-普通价格
+        pencentage = product.PRprice * 0.9 
+        product.pencentage = pencentage
+        product.add('pencentage')
+        return product
+    
+    def fill_product_nums(self, product):
+        soldnum = product.PRsalefakenum or product.PRsalesvolume  # 显示销量
+        viewnum = product.PRfakeviewnum or product.PRviewnum  # 浏览数
+        likenum = product.PRfakelikenum or self.sproductlike.get_product_like_num_by_prid(prid)  # 收藏(喜欢)数目
+        product.prsoldnum = soldnum
+        product.prviewnum = viewnum
+        product.prlikenum = likenum
+        product.add('prsoldnum', 'prlikenum', 'prviewnum') 
+        return product

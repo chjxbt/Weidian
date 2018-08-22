@@ -143,12 +143,10 @@ class Product(Base, BaseModel):
     PRtitle = Column(String(255))  # 商品标题
     PRname = Column(String(64), nullable=False)  # 名称
     PReditstate = Column(Integer, default=1)  # 商品编辑状态: {1 完成商品信息, 2 完成产品详情信息, 3, 完成??}
-    PRcollectnum = Column(Integer, default=0)  # 收藏数量
     PRoldprice = Column(Float)  # 原价
     PRchannelname = Column(String(64))  # 渠道商名称, 暂未设置, 默认空
     PRchannelid = Column(String(64))  # 渠道商id, 暂未设置, 默认空
     PRsalesvolume = Column(Integer, default=0)  # 商品销量
-    PRsalefakenum = Column(Integer)  # 商品自定义销量
     PRvipprice = Column(Float)  # 会员价格
     PRishhare = Column(Boolean, default=True)  # 是否共享
     SUid = Column(String(64))  # 发布者, 创建人
@@ -160,6 +158,9 @@ class Product(Base, BaseModel):
     PRisdelete = Column(Boolean, default=False)
     # 以下
     PRviewnum = Column(Integer, default=0)  # 浏览量
+    PRfakeviewnum = Column(Integer)  # 虚拟浏览数
+    PRfakelikenum = Column(Integer, default=0)  # 虚拟收藏数量
+    PRsalefakenum = Column(Integer)  # 商品自定义销量
     PAid = Column(String(64))  # 类目id
     PRlogisticsfee = Column(Float)  # 物流费
     PRstock = Column(Integer)  # 商品详情页库存
@@ -167,7 +168,7 @@ class Product(Base, BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['PRid', 'PRmainpic', 'PRimporturl', 'PRishot', 'PRtitle', 'PRname', 'PRcollectnum', 'PRsalesvolume', 'PRprice', 'PRviewnum']
+        self.fields = ['PRid', 'PRmainpic', 'PRimporturl', 'PRishot', 'PRtitle', 'PRname', 'PRprice', 'PRoldprice', 'PRchannelname', 'PRchannelid', 'SUid', 'PRstock']
 
 
 class ProductSkuKey(Base, BaseModel):
@@ -213,6 +214,20 @@ class ProductImage(Base, BaseModel):
     @orm.reconstructor
     def __init__(self):
         self.fields = self.all
+
+
+class ProductLike(Base, BaseModel):
+    """商品收藏(喜欢)"""
+    __tablename__ = 'productlike'
+    PLid = Column(String(64), primary_key=True)
+    USid = Column(String(64), nullable=False)  # 用户
+    PRid = Column(String(64), nullable=False)  # 商品
+    PLcreatetime = Column(String(64))  # 创建时间
+    
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        pass
 
 
 class ShoppingCart(Base):
@@ -380,7 +395,7 @@ class UserLoginTime(Base, BaseModel):
 
 class SuperUser(Base, BaseModel):
     """
-    超级用户
+    超级用户, 管理员, (客服)
     """
     __tablename__ = 'superuser'
     SUid = Column(String(64), primary_key=True)
