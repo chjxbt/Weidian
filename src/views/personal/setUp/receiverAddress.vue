@@ -2,7 +2,7 @@
     <div class="m-receiverAddress">
       <div v-if="have_address">
         <div class="m-one-address" @click="addressClick">
-          <span class="m-check-icon"></span>
+          <span class="m-check-icon active"></span>
           <div class="m-address-info">
             <div class="m-address-row m-address-row1 ">
               <span>小白</span>
@@ -49,7 +49,8 @@
         </div>
       </div>
       <div class="m-no-address" v-else>
-        <img src="" class="m-no-address-img" alt="">
+        <img src="/static/images/icon-no-address.png" class="m-no-address-img" alt="">
+        <p>您还没有收货地址哦</p>
       </div>
 
       <div class="m-address-btn" @click="addressClick">添加新地址</div>
@@ -61,7 +62,7 @@
     export default {
         data() {
             return {
-              have_address:false
+              have_address:true
             }
         },
         components: {},
@@ -88,8 +89,13 @@
         display: block;
         width: 50px;
         height: 50px;
-        background-color: #a3a3a3;
+        background: url("/static/images/icon-radio.png") no-repeat;
+        background-size: 100%;
         margin: 30px;
+        &.active{
+          background: url("/static/images/icon-radio-active.png") no-repeat;
+          background-size: 100%;
+        }
       }
       .m-address-info{
         .m-address-row{
@@ -137,12 +143,16 @@
       height: 890px;
       background-color: #f1f1f1;
       padding-top: 332px;
-      padding-left: 137px;
+      text-align: center;
+      font-size: 26px;
+      color: @grey;
       .m-no-address-img{
-        display: block;
-        width: 431px;
-        height: 268px;
-        background-color: #9fd0bf;
+        display: inline-block;
+        width: 218px;
+        height: 123px;
+      }
+      p{
+        margin-top: 20px;
       }
     }
   }

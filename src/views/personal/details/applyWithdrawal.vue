@@ -88,7 +88,8 @@
         display: inline-block;
         width: 60px;
         height: 60px;
-        background-color: #a4a4a4;
+        background: url("/static/images/icon-close-personal.png") no-repeat;
+        background-size: 100%;
         vertical-align: text-bottom;
       }
       .m-input-amount-input{
@@ -147,7 +148,8 @@
           display: inline-block;
           width: 85px;
           height: 85px;
-          background-color: #a4a4a4;
+          background: url("/static/images/icon-result-personal.png") no-repeat;
+          background-size: 100%;
           margin-bottom: 36px;
         }
         .m-apply-result-info{

@@ -21,19 +21,19 @@
          <cell :item="part_title" ></cell>
           <ul class="m-part-list">
             <li>
-              <span class="m-part-list-icon"></span>
+              <img src="/static/images/icon-pay-personal.png" class="m-part-list-icon" />
               <span>待支付</span>
             </li>
             <li>
-              <span class="m-part-list-icon"></span>
+              <img src="/static/images/icon-wait-send-personal.png" class="m-part-list-icon" />
               <span>待发货</span>
             </li>
             <li>
-              <span class="m-part-list-icon"></span>
+              <img src="/static/images/icon-sent-personal.png" class="m-part-list-icon" />
               <span>已发货</span>
             </li>
             <li>
-              <span class="m-part-list-icon"></span>
+              <img src="/static/images/icon-cancel-personal.png" class="m-part-list-icon" />
               <span>已取消</span>
             </li>
           </ul>
@@ -75,8 +75,8 @@
                   },
                   {
                     name:'快速投诉通道',
-                    value:'complain',
-                    url:''
+                    value:'',
+                    url:'complain'
                   },
                   {
                     name:'关注公众号',

@@ -3,7 +3,7 @@
     <span class="m-cell-name" v-if="item.name">{{item.name}}</span>
     <span class="m-cell-nav" v-if="item.nav">
       <template v-for="(i,j) in item.nav">
-              <span :class="i.click?'active':''" @click="cellNav(j)">{{i.name}}</span>
+              <span :class="i.click?'active':''" @click.stop="cellNav(j)">{{i.name}}</span>
       </template>
 
     </span>
@@ -65,10 +65,10 @@
     }
     .m-cell-icon{
       display: inline-block;
-      width: 20px;
+      width: 26px;
       height: 26px;
-      vertical-align: middle;
-      background-color: #666666;
+      vertical-align: text-top;
+      background: url("/static/images/icon-more.png") no-repeat right ;
       margin-left: 20px;
     }
   }

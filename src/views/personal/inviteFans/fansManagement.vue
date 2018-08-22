@@ -205,7 +205,7 @@
       display: inline-block;
       padding: 5px 10px;
       color: @mainColor;
-      border: 1px solid @mainColor;
+      border: 2px solid @mainColor;
       border-radius: 6px;
       font-size: 20px;
       margin-left: 20px;

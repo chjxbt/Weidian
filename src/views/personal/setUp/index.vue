@@ -30,7 +30,8 @@
       </div>
 
       <div class="m-setUp-btn">
-        退出登录
+        <span>退出登录</span>
+
       </div>
     </div>
 
@@ -108,15 +109,17 @@
     }
   }
   .m-setUp-btn{
-    position: absolute;
-    bottom: 154px;
-    left: 30px;
-    width: 690px;
-    height: 80px;
-    line-height: 80px;
-    background-color: @mainColor;
-    color: #fff;
-    font-size: 30px;
+    margin-top: 225px;
+    span{
+      display: inline-block;
+      width: 690px;
+      height: 80px;
+      line-height: 80px;
+      background-color: @mainColor;
+      color: #fff;
+      font-size: 30px;
+    }
+
   }
 }
 </style>

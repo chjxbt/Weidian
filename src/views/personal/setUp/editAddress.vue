@@ -26,7 +26,7 @@
       </div>
       <div class="m-editAddress-switch">
         <span>设为默认</span>
-        <mt-switch v-model="value"></mt-switch>
+        <span class="m-radio" :class="radio_select ? 'active':''" @click="radioChange"></span>
       </div>
       <div class="m-editAddress-switch">
         <span class="m-red">删除收货地址</span>
@@ -42,11 +42,15 @@
     export default {
         data() {
             return {
-                name: ''
+                radio_select:true
             }
         },
         components: {},
-        methods: {},
+        methods: {
+          radioChange(){
+            this.radio_select = !this.radio_select;
+          }
+        },
         created() {
 
         }
@@ -100,6 +104,18 @@
     background-color: #fff;
     padding: 0 36px;
     margin: 20px 0;
+    .m-radio{
+      display: block;
+      width: 50px;
+      height: 50px;
+      background: url("/static/images/icon-radio.png") no-repeat;
+      background-size: 100%;
+      margin: 30px;
+      &.active{
+        background: url("/static/images/icon-radio-active.png") no-repeat;
+        background-size: 100%;
+      }
+    }
   }
   .m-address-btn{
     position: fixed;
