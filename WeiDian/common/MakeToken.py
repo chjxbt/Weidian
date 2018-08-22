@@ -8,7 +8,7 @@ from flask import current_app, request
 from WeiDian.service.DBSession import db_session
 
 
-def usid_to_token(id, model='User', expiration=''):
+def usid_to_token(id, model='User', expiration='', level=0):
     """生成令牌
     id: 用户id
     scope: 用户类型(user 或者 superuser)
@@ -21,7 +21,8 @@ def usid_to_token(id, model='User', expiration=''):
     return s.dumps({
         'id': id,
         'model': model,
-        'time': time_now
+        'time': time_now,
+        'level': level
     })
 
 
@@ -38,6 +39,7 @@ def token_to_usid(token):
     id = data['id']
     time = data['time']
     model = data['model']
+    level = data.get('level', 0)
     return id
 
 
@@ -62,6 +64,7 @@ def verify_token_decorator(func):
         id = data['id']
         time = data['time']
         model = data['model']
+        level = data.get('level', 0)
         if model != 'User' and model != 'SuperUser':
             return func(self, *args, **kwargs)
         sessions = db_session()
@@ -71,6 +74,7 @@ def verify_token_decorator(func):
                 user = sessions.query(User).filter_by(USid=id).first()
                 user.id = user.USid
                 user.scope = 'User'
+                user.level = level
             if model == 'SuperUser':
                 from WeiDian.models.model import SuperUser
                 user = sessions.query(SuperUser).filter_by(SUid=id).first()
