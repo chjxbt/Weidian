@@ -101,7 +101,7 @@
       }
       .product-params-center {
         flex: 1;
-        margin: 20px 0 0 35px;
+        margin: 15px 0 0 35px;
         .product-price {
           font-size: 20px;
           text-align: left;
