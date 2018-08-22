@@ -164,8 +164,8 @@ class Product(Base, BaseModel):
     SUmodifyid = Column(String(64))  # 修改人id
     PRmodifytime = Column(String(64))  # 修改时间
     PRstatuss = Column(Integer, default=1)  # 商品状态: {0 删除, 1 正常, 2 禁用}
-    PRprice = Column(Float)  # 显示价格
-    PRisdelete = Column(Boolean, default=False)
+    PRprice = Column(Float, nullable=False)  # 显示价格
+    PRisdelete = Column(Boolean, nullable=False)
     # 以下
     PRviewnum = Column(Integer, default=0)  # 浏览量
     PRfakeviewnum = Column(Integer)  # 虚拟浏览数
