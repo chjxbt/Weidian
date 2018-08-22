@@ -24,7 +24,7 @@
       position: absolute;
       transform: rotate(40deg);
       top: 8px;
-      right: 6px;
+      right: 0;
       color: #fff;
     }
     .m-triangle{
@@ -33,7 +33,7 @@
       right: 0;
       width: 70px;
       height: 70px;
-      background: url("/static/images/icon-label.jpg");
+      background: url("/static/images/icon-label.png");
     }
   }
 </style>

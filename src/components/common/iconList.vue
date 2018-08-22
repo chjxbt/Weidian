@@ -3,7 +3,7 @@
 
 
     <li v-for="(item,index) in list" @click="iconClick(index)">
-      <img :src="'/static/images/' + item.src +'.jpg'" class="m-icon" alt="">
+      <img :src="'/static/images/' + item.src +'.png'" class="m-icon" alt="">
       {{item.name}}
     </li>
 
@@ -57,9 +57,8 @@
       font-size: 22px;
       .m-icon{
         display: block;
-        width: 40px;
-        height: 40px;
-        background-color: #666666;
+        width: 30px;
+        height: 25px;
       }
     }
 
