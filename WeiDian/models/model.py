@@ -214,6 +214,41 @@ class ProductImage(Base, BaseModel):
         self.fields = self.all
 
 
+class ShoppingCart(Base):
+    """购物车"""
+    SCid = Column(String(64), primary_key=True)
+    USid = Column(String(64))  # 用户id
+    PRid = Column(String(64))  # 商品id
+    SCnums = Column(Integer)  # 数量
+
+
+class OrderInfo(Base):
+    """订单信息"""
+    OIid = Column(String(64), primary_key=True)
+    OIsn = Column(String(64))  # 订单号
+    USid = Column(String(64))  # 用户
+    OItradenum = Column(String(125))  # 交易号, (如果有)
+    OIpaystatus = Column(Integer, default=0)  # 订单状态: {0: 待支付, 1: 支付成功, 2: 超时关闭, 3: 支付关闭}
+    OIpaytype = Column(Integer)  # 支付类型: {0: 银行卡支付, 1: 微信支付}
+    OIleavetext = Column(String(255))  # 订单留言
+    OImount = Column(Float)  # 金额
+    OIpaytime = Column(String(64))  # 支付时间
+    OIaddress = Column(String(255), nullable=False)  # 地址
+    OIsigername = Column(String(64))  # 收货人
+    OIcreatetime = Column(String(64))  # 订单创建时间
+
+
+class OrderProductInfo(Base):
+    """订单商品详情, 多个订单商品详情对应一个订单"""
+    OPIid = Column(String(64), primary_key=True)
+    OIid = Column(String(64), nullable=False)  # 订单
+    PRid = Column(String(64), nullable=False)  # 商品
+    OIproductprice = Column(Float, nullable=False)   # 商品价格(购买时候的价格)
+    OPIproductname = Column(String(64))  # 商品的名字(购买之时的)
+    OPIproductimages = Column(String(64))  # 商品主图
+    OPIproductnum = Column(Integer, default=1)  # 购买数量
+
+
 class ProductCategory(Base):
     """
     商品分类
