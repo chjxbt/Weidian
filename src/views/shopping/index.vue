@@ -135,7 +135,7 @@
   }
 </script>
 <style lang="less" rel="stylesheet/less" scoped>
-  @import "../../common/css/index";
+  @import "../../common/css/_variate";
   .m-swipe-box {
     .mint-swipe{
       width: 750px;
@@ -176,20 +176,20 @@
       width: 100%;
       .reduce-title {
         height: 30px;
-        color: #ffffff;
+        color: @bgMainColor;
         margin: 25px;
         padding: 0 20px;
         border-radius: 4px;
-        background-color: #f43b51;
+        background-color: @mainColor;
       }
       .reduce-number {
         flex: 1;
         text-align: left;
-        color: #666666;
+        color: @greyColor;
         margin: 25px 0;
       }
       .to-reduce {
-        color: #f43b51;
+        color: @mainColor;
         margin: 25px 30px;
       }
     }
@@ -236,7 +236,7 @@
         padding: 40px 15px;
         .one-product-price {
           margin: 0;
-          color: #f43b51;
+          color: @mainColor;
           font-size: 20px;
           font-weight: bold;
           .product-price-number {
@@ -245,7 +245,7 @@
         }
         .product-failure {
           flex: 1;
-          color: #A4A4A4;
+          color: @grey;
           font-size: 24px;
           line-height: 90px;
         }
@@ -264,7 +264,7 @@
       width: 700px;
       height: 540px;
       border-radius: 10px;
-      background-color: #ffffff;
+      background-color: @bgMainColor;
       .guess-product-title {
         display: flex;
         padding: 40px 0;
@@ -281,7 +281,7 @@
         }
         .guess-product-title-text {
           padding: 0 10px;
-          color: #f43b51;
+          color: @mainColor;
           font-size: 30px;
           letter-spacing: 5px;
         }
@@ -307,7 +307,7 @@
         .guess-product-price {
           margin: 0;
           float: left;
-          color: #f43b51;
+          color: @mainColor;
           padding: 15px 0;
           font-size: 20px;
           font-weight: bold;
@@ -321,7 +321,7 @@
           margin-top: 5px;
           padding: 10px 30px;
           letter-spacing: 5px;
-          border: 2px solid #f43b51;
+          border: 2px solid @mainColor;
           border-radius: 30px;
         }
       }
@@ -331,7 +331,7 @@
     display: flex;
     position: fixed;
     bottom: 100px;
-    background-color: #ffffff;
+    background-color: @bgMainColor;
     .choose-all-img {
       width: 50px;
       height: 49px;
@@ -349,27 +349,27 @@
         padding: 10px 20px;
         .pay-price-money {
           margin: 0;
-          color: #f43b51;
+          color: @mainColor;
           font-size: 20px;
           font-weight: bold;
         }
         .pay-price-number {
-          color: #f43b51;
+          color: @mainColor;
           font-size: 34px;
         }
       }
       .pay-price-reduce {
-        color: #a4a4a4;
+        color: @grey;
         font-size: 20px;
         padding: 10px 20px;
       }
     }
     .to-pay {
-      color: #ffffff;
+      color: @bgMainColor;
       font-size: 34px;
       padding: 33px 60px;
       letter-spacing: 5px;
-      background-color: #f43b51;
+      background-color: @mainColor;
     }
   }
 </style>
