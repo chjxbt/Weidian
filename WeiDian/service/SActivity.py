@@ -3,6 +3,8 @@ import sys
 import os
 from datetime import datetime
 
+from WeiDian.common.timeformat import format_for_db
+
 sys.path.append(os.path.dirname(os.getcwd()))
 from SBase import SBase, close_session
 from WeiDian.models.model import Activity, Product
@@ -83,8 +85,33 @@ class SActivity(SBase):
                 return 0
 
     @close_session
-    def update_activity(self, activity):
-        pass
+    def update_activity(self, acid, **kwargs):
+        cur_activity = self.session.query(Activity).filter_by(ACid=acid).first()
+        if cur_activity:
+            if 'prid' in kwargs.keys():
+                cur_activity.PRid = kwargs['prid']
+            if 'actype' in kwargs.keys():
+                cur_activity.ACtype = kwargs['actype']
+            if 'topnavid' in kwargs.keys():
+                cur_activity.TopnavId = kwargs['topnavid']
+            if 'actext' in kwargs.keys():
+                cur_activity.ACtext = kwargs['actext']
+            if 'aclikefakenum' in kwargs.keys():
+                cur_activity.AClikeFakeNum = kwargs['aclikefakenum']
+            if 'acforwardfakenum' in kwargs.keys():
+                cur_activity.ACforwardFakenum = kwargs['acforwardfakenum']
+            if 'acproductssoldfakenum' in kwargs.keys():
+                cur_activity.ACProductsSoldFakeNum = kwargs['acproductssoldfakenum']
+            if 'acstarttime' in kwargs.keys():
+                cur_activity.ACstarttime = kwargs['acstarttime']
+            if 'acendtime' in kwargs.keys():
+                cur_activity.ACendtime = kwargs['acendtime']
+            if 'acistop' in kwargs.keys():
+                cur_activity.acistop = kwargs['acistop']
+            now_time = datetime.strftime(datetime.now(), format_for_db)
+            cur_activity.ACupdatetime = now_time
+            self.session.add(cur_activity)
+            return True
 
     @close_session
     def foward_activity(self, forward):

@@ -19,7 +19,7 @@ def close_session(fn):
             print("DBERROR" + e.message)
             self.session.rollback()
             # raise e
-            raise dberror(e.message)
+            raise dberror(message=e.message)
         finally:
             self.session.close()
     return inner
