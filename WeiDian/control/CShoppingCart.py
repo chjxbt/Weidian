@@ -30,6 +30,9 @@ class CShoppingCart():
         carts_list = self.sshoppingcart.get_shoppingcart_by_usid(request.user.id)
         map(self.fill_product, carts_list)
         map(self.fill_sku, carts_list)
+        data = import_status('get_cart_success', "OK")
+        data['data'] = carts_list
+        return data
 
 
     @verify_token_decorator
