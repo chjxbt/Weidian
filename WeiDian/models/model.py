@@ -216,6 +216,7 @@ class ProductImage(Base, BaseModel):
 
 class ShoppingCart(Base):
     """购物车"""
+    __tablename__ = 'shopingcart'
     SCid = Column(String(64), primary_key=True)
     USid = Column(String(64))  # 用户id
     PRid = Column(String(64))  # 商品id
@@ -224,6 +225,7 @@ class ShoppingCart(Base):
 
 class OrderInfo(Base):
     """订单信息"""
+    __tablename__ = 'orderinfo'
     OIid = Column(String(64), primary_key=True)
     OIsn = Column(String(64))  # 订单号
     USid = Column(String(64))  # 用户
@@ -240,6 +242,7 @@ class OrderInfo(Base):
 
 class OrderProductInfo(Base):
     """订单商品详情, 多个订单商品详情对应一个订单"""
+    __tablename__ = 'orderproductinfo'
     OPIid = Column(String(64), primary_key=True)
     OIid = Column(String(64), nullable=False)  # 订单
     PRid = Column(String(64), nullable=False)  # 商品

@@ -1,13 +1,11 @@
 # *- coding:utf8 *-
-import uuid
-
 from flask import request
 
 from WeiDian.common.MakeToken import verify_token_decorator
 from WeiDian.common.TransformToList import list_add_models, dict_add_models
 from WeiDian.common.import_status import import_status
 from WeiDian.config.response import TOKEN_ERROR, AUTHORITY_ERROR, PARAMS_MISS, SYSTEM_ERROR
-from WeiDian.control.BaseActivityControl import BaseProductControl
+from WeiDian.control.BaseControl import BaseProductControl
 
 
 class CProduct(BaseProductControl):
@@ -20,6 +18,8 @@ class CProduct(BaseProductControl):
         self.sproductimage = SProductImage()
         from WeiDian.service.SProductSkuKey import SProductSkuKey
         self.sproductskukey = SProductSkuKey()
+        from WeiDian.service.SActivity import SActivity
+        self.sactivity = SActivity()
 
     @verify_token_decorator
     def add_product_list(self):
@@ -68,5 +68,12 @@ class CProduct(BaseProductControl):
         data['data'] = product
         return data
 
+    def trans_product_for_fans(self, product):
+        """调整为粉丝版本"""
+        pass
 
+    def trans_product_for_shopkeeper(self, product):
+        """调整为店主版本"""
+        pass
+        
 

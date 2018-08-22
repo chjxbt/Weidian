@@ -132,4 +132,7 @@ class BaseProductControl():
         product.add('sku_value')
         return product
 
+    def fill_activity(self, product):
+        pass
+
 
