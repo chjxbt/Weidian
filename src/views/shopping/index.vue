@@ -345,10 +345,10 @@
       width: 365px;
       text-align: right;
       .pay-price-text {
+        margin: 0;
         font-size: 30px;
         padding: 10px 20px;
         .pay-price-money {
-          margin: 0;
           color: @mainColor;
           font-size: 20px;
           font-weight: bold;
@@ -365,6 +365,7 @@
       }
     }
     .to-pay {
+      height: 45px;
       color: @bgMainColor;
       font-size: 34px;
       padding: 33px 60px;
