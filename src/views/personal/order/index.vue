@@ -137,6 +137,7 @@
 <style lang="less" rel="stylesheet/less" >
   @import "../../../common/css/index";
   .m-myOrder{
+    padding-bottom: 40px;
     .m-myOrder-nav{
       .flex-row(flex-start);
       span{

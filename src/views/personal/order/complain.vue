@@ -33,8 +33,19 @@
       </div>
       <div class="m-complain-line">自买订单</div>
       <div class="m-complain-order-list">
-        <div class="m-no-complain-order">
+        <div class="m-no-complain-order" v-if="!have_order">
           尚无相关订单...
+        </div>
+        <div class="m-one-complain-order" v-else>
+          <div class="m-one">
+            <span class="m-check"></span>
+            <one-order></one-order>
+          </div>
+          <div class="m-one">
+            <span class="m-check active"></span>
+            <one-order></one-order>
+          </div>
+
         </div>
       </div>
     </div>
@@ -42,13 +53,16 @@
 </template>
 
 <script type="text/ecmascript-6">
+  import oneOrder from './components/oneOrder'
     export default {
         data() {
             return {
-                name: ''
+                have_order:true,
             }
         },
-        components: {},
+        components: {
+          oneOrder
+        },
         methods: {},
         created() {
 
@@ -58,6 +72,7 @@
 <style lang="less" rel="stylesheet/less" >
   @import "../../../common/css/index";
 .m-complain{
+  padding-bottom: 40px;
   .m-complain-form{
     padding: 20px 69px;
     .m-complain-type{
@@ -139,12 +154,35 @@
     font-size: 24px;
     background-color: @mainColor;
     color: #fff;
+    margin-bottom: 40px;
   }
   .m-complain-order-list{
     .m-no-complain-order{
       font-size: 30px;
       color: #c1c1c1;
       margin-top: 300px;
+    }
+    .m-one-complain-order{
+      .m-one{
+        .flex-row(flex-start);
+        padding-right: 20px;
+        .m-check{
+          display: block;
+          width: 40px;
+          height: 40px;
+          background: url("/static/images/icon-complain-check.png") no-repeat;
+          background-size: 100%;
+          margin: 0 20px;
+          &.active{
+            background: url("/static/images/icon-complain-check-active.png") no-repeat;
+            background-size: 100%;
+          }
+        }
+        .m-one-order{
+          width: 630px;
+        }
+      }
+
     }
   }
 }
