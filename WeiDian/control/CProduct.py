@@ -6,6 +6,7 @@ from WeiDian.common.TransformToList import list_add_models, dict_add_models
 from WeiDian.common.import_status import import_status
 from WeiDian.config.response import TOKEN_ERROR, AUTHORITY_ERROR, PARAMS_MISS, SYSTEM_ERROR
 from WeiDian.control.BaseControl import BaseProductControl
+from WeiDian.config.divide_config import Partner
 
 
 class CProduct(BaseProductControl):
@@ -22,6 +23,8 @@ class CProduct(BaseProductControl):
         self.sactivity = SActivity()
         from WeiDian.service.SProductLike import SProductLike
         self.sproductlike = SProductLike()
+        # 后续修改
+        self.partner = Partner()
 
     @verify_token_decorator
     def add_product_list(self):
@@ -84,19 +87,23 @@ class CProduct(BaseProductControl):
     def trans_product_for_fans(self, product):
         """调整为粉丝版本"""
         # 粉丝页面显示本身价格和店主价, 以及相关商品推荐(规则?)
-        product.add('PRvipprice')
+        prkeeperprice = product.PRprice * self.partner.new_partner
+        product.prkeeperprice = prkeeperprice
+        product.add('prkeeperprice')
         return product
 
     def trans_product_for_shopkeeper(self, product):
         """调整为店主版本"""
         # 店主页面需要显示赚多少, '买'和'卖'分别省多少和赚多少(10%)
         # 暂定为赚取金额为店主价-普通价格
-        pencentage = product.PRprice * 0.9 
-        product.pencentage = pencentage
-        product.add('pencentage')
+        prkeeperprice = product.PRprice * self.partner.new_partner
+        # 节省或赚取的价格
+        product.prsavemonty = product.PRprice - prkeeperprice
+        product.add('prsavemonty')
         return product
     
     def fill_product_nums(self, product):
+        prid = product.PRid
         soldnum = product.PRsalefakenum or product.PRsalesvolume  # 显示销量
         viewnum = product.PRfakeviewnum or product.PRviewnum  # 浏览数
         likenum = product.PRfakelikenum or self.sproductlike.get_product_like_num_by_prid(prid)  # 收藏(喜欢)数目
