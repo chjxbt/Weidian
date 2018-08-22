@@ -5,6 +5,7 @@ get_activity_list_success = "获取活动成功"
 get_activity_info_success = "获取活动成功"
 delete_activity_success = '删除成功'
 add_activity_success = '添加活动成功'
+update_activity_success = '修改活动信息成功'
 get_nav_list_success = '获取上部导航成功'
 get_hotmessage_list_success = '获取热文成功'
 generic_token_success = '获取token成功'
@@ -21,4 +22,3 @@ delete_topnav_success = '删除上部导航成功'
 add_product_list_success = '批量添加商品成功'
 get_product_list_success = '获取商品列表成功'
 get_product_success = '获取商品成功'
-

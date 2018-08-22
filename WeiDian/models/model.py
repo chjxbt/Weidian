@@ -33,7 +33,8 @@ class Activity(Base, BaseModel):
     ACbrowsenum = Column(Integer, default=0)  # 浏览数
     ACforwardFakenum = Column(Integer, default=0)  # 虚假转发数
     ACProductsSoldFakeNum = Column(Integer)  # 可编辑的商品销量, 如果留空,  则使用实际的销量
-    ACcreatetime = Column(String(14))  # 活动的发布时间
+    ACcreatetime = Column(String(14))  # 活动的创建时间
+    ACupdatetime = Column(String(14))  # 活动的修改时间
     ACstarttime = Column(String(14))  # 活动开始时间
     ACendtime = Column(String(14))  # 活动结束时间
     ACisended = Column(Boolean, default=False)  # 是否被手动截止
