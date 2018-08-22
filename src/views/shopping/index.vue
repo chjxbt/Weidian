@@ -28,8 +28,9 @@
             <img :src="product.productImg" class="product-img">
             <div class="one-product-three">
               <div class="product-name">{{product.productName}}</div>
-              <div style="padding: 10px">尺寸：XL 颜色：黄色</div>
-              <div>- 2 +</div>
+              <product-params :size="product.size" :color="product.color" :quantity="product.quantity"></product-params>
+              <product-quantity :quantity="product.quantity"></product-quantity>
+              <!--<div>- 2 +</div>-->
             </div>
             <div class="one-product-four">
               <p class="one-product-price">￥<span class="product-price-number">{{product.productPrice}}</span></p>
@@ -44,8 +45,9 @@
             <img :src="failure.productImg" class="product-img">
             <div class="one-product-three">
               <div class="product-name">{{failure.productName}}</div>
-              <div style="padding: 10px">颜色分类：敏感 20 ml</div>
-              <div>- 2 +</div>
+              <div style="text-align: left">尺寸：{{failure.size}} 颜色：{{failure.color}}</div>
+              <!--<product-params :size="failure.size" :color="failure.color"></product-params>-->
+              <!--<product-quantity :quantity="failure.quantity"></product-quantity>-->
             </div>
             <div class="one-product-four">
               <p class="one-product-price">￥<span class="product-price-number">{{failure.productPrice}}</span></p>
@@ -88,6 +90,8 @@
 </template>
 
 <script type="text/ecmascript-6">
+  import productParams from "../../components/common/productParams";
+  import productQuantity from "../../components/common/productQuantity";
   export default {
     data() {
       return {
@@ -97,11 +101,11 @@
         orderList: [
           { storeName: "衣衣旗舰店", productSend: "已免运费", reduceTitle: "满 300 减 30", reduceNumber: "还差 30 元", toReduce: "去凑单 >",
             productList: [
-              { choose: false, productImg: "/static/images/product1.png", productName: "18年版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版", productPrice: "106" },
-              { choose: true, productImg: "/static/images/product1.png", productName: "18年版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版", productPrice: "99" }
+              { choose: false, productImg: "/static/images/product1.png", productName: "18年版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版", size: "XL", color: "黄色", quantity: 2, productPrice: "106" },
+              { choose: true, productImg: "/static/images/product1.png", productName: "18年版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版",  size: "XXL", color: "蓝色", quantity: 1,productPrice: "99" }
             ],
             failureList: [
-              { productImg: "/static/images/product1.png", productName: "18年版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版", productPrice: "106" }
+              { productImg: "/static/images/product1.png", productName: "18年版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版", size: "M", color: "红色", quantity: 3, productPrice: "106" }
             ]
           }
         ],
@@ -112,7 +116,7 @@
         ifChooseAll: false
       }
     },
-    components: {},
+    components: { productParams, productQuantity },
     methods: {
       // 选择产品
       chooseProduct(product) {
@@ -206,7 +210,7 @@
     .one-product {
       display: flex;
       width: 100%;
-      height: 230px;
+      /*height: 230px;*/
       .check-box-img {
         width: 45px;
         height: 45px;
@@ -319,6 +323,7 @@
           float: right;
           font-size: 24px;
           margin-top: 5px;
+          color: @mainColor;
           padding: 10px 30px;
           letter-spacing: 5px;
           border: 2px solid @mainColor;
