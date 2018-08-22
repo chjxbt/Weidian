@@ -138,3 +138,32 @@ class BaseProductControl():
         product.activity = activity_list
         product.add('activity')
         return product
+
+    def trans_product_for_fans(self, product):
+        """调整为粉丝版本"""
+        # 粉丝页面显示本身价格和店主价, 以及相关商品推荐(规则?)
+        prkeeperprice = product.PRprice * self.partner.new_partner
+        product.prkeeperprice = prkeeperprice
+        product.add('prkeeperprice')
+        return product
+
+    def trans_product_for_shopkeeper(self, product):
+        """调整为店主版本"""
+        # 店主页面需要显示赚多少, '买'和'卖'分别省多少和赚多少(10%)
+        # 暂定为赚取金额为店主价-普通价格
+        prkeeperprice = product.PRprice * self.partner.new_partner
+        # 节省或赚取的价格
+        product.prsavemonty = product.PRprice - prkeeperprice
+        product.add('prsavemonty')
+        return product
+    
+    def fill_product_nums(self, product):
+        prid = product.PRid
+        soldnum = product.PRsalefakenum or product.PRsalesvolume  # 显示销量
+        viewnum = product.PRfakeviewnum or product.PRviewnum  # 浏览数
+        likenum = product.PRfakelikenum or self.sproductlike.get_product_like_num_by_prid(prid)  # 收藏(喜欢)数目
+        product.prsoldnum = soldnum
+        product.prviewnum = viewnum
+        product.prlikenum = likenum
+        product.add('prsoldnum', 'prlikenum', 'prviewnum') 
+        return product
