@@ -24,7 +24,7 @@
       position: absolute;
       transform: rotate(40deg);
       top: 8px;
-      right: 0;
+      right: 4px;
       color: #fff;
     }
     .m-triangle{
