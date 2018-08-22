@@ -12,8 +12,8 @@ from WeiDian.models.model import TopNav
 class STopNav(SBase):
 
     @close_session
-    def get_all(self):
-        return self.session.query(TopNav).filter_by(Tisdelete=False).order_by(TopNav.TSort).all()
+    def get_list_by_parentid(self, tnparentid=0):
+        return self.session.query(TopNav).filter_by(Tisdelete=False, TNparentid=tnparentid).order_by(TopNav.TSort).all()
 
     @close_session
     def add_one(self, topnav):

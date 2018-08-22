@@ -19,10 +19,17 @@ class CTopNav():
         self.s_topnav = STopNav()
 
     def get_all(self):
-        res = self.s_topnav.get_all()
+        parent_nav_list = self.s_topnav.get_list_by_parentid()
+        map(self.fill_detail, parent_nav_list)
         data = import_status('get_nav_list_success', "OK")
-        data['data'] = res
+        data['data'] = parent_nav_list
         return data
+
+    def fill_detail(self, nav):
+        naid = nav.TNid
+        nav.sub = self.s_topnav.get_list_by_parentid(naid)
+        nav.add('sub')
+        return nav
 
     @verify_token_decorator
     def add_one(self):
@@ -36,13 +43,17 @@ class CTopNav():
         tnname = data.get('tnname')
         tsort = data.get('tsort')
         tnurl = data.get('tnurl')
+        tntype = data.get('tntype')
+        tnparentid = data.get('tnparentid')
         if not tnid or not tnname:
             return PARAMS_MISS
         add_model('TopNav', **{
             'TNid': tnid,
             'TNname': tnname,
             'TSort': tsort,
-            'TNurl': tnurl
+            'TNurl': tnurl,
+            'TNtype': tntype,
+            'TNparentid': tnparentid
         })
         response_make_topnav = import_status('add_topnav_success', 'OK')
         response_make_topnav['data'] = {'tnid': tnid}
