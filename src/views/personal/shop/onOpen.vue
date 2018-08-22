@@ -51,20 +51,20 @@
          <cell :item="part_tilt_two" @cellNav="cellNav" ></cell>
           <ul class="m-part-list">
             <li>
-              <span class="m-part-list-icon"></span>
-              <span>待支付<span class="m-red">（1）</span></span>
+              <img src="/static/images/icon-pay-personal.png" class="m-part-list-icon" />
+              <span>待支付</span>
             </li>
             <li>
-              <span class="m-part-list-icon"></span>
-              <span>待发货<span class="m-red">（1）</span></span>
+              <img src="/static/images/icon-wait-send-personal.png" class="m-part-list-icon" />
+              <span>待发货</span>
             </li>
             <li>
-              <span class="m-part-list-icon"></span>
-              <span>已发货<span class="m-red">（1）</span></span>
+              <img src="/static/images/icon-sent-personal.png" class="m-part-list-icon" />
+              <span>已发货</span>
             </li>
             <li>
-              <span class="m-part-list-icon"></span>
-              <span>已取消<span class="m-red">（0）</span></span>
+              <img src="/static/images/icon-cancel-personal.png" class="m-part-list-icon" />
+              <span>已取消</span>
             </li>
           </ul>
         </div>

@@ -65,10 +65,10 @@
     }
     .m-cell-icon{
       display: inline-block;
-      width: 20px;
+      width: 26px;
       height: 26px;
-      vertical-align: middle;
-      background-color: #666666;
+      vertical-align: text-top;
+      background: url("/static/images/icon-more.png") no-repeat right ;
       margin-left: 20px;
     }
   }

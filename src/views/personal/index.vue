@@ -12,7 +12,7 @@
     export default {
         data() {
             return {
-                isOpen:true
+                isOpen: true
             }
         },
         components: {
@@ -51,7 +51,6 @@
         display: block;
         width: 50px;
         height: 50px;
-        background-color: #666666;
         margin-bottom: 15px;
       }
       .m-num{
