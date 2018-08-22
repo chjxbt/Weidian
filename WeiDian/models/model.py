@@ -285,6 +285,8 @@ class TopNav(Base, BaseModel):
     Tisdelete = Column(Boolean, default=False)  # 是否删除
     TSort = Column(Integer)  # 顺序标志
     TNurl = Column(String(255))  # 跳转链接, 可能需要
+    TNtype = Column(Integer, defualt=1)  # 导航位置分类: {1: 首页, 2: 发现页}
+    TNparentid = Column(String(64), defualt=0)  # 父导航id, 0表示本身是一级导航
 
     @orm.reconstructor
     @auto_createtime

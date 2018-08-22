@@ -133,6 +133,8 @@ class BaseProductControl():
         return product
 
     def fill_activity(self, product):
-        pass
-
-
+        prid = product.PRid
+        activity_list = self.activity.get_activiti_by_prid(prid)
+        product.activity = activity_list
+        product.add('activity')
+        return product

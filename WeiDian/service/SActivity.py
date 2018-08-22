@@ -70,6 +70,10 @@ class SActivity(SBase):
         return activity
 
     @close_session
+    def get_activity_by_prid(self, prid):
+        return self.session.query(Activity).filter_by(PRid=prid, ACisdelete=False).all()
+
+    @close_session
     def get_product_soldnum_by_acid(self, acid):
         """根据活动获取对应商品的销量"""
         cur_activity = self.session.query(Activity).filter_by(ACid=acid).first()

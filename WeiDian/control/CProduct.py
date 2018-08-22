@@ -70,10 +70,9 @@ class CProduct(BaseProductControl):
 
     def trans_product_for_fans(self, product):
         """调整为粉丝版本"""
-        pass
+        product.fields = ['PRid', 'PRdetail', 'PRmainpic', 'Maketlias', 'PRalias', ]
 
     def trans_product_for_shopkeeper(self, product):
         """调整为店主版本"""
         pass
         
-
