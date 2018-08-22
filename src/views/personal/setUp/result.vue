@@ -1,6 +1,6 @@
 <template>
     <div class="m-add-result">
-      <img src="" class="m-add-result-img" alt="">
+      <img src="/static/images/icon-result.png" class="m-add-result-img" alt="">
       <p>恭喜，绑定成功！</p>
       <span class="m-result-btn" @click="returnBack">返回</span>
     </div>
@@ -37,7 +37,6 @@
     display: inline-block;
     width: 200px;
     height: 200px;
-    background-color: #a3a3a3;
     margin: 250px 0 58px;
   }
   .m-result-btn{

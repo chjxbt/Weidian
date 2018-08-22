@@ -81,7 +81,7 @@
               width: 100%;
               font-size: 30px;
               border: none;
-              height: 98px;
+              height: 90px;
             }
           }
           .m-bankCard-select{
@@ -94,7 +94,8 @@
               width: 16px;
               height: 31px;
               margin: 0 34px;
-              background-color: #a3a3a3;
+              background: url("/static/images/icon-more.png") no-repeat;
+              background-size: 100%;
               vertical-align: middle;
             }
           }

@@ -72,23 +72,23 @@
 
       <ul class="m-part-list">
         <li>
-          <span class="m-part-list-icon"></span>
+          <img src="/static/images/icon-collect-personal.png" class="m-part-list-icon" />
           <span>我的收藏</span>
         </li>
         <li>
-          <span class="m-part-list-icon"></span>
+          <img src="/static/images/icon-make-money-personal.png" class="m-part-list-icon" />
           <span>赚钱学院</span>
         </li>
         <li>
-          <span class="m-part-list-icon"></span>
+          <img src="/static/images/icon-teacher-personal.png" class="m-part-list-icon" />
           <span>我的导师</span>
         </li>
         <li>
-          <span class="m-part-list-icon"></span>
-          <span>我的导师</span>
+          <img src="/static/images/icon-material-personal.png" class="m-part-list-icon" />
+          <span>素材圈</span>
         </li>
         <li>
-          <span class="m-part-list-icon"></span>
+          <img src="/static/images/icon-complain-personal.png" class="m-part-list-icon" />
           <span>快速投诉</span>
         </li>
       </ul>
@@ -127,7 +127,14 @@
                 ],
                 value:'查看更多',
                 url:'order'
-              }
+              },
+              order_list:[
+                {
+                  name:'',
+                  src:'',
+                  value:''
+                }
+              ]
             }
         },
         components: {

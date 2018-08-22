@@ -22,8 +22,8 @@
       </p>
       <div class="m-money-details">
         <p class="m-money-type">
-          <span class="active">我的收益</span>
-          <span>新衣币</span>
+          <span :class="isIncome ? 'active':''" @click="moneyTypeClick(true)">我的收益</span>
+          <span :class="!isIncome ? 'active':''" @click="moneyTypeClick(false)">新衣币</span>
         </p>
 
         <div v-if="isIncome">
@@ -123,7 +123,7 @@
         data() {
             return {
                 name: '',
-              isIncome:false
+              isIncome:true
             }
         },
         components: {},
@@ -133,6 +133,9 @@
           },
           putForwardClick(){
             this.$router.push('applyWithdrawal');
+          },
+          moneyTypeClick(v){
+            this.isIncome = v;
           }
         },
         created() {
@@ -218,7 +221,8 @@
         display: inline-block;
         width: 24px;
         height: 12px;
-        background-color: #edb3b1;
+        background: url("/static/images/icon-select-date-personal.png") no-repeat;
+        background-size: 100%;
         line-height: 32px;
       }
     }
