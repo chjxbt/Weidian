@@ -258,6 +258,7 @@ class ShoppingCart(Base, BaseModel):
     SCid = Column(String(64), primary_key=True)
     USid = Column(String(64))  # 用户id
     PSKid = Column(String(64))  # 商品的选项id
+    PRid = Column(String(64))  # 商品id
     SCnums = Column(Integer)  # 数量
 
     @orm.reconstructor
