@@ -230,13 +230,18 @@ class ProductLike(Base, BaseModel):
         pass
 
 
-class ShoppingCart(Base):
+class ShoppingCart(Base, BaseModel):
     """购物车"""
     __tablename__ = 'shopingcart'
     SCid = Column(String(64), primary_key=True)
     USid = Column(String(64))  # 用户id
-    PRid = Column(String(64))  # 商品id
+    PSKid = Column(String(64))  # 商品的选项id
     SCnums = Column(Integer)  # 数量
+
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = ['SCid', 'PRid', 'SCnums']
 
 
 class OrderInfo(Base):
