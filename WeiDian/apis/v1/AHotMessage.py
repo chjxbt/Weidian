@@ -28,4 +28,5 @@ class AHotMessage(Resource):
             "update_one": "self.control_hotmessage.update_one()",
             "del_one": "self.control_hotmessage.del_one()"
         }
-        return eval(apis[hotmessage])
+        res = eval(apis[hotmessage])
+        return jsonify(res)

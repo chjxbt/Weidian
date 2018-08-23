@@ -18,7 +18,7 @@ class AProduct(Resource):
             'add_list': 'self.cproduct.add_product_list()',
         }
         res = eval(apis[product])
-        return res
+        return jsonify(res)
 
     def get(self, product):
         print product

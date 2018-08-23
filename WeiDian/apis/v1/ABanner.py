@@ -28,4 +28,4 @@ class ABanner(Resource):
             "del_one": "self.cbanner.del_one()"
         }
         res = eval(apis[banner])
-        return res
+        return jsonify(res)

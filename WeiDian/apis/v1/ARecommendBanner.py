@@ -28,4 +28,4 @@ class ARecommendBanner(Resource):
             "del_one": "self.control_banner.del_one()"
         }
         res = eval(apis[recommendbanner])
-        return res
+        return jsonify(res)

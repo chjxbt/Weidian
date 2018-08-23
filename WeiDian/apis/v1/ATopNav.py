@@ -31,4 +31,4 @@ class ATopNav(Resource):
 
         }
         res = eval(apis[topnav])
-        return res
+        return jsonify(res)
