@@ -7,3 +7,4 @@ from .ASuperUser import ASuperUser
 from .AProduct import AProduct
 from .ARecommendBanner import ARecommendBanner
 from .AShoppingCart import AShoppingCart
+from .AActivityComment import AActivityComment
