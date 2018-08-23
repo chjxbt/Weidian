@@ -213,6 +213,8 @@
 }
   .m-modal{
     .m-modal-state{
+      /*height: auto;*/
+      min-height: 50%;
       .m-modal-content{
         padding: 0;
         .m-modal-award-title{
