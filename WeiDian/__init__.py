@@ -3,10 +3,12 @@ from datetime import date
 
 from flask import Flask as _Flask
 from flask.json import JSONEncoder as _JSONEncoder
+from werkzeug.exceptions import HTTPException
 
 from WeiDian.apis.v1 import AActivity, AHotMessage, ABanner, ASearchField, ATopNav, \
     ASuperUser, AProduct, ARecommendBanner, AShoppingCart
 from WeiDian.common.base_error import BaseError
+from test.test_maketoken import create_test_url
 
 
 class JSONEncoder(_JSONEncoder):
@@ -16,12 +18,17 @@ class JSONEncoder(_JSONEncoder):
             res = dict(o)
             for k in res.keys():
                 if k[0].isupper():
+                    # 字段转小写
                     res[k.lower()] = res[k]
                     res.pop(k)
             return res
         if isinstance(o, date):
             # 也可以序列化时间类型的对象
             return o.strftime('%Y-%m-%d')
+        if isinstance(o, type):
+            raise o()
+        if isinstance(o, HTTPException):
+            raise o
         raise Exception()
 
 
@@ -60,4 +67,5 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object('WeiDian.config.setting')
     register_route(app)
+    create_test_url(app)  # 测试用
     return app
