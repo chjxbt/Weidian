@@ -71,12 +71,16 @@ def verify_token_decorator(func):
             if model == 'User':
                 from WeiDian.models.model import User
                 user = sessions.query(User).filter_by(USid=id).first()
+                if not user:
+                    return func(self, *args, **kwargs)
                 user.id = user.USid
                 user.scope = 'User'
                 user.level = user.USlevel
             if model == 'SuperUser':
                 from WeiDian.models.model import SuperUser
                 user = sessions.query(SuperUser).filter_by(SUid=id).first()
+                if not user:
+                    return func(self, *args, **kwargs)
                 user.id = user.SUid
                 user.scope = 'SuperUser'
                 user.level = user.SUlevel
