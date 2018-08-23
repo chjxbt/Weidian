@@ -24,6 +24,6 @@ class SProduct(SBase):
     @close_session
     def get_all(self):
         """获取所有商品"""
-        product_list = self.session.query(Product).filter_by(PRstatuss=1, PReditstate=1).all()
+        product_list = self.session.query(Product).filter_by(PRstatus=1, PReditstate=1).all()
         return product_list
 

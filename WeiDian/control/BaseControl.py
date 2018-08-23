@@ -91,7 +91,6 @@ class BaseProductControl():
             sku_item['pskid'] = str(uuid.uuid4())
             sku_item['prid'] = prid
             sku_item['psvid'] = psvid
-            sku_item['pskproperkey'] = str(sku_item['pskproperkey'])
             # psk_key值是一个列表, 元素是个字典, 类似{key: 大小, value: xl}
         return sku_items
 
@@ -101,7 +100,7 @@ class BaseProductControl():
         productskuvalue = {}
         productskuvalue['psvid'] = psvid
         productskuvalue['prid'] = prid
-        productskuvalue['psvpropervalue'] = str(sku_value)
+        productskuvalue['psvpropervalue'] = sku_value
         return productskuvalue
 
     def fill_images(self, product):
@@ -117,7 +116,7 @@ class BaseProductControl():
         if not sku_list:
             return
         for sku in sku_list:
-            sku.PSKproperkey = eval(sku.PSKproperkey)
+            sku.PSKproperkey = sku.PSKproperkey
         product.sku = sku_list
         product.add('sku')
         return product
@@ -127,7 +126,7 @@ class BaseProductControl():
         sku_value = self.sproductskuvalue.get_skvalue_by_prid(prid)
         if not sku_value:
             return
-        sku_value.PSVpropervalue = eval(sku_value.PSVpropervalue)
+        sku_value.PSVpropervalue = sku_value.PSVpropervalue
         product.sku_value = sku_value
         product.add('sku_value')
         return product
@@ -178,22 +177,35 @@ class BaseShoppingCart():
         pskid = cart.PSKid
         if pskid:
             sku = self.sproductskukey.get_psk_by_pskid(pskid)
+            if not sku:
+                return cart
             sku.add('PSKproperkey')
-            cart.PRprice = sku.PSKprice  # 价格, 如果sku有价格, 会直接覆盖掉商品表中的价格
+            cart.PRprice = sku.PSKprice
             cart.sku = sku
-        cart.add('sku')
+            cart.add('sku')
         return cart
 
     def fill_product(self, cart):
         """填充购物车的商品信息, 不包括sku"""
-        prid = cart.PRid
+        if not hasattr(cart, 'sku'):
+            return cart
+        prid = cart.sku.PRid
         if prid:
             product = self.sproduct.get_product_by_prid(prid)
             if product:
                 cart.PRimage = product.PRmainpic
                 cart.PRtitle = product.PRtitle
                 cart.PRstatus = product.PRstatus
-                cart.PRprice = product.price  # 价格, 待计算
-        cart.add('PRimage', 'PRtitle', 'PRstatus', 'PRprice')
+                cart.add('PRimage', 'PRtitle', 'PRstatus')
         return cart
+
+    def total_price(self, cart_list):
+        """总金额"""
+        has_price = filter(lambda x: hasattr(x, 'sku') and hasattr(x.sku, 'PSKprice'), cart_list)
+        if not has_price:
+            return 0
+        import ipdb
+        ipdb.set_trace()
+        total = sum([x.sku.PSKprice * x.SCnums + x.sku.PSKpostfee for x in has_price])
+        return total
 
