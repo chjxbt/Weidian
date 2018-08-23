@@ -167,3 +167,33 @@ class BaseProductControl():
         product.prlikenum = likenum
         product.add('prsoldnum', 'prlikenum', 'prviewnum') 
         return product
+
+
+class BaseShoppingCart():
+
+    def fill_sku(self, cart):
+        """
+        填充选择的sku信息
+        """
+        pskid = cart.PSKid
+        if pskid:
+            sku = self.sproductskukey.get_psk_by_pskid(pskid)
+            sku.add('PSKproperkey')
+            cart.PRprice = sku.PSKprice  # 价格, 如果sku有价格, 会直接覆盖掉商品表中的价格
+            cart.sku = sku
+        cart.add('sku')
+        return cart
+
+    def fill_product(self, cart):
+        """填充购物车的商品信息, 不包括sku"""
+        prid = cart.PRid
+        if prid:
+            product = self.sproduct.get_product_by_prid(prid)
+            if product:
+                cart.PRimage = product.PRmainpic
+                cart.PRtitle = product.PRtitle
+                cart.PRstatus = product.PRstatus
+                cart.PRprice = product.price  # 价格, 待计算
+        cart.add('PRimage', 'PRtitle', 'PRstatus', 'PRprice')
+        return cart
+

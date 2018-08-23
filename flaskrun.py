@@ -1,9 +1,8 @@
 # *- coding:utf8 *-
 import flask_restful
 from WeiDian import create_app
-
-from WeiDian.apis.v1 import AActivity, AHotMessage, ABanner, ASearchField, ATopNav, ASuperUser, AProduct, \
-    ARecommendBanner
+from WeiDian.apis.v1 import AActivity, AHotMessage, ABanner, ASearchField, ATopNav, \
+    ASuperUser, AProduct, ARecommendBanner, AShoppingCart
 from WeiDian.common.base_error import BaseError
 from werkzeug.exceptions import HTTPException
 from test.test_maketoken import create_test_url
@@ -18,22 +17,23 @@ api.add_resource(ASearchField, '/searchfield/<string:searchfield>')
 api.add_resource(ASuperUser, '/super/<string:super>')
 api.add_resource(AProduct, '/product/<string:product>')
 api.add_resource(ARecommendBanner, '/recommendbanner/<string:recommendbanner>')
+api.add_resource(AShoppingCart, '/shoppingcart/<string:shoppingcart>')
 
 
 # 测试
 create_test_url(wd)
 
-
-@wd.errorhandler(Exception)
-def framework_error(e):
-    if isinstance(e, BaseError):
-        return e
-    if isinstance(e, HTTPException):
-        raise BaseError()
-    if not wd.config['DEBUG']:
-        raise BaseError()
-    raise e
-
+#
+# @wd.errorhandler(Exception)
+# def framework_error(e):
+#     if isinstance(e, BaseError):
+#         return e
+#     if isinstance(e, HTTPException):
+#         raise BaseError()
+#     if not wd.config['DEBUG']:
+#         raise BaseError()
+#     raise e
+#
 
 if __name__ == '__main__':
     wd.run(debug=True)

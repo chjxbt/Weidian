@@ -17,7 +17,9 @@ def auto_createtime(f):
 class BaseModel:
 
     def __getitem__(self, item):
-        return getattr(self, item)
+        if hasattr(self, item):
+            return getattr(self, item)
+        return []
 
     def keys(self):
         return self.fields
