@@ -252,6 +252,49 @@ class ProductLike(Base, BaseModel):
         pass
 
 
+class RecommendBanner(Base, BaseModel):
+    """每日十荐页上部轮播图"""
+    __tablename__ = 'recommendbanner'
+    RBid = Column(String(64), primary_key=True)
+    RBimage = Column(String(64))  # 图片
+    PRid = Column(String(64))  # 推荐页轮播图对应的商品
+    RBcreatetime = Column(String(14))  # 创建时间
+    RBstarttime = Column(String(14))  # 上线时间
+    RBendtime = Column(String(14))  # 下线时间
+    RBsort = Column(Integer)  # 顺序标志
+
+
+class Recommend(Base, BaseModel):
+    """每日十荐页中部商品区域"""
+    __tablename__ = 'recommend'
+    REid = Column(String(64), primary_key=True)
+    SUid = Column(String(64), nullable=False)  # 管理员
+    REcreatetime = Column(String(14))  # 创建时间
+    REstarttime = Column(String(14))  # 该次推荐开始时间
+    REendtime = Column(String(14))  # 该次推荐结束时间
+    REviewnum = Column(Integer, default=0)  # 浏览量
+    REfakeviewnum = Column(Integer)  # 虚拟浏览数
+    RElikenum = Column(Integer, default=0)  # 喜欢数
+    RElikefakenum = Column(Integer)  # 可编辑的喜欢数量, 如果留空, 则使用实际的喜欢数量
+
+
+class RecommendProduct(Base, BaseModel):
+    """每日十荐页商品滚动区域的中转表"""
+    __tablename__ = 'recommendproduct'
+    RPid = Column(String(64), primary_key=True)
+    REid = Column(String(64))  # 关联的推荐商品区域
+    PRid = Column(String(64))  # 关联的商品
+
+
+class RecommendLike(Base, BaseModel):
+    """每日十荐页点赞笑脸"""
+    __tablename__ = 'recommendlike'
+    RLid = Column(String(64), primary_key=True)
+    USid = Column(String(64))  # 用户id
+    REid = Column(String(64))  # 推荐商品id
+    RLtime = Column(String(14))  # 推荐页点赞时间
+
+
 class ShoppingCart(Base, BaseModel):
     """购物车"""
     __tablename__ = 'shopingcart'
@@ -408,7 +451,8 @@ class User(Base):
     USgender = Column(String(64))  # 性别
     USage = Column(Integer)  # 年龄
     USlastlogin = Column(String(64))  # 用户上次登录时间
-    USlevel = Column(Integer, default=0)  # 用户级别: {0 普通用户, 1 普通合伙人, 2 中级合伙人, 3 高级合伙人}
+    # 用户级别: {0 普通用户, 1 普通合伙人, 2 中级合伙人, 3 高级合伙人}
+    USlevel = Column(Integer, default=0)
 
 
 class UserLoginTime(Base, BaseModel):
