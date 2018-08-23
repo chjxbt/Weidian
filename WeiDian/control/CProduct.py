@@ -1,7 +1,7 @@
 # *- coding:utf8 *-
 from flask import request
 
-from WeiDian.common.MakeToken import verify_token_decorator, is_admin
+from WeiDian.common.MakeToken import verify_token_decorator, is_admin, is_tourist, is_ordirnaryuser, is_customerservice
 from WeiDian.common.TransformToList import list_add_models, dict_add_models
 from WeiDian.common.import_status import import_status
 from WeiDian.config.response import TOKEN_ERROR, AUTHORITY_ERROR, PARAMS_MISS, SYSTEM_ERROR
@@ -65,15 +65,17 @@ class CProduct(BaseProductControl):
         product = self.sproduct.get_product_by_prid(prid)
         if not product:
             return SYSTEM_ERROR
-        # 是管理员则显示全部信息
-        if is_admin():
+        # 是管理员或客服则显示全部信息
+        if is_admin() or is_customerservice():
             product.fields = product.all
+            print '是管理员或客服'
         else:
-            # 如果是游客, 或者用户的不是合伙人
-            if not hasattr(request, 'user') or request.user.level == 0:
+            # 如果是游客, 或者是未购买开店大礼包的普通用户
+            if is_tourist() or is_ordirnaryuser():
+                print '是游客或者普通用户'
                 product = self.trans_product_for_fans(product)
-            else:
-                # 合伙人
+            else:  # 合伙人(即已购买开店大礼包的用户)
+                print '合伙人'
                 product = self.trans_product_for_shopkeeper(product)
             product = self.fill_product_nums(product)
         # 填充一些都需要的信息

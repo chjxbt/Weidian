@@ -1,6 +1,6 @@
 # *- coding:utf8 *-
 import datetime
-from collections import namedtuple
+
 
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired
 from flask import current_app, request
@@ -90,13 +90,28 @@ def verify_token_decorator(func):
     return inner
 
 
-
-
 def is_admin():
     """是否是管理员(不包括客服)"""
-    return (request.user.scope == 'SuperUser' and request.user.SUlevel > 0)
+    return (hasattr(request, 'user') and request.user.scope == 'SuperUser' and request.user.SUlevel > 0)
 
 
+def is_customerservice():
+    """客服"""
+    return (hasattr(request, 'user') and request.user.scope == 'SuperUser' and request.user.SUlevel == 0)
+
+
+def is_ordirnaryuser():
+    """普通用户"""
+    return (hasattr(request, 'user') and request.user.scope == 'User')
+
+
+def is_partner():
+    """合伙人"""
+    return (hasattr(request, 'user') and request.user.scope == 'User' and request.user.USlevel > 0)
+
+
+def is_tourist():
+    return (not hasattr(request, 'user'))
 # if __name__ == '__main__':
 #     from WeiDian import create_app
 #     app = create_app()
