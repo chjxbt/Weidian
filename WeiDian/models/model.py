@@ -210,8 +210,7 @@ class ProductSkuKey(Base, BaseModel):
     @auto_createtime
     def __init__(self):
         self.fields = self.all
-        self.hide('_PSKproperkey', 'PRid')
-        self.add('PSKproperkey')
+        self.hide('_PSKproperkey', 'PRid').add('PSKproperkey')
 
     @property
     def PSKproperkey(self):
@@ -233,8 +232,7 @@ class ProductSkuValue(Base, BaseModel):
     @auto_createtime
     def __init__(self):
         self.fields = self.all
-        self.add('PSVpropervalue')
-        self.hide('_PSVpropervalue')
+        self.add('PSVpropervalue').hide('_PSVpropervalue')
 
     @property
     def PSVpropervalue(self):
