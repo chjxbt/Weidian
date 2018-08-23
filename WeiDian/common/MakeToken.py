@@ -30,9 +30,11 @@ def token_to_usid(token):
     try:
         data = s.loads(token)
     except BadSignature as e:
-        return '不合法的token'
+        print '不合法的token'
+        return
     except SignatureExpired as e:
-        return 'token is expired'
+        print 'token is expired'
+        return
     except Exception as e:
         raise e
     id = data['id']
@@ -42,7 +44,6 @@ def token_to_usid(token):
 def verify_token_decorator(func):
     """
     验证token装饰器, 并将用户对象放入request.user中
-
     """
 
     def inner(self, *args, **kwargs):
@@ -87,6 +88,13 @@ def verify_token_decorator(func):
         finally:
             sessions.close()
     return inner
+
+
+
+
+def is_admin():
+    """是否是管理员(不包括客服)"""
+    return (request.user.scope == 'SuperUser' and request.user.SUlevel > 0)
 
 
 # if __name__ == '__main__':

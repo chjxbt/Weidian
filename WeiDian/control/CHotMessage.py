@@ -6,7 +6,7 @@ from flask import request
 
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db
-from WeiDian.common.MakeToken import verify_token_decorator
+from WeiDian.common.MakeToken import verify_token_decorator, is_admin
 from WeiDian.config.messages import update_hotmessage_success, delete_hotmessage_success
 from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR
 from WeiDian.common.TransformToList import add_model
@@ -35,7 +35,7 @@ class CHotMessage():
         """添加活动热文, 需要管理员登录"""
         if not hasattr(request, 'user'):
             return TOKEN_ERROR  # 未登录, 或token错误
-        if request.user.scope != 'SuperUser':
+        if not is_admin():
             return AUTHORITY_ERROR  # 权限不足
         data = request.json
         now_time = datetime.strftime(datetime.now(), format_for_db)
@@ -70,7 +70,7 @@ class CHotMessage():
 
         if not hasattr(request, 'user'):
             return TOKEN_ERROR  # 未登录, 或token错误
-        if request.user.scope != 'SuperUser':
+        if not is_admin():
             return AUTHORITY_ERROR  # 权限不足
         data = request.json
         if not 'hmid' in data.keys():
@@ -88,7 +88,7 @@ class CHotMessage():
         """删除一条热文, 需要管理员的登录状态"""
         if not hasattr(request, 'user'):
             return TOKEN_ERROR  # 未登录, 或token错误
-        if request.user.scope != 'SuperUser':
+        if not is_admin():
             return AUTHORITY_ERROR  # 权限不足
         data = request.json
         hmid = data.get('hmid')

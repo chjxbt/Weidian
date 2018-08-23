@@ -1,7 +1,7 @@
 # *- coding:utf8 *-
 from flask import request
 
-from WeiDian.common.MakeToken import verify_token_decorator
+from WeiDian.common.MakeToken import verify_token_decorator, is_admin
 from WeiDian.common.TransformToList import list_add_models, dict_add_models
 from WeiDian.common.import_status import import_status
 from WeiDian.config.response import TOKEN_ERROR, AUTHORITY_ERROR, PARAMS_MISS, SYSTEM_ERROR
@@ -30,7 +30,7 @@ class CProduct(BaseProductControl):
     def add_product_list(self):
         if not hasattr(request, 'user'):
             return TOKEN_ERROR  # 未登录, 或token错误
-        if not (request.user.scope == 'SuperUser' and request.user.level > 0):
+        if not is_admin():
             return AUTHORITY_ERROR  # 权限不足
         json_data = request.json
         product_list = json_data.get('products')
@@ -66,7 +66,7 @@ class CProduct(BaseProductControl):
         if not product:
             return SYSTEM_ERROR
         # 是管理员则显示全部信息
-        if hasattr(request, 'user') and request.user.scope == 'SuperUser':
+        if is_admin():
             product.fields = product.all
         else:
             # 如果是游客, 或者用户的不是合伙人

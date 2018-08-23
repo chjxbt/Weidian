@@ -6,12 +6,6 @@ from flask import request
 from WeiDian.common.TransformToList import list_add_models, dict_add_models
 
 
-class BaseControl():
-
-    def is_admin_or_superadmin(self):
-        return (request.user.scope == 'SuperUser' and request.user.SUlevel > 0)
-
-
 class BaseActivityControl():
 
     def get_one_activity(self):
