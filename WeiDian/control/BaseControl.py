@@ -112,11 +112,11 @@ class BaseProductControl():
 
     def fill_product_sku_key(self, product):
         prid = product.PRid
+        # 该商品的所有skukey
         sku_list = self.sproductskukey.get_psk_by_pid(prid)
         if not sku_list:
-            return
-        for sku in sku_list:
-            sku.PSKproperkey = sku.PSKproperkey
+            return product
+        map(lambda x: x.hide('PRid'), sku_list)
         product.sku = sku_list
         product.add('sku')
         return product

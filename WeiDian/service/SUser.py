@@ -24,8 +24,3 @@ class SUser(SBase):
     def get_user_by_user_id(self, usid):
         """通过活动id获取发布者"""
         return self.session.query(User).filter_by(USid=usid).first()
-        # return self.session.query(
-        #     User.USid,
-        #     User.USname,
-        #     User.UShader
-        # ).filter_by(USid=usid).first()
