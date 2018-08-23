@@ -4,14 +4,11 @@ import random
 import sys
 import os
 import uuid
-
-from sqlalchemy.orm import scoped_session, sessionmaker
-
 import model
 import pymysql
-
-sys.path.append(os.path.dirname(os.getcwd()))  # 增加系统路径
+from sqlalchemy.orm import scoped_session, sessionmaker
 from WeiDian.service.SActivity import SActivity
+sys.path.append(os.path.dirname(os.getcwd()))  # 增加系统路径
 
 change_index = 10  # 循环中改变type的点
 info_count = 22  # 需要插入的数据库条数
@@ -32,6 +29,7 @@ class MakeData():
         self.product_id = self.generic_uuid()
         self.hotmessege_id = self.generic_uuid()
         self.topnav_id = self.generic_uuid()[:4]
+        self.recommendbanner_id = self.generic_uuid()
 
     def generic_uuid(self):
         return [str(uuid.uuid4()) for i in range(info_count)]
@@ -64,7 +62,6 @@ class MakeData():
             activity_model.TopnavId = random.choice(self.topnav_id)
             self.session.add(activity_model)
             self.session.commit()
-
 
     def add_media(self):
         for i in self.media_id:
@@ -139,10 +136,10 @@ class MakeData():
             pr.PRtitle = '{hello 这是一个标题'
             pr.PRoldprice = 100.25
             pr.PRsalesvolume = 100
-            pr.suid = 'suid'
+            pr.SUid = 'suid'
+            pr.PRprice = random.randint(1, 999)
             self.session.add(pr)
             self.session.commit()
-
 
     def add_banner(self):
         from model import Banner
@@ -155,6 +152,19 @@ class MakeData():
             ba.BAendtime = str(random.randint(2017, 2019))+'0510000000'
             ba.BAimage = '这是轮播图片' + str(i)
             self.session.add(ba)
+            self.session.commit()
+
+    def add_recommendbanner(self):
+        from model import RecommendBanner
+        for i in self.recommendbanner_id:
+            rb = RecommendBanner()
+            rb.RBid = str(i)
+            rb.prid = random.choice(self.product_id)
+            rb.RBsort = random.randint(1, 50)
+            rb.RBstarttime = str(random.randint(2017, 2019))+'0510000000'
+            rb.RBendtime = str(random.randint(2017, 2019))+'0510000000'
+            rb.RBimage = '商品轮播图片' + str(i)
+            self.session.add(rb)
             self.session.commit()
 
     # def update_activity(self, ):
@@ -238,7 +248,7 @@ if __name__ == "__main__":
         drop()
 
     else:
-         create()
+        create()
         data = MakeData()
         # tshop_ids = data.make_id()
         # print("over")
@@ -250,3 +260,4 @@ if __name__ == "__main__":
         data.add_banner()
         data.add_product()
         data.add_super()
+        data.add_recommendbanner()

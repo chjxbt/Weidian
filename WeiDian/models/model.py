@@ -263,6 +263,11 @@ class RecommendBanner(Base, BaseModel):
     RBendtime = Column(String(14))  # 下线时间
     RBsort = Column(Integer)  # 顺序标志
 
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = self.all
+
 
 class Recommend(Base, BaseModel):
     """每日十荐页中部商品区域"""
