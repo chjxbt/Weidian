@@ -7,7 +7,6 @@ class BaseError(HTTPException):
     message = '系统错误'
     status = 404
     status_code = 405001
-    msg = 'error'
 
     def __init__(self, message=None, status=None, status_code=None, header=None):
         self.code = 200
@@ -23,8 +22,7 @@ class BaseError(HTTPException):
         body = dict(
             status=self.status,
             status_code=self.status_code,
-            message=self.message,
-            msg=self.msg
+            message=self.message
         )
         text = json.dumps(body)
         return text
