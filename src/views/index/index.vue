@@ -1,5 +1,8 @@
 <template>
     <div>
+      <div class="m-suspend-btn">
+        <span>开始转发</span>
+      </div>
       <div class="m-top">
         <search></search>
         <navbar :list="nav_list" @navClick="navClick"></navbar>
@@ -22,6 +25,8 @@
         <ctx :icon="icon_list" @iconClick="iconClick"></ctx>
         <ctx></ctx>
       </div>
+
+
       <div class="m-modal" v-if="show_modal">
         <div class="m-modal-state">
           <div class="m-modal-head">
@@ -35,6 +40,27 @@
           </div>
           <div class="m-modal-foot">
             <span class="m-modal-foot-btn">复制文案</span>
+          </div>
+        </div>
+      </div>
+      <div class="m-modal" v-if="!show_modal">
+        <div class="m-modal-state">
+          <div class="m-modal-head">
+            <span class="m-close" @click="closeModal"> x </span>
+          </div>
+          <div class="m-modal-content">
+            <h3 class="m-modal-award-title">
+              <span>奖励任务</span>
+              <span class="m-modal-award-info">15元新衣币*2张</span>
+            </h3>
+            <ul>
+              <li>
+
+              </li>
+            </ul>
+          </div>
+          <div class="m-modal-foot">
+
           </div>
         </div>
       </div>
@@ -168,5 +194,41 @@
   .m-index-section{
 
   }
+.m-suspend-btn{
+  position: fixed;
+  bottom: 211px;
+  right: 5px;
+  width: 113px;
+  height: 113px;
+  box-shadow: 0 7px 13px rgba(245, 78, 100, 0.83) ;
+  background-color: rgba(245, 78, 100, 0.83);
+  color: rgba(248, 248, 249, 0.8);
+  border-radius: 50%;
+  z-index: 1001;
+  vertical-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+  .m-modal{
+    .m-modal-state{
+      .m-modal-content{
+        padding: 0;
+        .m-modal-award-title{
+          .flex-row(space-between);
+          color: #333;
+          padding: 20px 33px 30px;
+          font-size: 30px;
+          font-weight: normal;
+          border-bottom: 1px solid @borderColor;
+          .m-modal-award-info{
+            color: @grey;
+            font-size: 24px;
+          }
+        }
+      }
+    }
 
+  }
 </style>
