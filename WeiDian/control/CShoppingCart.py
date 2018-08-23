@@ -44,21 +44,34 @@ class CShoppingCart(BaseShoppingCart):
         usid = request.user.id
         if not pskid:
             return PARAMS_MISS
+        # 删除
+        if scnums < 1:
+            return self.delete_shoppingcart(pskid)
         cart = self.sshoppingcart.get_shoppingcar_by_usidandpskid(usid, pskid)
-        if cart:  # 如果是存在的购物车记录
+        # 修改
+        if cart:
             scid = cart.SCid
             self.sshoppingcart.update_shoppingcart(cart, scnums)
-        else:   # 如果没有则新建一个
+        # 创建
+        else:
             scid = str(uuid.uuid4())
+            psk = self.sproductskukey.get_psk_by_pskid(pskid)
+            prid = psk.PRid
             cartdict = {
                 'scid': scid,
                 'usid': usid,
                 'pskid': pskid,
-                'scnums': scnums
+                'scnums': scnums,
+                'prid': prid
             }
             dict_add_models('ShoppingCart', cartdict)
         data = import_status('update_cart_success', 'OK')
         data['data'] = {
             'scid': scid
         }
+        return data
+
+    def delete_shoppingcart(self, pskid):
+        self.sshoppingcart.delete_shoppingcart_by_usidandpskid(pskid, request.user.id)
+        data = import_status('delete_success', 'OK')
         return data

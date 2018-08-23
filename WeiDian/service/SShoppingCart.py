@@ -37,3 +37,8 @@ class SShoppingCart(SBase):
         """根据用户id获取购物车"""
         return self.session.query(ShoppingCart).filter_by(USid=usid).all()
 
+    @close_session
+    def delete_shoppingcart_by_usidandpskid(self, usid, pskid):
+        """删除购物车"""
+        return self.session.query(ShoppingCart).filter_by(PSKid=pskid, USid=usid).delete()
+

@@ -1,5 +1,5 @@
 # *- coding:utf8 *-
-from flask import request, json
+from flask import json
 from werkzeug.exceptions import HTTPException
 
 
@@ -7,6 +7,7 @@ class BaseError(HTTPException):
     message = '系统错误'
     status = 404
     status_code = 405001
+    msg = 'error'
 
     def __init__(self, message=None, status=None, status_code=None, header=None):
         self.code = 200
@@ -23,6 +24,7 @@ class BaseError(HTTPException):
             status=self.status,
             status_code=self.status_code,
             message=self.message,
+            msg=self.msg
         )
         text = json.dumps(body)
         return text

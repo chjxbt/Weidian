@@ -15,7 +15,7 @@ class TestToken(MethodView):
     def post(self):
         """generic token test"""
         usid = '6882ad09-bf5f-4607-8ad1-1cd46b6158e0'
-        raise SYSTEM_ERROR(message='测试信d息')
+        raise BaseError(message='测试信d息')
 
     @verify_token_decorator
     def get(self):
@@ -97,3 +97,4 @@ class TestToken(MethodView):
 
 def create_test_url(app):
     app.add_url_rule('/test', view_func=TestToken.as_view('test'))
+    # api.add_resource(TestToken, '/test')
