@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from WeiDian.config.messages import delete_activity_success, stop_activity_success
 from sqlalchemy.orm import Session
 
-from WeiDian.common.MakeToken import verify_token_decorator
+from WeiDian.common.token_required import verify_token_decorator, is_admin
 from WeiDian.common.TransformToList import add_model
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db
@@ -95,7 +95,7 @@ class CActivity(BaseActivityControl):
         """删除一个活动, 需要管理员的登录状态"""
         if not hasattr(request, 'user'):
             return TOKEN_ERROR  # 未登录, 或token错误
-        if request.user.scope != 'SuperUser':
+        if not is_admin():
             return AUTHORITY_ERROR  # 权限不足
         data = request.json
         acid = data.get('acid')
@@ -112,7 +112,7 @@ class CActivity(BaseActivityControl):
         """手动截止活动"""
         if not hasattr(request, 'user'):
             return TOKEN_ERROR  # 未登录, 或token错误
-        if request.user.scope != 'SuperUser':
+        if not is_admin():
             return AUTHORITY_ERROR  # 权限不足
         data = request.json
         acid = data.get('acid')
@@ -129,7 +129,7 @@ class CActivity(BaseActivityControl):
         """添加一个活动, 需要管理员的登录状态"""
         if not hasattr(request, 'user'):
             return TOKEN_ERROR  # 未登录, 或token错误
-        if request.user.scope != 'SuperUser':
+        if not is_admin():
             return AUTHORITY_ERROR  # 权限不足
         data = request.json
         now_time = datetime.strftime(datetime.now(), format_for_db)
@@ -216,7 +216,7 @@ class CActivity(BaseActivityControl):
     def update_activity(self):
         if not hasattr(request, 'user'):
             return TOKEN_ERROR  # 未登录, 或token错误
-        if request.user.scope != 'SuperUser':
+        if not is_admin():
             return AUTHORITY_ERROR  # 权限不足
         data = request.json
         if not 'acid' in data.keys():

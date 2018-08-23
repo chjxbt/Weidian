@@ -2,7 +2,7 @@
 import sys
 import os
 
-from WeiDian.common.MakeToken import verify_token_decorator
+from WeiDian.common.token_required import verify_token_decorator, is_admin
 from WeiDian.common.TransformToList import add_model
 from WeiDian.common.import_status import import_status
 from WeiDian.config.messages import delete_topnav_success
@@ -36,7 +36,7 @@ class CTopNav():
         """添加一个首页上部导航, 需要管理员的登录状态"""
         if not hasattr(request, 'user'):
             return TOKEN_ERROR  # 未登录, 或token错误
-        if request.user.scope != 'SuperUser':
+        if not is_admin():
             return AUTHORITY_ERROR  # 权限不足
         data = request.json
         tnid = str(uuid.uuid1())
@@ -63,7 +63,7 @@ class CTopNav():
     def del_one(self):
         if not hasattr(request, 'user'):
             return TOKEN_ERROR  # 未登录, 或token错误
-        if request.user.scope != 'SuperUser':
+        if not is_admin():
             return AUTHORITY_ERROR  # 权限不足
         data = request.json
         tnid = data.get('tnid')

@@ -6,12 +6,6 @@ from flask import request
 from WeiDian.common.TransformToList import list_add_models, dict_add_models
 
 
-class BaseControl():
-
-    def is_admin_or_superadmin(self):
-        return (request.user.scope == 'SuperUser' and request.user.SUlevel > 0)
-
-
 class BaseActivityControl():
 
     def get_one_activity(self):
@@ -148,7 +142,7 @@ class BaseProductControl():
     def trans_product_for_fans(self, product):
         """调整为粉丝版本"""
         # 粉丝页面显示本身价格和店主价, 以及相关商品推荐(规则?)
-        prkeeperprice = product.PRprice * self.partner.new_partner
+        prkeeperprice = product.PRprice * (1 - self.partner.new_partner)
         product.prkeeperprice = prkeeperprice
         product.add('prkeeperprice')
         return product

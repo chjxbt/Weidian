@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from WeiDian.config.response import TOKEN_ERROR, PARAMS_MISS, AUTHORITY_ERROR, SYSTEM_ERROR
 from WeiDian.common.import_status import import_status
 from WeiDian.config.messages import delete_banner_success
-from WeiDian.common.MakeToken import verify_token_decorator
+from WeiDian.common.token_required import verify_token_decorator, is_admin
 from WeiDian.common.TransformToList import add_model
 
 from sqlalchemy.orm import Session
@@ -55,7 +55,7 @@ class CBanner():
         """添加一个轮播图, 需要管理员的登录状态"""
         if not hasattr(request, 'user'):
             return TOKEN_ERROR  # 未登录, 或token错误
-        if request.user.scope != 'SuperUser':
+        if not is_admin():
             return AUTHORITY_ERROR  # 权限不足
         data = request.json
         now_time = datetime.strftime(datetime.now(), format_for_db)
@@ -88,7 +88,7 @@ class CBanner():
     def del_one(self):
         if not hasattr(request, 'user'):
             return TOKEN_ERROR  # 未登录, 或token错误
-        if request.user.scope != 'SuperUser':
+        if not is_admin():
             return AUTHORITY_ERROR  # 权限不足
         data = request.json
         baid = data.get('baid')

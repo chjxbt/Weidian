@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from flask import Blueprint, request, jsonify
 from flask.views import MethodView
 
-from WeiDian.common.MakeToken import verify_token_decorator
+from WeiDian.common.token_required import verify_token_decorator
 from WeiDian.common.timeformat import format_for_db
 from WeiDian.common.base_error import BaseError
 from WeiDian.config.response import TOKEN_ERROR, PARAMS_MISS, SYSTEM_ERROR
