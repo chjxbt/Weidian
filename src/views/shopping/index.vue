@@ -30,12 +30,11 @@
               <div class="product-name">{{product.productName}}</div>
               <product-params :size="product.size" :color="product.color" :quantity="product.quantity"></product-params>
               <product-quantity :quantity="product.quantity"></product-quantity>
-              <!--<div>- 2 +</div>-->
             </div>
             <div class="one-product-four">
               <p class="one-product-price">￥<span class="product-price-number">{{product.productPrice}}</span></p>
               <div class="product-failure"></div>
-              <img src="/static/images/delete.png" class="delete-product-img">
+              <img src="/static/images/delete.png" class="delete-product-img" @click="deleteProduct(product)">
             </div>
           </div>
         </div>
@@ -92,6 +91,8 @@
 <script type="text/ecmascript-6">
   import productParams from "../../components/common/productParams";
   import productQuantity from "../../components/common/productQuantity";
+  import { MessageBox } from 'mint-ui';
+
   export default {
     data() {
       return {
@@ -102,7 +103,7 @@
           { storeName: "衣衣旗舰店", productSend: "已免运费", reduceTitle: "满 300 减 30", reduceNumber: "还差 30 元", toReduce: "去凑单 >",
             productList: [
               { choose: false, productImg: "/static/images/product1.png", productName: "18年版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版", size: "XL", color: "黄色", quantity: 2, productPrice: "106" },
-              { choose: true, productImg: "/static/images/product1.png", productName: "18年版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版",  size: "XXL", color: "蓝色", quantity: 1,productPrice: "99" }
+              { choose: false, productImg: "/static/images/product1.png", productName: "18年版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版",  size: "2XL", color: "蓝色", quantity: 1,productPrice: "99" }
             ],
             failureList: [
               { productImg: "/static/images/product1.png", productName: "18年版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版", size: "M", color: "红色", quantity: 3, productPrice: "106" }
@@ -133,6 +134,18 @@
         }else if(!this.ifChooseAll) {
           this.ifChooseAll = true;
         }
+      },
+      // 删除商品
+      deleteProduct(product) {
+        MessageBox({
+          title: '提示',
+          message: '确定删除该商品？',
+          showCancelButton: true
+        }).then(action => {
+          if(action == "confirm") {
+            console.log("deleteProduct", product);
+          }
+        });
       }
     },
     created() {}
@@ -366,15 +379,17 @@
       .pay-price-reduce {
         color: @grey;
         font-size: 20px;
-        padding: 10px 20px;
+        padding: 0 20px;
       }
     }
     .to-pay {
-      height: 45px;
-      color: @bgMainColor;
+      height: 48px;
       font-size: 34px;
+      white-space: nowrap;
+      overflow: hidden;
       padding: 33px 60px;
       letter-spacing: 5px;
+      color: @bgMainColor;
       background-color: @mainColor;
     }
   }
