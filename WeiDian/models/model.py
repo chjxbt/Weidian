@@ -74,7 +74,7 @@ class ActivityComment(Base, BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['USid', 'ACOcreatetime', 'ACtext']
+        self.fields = ['ACOid' ,'USid', 'ACOcreatetime', 'ACtext']
 
 
 class ActivityLike(Base, BaseModel):
@@ -241,7 +241,6 @@ class ProductSkuValue(Base, BaseModel):
     @PSVpropervalue.setter
     def PSVpropervalue(self, raw):
         self._PSVpropervalue = str(raw)
-
 
 
 class ProductImage(Base, BaseModel):
@@ -463,13 +462,14 @@ class SpicialActivity(Base):
     SAtext = Column(Text)  # 活动专场介绍
 
 
-class User(Base):
+class User(Base, BaseModel):
     """
     普通用户
     """
     __tablename__ = 'user'
     USid = Column(String(64), primary_key=True)
     USname = Column(String(64), nullable=False)  # 用户名
+    USpassword = Column(String(255))  # 密码
     USphone = Column(String(16))  # 手机号
     UShader = Column(String(255))  # 头像
     USgender = Column(String(64))  # 性别
@@ -478,6 +478,11 @@ class User(Base):
     # 用户级别: {0 普通用户, 1 普通合伙人, 2 中级合伙人, 3 高级合伙人}
     USlevel = Column(Integer, default=0)
     UPPerd = Column(String(64), default=0)
+
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = ['USid', 'USname', 'UShader']
 
 
 class UserLoginTime(Base, BaseModel):
