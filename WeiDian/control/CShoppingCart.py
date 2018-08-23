@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from flask import request
 
 from WeiDian.config.messages import delete_activity_success, stop_activity_success
-from WeiDian.common.MakeToken import verify_token_decorator
+from WeiDian.common.token_required import verify_token_decorator
 from WeiDian.common.TransformToList import add_model
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db
@@ -48,7 +48,9 @@ class CShoppingCart():
             return SYSTEM_ERROR
 
     def fill_sku(self, cart):
-        """填充选择的sku信息"""
+        """
+        填充选择的sku信息
+        """
         pskid = cart.PSKid
         if pskid:
             sku = self.sproductskukey.get_psk_by_pskid(pskid)
@@ -59,6 +61,7 @@ class CShoppingCart():
         return cart
 
     def fill_product(self, cart):
+        """填充购物车的商品信息, 不包括sku"""
         prid = cart.prid
         product = self.sproduct.get_product_by_prid(prid)
         cart.PRimage = product.PRmainpic

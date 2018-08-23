@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from WeiDian.config.response import TOKEN_ERROR, PARAMS_MISS, AUTHORITY_ERROR, SYSTEM_ERROR
 from WeiDian.common.import_status import import_status
 from WeiDian.config.messages import delete_banner_success
-from WeiDian.common.MakeToken import verify_token_decorator, is_admin
+from WeiDian.common.token_required import verify_token_decorator, is_admin
 from WeiDian.common.TransformToList import add_model
 
 from sqlalchemy.orm import Session

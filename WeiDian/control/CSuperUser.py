@@ -1,7 +1,7 @@
 # *- coding:utf8 *-
 from datetime import datetime, timedelta
 
-from WeiDian.common.MakeToken import verify_token_decorator, usid_to_token
+from WeiDian.common.token_required import verify_token_decorator, usid_to_token
 from WeiDian.common.TransformToList import add_model
 from WeiDian.common.import_status import import_status
 from WeiDian.service.SSuperUser import SSuperUser

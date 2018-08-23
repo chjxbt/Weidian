@@ -6,7 +6,7 @@ from flask import request
 
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db
-from WeiDian.common.MakeToken import verify_token_decorator, is_admin
+from WeiDian.common.token_required import verify_token_decorator, is_admin
 from WeiDian.config.messages import update_hotmessage_success, delete_hotmessage_success
 from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR
 from WeiDian.common.TransformToList import add_model

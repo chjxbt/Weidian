@@ -2,7 +2,7 @@
 import sys
 import os
 
-from WeiDian.common.MakeToken import verify_token_decorator, is_admin
+from WeiDian.common.token_required import verify_token_decorator, is_admin
 from WeiDian.common.TransformToList import add_model
 from WeiDian.common.import_status import import_status
 from WeiDian.config.messages import delete_topnav_success

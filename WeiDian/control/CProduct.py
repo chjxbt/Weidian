@@ -1,7 +1,7 @@
 # *- coding:utf8 *-
 from flask import request
 
-from WeiDian.common.MakeToken import verify_token_decorator, is_admin, is_tourist, is_ordirnaryuser, is_customerservice
+from WeiDian.common.token_required import verify_token_decorator, is_admin, is_tourist, is_ordirnaryuser, is_customerservice
 from WeiDian.common.TransformToList import list_add_models, dict_add_models
 from WeiDian.common.import_status import import_status
 from WeiDian.config.response import TOKEN_ERROR, AUTHORITY_ERROR, PARAMS_MISS, SYSTEM_ERROR

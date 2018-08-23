@@ -111,6 +111,7 @@ def is_partner():
 
 
 def is_tourist():
+    """游客"""
     return (not hasattr(request, 'user'))
 # if __name__ == '__main__':
 #     from WeiDian import create_app
