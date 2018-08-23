@@ -22,17 +22,17 @@ api.add_resource(AShoppingCart, '/shoppingcart/<string:shoppingcart>')
 # 测试
 create_test_url(wd)
 
-
-@wd.errorhandler(Exception)
-def framework_error(e):
-    if isinstance(e, BaseError):
-        return e
-    if isinstance(e, HTTPException):
-        raise BaseError()
-    if not wd.config['DEBUG']:
-        raise BaseError()
-    raise e
-
+#
+# @wd.errorhandler(Exception)
+# def framework_error(e):
+#     if isinstance(e, BaseError):
+#         return e
+#     if isinstance(e, HTTPException):
+#         raise BaseError()
+#     if not wd.config['DEBUG']:
+#         raise BaseError()
+#     raise e
+#
 
 if __name__ == '__main__':
     wd.run(debug=True)

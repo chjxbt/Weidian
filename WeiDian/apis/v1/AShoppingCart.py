@@ -11,8 +11,17 @@ class AShoppingCart(Resource):
     def post(self, shoppingcart):
         print shoppingcart
         apis = {
-            'update_cart': 'self.cshoppingcart.update_shoppingcart()'
+            'update': 'self.cshoppingcart.update_shoppingcart()',
+            'get_list': 'self.cshoppingcart.get_shopingcart_all()'
         }
-        return eval(apis[shoppingcart])
+        res = eval(apis[shoppingcart])
+        return jsonify(res)
 
+    def get(self, shoppingcart):
+        print shoppingcart
+        apis = {
+            'get_list': 'self.cshoppingcart.get_shopingcart_all()'
+        }
+        res = eval(apis[shoppingcart])
+        return jsonify(res)
 

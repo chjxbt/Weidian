@@ -26,4 +26,9 @@ class SShoppingCart(SBase):
         """修改购物车"""
         cart.SCnums = scnums
         self.session.add(cart)
-        return cart
+
+    @close_session
+    def get_shoppingcart_list(self, usid):
+        """根据用户id获取购物车"""
+        return self.session.query(ShoppingCart).filter_by(USid=usid).all()
+

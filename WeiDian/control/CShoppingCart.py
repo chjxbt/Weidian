@@ -42,7 +42,7 @@ class CShoppingCart():
         if is_tourist():
             return SYSTEM_ERROR  # token无效或者未登录的用户
         data = request.json  
-        # pskid 和 prid 至少需要一个, 如果用户选择的商品有productskukey则必须使用pskid
+        # pskid 和 prid 至少需要一个, 如果用户选择的商品有psk则须使用pskid
         pskid = data.get('pskid')
         prid = data.get('prid')
         scnums = int(data.get('scnums'))
@@ -50,10 +50,10 @@ class CShoppingCart():
         if not pskid and not prid:
             return PARAMS_MISS
         cart = self.sshoppingcart.get_shoppingcart_by_usidandpid(usid, prid)
-        scid = cart.SCid
-        if cart:  # 如果是也存在的购物车记录
+        if cart:  # 如果是存在的购物车记录
+            scid = cart.SCid
             self.sshoppingcart.update_shoppingcart(cart, scnums)
-        else:
+        else:   # 如果没有则新建一个
             scid = str(uuid.uuid4())
             cartdict = {
                 'scid': scid,
@@ -70,9 +70,6 @@ class CShoppingCart():
         return data
 
 
-
-
-
     def fill_sku(self, cart):
         """
         填充选择的sku信息
@@ -83,16 +80,18 @@ class CShoppingCart():
             sku.add('PSKproperkey')
             cart.PRprice = sku.PSKprice  # 价格, 如果sku有价格, 会直接覆盖掉商品表中的价格
             cart.sku = sku
-            cart.add('sku') 
+        cart.add('sku')
         return cart
 
     def fill_product(self, cart):
         """填充购物车的商品信息, 不包括sku"""
-        prid = cart.prid
-        product = self.sproduct.get_product_by_prid(prid)
-        cart.PRimage = product.PRmainpic
-        cart.PRtitle = product.PRtitle
-        cart.PRstatus = product.PRstatus
-        cart.PRprice = product.price  # 价格, 待计算
+        prid = cart.PRid
+        if prid:
+            product = self.sproduct.get_product_by_prid(prid)
+            if product:
+                cart.PRimage = product.PRmainpic
+                cart.PRtitle = product.PRtitle
+                cart.PRstatus = product.PRstatus
+                cart.PRprice = product.price  # 价格, 待计算
         cart.add('PRimage', 'PRtitle', 'PRstatus', 'PRprice')
         return cart
