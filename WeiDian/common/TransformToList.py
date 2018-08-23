@@ -112,13 +112,14 @@ def list_add_models(model_name, items):
             return
         model_bean = eval(" models.{0}()".format(model_name))
         model_bean_key = model_bean.__table__.columns.keys()
-        lower_table_key = list(map(lambda x: x.lower(), model_bean_key))   # 数据库的字段转小写
+        model_bean_key_without_line = list(map(lambda x: x.strip('_'), model_bean_key))
+        lower_table_key = list(map(lambda x: x.lower().strip('_'), model_bean_key))   # 数据库的字段转小写
         for item_key in item.keys():
             if item_key.lower() in lower_table_key:  # 如果json中的key同时也存在与数据库的话
                 # 找到此key在model_beankey中的位置
                 index = lower_table_key.index(item_key.lower())
                 if item.get(item_key):  # 如果传入的字段有值
-                    setattr(model_bean, model_bean_key[index], item.get(item_key))
+                    setattr(model_bean, model_bean_key_without_line[index], item.get(item_key))
             model_bean_list.append(model_bean)
     from WeiDian.service.DBSession import get_session
     session, status = get_session()
@@ -136,13 +137,14 @@ def dict_add_models(model_name, item):
         return
     model_bean = eval(" models.{0}()".format(model_name))
     model_bean_key = model_bean.__table__.columns.keys()
-    lower_table_key = list(map(lambda x: x.lower(), model_bean_key))  # 数据库的字段转小写
+    model_bean_key_without_line = list(map(lambda x: x.strip('_'), model_bean_key))
+    lower_table_key = list(map(lambda x: x.lower().strip('_'), model_bean_key))   # 数据库的字段转小写
     for item_key in item.keys():
         if item_key.lower() in lower_table_key:  # 如果json中的key同时也存在与数据库的话
             # 找到此key在model_beankey中的位置
             index = lower_table_key.index(item_key.lower())
             if item.get(item_key):  # 如果传入的字段有值
-                setattr(model_bean, model_bean_key[index], item.get(item_key))
+                setattr(model_bean, model_bean_key_without_line[index], item.get(item_key))
     from WeiDian.service.DBSession import get_session
     session, status = get_session()
     if status:

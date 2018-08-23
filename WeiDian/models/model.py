@@ -163,7 +163,7 @@ class Product(Base, BaseModel):
     PRcreatetime = Column(String(64))  # 创建时间
     SUmodifyid = Column(String(64))  # 修改人id
     PRmodifytime = Column(String(64))  # 修改时间
-    PRstatuss = Column(Integer, default=1)  # 商品状态: {0 删除, 1 正常, 2 禁用}
+    PRstatus = Column(Integer, default=1)  # 商品状态: {0 删除, 1 正常, 2 禁用}
     PRprice = Column(Float, nullable=False)  # 显示价格
     PRisdelete = Column(Boolean, default=False)
     # 以下
@@ -199,7 +199,7 @@ class ProductSkuKey(Base, BaseModel):
     PSKid = Column(String(64), primary_key=True)
     PRid = Column(String(64), nullable=False)  # 商品id
     PSVid = Column(String(64), nullable=False)  # 商品sku属性的value
-    PSKproperkey = Column(Text, nullable=False)  # 商品sku属性的key, json
+    _PSKproperkey = Column(Text, nullable=False)  # 商品sku属性的key, json
     PSKproductnum = Column(Integer, nullable=False)  # 库存
     PSKalias = Column(String(64), nullable=False)  # 商品别名
     PSKprice = Column(Float, default=0.00)  # 价格
@@ -210,6 +210,16 @@ class ProductSkuKey(Base, BaseModel):
     @auto_createtime
     def __init__(self):
         self.fields = self.all
+        self.hide('_PSKproperkey')
+        self.add('PSKproperkey')
+
+    @property
+    def PSKproperkey(self):
+        return eval(self._PSKproperkey)
+
+    @PSKproperkey.setter
+    def PSKproperkey(self, raw):
+        self._PSKproperkey = str(raw)
 
 
 class ProductSkuValue(Base, BaseModel):
@@ -217,12 +227,23 @@ class ProductSkuValue(Base, BaseModel):
     __tablename__ = 'productskuvalue'
     PSVid = Column(String(64), primary_key=True)
     PRid = Column(String(64), nullable=False)  # 关联商品
-    PSVpropervalue = Column(Text, nullable=False)  # 商品sku的属性, json
+    _PSVpropervalue = Column(Text, nullable=False)  # 商品sku的属性, json
 
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
         self.fields = self.all
+        self.add('PSVpropervalue')
+        self.hide('_PSVpropervalue')
+
+    @property
+    def PSVpropervalue(self):
+        return eval(self._PSVpropervalue)
+
+    @PSVpropervalue.setter
+    def PSVpropervalue(self, raw):
+        self._PSVpropervalue = str(raw)
+
 
 
 class ProductImage(Base, BaseModel):
@@ -301,7 +322,7 @@ class ShoppingCart(Base, BaseModel):
     SCid = Column(String(64), primary_key=True)
     USid = Column(String(64))  # 用户id
     PSKid = Column(String(64))  # 商品的选项id
-    PRid = Column(String(64))  # 商品id
+    PRid = Column(String(64))  # 商品id, 冗余字段
     SCnums = Column(Integer)  # 数量
 
     @orm.reconstructor

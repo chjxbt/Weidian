@@ -12,7 +12,6 @@ class AShoppingCart(Resource):
         print shoppingcart
         apis = {
             'update': 'self.cshoppingcart.update_shoppingcart()',
-            'get_list': 'self.cshoppingcart.get_shopingcart_all()'
         }
         res = eval(apis[shoppingcart])
         return jsonify(res)

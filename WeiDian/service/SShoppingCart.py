@@ -22,6 +22,11 @@ class SShoppingCart(SBase):
         return self.session.query(ShoppingCart).filter_by(USid=usid, PRid=prid).first()
 
     @close_session
+    def get_shoppingcar_by_usidandpskid(self, usid, pskid):
+        """根据用户和sku搜索购物车"""
+        return self.session.query(ShoppingCart).filter_by(USid=usid, PSKid=pskid).first()
+
+    @close_session
     def update_shoppingcart(self, cart, scnums):
         """修改购物车"""
         cart.SCnums = scnums

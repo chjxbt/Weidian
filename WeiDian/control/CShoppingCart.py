@@ -1,5 +1,4 @@
 # *- coding:utf8 *-
-
 import uuid
 
 from flask import request
@@ -26,12 +25,12 @@ class CShoppingCart(BaseShoppingCart):
         if not hasattr(request, 'user'):
             return TOKEN_ERROR  # token失效或者未携带token
         carts_list = self.sshoppingcart.get_shoppingcart_by_usid(request.user.id)
-        map(self.fill_product, carts_list)
         map(self.fill_sku, carts_list)
+        map(self.fill_product, carts_list)
         data = import_status('get_cart_success', "OK")
-        data['data'] = carts_list
+        data['data'] = {"cart": carts_list}
+        data['total'] = self.total_price(carts_list)
         return data
-
 
     @verify_token_decorator
     def update_shoppingcart(self):
@@ -39,14 +38,13 @@ class CShoppingCart(BaseShoppingCart):
         if is_tourist():
             return TOKEN_ERROR  # token无效或者未登录的用户
         data = request.json  
-        # pskid 和 prid 至少需要一个, 如果用户选择的商品有psk则须使用pskid
+        # pskid
         pskid = data.get('pskid')
-        prid = data.get('prid')
         scnums = int(data.get('scnums'))
         usid = request.user.id
-        if not pskid and not prid:
+        if not pskid:
             return PARAMS_MISS
-        cart = self.sshoppingcart.get_shoppingcart_by_usidandpid(usid, prid)
+        cart = self.sshoppingcart.get_shoppingcar_by_usidandpskid(usid, pskid)
         if cart:  # 如果是存在的购物车记录
             scid = cart.SCid
             self.sshoppingcart.update_shoppingcart(cart, scnums)
@@ -56,7 +54,6 @@ class CShoppingCart(BaseShoppingCart):
                 'scid': scid,
                 'usid': usid,
                 'pskid': pskid,
-                'prid': prid,
                 'scnums': scnums
             }
             dict_add_models('ShoppingCart', cartdict)
