@@ -40,11 +40,12 @@ class MakeData():
         from WeiDian.models.model import SuperUser
         from werkzeug.security import generate_password_hash
         super = SuperUser()
-        # super.SUid = self.user_id[0]
-        super.SUid = '6882ad09-bf5f-4607-8ad1-1cd46b6158e0'
+        super.SUid = self.user_id[0]
+        #super.SUid = '6882ad09-bf5f-4607-8ad1-1cd46b6158e0'
         super.header = '这是头像图片'
-        super.SUname = '这是用户名称'
+        super.SUname = 'username'
         super.SUpassword = generate_password_hash('hello')  # 密码是hello
+        super.SUlevel = 1
         self.session.add(super)
         self.session.commit()
 
@@ -237,15 +238,15 @@ if __name__ == "__main__":
         drop()
 
     else:
-        create()
+        # create()
         data = MakeData()
         # tshop_ids = data.make_id()
         # print("over")
-        data.add_activity()
-        data.add_media()
-        data.add_comment()
-        data.add_tags()
-        data.add_hotmessage()
-        data.add_banner()
-        data.add_product()
+        # data.add_activity()
+        # data.add_media()
+        # data.add_comment()
+        # data.add_tags()
+        # data.add_hotmessage()
+        # data.add_banner()
+        # data.add_product()
         data.add_super()

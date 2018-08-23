@@ -165,7 +165,7 @@ class Product(Base, BaseModel):
     PRmodifytime = Column(String(64))  # 修改时间
     PRstatuss = Column(Integer, default=1)  # 商品状态: {0 删除, 1 正常, 2 禁用}
     PRprice = Column(Float, nullable=False)  # 显示价格
-    PRisdelete = Column(Boolean, nullable=False)
+    PRisdelete = Column(Boolean, default=False)
     # 以下
     PRviewnum = Column(Integer, default=0)  # 浏览量
     PRfakeviewnum = Column(Integer)  # 虚拟浏览数
@@ -408,8 +408,7 @@ class User(Base):
     USgender = Column(String(64))  # 性别
     USage = Column(Integer)  # 年龄
     USlastlogin = Column(String(64))  # 用户上次登录时间
-    # 用户级别: {0 普通用户, 1 普通合伙人, 2 中级合伙人, 3 高级合伙人}
-    USlevel = Column(Integer, default=0)
+    USlevel = Column(Integer, default=0)  # 用户级别: {0 普通用户, 1 普通合伙人, 2 中级合伙人, 3 高级合伙人}
 
 
 class UserLoginTime(Base, BaseModel):
@@ -425,13 +424,14 @@ class UserLoginTime(Base, BaseModel):
 
 class SuperUser(Base, BaseModel):
     """
-    超级用户, 管理员, (客服)
+    超级管理员, 管理员, (客服)
     """
     __tablename__ = 'superuser'
     SUid = Column(String(64), primary_key=True)
     SUname = Column(String(64), nullable=False)  # 超级用户名
     SUpassword = Column(String(255), nullable=False)  # 密码
     SUheader = Column(String(64))  # 用户头像, 可以设置一个默认值
+    SUlevel = Column(Integer, default=0)  # 用户类型{0: 客服, 1: 管理员, 2:超管}　
     SUcreatetime = Column(String(64))  # 创建时间
     SUidfreeze = Column(Boolean, default=False)  # 是否被冻结
     SUisdelete = Column(Boolean, default=False)  # 是否被删除

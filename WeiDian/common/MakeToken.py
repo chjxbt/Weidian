@@ -8,7 +8,7 @@ from flask import current_app, request
 from WeiDian.service.DBSession import db_session
 
 
-def usid_to_token(id, model='User', expiration='', level=0):
+def usid_to_token(id, model='User', expiration=''):
     """生成令牌
     id: 用户id
     scope: 用户类型(user 或者 superuser)
@@ -22,7 +22,6 @@ def usid_to_token(id, model='User', expiration='', level=0):
         'id': id,
         'model': model,
         'time': time_now,
-        'level': level
     })
 
 
@@ -37,14 +36,14 @@ def token_to_usid(token):
     except Exception as e:
         raise e
     id = data['id']
-    time = data['time']
-    model = data['model']
-    level = data.get('level', 0)
     return id
 
 
 def verify_token_decorator(func):
-    """验证token装饰器, 并将用户对象放入request.user中"""
+    """
+    验证token装饰器, 并将用户对象放入request.user中
+
+    """
 
     def inner(self, *args, **kwargs):
         parameter = request.args.to_dict()
@@ -64,7 +63,6 @@ def verify_token_decorator(func):
         id = data['id']
         time = data['time']
         model = data['model']
-        level = data.get('level', 0)
         if model != 'User' and model != 'SuperUser':
             return func(self, *args, **kwargs)
         sessions = db_session()
@@ -74,12 +72,13 @@ def verify_token_decorator(func):
                 user = sessions.query(User).filter_by(USid=id).first()
                 user.id = user.USid
                 user.scope = 'User'
-                user.level = level
+                user.level = user.USlevel
             if model == 'SuperUser':
                 from WeiDian.models.model import SuperUser
                 user = sessions.query(SuperUser).filter_by(SUid=id).first()
                 user.id = user.SUid
                 user.scope = 'SuperUser'
+                user.level = user.SUlevel
             sessions.expunge_all()
             sessions.commit()
             if user:

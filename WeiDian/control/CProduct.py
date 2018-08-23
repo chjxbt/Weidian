@@ -30,7 +30,7 @@ class CProduct(BaseProductControl):
     def add_product_list(self):
         if not hasattr(request, 'user'):
             return TOKEN_ERROR  # 未登录, 或token错误
-        if request.user.scope != 'SuperUser':
+        if not (request.user.scope == 'SuperUser' and request.user.level > 0):
             return AUTHORITY_ERROR  # 权限不足
         json_data = request.json
         product_list = json_data.get('products')
