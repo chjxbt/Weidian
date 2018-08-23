@@ -4,10 +4,11 @@ from datetime import datetime, timedelta
 
 from flask import Blueprint, request, jsonify
 from flask.views import MethodView
-
+from werkzeug.exceptions import HTTPException
 from WeiDian.common.token_required import verify_token_decorator
 from WeiDian.common.timeformat import format_for_db
 from WeiDian.common.base_error import BaseError
+
 from WeiDian.config.response import TOKEN_ERROR, PARAMS_MISS, SYSTEM_ERROR
 
 
@@ -95,6 +96,14 @@ class TestToken(MethodView):
         return jsonify({"data": 'success'})
 
 
+
+class ErrorTest(MethodView):
+    def get(self):
+        import ipdb
+
+        return jsonify(BaseError('test'))
+
 def create_test_url(app):
     app.add_url_rule('/test', view_func=TestToken.as_view('test'))
+    app.add_url_rule('/error', view_func=ErrorTest.as_view('error'))
     # api.add_resource(TestToken, '/test')
