@@ -14,16 +14,6 @@
         </div>
         <img src="/static/images/delete.png" class="close-popup" @click="productParams">
       </div>
-<!--      <div class="line"></div>
-      <div class="product-size-color">
-        <div class="product-size-color-text">颜色</div>
-        <div class="product-choose-button" v-for="item in colorList" @click="chooseColor(item)">{{item.color}}</div>
-      </div>
-      <div class="line"></div>
-      <div class="product-size-color">
-        <div class="product-size-color-text">尺码</div>
-        <div class="product-choose-button" v-for="item in sizeList" @click="chooseSize(item)">{{item.size}}</div>
-      </div>-->
       <div class="line"></div>
       <div class="product-size-color" v-for="(option, index) in options">
         <p class="product-size-color-text">{{option.name}}</p>

@@ -111,6 +111,8 @@ export const constantRouterMap = [
   { path: '/complain', component: () => import('../views/personal/order/complain'), hidden: true },
   /*收藏*/
   { path: '/collect', component: () => import('../views/personal/collect'), hidden: true },
+  // 商品详情
+  { path: '/productDetail', component: () => import('../views/shopping/productDetail'), hidden: true },
 ]
 
 export default new Router({

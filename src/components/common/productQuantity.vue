@@ -38,44 +38,14 @@
           message:' ',
           // showCancelButton: true,
           // cancelButtonText: "我再想想",
-          inputPattern:/^[0-9]/,    //正则条件
+          inputPattern:/^[0-9]/,
           inputErrorMessage:'数量必须为数字',
           showInput:true
         }).then(({ value, action }) => {
           if(action == "confirm") {
             console.log(value);
           }
-        }).catch(MessageBox.noop);
- /*       /!*MessageBox({
-          title: '修改购买数量',
-          message: ' ',
-          showCancelButton: true,
-          showInput: true,
-          inputType: Number,
-          inputValue: this.quantity
-        }).then(action => {
-          if(action == "confirm") {
-            console.log(this.inputValue);
-          }
-        });*!/
-
-        MessageBox.prompt("修改购买数量", {
-          inputValidator: (val) => {
-            if(val == null) {
-              return true;
-            }
-            /!*if(val != null) {
-              console.log(isNaN(val.value));
-              return true;
-            }*!/
-            // return (isNaN(val.value))
-          },inputErrorMessage: '数量必须为数字'
-        }).then((val) => {
-            console.log(val.value)
-          }, () => {
-          console.info('cancel')
-        })*/
-
+        });
       },
       // 产品数量加 1
       addQuantity() {

@@ -25,9 +25,9 @@
           <div class="one-product" v-for="product in item.productList" :key="product.id">
             <img v-if="product.choose" src="/static/images/check_box_on.png" class="check-box-img" @click="chooseProduct(product)">
             <img v-if="!product.choose" src="/static/images/check_box_un.png" class="check-box-img" @click="chooseProduct(product)">
-            <img :src="product.productImg" class="product-img">
+            <img :src="product.productImg" class="product-img" @click="toDetail(product)">
             <div class="one-product-three">
-              <div class="product-name">{{product.productName}}</div>
+              <div class="product-name" @click="toDetail(product)">{{product.productName}}</div>
               <product-params :size="product.size" :color="product.color" :quantity="product.quantity"></product-params>
               <product-quantity :quantity="product.quantity"></product-quantity>
             </div>
@@ -146,6 +146,11 @@
             console.log("deleteProduct", product);
           }
         });
+      },
+      // 跳转商品详情页
+      toDetail(product) {
+        // console.log(product)
+        this.$router.push({path: "/productDetail", query: {product}});
       }
     },
     created() {}
