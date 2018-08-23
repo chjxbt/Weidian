@@ -204,8 +204,6 @@ class BaseShoppingCart():
         has_price = filter(lambda x: hasattr(x, 'sku') and hasattr(x.sku, 'PSKprice'), cart_list)
         if not has_price:
             return 0
-        import ipdb
-        ipdb.set_trace()
         total = sum([x.sku.PSKprice * x.SCnums + x.sku.PSKpostfee for x in has_price])
         return total
 
