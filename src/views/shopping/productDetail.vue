@@ -101,7 +101,7 @@
         <img src="/static/images/produc_detail_shopping_cart.png" class="to-buy-icon">
         <p class="to-buy-text">购物车</p>
       </span>
-      <span class="to-buy-btn">立即购买</span>
+      <span class="to-buy-btn" @click="buyNow">立即购买</span>
     </div>
   </div>
 </template>
@@ -154,6 +154,11 @@
       // 添加购物车
       addCart () {
 
+      },
+      // 立即购买
+      buyNow() {
+        let order = "";
+        this.$router.push({path: "/submitOrder", query: {order}});
       }
     },
     created() {
@@ -165,6 +170,7 @@
 
 <style lang="less" rel="stylesheet/less" scoped>
   @import "../../common/css/discover";
+  @import "../../common/css/_variate";
   .back-img {
     float: left;
     width: 18px;
@@ -200,7 +206,7 @@
   .product-prices {
     display: flex;
     .new-price {
-      color: #333333;
+      color: @black;
       font-size: 38px;
       font-weight: bold;
       margin: 20px 20px;

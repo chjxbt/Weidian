@@ -1,0 +1,247 @@
+<template>
+  <div>
+    <div class="line-one"></div>
+    <div class="add-address">
+      <span class="add-address-text">+ 添加地址</span>
+      <span class="to-add-address">></span>
+    </div>
+    <div class="line-one"></div>
+    <div class="store-product">
+      <div class="store-title">
+        <img src="/static/images/store-img.png" class="store-img">
+        <div class="store-name">衣衣旗舰店</div>
+      </div>
+      <div class="line-two"></div>
+      <div class="order-product">
+        <img src="http://imgsrc.baidu.com/imgad/pic/item/f11f3a292df5e0fed9b2f28e566034a85fdf7292.jpg" class="product-img">
+        <div class="product-info">
+          <div class="product-name">2018早秋新款显瘦秋新款显瘦款显瘦瘦2018早秋新款显瘦秋新款显瘦款显瘦瘦</div>
+          <div class="product-params">尺寸：L   颜色：红色</div>
+          <span class="product-price">￥ 149</span>
+          <span class="product-quantity">X1</span>
+        </div>
+      </div>
+      <div class="line-two"></div>
+      <p class="user-new">
+        <span class="user-new-title">使用新衣币</span>
+        <span class="user-new-content">优惠：30元新衣币</span>
+        <img src="/static/images/icon-list-right.png" class="user-new-more">
+      </p>
+      <div class="line-two"></div>
+      <div class="wechat-pay">
+        <img src="/static/images/wechat_pay.png" class="wechat-pay-img">
+        <span class="wechat-pay-text">微信支付</span>
+        <img src="/static/images/icon-radio-active.png" class="wechat-pay-active">
+      </div>
+      <div class="line-one"></div>
+      <p class="order-amount">
+        <span class="amount-title">支付金额</span>
+        <span class="amount-text">运费： 0</span>
+        <span class="amount-text">总计：</span>
+        <span class="amount-number">￥149.00</span>
+      </p>
+      <div class="line-two"></div>
+      <div class="buyer-msg">
+        <div class="msg-title">买家留言：</div>
+        <textarea class="msg-input" placeholder="选填：建议填写和卖家商量好的内容~" rows="3"></textarea>
+      </div>
+      <div class="order-pay-box">
+        <div class="order-pay">支付订单</div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  export default {
+    data() {
+      return {
+        name: "submitOrder",
+      }
+    },
+    // components: {},
+    methods: {
+
+    },
+    created() {
+      let order = this.$route.query.order;
+      console.log(order);
+    }
+  }
+</script>
+
+<style lang="less" rel="stylesheet/less" scoped>
+  @import "../../common/css/discover";
+  @import "../../common/css/_variate";
+  .line-one {
+    height: 15px;
+    background-color: #f2f5f7;
+  }
+  .line-two {
+    width: 750px;
+    height: 2px;
+    opacity: 0.3;
+    background-color: @grey;
+  }
+  .add-address {
+    height: 88px;
+    background-color: #9c94c5;
+    .add-address-text {
+      font-size: 36px;
+      line-height: 88px;
+      color: @bgMainColor;
+    }
+    .to-add-address {
+      float: right;
+      font-size: 36px;
+      color: @bgMainColor;
+      margin: 22px 45px 0 -45px;
+    }
+  }
+  .store-product {
+    .store-title {
+      display: flex;
+      .store-img {
+        width: 40px;
+        height: 41px;
+        margin: 20px 30px;
+      }
+      .store-name {
+        flex: 1;
+        color: @black;
+        margin: 20px 0;
+        font-size: 28px;
+        text-align: left;
+      }
+    }
+    .order-product {
+      display: flex;
+      .product-img {
+        width: 160px;
+        height: 160px;
+        margin: 25px 30px 32px 34px;
+      }
+      .product-info {
+        flex: 1;
+        .product-name {
+          width: 435px;
+          color: @black;
+          font-size: 24px;
+          margin: 30px 0 14px 0;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+        .product-params {
+          color: @black;
+          font-size: 24px;
+          text-align: left;
+          margin-left: 10px;
+        }
+        .product-price {
+          float: left;
+          width: 200px;
+          font-size: 24px;
+          text-align: left;
+          margin: 35px 0 0 5px;
+          color: @mainColor;
+        }
+        .product-quantity {
+          width: 130px;
+          float: right;
+          color: @black;
+          font-size: 18px;
+          margin: 40px 0 0 30px;
+        }
+      }
+    }
+    .user-new {
+      display: flex;
+      .user-new-title {
+        color: @grey;
+        font-size: 26px;
+        margin: 32px 35px;
+      }
+      .user-new-content {
+        flex: 1;
+        color: @black;
+        font-size: 26px;
+        margin-top: 32px;
+        text-align: right;
+      }
+      .user-new-more {
+        width: 22px;
+        height: 22px;
+        margin: 40px;
+      }
+    }
+    .wechat-pay {
+      display: flex;
+      .wechat-pay-img {
+        width: 40px;
+        height: 30px;
+        margin: 40px 20px 40px 50px;
+      }
+      .wechat-pay-text {
+        flex: 1;
+        color: @black;
+        font-size: 26px;
+        text-align: left;
+        margin-top: 37px;
+      }
+      .wechat-pay-active {
+        width: 35px;
+        height: 35px;
+        margin: 37px 40px;
+      }
+    }
+    .order-amount {
+      display: flex;
+      font-size: 26px;
+      .amount-title {
+        flex: 1;
+        color: @grey;
+        text-align: left;
+        margin: 32px 30px;
+      }
+      .amount-text {
+        color: @black;
+        margin: 32px 0 0 20px;
+      }
+      .amount-number {
+        margin: 32px 40px 0 10px;
+        color: @mainColor;
+      }
+    }
+    .buyer-msg {
+      .msg-title {
+        color: @black;
+        font-size: 26px;
+        margin: 40px 30px;
+        text-align: left;
+      }
+      .msg-input {
+        width: 600px;
+        font-size: 26px;
+        margin-bottom: 230px;
+        letter-spacing: 2.5px;
+      }
+    }
+    .order-pay-box {
+      bottom: 0;
+      position: fixed;
+      padding: 40px 25px;
+      background-color: #f2f5f7;
+      .order-pay {
+        width: 140px;
+        height: 48px;
+        font-size: 36px;
+        color: @bgMainColor;
+        padding: 32px 280px;
+        white-space: nowrap;
+        letter-spacing: 3px;
+        background-color: @mainColor;
+      }
+    }
+  }
+</style>

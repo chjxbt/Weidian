@@ -12,7 +12,7 @@
       </div>
       <div class="m-store-order" v-for="item in orderList" :key="item.id">
         <div class="m-store-name">
-          <img src="/static/images/store-img.png" class="store-img" alt="">
+          <img src="/static/images/store-img.png" class="store-img">
           <div class="store-name">{{item.storeName}}</div>
           <div class="product-send">{{item.productSend}}</div>
         </div>
@@ -75,15 +75,15 @@
       <div class="pay-price">
         <img v-if="ifChooseAll" src="/static/images/check_box_on.png" class="choose-all-img" @click="chooseAll()">
         <img v-if="!ifChooseAll" src="/static/images/check_box_un.png" class="choose-all-img" @click="chooseAll()">
-        <div class="choose-all-text">全 选</div>
+        <div class="choose-all-text" @click="chooseAll()">全 选</div>
         <div class="pay-price-detail">
           <p class="pay-price-text">总 价：
             <span class="pay-price-money">￥</span>
-            <span class="pay-price-number">256</span>
+            <span class="pay-price-number">{{totalPrice}}</span>
           </p>
           <div class="pay-price-reduce">已减 30 元</div>
         </div>
-        <div class="to-pay">去结算</div>
+        <div class="to-pay" @click="toOrder">去结算</div>
       </div>
     </div>
 </template>
@@ -114,25 +114,61 @@
           {productImg: "/static/images/product1.png", productName: "商品名称商品名称商品名称商品名称商品名称", productPrice: "199"},
           {productImg: "/static/images/product1.png", productName: "商品名称商品名称商品名称商品名称商品名称", productPrice: "199"}
         ],
-        ifChooseAll: false
+        ifChooseAll: false,
+        totalPrice: 0,
+        order: []
       }
     },
     components: { productParams, productQuantity },
     methods: {
-      // 选择产品
+      // 单独勾选产品
       chooseProduct(product) {
         if(product.choose) {
           product.choose = false;
+          this.totalPrice = 0;
+          this.order = [];
         }else if(!product.choose) {
           product.choose = true;
+          // 勾选后把该商品加入到可以结算的 list 中
+          for(let i = 0; i < this.orderList.length; i++) {
+            for(let j = 0; j < this.orderList[i].productList.length; j++) {
+              if(this.orderList[i].productList[j].choose) {
+                this.order.push(this.orderList[i].productList[j]);
+                // 计算单价商品的总价
+                this.totalPrice = this.orderList[i].productList[j].productPrice * this.orderList[i].productList[j].quantity;
+              }
+            }
+          }
         }
       },
       // 结算时的全选
       chooseAll() {
+        let price;
+        let quantity;
         if(this.ifChooseAll) {
           this.ifChooseAll = false;
+          this.totalPrice = 0;
+          for(let i = 0; i < this.orderList.length; i++) {
+            for(let j = 0; j < this.orderList[i].productList.length; j++) {
+              this.orderList[i].productList[j].choose = false;
+              this.order = [];
+            }
+          }
         }else if(!this.ifChooseAll) {
           this.ifChooseAll = true;
+          for(let i = 0; i < this.orderList.length; i++) {
+            for(let j = 0; j < this.orderList[i].productList.length; j++) {
+              this.orderList[i].productList[j].choose = true;
+              // console.log(this.orderList[i].productList[j]);
+              // 单价、数量
+              price = parseFloat(this.orderList[i].productList[j].productPrice);
+              quantity = parseInt(this.orderList[i].productList[j].quantity);
+              // 计算总价
+              this.totalPrice = this.totalPrice + price * quantity;
+              // 勾选后把该商品加入到可以结算的 list 中
+              this.order.push(this.orderList[i].productList[j]);
+            }
+          }
         }
       },
       // 删除商品
@@ -151,6 +187,11 @@
       toDetail(product) {
         // console.log(product)
         this.$router.push({path: "/productDetail", query: {product}});
+      },
+      // 去结算
+      toOrder() {
+        let order = this.order;
+        this.$router.push({path: "/submitOrder", query: {order}});
       }
     },
     created() {}
@@ -362,7 +403,7 @@
     }
     .choose-all-text {
       font-size: 30px;
-      padding: 30px 0;
+      padding: 32px 0;
     }
     .pay-price-detail {
       width: 365px;
