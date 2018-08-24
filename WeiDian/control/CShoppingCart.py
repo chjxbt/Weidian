@@ -76,7 +76,13 @@ class CShoppingCart(BaseShoppingCart):
         }
         return data
 
-    def delete_shoppingcart(self, scid):
+    @verify_token_decorator
+    def delete_shoppingcart(self, scid=None):
+        if not scid:
+            data = request.json
+            acid = data.get('acid')
+        if not acid:
+            return PARAMS_MISS
         self.sshoppingcart.delete_shoppingcart_by_scid(scid)
         data = import_status('delete_success', 'OK')
         data['data'] = {

@@ -14,4 +14,14 @@ class COrder():
     @verify_token_decorator
     def add_one(self):
         if is_tourist():
-            return AUTHORITY_ERROR()
+            return AUTHORITY_ERROR
+
+    @verify_token_decorator
+    def get_order_list(self):
+        if is_tourist():
+            return AUTHORITY_ERROR
+
+    @verify_token_decorator
+    def update_order(self):
+        if is_tourist(self):
+            return AUTHORITY_ERROR
