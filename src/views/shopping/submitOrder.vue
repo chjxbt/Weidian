@@ -1,9 +1,17 @@
 <template>
   <div>
-    <div class="line-one"></div>
-    <div class="add-address">
+    <div class="line-one" v-if="hasAddress"></div>
+    <div class="add-address" v-if="hasAddress" @click="addAddress">
       <span class="add-address-text">+ 添加地址</span>
       <span class="to-add-address">></span>
+    </div>
+    <div class="order-address" v-if="!hasAddress" @click="addAddress">
+      <div class="consignee-info">
+        <img src="/static/images/order_address.png" class="order-address-img">
+        <div class="consignee-name">收货人： 茉莉</div>
+        <div class="consignee-phone">13588718806</div>
+      </div>
+      <div class="consignee-address">收货地址：北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京</div>
     </div>
     <div class="line-one"></div>
     <div class="store-product">
@@ -13,7 +21,7 @@
       </div>
       <div class="line-two"></div>
       <div class="order-product">
-        <img src="http://imgsrc.baidu.com/imgad/pic/item/f11f3a292df5e0fed9b2f28e566034a85fdf7292.jpg" class="product-img">
+        <img src="http://img1.imgtn.bdimg.com/it/u=661395716,3070712851&fm=214&gp=0.jpg" class="product-img">
         <div class="product-info">
           <div class="product-name">2018早秋新款显瘦秋新款显瘦款显瘦瘦2018早秋新款显瘦秋新款显瘦款显瘦瘦</div>
           <div class="product-params">尺寸：L   颜色：红色</div>
@@ -57,15 +65,23 @@
     data() {
       return {
         name: "submitOrder",
+        hasAddress: true
       }
     },
     // components: {},
     methods: {
-
+      // 添加新地址
+      addAddress() {
+        if(this.hasAddress) {
+          this.hasAddress = false;
+        }else if(!this.hasAddress) {
+          this.hasAddress = true;
+        }
+      }
     },
     created() {
       let order = this.$route.query.order;
-      console.log(order);
+      console.log("order", order);
     }
   }
 </script>
@@ -98,6 +114,39 @@
       margin: 22px 45px 0 -45px;
     }
   }
+  .order-address {
+    .consignee-info {
+      width: 100%;
+      display: flex;
+      .order-address-img {
+        width: 40px;
+        height: 60px;
+        margin: 15px 40px;
+      }
+      .consignee-name {
+        color: @black;
+        font-size: 26px;
+        margin: 30px -10px;
+      }
+      .consignee-phone {
+        flex: 1;
+        margin: 33px;
+        color: @black;
+        font-size: 26px;
+        text-align: right;
+      }
+    }
+    .consignee-address {
+      color: @black;
+      font-size: 26px;
+      letter-spacing: 3px;
+      margin: 0 33px 20px 40px;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+    }
+  }
   .store-product {
     .store-title {
       display: flex;
@@ -119,7 +168,7 @@
       .product-img {
         width: 160px;
         height: 160px;
-        margin: 25px 30px 32px 34px;
+        margin: 25px 30px 32px 40px;
       }
       .product-info {
         flex: 1;
