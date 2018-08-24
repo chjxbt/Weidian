@@ -167,6 +167,27 @@ class MakeData():
             self.session.add(rb)
             self.session.commit()
 
+    def add_user_ordinary(self):
+        from model import User
+        from werkzeug.security import generate_password_hash
+        user = User()
+        user.USid = '4304cf38-c3cf-401f-8ba7-f8ce040f064f'
+        user.USname = 'name'
+        user.USpassword = generate_password_hash('pass')
+        self.session.add(user)
+        self.session.commit()
+    
+    def add_user_partner(self):
+        from model import User
+        from werkzeug.security import generate_password_hash
+        user = User()
+        user.USid = 'jfksadjf-fdaslkjf-3213-31231'
+        user.USname = 'part'
+        user.USpassword = generate_password_hash('pass')
+        user.USlevel = 2 
+        self.session.add(user)
+        self.session.commit()
+
     # def update_activity(self, ):
 
     #
@@ -248,16 +269,18 @@ if __name__ == "__main__":
         drop()
 
     else:
-        create()
+        # create()
         data = MakeData()
         # tshop_ids = data.make_id()
         # print("over")
-        data.add_activity()
-        data.add_media()
-        data.add_comment()
-        data.add_tags()
-        data.add_hotmessage()
-        data.add_banner()
-        data.add_product()
-        data.add_super()
-        data.add_recommendbanner()
+        # data.add_activity()
+        # data.add_media()
+        # data.add_comment()
+        # data.add_tags()
+        # data.add_hotmessage()
+        # data.add_banner()
+        # data.add_product()
+        # data.add_super()
+        # data.add_recommendbanner()
+        # data.add_user_ordinary()
+        data.add_user_partner()

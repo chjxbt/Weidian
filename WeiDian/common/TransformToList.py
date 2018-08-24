@@ -154,6 +154,7 @@ def dict_add_models(model_name, item):
         return
     raise Exception("session connect error")
 
+
 if __name__ == '__main__':
 
     def test_list_add():

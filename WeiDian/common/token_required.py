@@ -11,8 +11,8 @@ from WeiDian.service.DBSession import db_session
 def usid_to_token(id, model='User', expiration=''):
     """生成令牌
     id: 用户id
-    scope: 用户类型(user 或者 superuser)
-    expiration: 过期时间, 默认20个小时, 在setting中修改
+    model: 用户类型(User 或者 SuperUser)
+    expiration: 过期时间, 默认20个小时, 在common/setting中修改
     """
     if not expiration:
         expiration = current_app.config['TOKEN_EXPIRATION']
@@ -53,7 +53,7 @@ def verify_token_decorator(func):
         try:
             data = s.loads(token)
         except BadSignature as e:
-            # 无法解析的token
+            # 签名出错的token
             return func(self, *args, **kwargs)
         except SignatureExpired as e:
             # 过期的token
@@ -71,12 +71,18 @@ def verify_token_decorator(func):
             if model == 'User':
                 from WeiDian.models.model import User
                 user = sessions.query(User).filter_by(USid=id).first()
+                if not user:
+                    # 不存在的用户
+                    return func(self, *args, **kwargs)
                 user.id = user.USid
                 user.scope = 'User'
                 user.level = user.USlevel
             if model == 'SuperUser':
                 from WeiDian.models.model import SuperUser
                 user = sessions.query(SuperUser).filter_by(SUid=id).first()
+                if not user:
+                    # 不存在的管理
+                    return func(self, *args, **kwargs)
                 user.id = user.SUid
                 user.scope = 'SuperUser'
                 user.level = user.SUlevel
@@ -101,8 +107,8 @@ def is_customerservice():
 
 
 def is_ordirnaryuser():
-    """普通用户"""
-    return (hasattr(request, 'user') and request.user.scope == 'User')
+    """普通用户(不包括合伙人)"""
+    return (hasattr(request, 'user') and request.user.scope == 'User' and request.user.USlevel == 0)
 
 
 def is_partner():

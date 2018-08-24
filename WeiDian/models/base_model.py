@@ -33,6 +33,7 @@ class BaseModel:
     def add(self, *keys):
         for key in keys:
             self.fields.append(key)
+        return self
 
     @property
     def all(self):

@@ -8,3 +8,5 @@ from .AProduct import AProduct
 from .ARecommendBanner import ARecommendBanner
 from .ARecommend import ARecommend
 from .AShoppingCart import AShoppingCart
+from .AActivityComment import AActivityComment
+from .AUser import AUser

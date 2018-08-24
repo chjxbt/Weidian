@@ -6,7 +6,7 @@ from flask import request
 from WeiDian.common.token_required import verify_token_decorator, is_tourist
 from WeiDian.common.TransformToList import add_model, dict_add_models
 from WeiDian.common.import_status import import_status
-from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR
+from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, SYSTEM_ERROR
 from WeiDian.control.BaseControl import BaseShoppingCart
 
 
@@ -40,28 +40,33 @@ class CShoppingCart(BaseShoppingCart):
         data = request.json  
         # pskid
         pskid = data.get('pskid')
-        scnums = int(data.get('scnums'))
+        scahangenums = int(data.get('changenum', 1))  # 更改数量
         usid = request.user.id
         if not pskid:
             return PARAMS_MISS
-        # 删除
-        if scnums < 1:
-            return self.delete_shoppingcart(pskid)
         cart = self.sshoppingcart.get_shoppingcar_by_usidandpskid(usid, pskid)
-        # 修改
+        # 如果是已经存在的购物车
         if cart:
             scid = cart.SCid
+            scnums = cart.SCnums + scahangenums
+            if scnums < 1:
+                # 删除
+                return self.delete_shoppingcart(scid)
             self.sshoppingcart.update_shoppingcart(cart, scnums)
         # 创建
         else:
+            if scahangenums < 1:
+                return SYSTEM_ERROR('错误的数量')
             scid = str(uuid.uuid4())
             psk = self.sproductskukey.get_psk_by_pskid(pskid)
+            if not psk:
+                raise SYSTEM_ERROR('不存在的商品')
             prid = psk.PRid
             cartdict = {
                 'scid': scid,
                 'usid': usid,
                 'pskid': pskid,
-                'scnums': scnums,
+                'scnums': scahangenums,
                 'prid': prid
             }
             dict_add_models('ShoppingCart', cartdict)
@@ -71,7 +76,11 @@ class CShoppingCart(BaseShoppingCart):
         }
         return data
 
-    def delete_shoppingcart(self, pskid):
-        self.sshoppingcart.delete_shoppingcart_by_usidandpskid(pskid, request.user.id)
+    def delete_shoppingcart(self, scid):
+        self.sshoppingcart.delete_shoppingcart_by_scid(scid)
         data = import_status('delete_success', 'OK')
+        data['data'] = {
+            "scid": scid        
+        }
         return data
+

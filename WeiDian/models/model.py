@@ -68,13 +68,13 @@ class ActivityComment(Base, BaseModel):
     ACOparentid = Column(String(64))  # 所回复的评论(可以为空, 为空代表是评论)
     USid = Column(String(64), nullable=False)  # 发布评论的用户
     ACtext = Column(String(255), nullable=False)  # 评论内容
-    ACOcreatetime = Column(String(64))  # 时间
+    ACOcreatetime = Column(String(14))  # 时间
     ACisdelete = Column(Boolean, default=False)  # 是否删除
 
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['USid', 'ACOcreatetime', 'ACtext']
+        self.fields = ['ACOid', 'USid', 'ACOcreatetime', 'ACtext']
 
 
 class ActivityLike(Base, BaseModel):
@@ -85,7 +85,7 @@ class ActivityLike(Base, BaseModel):
     ALid = Column(String(64), primary_key=True)
     ACid = Column(String(64), nullable=False)  # 活动
     USid = Column(String(64), nullable=False)  # 用户
-    ALcreatetime = Column(String(64))  # 时间
+    ALcreatetime = Column(String(14))  # 时间
 
     @orm.reconstructor
     @auto_createtime
@@ -160,9 +160,9 @@ class Product(Base, BaseModel):
     PRvipprice = Column(Float)  # 会员价格
     PRishhare = Column(Boolean, default=True)  # 是否共享
     SUid = Column(String(64))  # 发布者, 创建人
-    PRcreatetime = Column(String(64))  # 创建时间
+    PRcreatetime = Column(String(14))  # 创建时间
     SUmodifyid = Column(String(64))  # 修改人id
-    PRmodifytime = Column(String(64))  # 修改时间
+    PRmodifytime = Column(String(14))  # 修改时间
     PRstatus = Column(Integer, default=1)  # 商品状态: {0 删除, 1 正常, 2 禁用}
     PRprice = Column(Float, nullable=False)  # 显示价格
     PRisdelete = Column(Boolean, default=False)
@@ -210,8 +210,7 @@ class ProductSkuKey(Base, BaseModel):
     @auto_createtime
     def __init__(self):
         self.fields = self.all
-        self.hide('_PSKproperkey')
-        self.add('PSKproperkey')
+        self.hide('_PSKproperkey', 'PRid').add('PSKproperkey')
 
     @property
     def PSKproperkey(self):
@@ -233,8 +232,7 @@ class ProductSkuValue(Base, BaseModel):
     @auto_createtime
     def __init__(self):
         self.fields = self.all
-        self.add('PSVpropervalue')
-        self.hide('_PSVpropervalue')
+        self.add('PSVpropervalue').hide('_PSVpropervalue')
 
     @property
     def PSVpropervalue(self):
@@ -264,7 +262,7 @@ class ProductLike(Base, BaseModel):
     PLid = Column(String(64), primary_key=True)
     USid = Column(String(64), nullable=False)  # 用户
     PRid = Column(String(64), nullable=False)  # 商品
-    PLcreatetime = Column(String(64))  # 创建时间
+    PLcreatetime = Column(String(14))  # 创建时间
 
     @orm.reconstructor
     @auto_createtime
@@ -364,10 +362,11 @@ class OrderInfo(Base):
     OIpaytype = Column(Integer)  # 支付类型: {0: 银行卡支付, 1: 微信支付}
     OIleavetext = Column(String(255))  # 订单留言
     OImount = Column(Float)  # 金额
-    OIpaytime = Column(String(64))  # 支付时间
+    OIpaytime = Column(String(14))  # 支付时间
     OIaddress = Column(String(255), nullable=False)  # 地址
     OIsigername = Column(String(64))  # 收货人
-    OIcreatetime = Column(String(64))  # 订单创建时间
+    OIcreatetime = Column(String(14))  # 订单创建时间
+    OIisdelete = Column(Boolean, default=False)  # 是否删除
 
 
 class OrderProductInfo(Base):
@@ -375,7 +374,8 @@ class OrderProductInfo(Base):
     __tablename__ = 'orderproductinfo'
     OPIid = Column(String(64), primary_key=True)
     OIid = Column(String(64), nullable=False)  # 订单
-    PRid = Column(String(64), nullable=False)  # 商品
+    PRid = Column(String(64), nullable=False)  # 商品id
+    OPIsku = Column(String(Text), nullable=False)  # 订单中的sku值
     OIproductprice = Column(Float, nullable=False)   # 商品价格(购买时候的价格)
     OPIproductname = Column(String(64))  # 商品的名字(购买之时的)
     OPIproductimages = Column(String(64))  # 商品主图
@@ -431,9 +431,9 @@ class HotMessage(Base, BaseModel):
     HMid = Column(String(64), primary_key=True)
     HMtext = Column(String(64), nullable=False)  # 热文文字
     PRid = Column(String(64), nullable=False)  # 对应商品
-    HMcreatetime = Column(String(64))  # 创建时间
-    HMstarttime = Column(String(64))  # 上线时间
-    HMendtime = Column(String(64))  # 下线时间
+    HMcreatetime = Column(String(14))  # 创建时间
+    HMstarttime = Column(String(14))  # 上线时间
+    HMendtime = Column(String(14))  # 下线时间
     HMsort = Column(Integer)  # 热文的顺序标志
 
     @orm.reconstructor
@@ -458,9 +458,9 @@ class Banner(Base, BaseModel):
     BAid = Column(String(64), primary_key=True)
     BAimage = Column(String(64))  # 图片
     ACid = Column(String(64))  # 轮播图对应的活动
-    BAcreatetime = Column(String(64))  # 创建时间
-    BAstarttime = Column(String(64))  # 上线时间
-    BAendtime = Column(String(64))  # 下线时间
+    BAcreatetime = Column(String(14))  # 创建时间
+    BAstarttime = Column(String(14))  # 上线时间
+    BAendtime = Column(String(14))  # 下线时间
     BAsort = Column(Integer)  # 顺序标志
 
     @orm.reconstructor
@@ -481,13 +481,14 @@ class SpicialActivity(Base):
     SAtext = Column(Text)  # 活动专场介绍
 
 
-class User(Base):
+class User(Base, BaseModel):
     """
     普通用户
     """
     __tablename__ = 'user'
     USid = Column(String(64), primary_key=True)
     USname = Column(String(64), nullable=False)  # 用户名
+    USpassword = Column(String(255))  # 密码
     USphone = Column(String(16))  # 手机号
     UShader = Column(String(255))  # 头像
     USgender = Column(String(64))  # 性别
@@ -495,6 +496,12 @@ class User(Base):
     USlastlogin = Column(String(64))  # 用户上次登录时间
     # 用户级别: {0 普通用户, 1 普通合伙人, 2 中级合伙人, 3 高级合伙人}
     USlevel = Column(Integer, default=0)
+    UPPerd = Column(String(64), default=0)
+
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = ['USid', 'USname', 'UShader']
 
 
 class UserLoginTime(Base, BaseModel):
@@ -504,7 +511,7 @@ class UserLoginTime(Base, BaseModel):
     __tablename__ = 'userlogintime'
     ULTid = Column(String(64), primary_key=True)
     Usid = Column(String(64), nullable=False)  # 用户id
-    USTcreatetime = Column(String(64))  # 登录时间
+    USTcreatetime = Column(String(14))  # 登录时间
     USTip = Column(String(64))  # 登录ip地址
 
 
@@ -518,7 +525,7 @@ class SuperUser(Base, BaseModel):
     SUpassword = Column(String(255), nullable=False)  # 密码
     SUheader = Column(String(64))  # 用户头像, 可以设置一个默认值
     SUlevel = Column(Integer, default=0)  # 用户类型{0: 客服, 1: 管理员, 2:超管}　
-    SUcreatetime = Column(String(64))  # 创建时间
+    SUcreatetime = Column(String(14))  # 创建时间
     SUidfreeze = Column(Boolean, default=False)  # 是否被冻结
     SUisdelete = Column(Boolean, default=False)  # 是否被删除
 
@@ -544,9 +551,9 @@ class SearchField(Base, BaseModel):
     __tablename__ = 'searchfield'
     SFid = Column(String(64), primary_key=True)
     SFtext = Column(String(64))  # 搜索框文字
-    SFcreatetime = Column(String(64))  # 创建时间
-    SFstarttime = Column(String(64))  # 上线时间
-    SFendtime = Column(String(64))  # 下线时间
+    SFcreatetime = Column(String(14))  # 创建时间
+    SFstarttime = Column(String(14))  # 上线时间
+    SFendtime = Column(String(14))  # 下线时间
     SFsort = Column(Integer)  # 顺序
     ACisended = Column(Boolean, default=False)  # 是否被手动截止
 

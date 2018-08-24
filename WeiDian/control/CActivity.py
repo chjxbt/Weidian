@@ -11,7 +11,6 @@ from WeiDian.common.TransformToList import add_model
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db
 from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR
-from WeiDian.config.activitytype import activity_type
 from WeiDian.control.BaseControl import BaseActivityControl
 
 sys.path.append(os.path.dirname(os.getcwd()))
@@ -99,11 +98,8 @@ class CActivity(BaseActivityControl):
         acid = data.get('acid')
         if not acid:
             return PARAMS_MISS
-        try:
-            self.sactivity.delete_activity(acid)
-            return delete_activity_success
-        except Exception as e:
-            pass
+        self.sactivity.delete_activity(acid)
+        return delete_activity_success
 
     @verify_token_decorator
     def stop_one(self):
@@ -116,11 +112,8 @@ class CActivity(BaseActivityControl):
         acid = data.get('acid')
         if not acid:
             return PARAMS_MISS
-        try:
-            self.sactivity.stop_activity(acid)
-            return stop_activity_success
-        except Exception as e:
-            pass
+        self.sactivity.stop_activity(acid)
+        return stop_activity_success
 
     @verify_token_decorator
     def add_one(self):
