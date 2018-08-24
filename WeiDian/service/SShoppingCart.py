@@ -42,3 +42,8 @@ class SShoppingCart(SBase):
         """删除购物车"""
         return self.session.query(ShoppingCart).filter_by(PSKid=pskid, USid=usid).delete()
 
+    @close_session
+    def delete_shoppingcart_by_scid(self, scid):
+        """删除购物车"""
+        return self.session.query(ShoppingCart).filter_by(SCid=scid).delete()
+
