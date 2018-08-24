@@ -105,8 +105,8 @@ def is_customerservice():
 
 
 def is_ordirnaryuser():
-    """普通用户"""
-    return (hasattr(request, 'user') and request.user.scope == 'User')
+    """普通用户(不包括合伙人)"""
+    return (hasattr(request, 'user') and request.user.scope == 'User' and request.user.USlevel == 0)
 
 
 def is_partner():
