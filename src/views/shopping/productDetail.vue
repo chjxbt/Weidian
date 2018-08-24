@@ -74,14 +74,35 @@
           <p class="recommended-name">太阳帽女防晒防</p>
           <p class="recommended-price">￥160</p>
         </div>
+        <div class="recommended-box">
+          <img src="http://v1.51camel.com/Resources/uploadFile/L_Logo/largepic/20110509135116.jpg" class="recommended-img">
+          <p class="recommended-name">太阳帽女防晒防</p>
+          <p class="recommended-price">￥160</p>
+        </div>
+        <div class="recommended-box">
+          <img src="http://v1.51camel.com/Resources/uploadFile/L_Logo/largepic/20110509135116.jpg" class="recommended-img">
+          <p class="recommended-name">太阳帽女防晒防</p>
+          <p class="recommended-price">￥160</p>
+        </div>
       </div>
     </div>
     <div class="product-detail-text">—— 详情 ——</div>
-    <ul>
+    <ul style="margin-bottom: 15%">
       <li v-for="brand in brandList">
         <img v-lazy="brand.img" class="detail-img">
       </li>
     </ul>
+    <div class="to-buy">
+      <span class="service-add" @click="toService">
+        <img src="/static/images/produc_detail_service.png" class="to-buy-icon">
+        <p class="to-buy-text">客服</p>
+      </span>
+      <span class="service-add" @click="addCart">
+        <img src="/static/images/produc_detail_shopping_cart.png" class="to-buy-icon">
+        <p class="to-buy-text">购物车</p>
+      </span>
+      <span class="to-buy-btn">立即购买</span>
+    </div>
   </div>
 </template>
 
@@ -124,6 +145,14 @@
       },
       // 查看更多评论
       moreEvaluation() {
+
+      },
+      // 客服聊天
+      toService () {
+
+      },
+      // 添加购物车
+      addCart () {
 
       }
     },
@@ -236,7 +265,7 @@
   .product-commitment {
     width: 21%;
     float: left;
-    margin: 20px -2% 10px 5%;
+    margin: 25px -2% 15px 5%;
     .commitment-img {
       width: 20px;
       height: 20px;
@@ -245,6 +274,7 @@
     }
     .commitment-text {
       width: 130px;
+      white-space: nowrap;
     }
   }
   .product-activity-title {
@@ -398,6 +428,37 @@
     width: 750px;
     height: auto;
     margin: auto;
-    background: url("/static/images/commitment.png") no-repeat fixed center;
+    background: url("/static/images/icon-look.png") no-repeat fixed center;
+  }
+  .to-buy {
+    /*height: 8.2%;*/
+    bottom: 0;
+    display: flex;
+    position: fixed;
+    background-color: @bgMainColor;
+    .service-add {
+      flex: 1;
+      border-top: 2px solid @grey;
+      border-right: 2px solid @grey;
+      .to-buy-icon {
+        width: 52px;
+        height: 45px;
+        font-size: 20px;
+        margin: 14px 44px 0 49px;
+      }
+      .to-buy-text {
+        font-size: 20px;
+        letter-spacing: 2px;
+      }
+    }
+    .to-buy-btn {
+      font-size: 36px;
+      margin-left: -2px;
+      padding: 31px 150px;
+      white-space: nowrap;
+      color: @bgMainColor;
+      letter-spacing: 3.6px;
+      background-color: @mainColor;
+    }
   }
 </style>
