@@ -62,5 +62,7 @@ class CActivityComment(BaseActivityCommentControl):
         comment_list = comment_list[start: end]
         map(self.fill_user, comment_list)
         map(self.fill_comment_apply_for, comment_list)
-        return comment_list
+        data = import_status('get_acvity_comment_list_success', 'OK')
+        data['data'] = comment_list
+        return data
 
