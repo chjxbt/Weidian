@@ -57,9 +57,7 @@ class CActivity(BaseActivityControl):
             activity_list = self.sactivity.get_activity_by_suid(suid)
         if lasting == 'true':
             now_time = datetime.strftime(datetime.now(), format_for_db)
-            activity_list = filter(
-                lambda act: act.ACstarttime < now_time < act.ACendtime and not act.ACisended,
-                activity_list)
+            activity_list = filter(lambda act: act.ACstarttime < now_time < act.ACendtime and not act.ACisended, activity_list)
         len_aclist = len(activity_list)
         if count > 30:
             count = 30

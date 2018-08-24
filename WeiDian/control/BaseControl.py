@@ -167,6 +167,23 @@ class BaseProductControl():
         product.add('prsoldnum', 'prlikenum', 'prviewnum') 
         return product
 
+    def fill_recommend_nums(self, recommend):
+        """日荐页中部浏览数和笑脸数"""
+        viewnum = recommend.REfakeviewnum or recommend.REviewnum  # 浏览数
+        likenum = recommend.RElikefakenum or recommend.RElikenum  # 笑脸数
+        recommend.reviewnum = viewnum
+        recommend.relikefakenum = likenum
+        recommend.add('reviewnum', 'relikefakenum')
+        return recommend
+
+    def fill_recommend_product(self, recommend):
+        """日荐页中中部商品填充"""
+        reid = recommend.REid
+        recommend_product_list = self.srecommendproduct.get_recommend_product_by_reid(reid)
+        recommend.productlist = recommend_product_list
+        recommend.add('productlist')
+        return recommend
+
 
 class BaseShoppingCart():
 
