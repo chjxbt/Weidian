@@ -100,11 +100,8 @@ class CActivity(BaseActivityControl):
         acid = data.get('acid')
         if not acid:
             return PARAMS_MISS
-        try:
-            self.sactivity.delete_activity(acid)
-            return delete_activity_success
-        except Exception as e:
-            pass
+        self.sactivity.delete_activity(acid)
+        return delete_activity_success
 
     @verify_token_decorator
     def stop_one(self):
@@ -117,11 +114,8 @@ class CActivity(BaseActivityControl):
         acid = data.get('acid')
         if not acid:
             return PARAMS_MISS
-        try:
-            self.sactivity.stop_activity(acid)
-            return stop_activity_success
-        except Exception as e:
-            pass
+        self.sactivity.stop_activity(acid)
+        return stop_activity_success
 
     @verify_token_decorator
     def add_one(self):
