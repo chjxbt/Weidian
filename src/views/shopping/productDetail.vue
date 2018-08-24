@@ -26,6 +26,14 @@
       <img src="/static/images/commitment.png" class="commitment-img">
       <div class="commitment-text">{{item}}</div>
     </div>
+    <!--<div class="product-activity-title">
+      <div class="product-activity-name">活动1</div>
+      <div class="product-activity-content">满89减5;满139减10</div>
+      <img src="/static/images/icon-list-right.png" class="to-activity">
+    </div>-->
+    <product-params :choose="false"></product-params>
+    <div class="rectangular"></div>
+    <div class="product"></div>
   </div>
 </template>
 
@@ -162,12 +170,44 @@
     }
   }
   .product-commitment {
+    width: 21%;
+    float: left;
+    margin: 10px -2% 10px 5%;
     .commitment-img {
-      width: 30px;
-      height: 30px;
+      width: 20px;
+      height: 20px;
+      float: left;
+      margin: 5px 0;
     }
     .commitment-text {
-
+      width: 130px;
     }
+  }
+  .product-activity-title {
+    width: 100%;
+    display: flex;
+    .product-activity-name {
+      color: @grey;
+      font-size: 26px;
+      margin: 25px 25px 10px 25px;
+    }
+    .product-activity-content {
+      flex: 1;
+      text-align: left;
+      margin: 25px 0 10px 0;
+      font-size: 28px;
+      font-weight: bold;
+      color: @greyColor;
+    }
+    .to-activity {
+      width: 22px;
+      height: 22px;
+      margin: 35px 25px 10px 0;
+    }
+  }
+  .rectangular {
+    width: 750px;
+    height: 19px;
+    background-color: #f2f5f7;
   }
 </style>

@@ -1,10 +1,17 @@
 <template>
   <div class="product-params">
-    <div class="product-params-show" @click="productParams">
+
+    <div v-if="!choose" class="product-params-choose" @click="productParams">
+      <div class="product-params-text">规格数量选择</div>
+      <img src="/static/images/icon-list-right.png" class="more-params">
+    </div>
+
+    <div v-if="choose" class="product-params-show" @click="productParams">
       <span class="product-params-detail">尺寸：{{size}}</span><span class="product-params-detail">颜色：{{color}}</span>
       <img v-if="popupVisible" src="../../../static/images/icon-list-down.png" class="list-right-down">
       <img v-if="!popupVisible" src="../../../static/images/icon-list-right.png" class="list-right-down">
     </div>
+
     <mt-popup v-model="popupVisible" position="bottom">
       <div class="product-params-content">
         <img src="/static/images/product1.png" class="product-img">
@@ -45,6 +52,10 @@
     },
     components: { productQuantity },
     props:{
+      choose:{
+        type: Boolean,
+        default: false
+      },
       size:{
         type: String,
         default: null
@@ -83,10 +94,10 @@
         }
       },
       select(index, ind) {
-        this.changePrompt();
         this.sel[index] = ind;                  // 让数组sel的第index+1的元素的值等于ind
         this.sel = this.sel.concat([]);         // 因为数组是引用类型，对其中一个变量直接赋值不会影响到另一个变量（并未操作引用的对象），使用concat（操作了应用对象）
         this.colorSizeList[index] = this.options[index].items[ind].msg;         // 获取选中的id
+        this.changePrompt();
       },
       // 根据选择的商品参数来改变提示信息
       changePrompt() {
@@ -117,6 +128,22 @@
   @import "../../common/css/_variate";
 
   .product-params {
+    .product-params-choose {
+      width: 100%;
+      display: flex;
+      .product-params-text {
+        flex: 1;
+        color: @grey;
+        font-size: 26px;
+        text-align: left;
+        margin: 15px 0 25px 35px;
+      }
+      .more-params {
+        width: 22px;
+        height: 22px;
+        margin: 20px 25px;
+      }
+    }
     .product-params-show {
       .product-params-detail {
         float: left;

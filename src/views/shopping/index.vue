@@ -28,7 +28,7 @@
             <img :src="product.productImg" class="product-img" @click="toDetail(product)">
             <div class="one-product-three">
               <div class="product-name" @click="toDetail(product)">{{product.productName}}</div>
-              <product-params :size="product.size" :color="product.color" :quantity="product.quantity"></product-params>
+              <product-params :choose="true" :size="product.size" :color="product.color" :quantity="product.quantity"></product-params>
               <product-quantity :quantity="product.quantity"></product-quantity>
             </div>
             <div class="one-product-four">
