@@ -1,6 +1,6 @@
 <template>
   <div>
-    <img src="/static/images/icon-more.png" class="back-img">
+    <img src="/static/images/icon-more.png" class="back-img" @click="backPage">
     <img src="http://s9.rr.itc.cn/r/wapChange/20167_8_22/a87n9v8965341955628.jpg" class="product-img">
     <div class="product-activity">
       <span class="activity-text-one">限时特卖</span>
@@ -33,7 +33,53 @@
     </div>-->
     <product-params :choose="false"></product-params>
     <div class="rectangular"></div>
-    <div class="product"></div>
+    <div class="product-evaluation">
+      <div class="evaluation-title">商品评价（99+）</div>
+      <div class="applause-rate">好评率99.8%</div>
+    </div>
+    <div class="evaluation-tabs" v-for="item in evaluationTabs">
+      <div class="evaluation-tab" @click="getEvaluation">{{item}}</div>
+    </div>
+    <div class="one-evaluation">
+      <div class="evaluator">
+        <img src="http://a.hiphotos.baidu.com/zhidao/pic/item/21a4462309f79052782f28490ff3d7ca7bcbd591.jpg" class="evaluator-img">
+        <div class="evaluator-name">欣**3</div>
+      </div>
+      <div class="evaluation-text">一级赞！很喜欢这个裤子 面料很挺一级赞！很喜欢这个裤子 面料很挺一级赞！很喜欢这个裤子 面料很挺一级赞！很喜欢这个裤子 面料很挺一级赞！很喜欢这个裤子 面料很挺一级赞！很喜欢这个裤子 面料很挺</div>
+      <span class="evaluation-pictures" v-for="item in evaluationPictures">
+        <img :src="item" class="evaluation-picture">
+      </span>
+      <div class="more-evaluation" @click="moreEvaluation">查看更多>></div>
+    </div>
+    <div class="recommended">
+      <div class="recommended-title">—— 配套推荐 ——</div>
+      <div class="recommended-imgs">
+        <div class="recommended-box">
+          <img src="http://v1.51camel.com/Resources/uploadFile/L_Logo/largepic/20110509135116.jpg" class="recommended-img">
+          <p class="recommended-name">太阳帽女防晒防太阳帽女防晒防</p>
+          <p class="recommended-price">￥160</p>
+        </div>
+        <div class="recommended-box">
+          <img src="http://v1.51camel.com/Resources/uploadFile/L_Logo/largepic/20110509135116.jpg" class="recommended-img">
+          <p class="recommended-name">太阳帽女防晒防</p>
+          <p class="recommended-price">￥160</p>
+        </div>
+        <div class="recommended-box">
+          <img src="http://v1.51camel.com/Resources/uploadFile/L_Logo/largepic/20110509135116.jpg" class="recommended-img">
+          <p class="recommended-name">太阳帽女防晒防</p>
+          <p class="recommended-price">￥160</p>
+        </div>
+        <div class="recommended-box">
+          <img src="http://v1.51camel.com/Resources/uploadFile/L_Logo/largepic/20110509135116.jpg" class="recommended-img">
+          <p class="recommended-name">太阳帽女防晒防</p>
+          <p class="recommended-price">￥160</p>
+        </div>
+      </div>
+    </div>
+    <div class="product-detail-text">—— 详情 ——</div>
+    <div class="detail-imgs" v-for="brand in brandList">
+      <img v-lazy="brand.img" class="detail-img">
+    </div>
   </div>
 </template>
 
@@ -45,11 +91,19 @@
         name: "productDetail",
         collectionVisible: false,
         ownerVisible: true,
-        commitmentList: ["正品保障", "发货&售后", "七天退货", "先行赔付"]
+        commitmentList: ["正品保障", "发货&售后", "七天退货", "先行赔付"],
+        evaluationTabs: ["衣服不错(50)", "面料好(30)", "穿着舒服(30)"],
+        evaluationPictures: ["http://image2.suning.cn/content/catentries/00000000010295/000000000102956200/fullimage/000000000102956200_8f.jpg", "http://image4.suning.cn/content/catentries/00000000010292/000000000102925077/fullimage/000000000102925077_6f.jpg",
+                             "http://img0.imgtn.bdimg.com/it/u=12035839,3404122673&fm=26&gp=0.jpg", "http://image3.suning.cn/content/catentries/00000000010295/000000000102955143/fullimage/000000000102955143_2f.jpg"],
+        brandList: [{img: "http://pic1.win4000.com/wallpaper/8/599d1d60036a2.jpg"}, {img: "http://bbsfiles.vivo.com.cn/vivobbs/attachment/forum/201804/25/145712qjc3gwcbtvgoct9w.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/57eb314a3c143.jpg"}, {img: "http://pic1.win4000.com/wallpaper/8/57eb322625b50.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc06f60ecf.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc080092c6.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc07478a17.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc08474821.jpg"}]
       }
     },
     components: { productParams },
     methods: {
+      // 返回上一页
+      backPage() {
+        this.$router.push('/shopping/index');
+      },
       // 收藏
       collection() {
         if(this.collectionVisible) {
@@ -61,6 +115,14 @@
       // 分享商品
       shareProduct() {
 
+      },
+      // 获取单个评论
+      getEvaluation() {
+
+      },
+      // 查看更多评论
+      moreEvaluation() {
+
       }
     },
     created() {
@@ -71,7 +133,7 @@
 </script>
 
 <style lang="less" rel="stylesheet/less" scoped>
-  @import "../../common/css/_variate";
+  @import "../../common/css/discover";
   .back-img {
     float: left;
     width: 18px;
@@ -172,7 +234,7 @@
   .product-commitment {
     width: 21%;
     float: left;
-    margin: 10px -2% 10px 5%;
+    margin: 20px -2% 10px 5%;
     .commitment-img {
       width: 20px;
       height: 20px;
@@ -209,5 +271,133 @@
     width: 750px;
     height: 19px;
     background-color: #f2f5f7;
+  }
+  .product-evaluation {
+    display: flex;
+    .evaluation-title {
+      color: @greyColor;
+      font-size: 26px;
+      font-weight: bold;
+      margin: 19px 24px;
+    }
+    .applause-rate {
+      flex: 1;
+      color: @grey;
+      font-size: 26px;
+      font-weight: bold;
+      margin: 19px 26px;
+      text-align: right;
+    }
+  }
+  .evaluation-tabs {
+    width: 100%;
+    .evaluation-tab {
+      float: left;
+      color: #f1f1f1;
+      margin: 10px 3%;
+      font-size: 18px;
+      padding: 7px 16px;
+      border-radius: 16px;
+      background-color: #f27f8d;
+    }
+  }
+  .one-evaluation {
+    .evaluator {
+      width: 100%;
+      display: flex;
+      .evaluator-img {
+        width: 56px;
+        height: 56px;
+        margin: 21px 24px;
+      }
+      .evaluator-name {
+        color: @grey;
+        font-size: 20px;
+        margin-top: 30px;
+      }
+    }
+    .evaluation-text {
+      font-size: 20px;
+      color: @greyColor;
+      line-height: 35px;
+      margin: 10px 23px 20px 23px;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+    }
+    .evaluation-pictures {
+      .evaluation-picture {
+        width: 140px;
+        height: 140px;
+        margin: 12px 45px 0 -25px;
+      }
+    }
+    .more-evaluation {
+      width: 708px;
+      margin: 32px 0;
+      padding: 21px;
+      font-size: 20px;
+      color: @greyColor;
+      background-color: #f2f5f7;
+    }
+  }
+  .recommended {
+    .recommended-title {
+      width: 750px;
+      margin: 7px 0 53px 0;
+      font-size: 22px;
+      color: @greyColor;
+      text-align: center;
+    }
+    .recommended-imgs {
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+      display: -moz-box; /*Firefox*/
+      display: -webkit-box; /*Safari,Opera,Chrome*/
+      display: flex;
+      margin-right: 30px;
+      .recommended-box {
+        .recommended-img {
+          width: 210px;
+          height: 210px;
+          margin-left: 30px;
+        }
+        .recommended-name {
+          width: 210px;
+          font-size: 20px;
+          margin: 10px 0 10px 30px;
+          color: @greyColor;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+        .recommended-price {
+          font-size: 22px;
+          color: @mainColor;
+          margin-bottom: 43px;
+        }
+      }
+    }
+  }
+  .product-detail-text {
+    font-size: 22px;
+    color: @greyColor;
+    padding: 34px 0;
+    background-color: #f2f5f7;
+  }
+  .detail-imgs {
+    .detail-img {
+      width: 750px;
+      height: auto;
+      margin-bottom: -5px;
+    }
+    img[lazy=loading] {
+      width: 750px;
+      height: 100px;
+      margin: auto;
+      background: url("/static/images/commitment.png") no-repeat fixed center;
+    }
   }
 </style>

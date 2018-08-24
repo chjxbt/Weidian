@@ -141,7 +141,7 @@
       .more-params {
         width: 22px;
         height: 22px;
-        margin: 20px 25px;
+        margin: 22px 25px;
       }
     }
     .product-params-show {
