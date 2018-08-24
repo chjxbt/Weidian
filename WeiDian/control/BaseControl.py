@@ -186,7 +186,7 @@ class BaseShoppingCart(BaseProductControl):
         return cart
 
     def fill_product(self, cart):
-        """填充购物车的商品信息, 不包括sku"""
+        """填充购物车的商品信息"""
         if not hasattr(cart, 'sku'):
             return cart
         prid = cart.sku.PRid
