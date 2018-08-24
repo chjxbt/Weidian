@@ -299,15 +299,32 @@ class Recommend(Base, BaseModel):
     REfakeviewnum = Column(Integer)  # 虚拟浏览数
     RElikenum = Column(Integer, default=0)  # 喜欢数
     RElikefakenum = Column(Integer)  # 可编辑的喜欢数量, 如果留空, 则使用实际的喜欢数量
+    REisdelete = Column(Boolean, default=False)  # 是否删除
+
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = [
+            'REid',
+            'SUid',
+            'REcreatetime',
+            'REstarttime',
+            'REendtime',
+            'REviewnum',
+            'RElikenum']
 
 
 class RecommendProduct(Base, BaseModel):
     """每日十荐页商品滚动区域的中转表"""
     __tablename__ = 'recommendproduct'
     RPid = Column(String(64), primary_key=True)
-    REid = Column(String(64))  # 关联的推荐商品区域
-    PRid = Column(String(64))  # 关联的商品
+    REid = Column(String(64), nullable=False)  # 关联的推荐商品区域
+    PRid = Column(String(64), nullable=False)  # 关联的商品
+    RPsort = Column(Integer)  # 商品顺序
 
+    @orm.reconstructor
+    def __init__(self):
+        self.fields = self.all
 
 class RecommendLike(Base, BaseModel):
     """每日十荐页点赞笑脸"""
