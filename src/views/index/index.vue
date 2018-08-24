@@ -1,6 +1,6 @@
 <template>
-    <div>
-      <div class="m-suspend-btn">
+    <div class="m-index">
+      <div class="m-suspend-btn" @click.stop="showModal('show_task')">
         <span>开始转发</span>
       </div>
       <div class="m-top">
@@ -30,7 +30,7 @@
       <div class="m-modal" v-if="show_modal">
         <div class="m-modal-state">
           <div class="m-modal-head">
-            <span class="m-close" @click="closeModal"> x </span>
+            <span class="m-close" @click="closeModal('show_modal')"> x </span>
           </div>
           <div class="m-modal-content">
             <h3>文案、图片已保存成功</h3>
@@ -43,25 +43,69 @@
           </div>
         </div>
       </div>
-      <div class="m-modal" v-if="!show_modal">
+      <div class="m-modal" v-if="show_task">
         <div class="m-modal-state">
           <div class="m-modal-head">
-            <span class="m-close" @click="closeModal"> x </span>
+            <span class="m-close" @click="closeModal('show_task')"> x </span>
           </div>
           <div class="m-modal-content">
             <h3 class="m-modal-award-title">
               <span>奖励任务</span>
               <span class="m-modal-award-info">15元新衣币*2张</span>
             </h3>
-            <ul>
-              <li>
-
-              </li>
-            </ul>
+            <div class="m-scroll">
+              <ul class="m-modal-award-ul">
+                <li>
+                  <div class="m-modal-award-img-box">
+                    <img src="" class="m-modal-award-img" alt="">
+                    <div>
+                      <h3>观看视频1</h3>
+                      <p class="m-modal-award-complete"><span>完成 0/1</span> </p>
+                    </div>
+                  </div>
+                  <span class="m-modal-award-btn">做任务</span>
+                </li>
+                <li>
+                  <div class="m-modal-award-img-box">
+                    <img src="" class="m-modal-award-img" alt="">
+                    <div>
+                      <h3>观看视频1</h3>
+                      <p class="m-modal-award-complete"><span>完成 0/1</span> </p>
+                    </div>
+                  </div>
+                  <span class="m-modal-award-btn active">做任务</span>
+                </li>
+                <li>
+                  <div class="m-modal-award-img-box">
+                    <img src="" class="m-modal-award-img" alt="">
+                    <div>
+                      <h3>观看视频1</h3>
+                      <p class="m-modal-award-complete"><span>完成 0/1</span><span class="m-red">首单佣金翻倍</span> </p>
+                    </div>
+                  </div>
+                  <span class="m-modal-award-btn">做任务</span>
+                </li>
+                <li>
+                  <div class="m-modal-award-img-box">
+                    <img src="" class="m-modal-award-img" alt="">
+                    <div>
+                      <h3>观看视频1</h3>
+                      <p class="m-modal-award-complete"><span>完成 0/1</span> </p>
+                    </div>
+                  </div>
+                  <span class="m-modal-award-btn">做任务</span>
+                </li>
+              </ul>
+            </div>
+            <div class="m-modal-award-rule">
+              <h3>规则</h3>
+              <p class="m-modal-award-rule-info">
+                完成任务领取奖励balbalalabanal
+                bababa
+              </p>
+            </div>
           </div>
-          <div class="m-modal-foot">
 
-          </div>
         </div>
       </div>
 
@@ -79,6 +123,7 @@
         data() {
             return {
               show_modal: false,
+              show_task:false,
               show_fixed:false,
               items: [{
                 title: '你的名字',
@@ -136,8 +181,11 @@
           share
         },
         methods: {
-          closeModal(){
-            this.show_modal = false;
+          closeModal(v){
+            this[v]  = false;
+          },
+          showModal(v){
+            this[v] = true;
           },
           fixedClick(){
             this.show_fixed = false;
@@ -211,26 +259,99 @@
   justify-content: center;
   font-size: 24px;
 }
+.m-index{
   .m-modal{
     .m-modal-state{
       /*height: auto;*/
-      min-height: 50%;
+      width: 620px;
+      height: 1000px;
+      .m-modal-head{
+        padding: 0 20px;
+      }
       .m-modal-content{
         padding: 0;
         .m-modal-award-title{
           .flex-row(space-between);
           color: #333;
-          padding: 20px 33px 30px;
+          padding: 10px 33px 30px;
           font-size: 30px;
           font-weight: normal;
           border-bottom: 1px solid @borderColor;
+          margin-bottom: 20px;
           .m-modal-award-info{
             color: @grey;
             font-size: 24px;
+          }
+        }
+        .m-scroll{
+          height: 620px;
+          overflow-y: auto;
+          .m-modal-award-ul{
+            li{
+              .flex-row(space-between);
+              margin: 0 25px;
+              border-bottom: 1px solid @borderColor;
+              padding: 30px 0;
+              .m-modal-award-img-box{
+                .flex-row(flex-start);
+                text-align: left;
+                .m-modal-award-img{
+                  display: block;
+                  width: 77px;
+                  height: 77px;
+                  background-color: #a3a3a3;
+                  border-radius: 50%;
+                  margin-right: 30px;
+                }
+                h3{
+                  font-size: 26px;
+                  line-height: 30px;
+                }
+                .m-modal-award-complete{
+                  font-size: 22px;
+                  .m-red{
+                    margin-left: 20px;
+                  }
+                }
+              }
+              .m-modal-award-btn{
+                display: block;
+                width: 137px;
+                height: 46px;
+                line-height: 46px;
+                text-align: center;
+                border-radius: 23px;
+                background:  linear-gradient(to right, #ff3146, #ff7044);
+                -webkit-background-clip: text;
+                color: transparent;
+                border: 2px solid #ff3146;
+                &.active{
+                  color: #fff;
+                  border: solid 2px transparent;
+                  background-image: linear-gradient(to right, #ff3146, #ff7044), linear-gradient(to right, #ff3146, #ff7044);
+                  background-origin: border-box;
+                  background-clip: content-box, border-box;
+                }
+              }
+            }
+          }
+        }
+        .m-modal-award-rule{
+          text-align: left;
+          h3{
+            margin: 0 33px 20px;
+            font-size: 30px;
+          }
+          .m-modal-award-rule-info{
+            padding: 10px 80px;
+            font-size: 20px;
+            line-height: 24px;
           }
         }
       }
     }
 
   }
+}
+
 </style>
