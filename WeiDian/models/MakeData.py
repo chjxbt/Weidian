@@ -167,7 +167,7 @@ class MakeData():
             self.session.add(rb)
             self.session.commit()
 
-    def add_user(self):
+    def add_user_ordinary(self):
         from model import User
         from werkzeug.security import generate_password_hash
         user = User()
@@ -176,7 +176,17 @@ class MakeData():
         user.USpassword = generate_password_hash('pass')
         self.session.add(user)
         self.session.commit()
-
+    
+    def add_user_partner(self):
+        from model import User
+        from werkzeug.security import generate_password_hash
+        user = User()
+        user.USid = 'jfksadjf-fdaslkjf-3213-31231'
+        user.USname = 'part'
+        user.USpassword = generate_password_hash('pass')
+        user.USlevel = 2 
+        self.session.add(user)
+        self.session.commit()
 
     # def update_activity(self, ):
 
@@ -272,4 +282,5 @@ if __name__ == "__main__":
         # data.add_product()
         # data.add_super()
         # data.add_recommendbanner()
-        data.add_user()
+        # data.add_user_ordinary()
+        data.add_user_partner()
