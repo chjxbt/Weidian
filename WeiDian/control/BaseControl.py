@@ -168,7 +168,7 @@ class BaseProductControl():
         return product
 
 
-class BaseShoppingCart():
+class BaseShoppingCart(BaseProductControl):
 
     def fill_sku(self, cart):
         """
@@ -196,7 +196,9 @@ class BaseShoppingCart():
                 cart.PRimage = product.PRmainpic
                 cart.PRtitle = product.PRtitle
                 cart.PRstatus = product.PRstatus
-                cart.add('PRimage', 'PRtitle', 'PRstatus')
+                product = self.fill_product_sku_key(product)  # 给获得货品的所有skukey值
+                cart.sku_total = product.sku
+                cart.add('PRimage', 'PRtitle', 'PRstatus', 'sku_total')
         return cart
 
     def total_price(self, cart_list):
