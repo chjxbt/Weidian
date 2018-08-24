@@ -207,3 +207,25 @@ class BaseShoppingCart():
         total = sum([x.sku.PSKprice * x.SCnums + x.sku.PSKpostfee for x in has_price])
         return total
 
+
+class BaseActivityCommentControl():
+
+    def fill_user(self, comment):
+        """给对象添加一个用户字段"""
+        usid = comment.USid
+        comment.user = self.suser.get_user_by_user_id(usid)  # 对象的用户
+        comment.add('user').hide('USid')
+        return comment
+
+    def fill_comment_apply_for(self, comment):
+        """"如果既是评论又是回复则添加一个'所回复用户'属性"""
+        acoid = comment.ACOid
+        comment.add('type')
+        if not comment.ACOparentid:
+            comment.type = 'comment'
+            return comment  # 如果ACOid没有值, 说明这不是回复的内容
+        comment.parent_apply_user = self.sactivitycomment.get_apply_for_by_acoid(acoid)
+        comment.type = 'apply'
+        comment.add('parent_apply_user')
+        return comment
+
