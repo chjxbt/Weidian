@@ -77,9 +77,11 @@
       </div>
     </div>
     <div class="product-detail-text">—— 详情 ——</div>
-    <div class="detail-imgs" v-for="brand in brandList">
-      <img v-lazy="brand.img" class="detail-img">
-    </div>
+    <ul>
+      <li v-for="brand in brandList">
+        <img v-lazy="brand.img" class="detail-img">
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -387,17 +389,15 @@
     padding: 34px 0;
     background-color: #f2f5f7;
   }
-  .detail-imgs {
-    .detail-img {
-      width: 750px;
-      height: auto;
-      margin-bottom: -5px;
-    }
-    img[lazy=loading] {
-      width: 750px;
-      height: 100px;
-      margin: auto;
-      background: url("/static/images/commitment.png") no-repeat fixed center;
-    }
+  .detail-img {
+    width: 750px;
+    height: auto;
+    margin-bottom: -5px;
+  }
+  img[lazy=loading] {
+    width: 750px;
+    height: auto;
+    margin: auto;
+    background: url("/static/images/commitment.png") no-repeat fixed center;
   }
 </style>
