@@ -1,6 +1,4 @@
 # *- coding:utf8 *-
-import sys
-import os
 import uuid
 from datetime import datetime, timedelta
 
@@ -13,9 +11,10 @@ from WeiDian.common.token_required import verify_token_decorator, is_admin, is_t
 from WeiDian.common.TransformToList import dict_add_models
 from WeiDian.common.import_status import import_status
 from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR
+from WeiDian.control.BaseControl import BaseActivityCommentControl
 
 
-class CActivityComment():
+class CActivityComment(BaseActivityCommentControl):
     def __init__(self):
         from WeiDian.service.SActivityComment import SActivityComment
         self.sactivitycomment = SActivityComment()
@@ -34,6 +33,10 @@ class CActivityComment():
             return AUTHORITY_ERROR('未登录')
         comment['usid'] = request.user.id
         comment['acoid'] = str(uuid.uuid4())
+        if 'acoid' not in comment and not 'acoparentid' not in comment:
+            return PARAMS_MISS('请指定回复或评论')
+        if 'acid' not in comment:  # 如果传来的数据不存在acid, 存数据库的使用要填充上
+            comment['acid'] = self.sactivitycomment.get_comment_by_acoid(comment['acoparentid']).ACid
         dict_add_models('ActivityComment', comment)
         data = import_status('add_activity_comment_success', 'OK')
         data['data'] = {
@@ -42,34 +45,22 @@ class CActivityComment():
         return data
 
     def get_comment_list(self):
+        """获取评论列表"""
         args = request.args.to_dict()
         acid = args.get('acid')
         if not acid:
             return PARAMS_MISS
+        start = int(args.get('start', 0))
+        count = int(args.get('count', 30))  # 默认显示30条评论
+        if count > 50:
+            count = 50
         comment_list = self.sactivitycomment.get_comment_by_activity_id(acid)
+        end = start + count
+        len_comment_list = len(comment_list)
+        if end > len_comment_list:
+            end = len_comment_list
+        comment_list = comment_list[start: end]
         map(self.fill_user, comment_list)
         map(self.fill_comment_apply_for, comment_list)
         return comment_list
-
-    def fill_user(self, comment):
-        """给对象添加一个用户字段"""
-        usid = comment.USid
-        comment.user = self.suser.get_user_by_user_id(usid)  # 对象的用户
-        comment.add('user').hide('USid')
-        return comment
-
-    def fill_comment_apply_for(self, comment):
-        """"如果既是评论又是回复则添加一个'所回复用户'属性"""
-        acoid = comment.ACOid
-        if not comment.ACOparentid:
-            return comment  # 如果ACOid没有值, 说明这不是回复的内容
-        comment.parent_apply_user = self.sactivitycomment.get_apply_for_by_acoid(acoid)
-        comment.add('parent_apply_user')
-        return comment
-
-
-
-
-
-
 

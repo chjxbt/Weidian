@@ -11,9 +11,15 @@ class SActivityComment(SBase):
 
     @close_session
     def get_comment_by_activity_id(self, acid):
-        """通过活动id获取下面的评论"""
+        """通过活动id获取下面的评论和回复"""
         comment_list = self.session.query(ActivityComment).filter_by(ACid=acid, ACisdelete=False).order_by(ActivityComment.ACOcreatetime.desc()).all()
         return comment_list
+
+    @close_session
+    def get_comment_by_acoid(self, acoid):
+        """通过acoid获取评论"""
+        comment = self.session.query(ActivityComment).filter_by(ACOid=acoid, ACisdelete=False).first()
+        return comment
 
     @close_session
     def get_apply_for_by_acoid(self, acoid):
@@ -37,4 +43,3 @@ class SActivityComment(SBase):
     def add_comment(self, comment):
         """添加评论"""
         self.session.add(comment)
-
