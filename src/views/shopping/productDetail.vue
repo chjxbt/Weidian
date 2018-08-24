@@ -434,7 +434,7 @@
     width: 750px;
     height: auto;
     margin: auto;
-    background: url("/static/images/icon-look.png") no-repeat fixed center;
+    background: url("/static/images/loading.gif") no-repeat fixed center;
   }
   .to-buy {
     /*height: 8.2%;*/
