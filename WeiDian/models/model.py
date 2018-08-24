@@ -488,7 +488,7 @@ class User(Base, BaseModel):
     __tablename__ = 'user'
     USid = Column(String(64), primary_key=True)
     USname = Column(String(64), nullable=False)  # 用户名
-    # USpassword = Column(String(255))  # 密码
+    USpassword = Column(String(255))  # 密码
     USphone = Column(String(16))  # 手机号
     UShader = Column(String(255))  # 头像
     USgender = Column(String(64))  # 性别
