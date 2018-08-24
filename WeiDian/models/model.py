@@ -358,7 +358,7 @@ class OrderProductInfo(Base):
     OPIid = Column(String(64), primary_key=True)
     OIid = Column(String(64), nullable=False)  # 订单
     PRid = Column(String(64), nullable=False)  # 商品id
-    OPIsku = Column(String(Text), nullable=False)  # 订单中的sku值
+    OPIsku = Column(Text, nullable=False)  # 订单中的sku值
     OIproductprice = Column(Float, nullable=False)   # 商品价格(购买时候的价格)
     OPIproductname = Column(String(64))  # 商品的名字(购买之时的)
     OPIproductimages = Column(String(64))  # 商品主图
@@ -471,7 +471,7 @@ class User(Base, BaseModel):
     __tablename__ = 'user'
     USid = Column(String(64), primary_key=True)
     USname = Column(String(64), nullable=False)  # 用户名
-    USpassword = Column(String(255))  # 密码
+    # USpassword = Column(String(255))  # 密码
     USphone = Column(String(16))  # 手机号
     UShader = Column(String(255))  # 头像
     USgender = Column(String(64))  # 性别
@@ -480,7 +480,7 @@ class User(Base, BaseModel):
     # 用户级别: {0 普通用户, 1 普通合伙人, 2 中级合伙人, 3 高级合伙人}
     USlevel = Column(Integer, default=0)
     UPPerd = Column(String(64), default=0)
-
+ 
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
