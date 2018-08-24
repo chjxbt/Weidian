@@ -364,7 +364,8 @@ class OrderInfo(Base):
     OImount = Column(Float)  # 金额
     OIpaytime = Column(String(14))  # 支付时间
     OIaddress = Column(String(255), nullable=False)  # 地址
-    OIsigername = Column(String(64))  # 收货人
+    OIsigername = Column(String(64), nullable=False)  # 收货人
+    OIsingerphone = Column(String(16), nullable=False)  # 收货人电话
     OIcreatetime = Column(String(14))  # 订单创建时间
     OIisdelete = Column(Boolean, default=False)  # 是否删除
 
@@ -375,7 +376,7 @@ class OrderProductInfo(Base):
     OPIid = Column(String(64), primary_key=True)
     OIid = Column(String(64), nullable=False)  # 订单
     PRid = Column(String(64), nullable=False)  # 商品id
-    OPIsku = Column(Text, nullable=False)  # 订单中的sku值
+    OPIsku = Column(Text, nullable=False)  # 订单中的sku值(无需存skuid)
     OIproductprice = Column(Float, nullable=False)   # 商品价格(购买时候的价格)
     OPIproductname = Column(String(64))  # 商品的名字(购买之时的)
     OPIproductimages = Column(String(64))  # 商品主图
