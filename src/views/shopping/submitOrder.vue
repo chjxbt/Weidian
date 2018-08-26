@@ -32,8 +32,7 @@
       <div class="line-two"></div>
       <p class="user-new">
         <span class="user-new-title">使用新衣币</span>
-        <span class="user-new-content">优惠：30元新衣币</span>
-        <img src="/static/images/icon-list-right.png" class="user-new-more">
+        <new-currency class="new-currency"></new-currency>
       </p>
       <div class="line-two"></div>
       <div class="wechat-pay">
@@ -61,6 +60,8 @@
 </template>
 
 <script>
+  import newCurrency from "../../components/common/newCurrency";
+
   export default {
     data() {
       return {
@@ -68,7 +69,7 @@
         hasAddress: true
       }
     },
-    // components: {},
+    components: { newCurrency },
     methods: {
       // 添加新地址
       addAddress() {
@@ -211,17 +212,10 @@
         font-size: 26px;
         margin: 32px 35px;
       }
-      .user-new-content {
+      .new-currency {
         flex: 1;
-        color: @black;
-        font-size: 26px;
-        margin-top: 32px;
+        margin: 30px;
         text-align: right;
-      }
-      .user-new-more {
-        width: 22px;
-        height: 22px;
-        margin: 40px;
       }
     }
     .wechat-pay {

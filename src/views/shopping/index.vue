@@ -433,7 +433,7 @@
       font-size: 34px;
       white-space: nowrap;
       overflow: hidden;
-      padding: 33px 60px;
+      padding: 30px 60px;
       letter-spacing: 5px;
       color: @bgMainColor;
       background-color: @mainColor;
