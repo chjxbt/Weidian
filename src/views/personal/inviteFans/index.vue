@@ -18,7 +18,7 @@
         <h3 class="m-fans-share-h3">立即邀请，赚取收益</h3>
         <p class="m-fans-share-p">好 友 将 获 得 20 元 新 衣 币</p>
         <div class="m-fans-share-btn">
-          <span>分享海报</span>
+          <span @click="sharePoster">分享海报</span>
           <span>分享链接</span>
         </div>
         <p class="m-fans-share-info">您已成功绑定5位粉丝  <span  @click="fansClick">&nbsp;&nbsp;&nbsp;点击查看></span></p>
@@ -33,7 +33,7 @@
               <span class="m-fans-scarf">No 2</span>
             </div>
             <p class="m-golden m-fans-top-name">贝之店</p>
-            <p>邀请<span  class="m-golden">212424</span>个专属粉丝 </p>
+            <p>邀请<span  class="m-golden">4</span>个专属粉丝 </p>
           </div>
           <div class="m-fans-top-one">
             <div class="m-fans-top-one-top">
@@ -42,7 +42,7 @@
               <span class="m-fans-scarf">No 1</span>
             </div>
             <p class="m-golden m-fans-top-name">贝之店</p>
-            <p>邀请<span  class="m-golden">212424</span>个专属粉丝 </p>
+            <p>邀请<span  class="m-golden">222</span>个专属粉丝 </p>
           </div>
           <div class="m-fans-top-one ">
             <div class="m-fans-top-one-top m-fans-top-three">
@@ -51,7 +51,7 @@
               <span class="m-fans-scarf">No 3</span>
             </div>
             <p class="m-golden m-fans-top-name">贝之店</p>
-            <p>邀请<span  class="m-golden">212424</span>个专属粉丝 </p>
+            <p>邀请<span  class="m-golden">4</span>个专属粉丝 </p>
           </div>
         </div>
         <ul class="m-fans-ranking-ul">
@@ -61,7 +61,7 @@
                 <img src="" class="m-fans-portrait" alt="">
                 <span class="m-fans-person-name">成成</span>
               </span>
-            <span>邀请5143个专属粉丝</span>
+            <span>邀请5个专属粉丝</span>
           </li>
           <li>
               <span>
@@ -69,7 +69,7 @@
                 <img src="" class="m-fans-portrait" alt="">
                 <span class="m-fans-person-name">成成</span>
               </span>
-            <span>邀请5143个专属粉丝</span>
+            <span>邀请514个专属粉丝</span>
           </li>
         </ul>
       </div>
@@ -88,6 +88,9 @@
         methods: {
           fansClick(){
             this.$router.push('/fansManagement')
+          },
+          sharePoster(){
+            this.$router.push('/poster')
           }
         },
         created() {
@@ -243,8 +246,8 @@
             }
             .m-fans-crown{
               position: absolute;
-              top:-22px;
-              right: 52px;
+              top:-25px;
+              right: 40px;
               width: 70px;
               height: 70px;
               background: url("/static/images/fans_two_crown.png") no-repeat;
@@ -275,8 +278,8 @@
             }
             .m-fans-crown{
               position: absolute;
-              top:-22px;
-              right: 52px;
+              top:-25px;
+              right: 40px;
               width: 70px;
               height: 70px;
               background: url("/static/images/fans_three_crown.png") no-repeat;
@@ -305,8 +308,8 @@
           }
           .m-fans-crown{
             position: absolute;
-            top:-22px;
-            right: 52px;
+            top:-25px;
+            right: 40px;
             width: 70px;
             height: 70px;
             background: url("/static/images/fans_one-crown.png") no-repeat;

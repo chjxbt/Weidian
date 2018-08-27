@@ -117,6 +117,7 @@
       background-color: @mainColor;
       color: #fff;
       border-radius: 50px;
+      box-shadow: 2px 8px 8px 0 rgba(0, 0, 0, 0.16);
       &.active{
         background-color: #c1c1c1;
       }
