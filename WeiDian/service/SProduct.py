@@ -27,3 +27,12 @@ class SProduct(SBase):
         product_list = self.session.query(Product).filter_by(PRstatus=1, PReditstate=1).all()
         return product_list
 
+    @close_session
+    def update_view_num(self, prid):
+        product = self.session.query(Product).filter_by(PRid=prid).first()
+        product.PRviewnum = product.PRviewnum + 1
+        if product.PRfakeviewnum:
+            product.PRfakeviewnum = product.PRfakeviewnum + 1
+        self.session.add(product)
+        self.session.commit()
+

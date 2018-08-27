@@ -82,6 +82,7 @@ class CProduct(BaseProductControl):
         self.fill_images(product)
         self.fill_product_sku_key(product)
         self.fill_product_sku_value(product)
+        self.sproduct.update_view_num(prid)
         data = import_status('get_product_success', 'OK')
         data['data'] = product
         return data
