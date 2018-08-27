@@ -1,7 +1,7 @@
 # *- coding:utf8 *-
 from sqlalchemy.dialects.mysql import LONGTEXT
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, create_engine, Integer, String, Text, Float, Boolean, orm
+from sqlalchemy import create_engine
 from WeiDian.config import dbconfig as cfg
 from WeiDian.models.base_model import BaseModel, auto_createtime
 
@@ -13,10 +13,9 @@ DB_PARAMS = "{0}://{1}:{2}@{3}/{4}?charset={5}".format(
     cfg.database,
     cfg.charset)
 mysql_engine = create_engine(DB_PARAMS, echo=False)
-Base = declarative_base()
 
 
-class Activity(Base, BaseModel):
+class Activity(BaseModel):
     """
     活动
     """
@@ -58,7 +57,7 @@ class Activity(Base, BaseModel):
             'TopnavId']
 
 
-class ActivityComment(Base, BaseModel):
+class ActivityComment(BaseModel):
     """
     活动评论, 以及评论回复
     """
@@ -77,7 +76,7 @@ class ActivityComment(Base, BaseModel):
         self.fields = ['ACOid', 'USid', 'ACOcreatetime', 'ACtext']
 
 
-class ActivityLike(Base, BaseModel):
+class ActivityLike(BaseModel):
     """
     点赞
     """
@@ -93,7 +92,7 @@ class ActivityLike(Base, BaseModel):
         self.fields = ['ACid', 'USid', 'ALcreatetime']
 
 
-class ActivityMedia(Base, BaseModel):
+class ActivityMedia(BaseModel):
     """
     活动图片/视频
     """
@@ -110,7 +109,7 @@ class ActivityMedia(Base, BaseModel):
         self.fields = ['AMid']
 
 
-class ActivityTag(Base, BaseModel):
+class ActivityTag(BaseModel):
     """
     活动右上角标
     """
@@ -126,7 +125,7 @@ class ActivityTag(Base, BaseModel):
         self.fields = ['ATid', 'ATname', ]
 
 
-class ActivityFoward(Base):
+class ActivityFoward(BaseModel):
     """
     活动转发
     """
@@ -136,7 +135,7 @@ class ActivityFoward(Base):
     ACid = Column(String(64))  # 活动
 
 
-class Product(Base, BaseModel):
+class Product(BaseModel):
     """
     商品
     """
@@ -193,7 +192,7 @@ class Product(Base, BaseModel):
             'PRstock']
 
 
-class ProductSkuKey(Base, BaseModel):
+class ProductSkuKey(BaseModel):
     """sku属性名"""
     __tablename__ = 'productskukey'
     PSKid = Column(String(64), primary_key=True)
@@ -221,7 +220,7 @@ class ProductSkuKey(Base, BaseModel):
         self._PSKproperkey = str(raw)
 
 
-class ProductSkuValue(Base, BaseModel):
+class ProductSkuValue(BaseModel):
     """sku属性值, 每一个商品对应一个此表"""
     __tablename__ = 'productskuvalue'
     PSVid = Column(String(64), primary_key=True)
@@ -243,7 +242,7 @@ class ProductSkuValue(Base, BaseModel):
         self._PSVpropervalue = str(raw)
 
 
-class ProductImage(Base, BaseModel):
+class ProductImage(BaseModel):
     """商品展示图片"""
     __tablename__ = 'productimage'
     PIid = Column(String(64), primary_key=True)
@@ -256,7 +255,7 @@ class ProductImage(Base, BaseModel):
         self.fields = self.all
 
 
-class ProductLike(Base, BaseModel):
+class ProductLike(BaseModel):
     """商品收藏(喜欢)"""
     __tablename__ = 'productlike'
     PLid = Column(String(64), primary_key=True)
@@ -270,7 +269,7 @@ class ProductLike(Base, BaseModel):
         pass
 
 
-class RecommendBanner(Base, BaseModel):
+class RecommendBanner(BaseModel):
     """每日十荐页上部轮播图"""
     __tablename__ = 'recommendbanner'
     RBid = Column(String(64), primary_key=True)
@@ -287,7 +286,7 @@ class RecommendBanner(Base, BaseModel):
         self.fields = self.all
 
 
-class Recommend(Base, BaseModel):
+class Recommend(BaseModel):
     """每日十荐页中部商品区域"""
     __tablename__ = 'recommend'
     REid = Column(String(64), primary_key=True)
@@ -314,7 +313,7 @@ class Recommend(Base, BaseModel):
             'RElikenum']
 
 
-class RecommendProduct(Base, BaseModel):
+class RecommendProduct(BaseModel):
     """每日十荐页商品滚动区域的中转表"""
     __tablename__ = 'recommendproduct'
     RPid = Column(String(64), primary_key=True)
@@ -326,7 +325,7 @@ class RecommendProduct(Base, BaseModel):
     def __init__(self):
         self.fields = self.all
 
-class RecommendLike(Base, BaseModel):
+class RecommendLike(BaseModel):
     """每日十荐页点赞笑脸"""
     __tablename__ = 'recommendlike'
     RLid = Column(String(64), primary_key=True)
@@ -335,7 +334,7 @@ class RecommendLike(Base, BaseModel):
     RLtime = Column(String(14))  # 推荐页点赞时间
 
 
-class ShoppingCart(Base, BaseModel):
+class ShoppingCart(BaseModel):
     """购物车"""
     __tablename__ = 'shopingcart'
     SCid = Column(String(64), primary_key=True)
@@ -350,7 +349,7 @@ class ShoppingCart(Base, BaseModel):
         self.fields = ['SCid', 'PRid', 'SCnums']
 
 
-class OrderInfo(Base):
+class OrderInfo(BaseModel):
     """订单信息"""
     __tablename__ = 'orderinfo'
     OIid = Column(String(64), primary_key=True)
@@ -370,7 +369,7 @@ class OrderInfo(Base):
     OIisdelete = Column(Boolean, default=False)  # 是否删除
 
 
-class OrderProductInfo(Base):
+class OrderProductInfo(BaseModel):
     """订单商品详情, 多个订单商品详情对应一个订单"""
     __tablename__ = 'orderproductinfo'
     OPIid = Column(String(64), primary_key=True)
@@ -394,7 +393,7 @@ class OrderProductInfo(Base):
 
 
 
-class ProductCategory(Base):
+class ProductCategory(BaseModel):
     """
     商品分类
     """
@@ -405,7 +404,7 @@ class ProductCategory(Base):
     Parentid = Column(String(64), default=0)  # 父类别id, 默认0
 
 
-class ProductFowardInfo(Base):
+class ProductFowardInfo(BaseModel):
     """
     转发商品
     """
@@ -416,7 +415,7 @@ class ProductFowardInfo(Base):
     PFIimage = Column(String(255))  # 转发显示图片, 为空则使用商品主图
 
 
-class TopNav(Base, BaseModel):
+class TopNav(BaseModel):
     """
     上导航栏
     """
@@ -435,7 +434,7 @@ class TopNav(Base, BaseModel):
         self.fields = ['TNid', 'TNname', 'TSort', 'TNtype']
 
 
-class HotMessage(Base, BaseModel):
+class HotMessage(BaseModel):
     """
     热文
     """
@@ -462,7 +461,7 @@ class HotMessage(Base, BaseModel):
         ]
 
 
-class Banner(Base, BaseModel):
+class Banner(BaseModel):
     """
     轮播图
     """
@@ -482,7 +481,7 @@ class Banner(Base, BaseModel):
 
 
 # 可能用不到
-class SpicialActivity(Base):
+class SpicialActivity(BaseModel):
     """
     轮播对应的专场活动
     """
@@ -493,7 +492,7 @@ class SpicialActivity(Base):
     SAtext = Column(Text)  # 活动专场介绍
 
 
-class User(Base, BaseModel):
+class User(BaseModel):
     """
     普通用户
     """
@@ -516,7 +515,7 @@ class User(Base, BaseModel):
         self.fields = ['USid', 'USname', 'UShader']
 
 
-class UserLoginTime(Base, BaseModel):
+class UserLoginTime(BaseModel):
     """
     用来记录用户的登录时间
     """
@@ -527,7 +526,7 @@ class UserLoginTime(Base, BaseModel):
     USTip = Column(String(64))  # 登录ip地址
 
 
-class SuperUser(Base, BaseModel):
+class SuperUser(BaseModel):
     """
     超级管理员, 管理员, (客服)
     """
@@ -547,7 +546,7 @@ class SuperUser(Base, BaseModel):
         self.fields = ['SUid', 'SUname', 'SUheader']
 
 
-class UserAddress(Base):
+class UserAddress(BaseModel):
     __tablename__ = 'useraddress'
     UAid = Column(String(64), primary_key=True)
     USid = Column(String(64), nullable=False)  # 用户
@@ -556,7 +555,7 @@ class UserAddress(Base):
     UAname = Column(String(16), nullable=False)  # 收货人姓名
 
 
-class SearchField(Base, BaseModel):
+class SearchField(BaseModel):
     """
     输入框
     """
@@ -575,7 +574,7 @@ class SearchField(Base, BaseModel):
         self.fields = ['SFid', 'SFtext', 'SFsort']
 
 
-class IndexAdAlert(Base):
+class IndexAdAlert(BaseModel):
     """
     首页弹窗
     """
