@@ -22,7 +22,7 @@ class CShoppingCart(BaseShoppingCart):
     @verify_token_decorator
     def get_shopingcart_all(self):
         """获取当前用户的购物车"""
-        if not hasattr(request, 'user'):
+        if is_tourist():
             return TOKEN_ERROR  # token失效或者未携带token
         carts_list = self.sshoppingcart.get_shoppingcart_by_usid(request.user.id)
         map(self.fill_sku, carts_list)
@@ -77,16 +77,25 @@ class CShoppingCart(BaseShoppingCart):
         return data
 
     @verify_token_decorator
+    def delete_one(self):
+        """删除购物车"""
+        if is_tourist(): 
+            return TOKEN_ERROR
+        data = request.json
+        if not data:
+            return PARAMS_MISS
+        scid = data.get('scid')
+        if not scid:
+            return PARAMS_MISS
+        return self.delete_shoppingcart(scid)
+
     def delete_shoppingcart(self, scid=None):
         if not scid:
-            data = request.json
-            acid = data.get('acid')
-        if not acid:
             return PARAMS_MISS
         self.sshoppingcart.delete_shoppingcart_by_scid(scid)
         data = import_status('delete_success', 'OK')
         data['data'] = {
-            "scid": scid        
+            "scid": scid
         }
         return data
 

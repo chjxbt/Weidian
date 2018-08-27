@@ -12,6 +12,7 @@ class AShoppingCart(Resource):
         print shoppingcart
         apis = {
             'update': 'self.cshoppingcart.update_shoppingcart()',
+            'delete': 'self.cshoppingcart.delete_one()',
         }
         res = eval(apis[shoppingcart])
         return jsonify(res)

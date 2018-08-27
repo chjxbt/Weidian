@@ -2,9 +2,11 @@
 from datetime import datetime
 
 from sqlalchemy import orm
+from sqlalchemy.ext.declarative import declarative_base, AbstractConcreteBase
 
 from WeiDian.common.timeformat import format_for_db
 
+Base = declarative_base()
 
 def auto_createtime(f):
     def inner(self, *args, **kwargs):
@@ -14,7 +16,7 @@ def auto_createtime(f):
     return inner
 
 
-class BaseModel:
+class BaseModel(AbstractConcreteBase, Base):
 
     def __getitem__(self, item):
         if hasattr(self, item):
@@ -51,4 +53,7 @@ class BaseModel:
             existsed_time = getattr(self, createtime)
             if not existsed_time:
                 setattr(self, createtime, datetime.strftime(datetime.now(), format_for_db))
+
+    class Meta:
+        abstract = True
 

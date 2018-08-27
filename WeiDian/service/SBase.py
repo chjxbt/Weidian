@@ -5,13 +5,14 @@ sys.path.append(os.path.dirname(os.getcwd()))
 import DBSession
 from WeiDian.common.weidian_error import dberror
 import WeiDian.models.model as models
+from WeiDian.models.base_model import BaseModel
 
 
 def close_session(fn):
     def inner(self, *args, **kwargs):
         try:
             result = fn(self, *args, **kwargs)
-            if isinstance(result, list) or isinstance(result, models.Base):
+            if isinstance(result, list) or isinstance(result, BaseModel):
                 self.session.expunge_all()
             # if not 'update' in fn.__name__ and not 'delete' in fn.__name__ and not 'stop' in fn.__name__:
             #     self.session.expunge_all()
