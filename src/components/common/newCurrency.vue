@@ -117,10 +117,6 @@
                       使用还回</p>
                   </div>
                 </div>
-                <div class="new-currency-choose-img">
-                  <img v-if="chooseNewVisible" src="/static/images/icon-complain-check-active.png" class="new-currency-choose" @click="chooseNew">
-                  <img v-if="!chooseNewVisible" src="/static/images/icon-complain-check.png" class="new-currency-choose" @click="chooseNew">
-                </div>
               </li>
               <li class="m-already-back">
                 <div class="m-new-info-left">
@@ -138,10 +134,6 @@
                     <p>乌冬冬已使用</p>
                   </div>
                 </div>
-                <div class="new-currency-choose-img">
-                  <img v-if="chooseNewVisible" src="/static/images/icon-complain-check-active.png" class="new-currency-choose" @click="chooseNew">
-                  <img v-if="!chooseNewVisible" src="/static/images/icon-complain-check.png" class="new-currency-choose" @click="chooseNew">
-                </div>
               </li>
               <li class="m-Unavailable">
                 <div class="m-new-info-left">
@@ -157,10 +149,6 @@
                   <div class="m-new-person-info">
 
                   </div>
-                </div>
-                <div class="new-currency-choose-img">
-                  <img v-if="chooseNewVisible" src="/static/images/icon-complain-check-active.png" class="new-currency-choose" @click="chooseNew">
-                  <img v-if="!chooseNewVisible" src="/static/images/icon-complain-check.png" class="new-currency-choose" @click="chooseNew">
                 </div>
               </li>
             </ul>
@@ -244,6 +232,7 @@
       height: 560px;
       overflow-y: auto;
       margin-top: 20px;
+      margin-left: 60px;
     }
     .m-new-info{
       li{
@@ -313,17 +302,17 @@
       }
     }
     /*滚动条样式*/
-    .m-scroll::-webkit-scrollbar {/*滚动条整体样式*/
+    ::-webkit-scrollbar {/*滚动条整体样式*/
       width: 9px;     /*高宽分别对应横竖滚动条的尺寸*/
       height: 9px;
       border-radius: 10px;
     }
-    .m-scroll::-webkit-scrollbar-thumb {/*滚动条里面小方块*/
+    ::-webkit-scrollbar-thumb {/*滚动条里面小方块*/
       border-radius: 10px;
       -webkit-box-shadow: inset 0 0 5px #FBC6CC;
       background: #FBC6CC;
     }
-    .m-scroll::-webkit-scrollbar-track {/*滚动条里面轨道*/
+    ::-webkit-scrollbar-track {/*滚动条里面轨道*/
       -webkit-box-shadow: inset 0 0 5px #FDEAEC;
       border-radius: 10px;
       background: #FDEAEC;
