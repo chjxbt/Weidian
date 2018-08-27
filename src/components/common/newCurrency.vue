@@ -153,6 +153,7 @@
               </li>
             </ul>
           </div>
+          <div class="line-black"></div>
           <div class="m-scroll-close" @click="closeScroll">关闭</div>
 
         </mt-tab-container-item>
@@ -193,8 +194,10 @@
       tabName() {
         console.log(this.selected)
       },
+      // 关闭选择新衣币的下部弹框
       closeScroll () {
         this.popupVisible = false;
+        this.selected = "1";
       }
     }
   }
@@ -229,10 +232,11 @@
       margin-top: 20px;
     }
     .m-un-scroll {
-      height: 560px;
+      height: 540px;
       overflow-y: auto;
       margin-top: 20px;
       margin-left: 60px;
+      margin-bottom: 20px;
     }
     .m-new-info{
       li{
