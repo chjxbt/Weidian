@@ -32,3 +32,12 @@ class SProduct(SBase):
         return self.session.query(Product).join(
             RecommendProduct, Product.PRid == RecommendProduct.PRid).filter(
             RecommendProduct.REid == reid).all()
+
+    @close_session
+    def update_view_num(self, prid):
+        product = self.session.query(Product).filter_by(PRid=prid).first()
+        product.PRviewnum = product.PRviewnum + 1
+        if product.PRfakeviewnum:
+            product.PRfakeviewnum = product.PRfakeviewnum + 1
+        self.session.add(product)
+        self.session.commit()
