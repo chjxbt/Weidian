@@ -197,7 +197,7 @@ class BaseShoppingCart(BaseProductControl):
             if not sku:
                 return cart
             sku.add('PSKproperkey')
-            cart.PRprice = sku.PSKprice
+            cart.PRprice = sku.PSKprice  # todo 价格, 待设置
             cart.sku = sku
             cart.add('sku')
         return cart
