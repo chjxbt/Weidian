@@ -93,7 +93,7 @@
             <img v-if="!chooseNewVisible" src="/static/images/icon-complain-check.png" class="un-use-img" @click="chooseNew">
           </div>
           <div class="line-black"></div>
-          <div class="m-scroll-close">关闭</div>
+          <div class="m-scroll-close" @click="closeScroll">关闭</div>
 
         </mt-tab-container-item>
         <mt-tab-container-item id="2">
@@ -165,6 +165,7 @@
               </li>
             </ul>
           </div>
+          <div class="m-scroll-close" @click="closeScroll">关闭</div>
 
         </mt-tab-container-item>
       </mt-tab-container>
@@ -177,7 +178,7 @@
     data() {
       return {
         name: 'newCurrency',
-        popupVisible: true,
+        popupVisible: false,
         selected: "1",
         chooseNewVisible: false
       }
@@ -200,9 +201,12 @@
           this.chooseNewVisible = true;
         }
       },
-      // 获取点击的tab
+      // 获取点击的tab 可使用、不可用
       tabName() {
         console.log(this.selected)
+      },
+      closeScroll () {
+        this.popupVisible = false;
       }
     }
   }
@@ -224,11 +228,11 @@
   }
   .new-currency-popup {
     width: 750px;
-    height: 850px;
+    height: 830px;
     .popup-title {
       color: @black;
       font-size: 36px;
-      margin: 22px 25px;
+      margin: 20px 25px 0 25px;
       text-align: left;
     }
     .m-scroll{
@@ -237,7 +241,7 @@
       margin-top: 20px;
     }
     .m-un-scroll {
-      height: 620px;
+      height: 560px;
       overflow-y: auto;
       margin-top: 20px;
     }
