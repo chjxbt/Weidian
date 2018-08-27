@@ -1,10 +1,9 @@
 # *- coding:utf8 *-
 import sys
 import os
-
-sys.path.append(os.path.dirname(os.getcwd()))
 from SBase import SBase, close_session
-from WeiDian.models.model import Product, ProductLike
+from WeiDian.models.model import Product, ProductLike, Recommend, RecommendProduct
+sys.path.append(os.path.dirname(os.getcwd()))
 
 
 class SProduct(SBase):
@@ -24,8 +23,15 @@ class SProduct(SBase):
     @close_session
     def get_all(self):
         """获取所有商品"""
-        product_list = self.session.query(Product).filter_by(PRstatus=1, PReditstate=1).all()
+        product_list = self.session.query(Product).filter_by(
+            PRstatus=1, PReditstate=1).all()
         return product_list
+
+    @close_session
+    def get_product_list_by_reid(self, reid):
+        return self.session.query(Product).join(
+            RecommendProduct, Product.PRid == RecommendProduct.PRid).filter(
+            RecommendProduct.REid == reid).all()
 
     @close_session
     def update_view_num(self, prid):
@@ -36,4 +42,3 @@ class SProduct(SBase):
             product.PRfakeviewnum = product.PRfakeviewnum + 1
         self.session.add(product)
         self.session.commit()
-

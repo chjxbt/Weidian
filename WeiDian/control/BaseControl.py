@@ -172,16 +172,23 @@ class BaseProductControl():
         viewnum = recommend.REfakeviewnum or recommend.REviewnum  # 浏览数
         likenum = recommend.RElikefakenum or recommend.RElikenum  # 笑脸数
         recommend.reviewnum = viewnum
-        recommend.relikefakenum = likenum
-        recommend.add('reviewnum', 'relikefakenum')
+        recommend.relikenum = likenum
+        recommend.add('reviewnum', 'relikenum')
         return recommend
 
-    def fill_recommend_product(self, recommend):
+    # def fill_recommend_product(self, recommend):
+    #     reid = recommend.REid
+    #     recommend_product_list = self.srecommendproduct.get_recommend_product_by_reid(reid)
+    #
+    #     recommend.add('productlist')
+    #     return recommend
+
+    def fill_product(self, recommend):
         """日荐页中中部商品填充"""
         reid = recommend.REid
-        recommend_product_list = self.srecommendproduct.get_recommend_product_by_reid(reid)
-        recommend.productlist = recommend_product_list
-        recommend.add('productlist')
+        product_lsit = self.sproduct.get_product_list_by_reid(reid)
+        recommend.products = product_lsit
+        recommend.add('products')
         return recommend
 
 
