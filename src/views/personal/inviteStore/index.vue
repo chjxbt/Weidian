@@ -143,12 +143,41 @@
             </div>
           </div>
         </div>
-      <div class="m-inviteStore-btn">立 即 邀 请</div>
+      <div class="m-inviteStore-btn" @click="showModal(true)">立 即 邀 请</div>
+
+      <div class="m-inviteStore-modal" v-if="show_modal">
+        <div class="m-inviteStore-modal-state">
+          <span class="m-inviteStore-modal-close" @click="showModal(false)"> X</span>
+          <span class="m-inviteStore-modal-logo"></span>
+
+          <div class="m-inviteStore-modal-content">
+            <h3 class="m-inviteStore-modal-content-h3">选择赠与的新衣币</h3>
+            <ul class="m-inviteStore-modal-content-ul">
+              <li>
+                <span class="m-check"></span>
+                <discount-coupon></discount-coupon>
+              </li>
+              <li>
+                <span class="m-check active"></span>
+                <discount-coupon></discount-coupon>
+              </li>
+            </ul>
+          </div>
+          <div class="m-inviteStore-modal-foot">
+            <div class="m-flex-start">
+              <span class="m-check"></span>
+              <span>不使用新衣币</span>
+            </div>
+            <span class="m-inviteStore-modal-btn">确定</span>
+          </div>
+        </div>
+      </div>
     </div>
 
 </template>
 
 <script type="text/ecmascript-6">
+  import discountCoupon from '../../../components/common/discountCoupon'
     export default {
         data() {
             return {
@@ -169,13 +198,22 @@
                     url:'ranking',
                     name:'邀请排行榜'
                   }
-                ]
+                ],
+              show_modal:false
             }
         },
-        components: {},
+        components: {
+          discountCoupon
+        },
+      mounted(){
+
+      },
         methods: {
           navChange(v){
             this.now = v
+          },
+          showModal(v){
+              this.show_modal = v;
           }
         },
         created() {
@@ -464,6 +502,94 @@
     -webkit-animation:myMove 1s infinite;
     -moz-animation:myMove 1s infinite;
     -o-animation:myMove 1s infinite;
+  }
+  .m-inviteStore-modal{
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0,0,0,0.2);
+    z-index: 1001;
+    transition: opacity .5s;
+    .m-inviteStore-modal-state{
+      background-color: #fff;
+      position: absolute;
+      width: 100%;
+      height: 786px;
+      left: 0;
+      bottom:0;
+      .m-inviteStore-modal-close{
+        position: absolute;
+        top:0;
+        right: 10px;
+        font-size: 30px;
+        color: #a4a4a4;
+        padding: 20px;
+        touch-action: none;
+      }
+      .m-inviteStore-modal-logo{
+        position: absolute;
+        top:-75px;
+        left: 50%;
+        transform: translateX(-75px);
+        width: 148px;
+        height: 148px;
+        border: 2px solid #fff;
+        border-radius: 50%;
+        background: url("/static/images/icon-invitateStore-logo.png") no-repeat;
+        background-size: 100%;
+      }
+      .m-inviteStore-modal-content{
+        padding: 34px;
+        margin-top: 90px;
+        .m-inviteStore-modal-content-h3{
+          font-size: 28px;
+          font-weight: bold;
+        }
+        .m-inviteStore-modal-content-ul{
+          li{
+            .flex-row(flex-start);
+          }
+        }
+      }
+      .m-inviteStore-modal-foot{
+        .flex-row(space-between);
+        font-size: 34px;
+        color: #666;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 110px;
+        line-height: 110px;
+        background-color: #f5f5f5;
+        border-top: 1px solid @borderColor;
+        .m-inviteStore-modal-btn{
+          display: block;
+          width: 247px;
+          height: 80px;
+          line-height: 80px;
+          color: #fff;
+          background-color: @mainColor;
+          border-radius: 6px;
+          margin-right: 36px;
+          font-size: 32px;
+        }
+      }
+      .m-check{
+        display: inline-block;
+        width: 46px;
+        height: 46px;
+        margin: 0 38px;
+        background: url("/static/images/icon-complain-check.png") no-repeat center;
+        background-size: 100% 100%;
+        &.active{
+          background: url("/static/images/icon-complain-check-active.png") no-repeat center;
+          background-size: 100% 100%;
+        }
+      }
+    }
   }
 }
   @keyframes  myMove{
