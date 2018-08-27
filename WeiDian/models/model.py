@@ -309,9 +309,7 @@ class Recommend(Base, BaseModel):
             'SUid',
             'REcreatetime',
             'REstarttime',
-            'REendtime',
-            'REviewnum',
-            'RElikenum']
+            'REendtime']
 
 
 class RecommendProduct(Base, BaseModel):
