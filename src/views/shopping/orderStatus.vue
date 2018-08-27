@@ -139,7 +139,8 @@
       },
       // 查看物流
       checkLogistics() {
-
+        let order = this.order;
+        this.$router.push({path: "/logisticsInfo", query: { order }});
       }
     },
     created() {

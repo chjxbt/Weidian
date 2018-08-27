@@ -120,6 +120,8 @@ export const constantRouterMap = [
   { path: '/orderPayOK', component: () => import('../views/shopping/orderPayOK'), hidden: true },
   // 各种订单状态
   { path: '/orderStatus', component: () => import('../views/shopping/orderStatus'), hidden: true },
+  // 物流信息
+  { path: '/logisticsInfo', component: () => import('../views/shopping/logisticsInfo'), hidden: true },
 ]
 
 export default new Router({
