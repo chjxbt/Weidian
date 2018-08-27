@@ -158,7 +158,7 @@
       // 立即购买
       buyNow() {
         let order = "";
-        this.$router.push({path: "/submitOrder", query: {order}});
+        this.$router.push({path: "/submitOrder", query: { order }});
       }
     },
     created() {

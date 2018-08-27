@@ -186,12 +186,12 @@
       // 跳转商品详情页
       toDetail(product) {
         // console.log(product)
-        this.$router.push({path: "/productDetail", query: {product}});
+        this.$router.push({path: "/productDetail", query: { product }});
       },
       // 去结算
       toOrder() {
         let order = this.order;
-        this.$router.push({path: "/submitOrder", query: {order}});
+        this.$router.push({path: "/submitOrder", query: { order }});
       }
     },
     created() {}

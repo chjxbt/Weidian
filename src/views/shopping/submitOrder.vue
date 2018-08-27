@@ -53,7 +53,7 @@
         <textarea class="msg-input" placeholder="选填：建议填写和卖家商量好的内容~" rows="3"></textarea>
       </div>
       <div class="order-pay-box">
-        <div class="order-pay">支付订单</div>
+        <div class="order-pay" @click="payOrder">支付订单</div>
       </div>
     </div>
   </div>
@@ -66,7 +66,8 @@
     data() {
       return {
         name: "submitOrder",
-        hasAddress: true
+        hasAddress: true,
+        order: {}
       }
     },
     components: { newCurrency },
@@ -78,11 +79,16 @@
         }else if(!this.hasAddress) {
           this.hasAddress = true;
         }
+      },
+      // 支付订单
+      payOrder() {
+        let order = this.order;
+        this.$router.push({path: "/orderPayOK", query: { order }});
       }
     },
     created() {
-      let order = this.$route.query.order;
-      console.log("order", order);
+      this.order = this.$route.query.order;
+      console.log("order", this.order);
     }
   }
 </script>
@@ -223,7 +229,7 @@
       .wechat-pay-img {
         width: 40px;
         height: 30px;
-        margin: 40px 20px 40px 50px;
+        margin: 38px 20px 40px 50px;
       }
       .wechat-pay-text {
         flex: 1;
