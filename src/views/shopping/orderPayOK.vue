@@ -16,7 +16,7 @@
     data() {
       return {
         name: "orderPayOK",
-        order:{}
+        order: {}
       }
     },
     // components: {  },
@@ -24,7 +24,7 @@
       // 查看订单
       orderDetail() {
         let order = this.order;
-        this.$router.push({path: "/productDetail", query: { order }});
+        this.$router.push({path: "/orderStatus", query: { order }});
       },
       // 返回首页
       returnHome() {
@@ -33,7 +33,7 @@
     },
     created() {
       this.order = this.$route.query.order;
-      console.log("order", this.order);
+      // console.log("order", this.order);
     }
   }
 </script>

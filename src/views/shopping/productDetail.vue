@@ -94,7 +94,7 @@
     </ul>
     <div class="to-buy">
       <span class="service-add" @click="toService">
-        <img src="/static/images/produc_detail_service.png" class="to-buy-icon">
+        <img src="/static/images/product_detail_service.png" class="to-buy-icon">
         <p class="to-buy-text">客服</p>
       </span>
       <span class="service-add" @click="addCart">

@@ -126,9 +126,9 @@
       width: 100%;
       display: flex;
       .order-address-img {
-        width: 40px;
-        height: 60px;
-        margin: 15px 40px;
+        width: 30px;
+        height: 45px;
+        margin: 25px 50px;
       }
       .consignee-name {
         color: @black;
@@ -146,7 +146,7 @@
     .consignee-address {
       color: @black;
       font-size: 26px;
-      letter-spacing: 3px;
+      letter-spacing: 2px;
       margin: 0 33px 20px 40px;
       display: -webkit-box;
       -webkit-box-orient: vertical;

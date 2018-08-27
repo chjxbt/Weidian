@@ -111,12 +111,15 @@ export const constantRouterMap = [
   { path: '/complain', component: () => import('../views/personal/order/complain'), hidden: true },
   /*收藏*/
   { path: '/collect', component: () => import('../views/personal/collect'), hidden: true },
+
   // 商品详情
   { path: '/productDetail', component: () => import('../views/shopping/productDetail'), hidden: true },
   // 提交订单
   { path: '/submitOrder', component: () => import('../views/shopping/submitOrder'), hidden: true },
   // 订单支付成功
   { path: '/orderPayOK', component: () => import('../views/shopping/orderPayOK'), hidden: true },
+  // 各种订单状态
+  { path: '/orderStatus', component: () => import('../views/shopping/orderStatus'), hidden: true },
 ]
 
 export default new Router({
