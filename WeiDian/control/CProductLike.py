@@ -23,7 +23,8 @@ class CProductLike():
             return TOKEN_ERROR()
         json_data = parameter_required('prid')
         prid = json_data.get('prid')
-        already_like = self.sproductlike.get_productlike_by_usidprid(request.user.id, prid)
+        already_like = self.sproductlike.get_productlike_by_usidprid(
+            request.user.id, prid)
         # 该用户是否已经收藏了此商品
         if not already_like:
             pl_dict = dict(
@@ -44,15 +45,5 @@ class CProductLike():
         """获取用户的收藏列表"""
         if is_tourist():
             return TOKEN_ERROR()
-        productlike_list = self.sproductlike.get_productlike_list_by_usid(request.user.id)
-        
-
-
-
-
-
-
-
-
-
-
+        productlike_list = self.sproductlike.get_productlike_list_by_usid(
+            request.user.id)

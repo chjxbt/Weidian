@@ -3,7 +3,8 @@ import sys
 import os
 
 from SBase import SBase, close_session
-from WeiDian.models.model import Recommend
+from WeiDian.models.model import Recommend, RecommendLike
+
 sys.path.append(os.path.dirname(os.getcwd()))
 
 
@@ -24,6 +25,25 @@ class SRecommend(SBase):
             recommend.REfakeviewnum = recommend.REfakeviewnum + 1
         self.session.add(recommend)
         self.session.commit()
+
+    @close_session
+    def update_like_num(self, reid):
+        recommend = self.session.query(Recommend).filter_by(REid=reid).first()
+        recommend.RElikenum = recommend.RElikenum + self.session.query(RecommendLike).count()
+        if recommend.RElikefakenum:
+            recommend.RElikefakenum = recommend.RElikefakenum + self.session.query(RecommendLike).count()
+        self.session.add(recommend)
+        self.session.commit()
+
+    # @close_session
+    # def update_like_num(self, reid):
+    #     recommend = self.session.query(Recommend).filter_by(REid=reid).first()
+    #     user_like_num = self.session.query(RecommendLike).count()
+    #     recommend.RElikenum = recommend.RElikenum + 1
+    #     if recommend.RElikefakenum:
+    #         recommend.RElikefakenum = recommend.RElikefakenum + 1
+    #     self.session.add(recommend)
+    #     self.session.commit()
 
     @close_session
     def add_recommend(self, recommend):
