@@ -1,7 +1,6 @@
 # *- coding:utf8 *-
 from sqlalchemy.dialects.mysql import LONGTEXT
 from sqlalchemy import Column, create_engine, Integer, String, Text, Float, Boolean, orm
-from sqlalchemy import create_engine
 from WeiDian.config import dbconfig as cfg
 from WeiDian.models.base_model import BaseModel, auto_createtime
 
@@ -363,8 +362,8 @@ class OrderInfo(BaseModel):
     OImount = Column(Float)  # 金额
     OIpaytime = Column(String(14))  # 支付时间
     OIaddress = Column(String(255), nullable=False)  # 地址
-    OIsigername = Column(String(64), nullable=False)  # 收货人
-    OIsingerphone = Column(String(16), nullable=False)  # 收货人电话
+    OIrecvname = Column(String(64), nullable=False)  # 收货人
+    OIrecvphone = Column(String(16), nullable=False)  # 收货人电话
     OIcreatetime = Column(String(14))  # 订单创建时间
     OIisdelete = Column(Boolean, default=False)  # 是否删除
 
