@@ -100,7 +100,7 @@
                       <span class="m-fans-scarf">No 2</span>
                     </div>
                     <p class="m-golden m-fans-top-name">贝之店</p>
-                    <p>邀请数：<span  class="m-golden">212424</span></p>
+                    <p class="m-ft-20">邀请数：<span  class="m-golden">212424</span></p>
                   </div>
                   <div class="m-fans-top-one">
                     <div class="m-fans-top-one-top">
@@ -109,7 +109,7 @@
                       <span class="m-fans-scarf">No 1</span>
                     </div>
                     <p class="m-golden m-fans-top-name">贝之店</p>
-                    <p class="m-ft-22">邀请数：<span  class="m-golden">212424</span></p>
+                    <p class="m-ft-20">邀请数：<span  class="m-golden">212424</span></p>
                   </div>
                   <div class="m-fans-top-one ">
                     <div class="m-fans-top-one-top m-fans-top-three">
@@ -118,7 +118,7 @@
                       <span class="m-fans-scarf">No 3</span>
                     </div>
                     <p class="m-golden m-fans-top-name">贝之店</p>
-                    <p class="m-ft-22">邀请数：<span  class="m-golden">212424</span></p>
+                    <p class="m-ft-20">邀请数：<span  class="m-golden">212424</span></p>
                   </div>
                 </div>
                 <ul class="m-fans-ranking-ul">
