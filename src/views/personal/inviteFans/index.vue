@@ -18,7 +18,7 @@
         <h3 class="m-fans-share-h3">立即邀请，赚取收益</h3>
         <p class="m-fans-share-p">好 友 将 获 得 20 元 新 衣 币</p>
         <div class="m-fans-share-btn">
-          <span>分享海报</span>
+          <span @click="sharePoster">分享海报</span>
           <span>分享链接</span>
         </div>
         <p class="m-fans-share-info">您已成功绑定5位粉丝  <span  @click="fansClick">&nbsp;&nbsp;&nbsp;点击查看></span></p>
@@ -88,6 +88,9 @@
         methods: {
           fansClick(){
             this.$router.push('/fansManagement')
+          },
+          sharePoster(){
+            this.$router.push('/poster')
           }
         },
         created() {
