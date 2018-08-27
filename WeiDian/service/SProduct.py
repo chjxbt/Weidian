@@ -29,6 +29,7 @@ class SProduct(SBase):
 
     @close_session
     def update_view_num(self, prid):
+        """增加浏览数"""
         product = self.session.query(Product).filter_by(PRid=prid).first()
         product.PRviewnum = product.PRviewnum + 1
         if product.PRfakeviewnum:
