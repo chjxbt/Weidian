@@ -121,7 +121,7 @@ class ActivityTag(BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['ATid', 'ATname', ]
+        self.fields = ['ATid', 'ATname']
 
 
 class ActivityFoward(BaseModel):
