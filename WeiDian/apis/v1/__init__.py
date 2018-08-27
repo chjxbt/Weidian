@@ -11,3 +11,4 @@ from .AShoppingCart import AShoppingCart
 from .AActivityComment import AActivityComment
 from .AUser import AUser
 from .AOrder import AOrder
+from .AProductLike import AProductLike
