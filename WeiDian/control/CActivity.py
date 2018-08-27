@@ -184,11 +184,14 @@ class CActivity(BaseActivityControl):
             elif 'amimage' not in img_or_vido_keys and 'amvideo' in img_or_vido_keys:
                 """视频"""
                 if image_num < 1:
+                    # 只有在无图片的状况下才会添加视频
                     add_model('ActivityMedia', **{
                         'AMid': str(uuid.uuid1()),
                         'ACid': acid,
-                        'AMvideo': media.get('amvideo')
+                        'AMvideo': img_or_vido.get('amvideo')
                     })
+                    # 只可以添加一个视频, 且不可以再添加图片
+                    break
 
         # 创建tag
         if tags:

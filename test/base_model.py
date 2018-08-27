@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Query as _Query
 
 
-from test.errors import ApiException
+
 
 
 class Query(_Query):
@@ -10,5 +10,5 @@ class Query(_Query):
 
         rv = self.first()
         if rv is None:
-            raise ApiException()
+            raise BaseException()
         return rv

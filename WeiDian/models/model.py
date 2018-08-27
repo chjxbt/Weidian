@@ -265,7 +265,7 @@ class ProductLike(BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        pass
+        self.fields = self.all
 
 
 class RecommendBanner(BaseModel):
@@ -508,6 +508,7 @@ class User(BaseModel):
     USlastlogin = Column(String(64))  # 用户上次登录时间
     # 用户级别: {0 普通用户, 1 普通合伙人, 2 中级合伙人, 3 高级合伙人}
     USlevel = Column(Integer, default=0)
+    # 上级
     UPPerd = Column(String(64), default=0)
 
     @orm.reconstructor
@@ -585,6 +586,28 @@ class IndexAdAlert(BaseModel):
     IAurl = Column(String(128))  # 暂存url(点击弹窗后的效果未知)
     # 弹窗所针对的用户: {0 普通用户, 1 普通合伙人, 2 中级合伙人, 4 高级合伙人, 5 全部}
     IAtype = Column(Integer, default=0)
+
+
+class PartnerRequired(BaseModel):
+    """合伙人需要满足的条件"""
+    __tablename__ = 'partnerrequired'
+    id = Column(String(64), primary_key=True)
+    partnerlevel = Column(Integer)  # 合伙人级别{0: 普通合伙人, 1: 初级合伙人, 2:高级合伙人}
+    ordinaryrequired = Column(Integer, default=0)  # 需要满足的普通合伙人人数
+    primaryrequired = Column(Integer, default=0)  # 需要的初级合伙人人数
+    invitedordinary = Column(Integer, default=0)  # 需要邀请成功开店的人数
+    shopgiftrequired = Column(Boolean, default=True)  # 是否需要开店大礼包
+
+
+class MonthMonthReward(BaseModel):
+    """月月奖"""
+    __tablename__ = 'monthmonthreward'
+    MMRid = Column(String(64), primary_key=True)
+    partnerlevel = Column(Integer)  # 合伙人级别{0: 普通合伙人, 1: 初级合伙人, 2:高级合伙人}
+    MMRstarttime = Column(String(16), nullable=False)  # 开始时间
+    MMRendtime = Column(String(16), nullable=False)  # 结束时间
+    MMRaverage = Column(Float)  # 需要人均销售额
+    MMRmount = Column(Float)  # 需要的团队销售总额
 
 
 # 交易相关
