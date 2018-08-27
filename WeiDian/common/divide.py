@@ -1,7 +1,10 @@
 # *- coding:utf8 *-
 import ConfigParser
 
+from WeiDian.common.single import singleton
 
+
+@singleton
 class Partner(object):
     """佣金分成设置, 后续设置"""
     def __init__(self, config_file_path='WeiDian/config/divide_config.ini'):
