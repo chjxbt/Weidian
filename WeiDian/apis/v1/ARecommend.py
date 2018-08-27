@@ -14,7 +14,7 @@ class ARecommend(Resource):
     def get(self, recommend):
         print recommend
         apis = {
-            "get_all": "self.control_recommend.get_all()"
+            "get_info": "self.control_recommend.get_one_by_reid()"
         }
         res = eval(apis[recommend])
         return jsonify(res)

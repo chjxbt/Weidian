@@ -329,7 +329,7 @@ class RecommendLike(BaseModel):
     RLid = Column(String(64), primary_key=True)
     USid = Column(String(64))  # 用户id
     REid = Column(String(64))  # 推荐商品id
-    RLtime = Column(String(14))  # 推荐页点赞时间
+    RLcreatetime = Column(String(14))  # 推荐页点赞时间
 
 
 class ShoppingCart(BaseModel):

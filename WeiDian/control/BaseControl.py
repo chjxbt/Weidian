@@ -169,6 +169,8 @@ class BaseProductControl():
 
     def fill_recommend_nums(self, recommend):
         """日荐页中部浏览数和笑脸数"""
+        # reid = recommend.REid
+        # recommend_list = self.srecommend.get_recommend_by_reid(reid)
         viewnum = recommend.REfakeviewnum or recommend.REviewnum  # 浏览数
         likenum = recommend.RElikefakenum or recommend.RElikenum  # 笑脸数
         recommend.reviewnum = viewnum

@@ -10,10 +10,20 @@ sys.path.append(os.path.dirname(os.getcwd()))
 class SRecommend(SBase):
 
     @close_session
-    def get_recommend(self):
-        """返回日推页商品区域所有信息"""
-        recommend_list = self.session.query(Recommend).filter_by(REisdelete=False).order_by(Recommend.REcreatetime.desc()).all()
-        return recommend_list
+    def get_recommend_by_reid(self, reid):
+        """返回日推页商品区域信息"""
+        # recommend_list = self.session.query(Recommend).filter_by(REid=reid, REisdelete=False).order_by(Recommend.REcreatetime.desc()).all()
+        recommend = self.session.query(Recommend).filter_by(REid=reid, REisdelete=False).all()
+        return recommend
+
+    @close_session
+    def update_view_num(self, reid):
+        recommend = self.session.query(Recommend).filter_by(REid=reid).first()
+        recommend.REviewnum = recommend.REviewnum + 1
+        if recommend.REfakeviewnum:
+            recommend.REfakeviewnum = recommend.REfakeviewnum + 1
+        self.session.add(recommend)
+        self.session.commit()
 
     @close_session
     def add_recommend(self, recommend):
