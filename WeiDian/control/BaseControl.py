@@ -4,6 +4,8 @@ import uuid
 from flask import request
 
 from WeiDian.common.TransformToList import list_add_models, dict_add_models
+from WeiDian.common.divide import Partner
+from WeiDian.common.token_required import is_partner
 
 
 class BaseActivityControl():
@@ -141,7 +143,7 @@ class BaseProductControl():
     def trans_product_for_fans(self, product):
         """调整为粉丝版本"""
         # 粉丝页面显示本身价格和店主价, 以及相关商品推荐(规则?)
-        prkeeperprice = product.PRprice * (1 - self.partner.new_partner)
+        prkeeperprice = product.PRprice * (1 - self.partner.one_level_divide)
         product.prkeeperprice = prkeeperprice
         product.add('prkeeperprice')
         return product
@@ -150,7 +152,7 @@ class BaseProductControl():
         """调整为店主版本"""
         # 店主页面需要显示赚多少, '买'和'卖'分别省多少和赚多少(10%)
         # 暂定为赚取金额为店主价-普通价格
-        prkeeperprice = product.PRprice * self.partner.new_partner
+        prkeeperprice = product.PRprice * self.partner.one_level_divide
         # 节省或赚取的价格
         product.prsavemonty = product.PRprice - prkeeperprice
         product.add('prsavemonty')
@@ -206,7 +208,8 @@ class BaseShoppingCart(BaseProductControl):
             if not sku:
                 return cart
             sku.add('PSKproperkey')
-            cart.PRprice = sku.PSKprice  # todo 价格, 待设置
+            # 价格计算, 合伙人优惠
+            cart.PRprice = sku.PSKprice * Partner().one_level_divide if is_partner() else sku.PSKprice
             cart.sku = sku
             cart.add('sku')
         return cart
