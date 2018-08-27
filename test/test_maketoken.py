@@ -2,14 +2,12 @@
 import uuid
 from datetime import datetime, timedelta
 
-from flask import Blueprint, request, jsonify
+from flask import request, jsonify
 from flask.views import MethodView
-from werkzeug.exceptions import HTTPException
 from WeiDian.common.token_required import verify_token_decorator
 from WeiDian.common.timeformat import format_for_db
 from WeiDian.common.base_error import BaseError
-
-from WeiDian.config.response import TOKEN_ERROR, PARAMS_MISS, SYSTEM_ERROR
+from WeiDian.common.divide import Partner
 
 
 class TestToken(MethodView):
@@ -21,8 +19,10 @@ class TestToken(MethodView):
     @verify_token_decorator
     def get(self):
         """verfity token test"""
-        from flask import request
-        raise BaseError()
+        pn = Partner()
+        pn.three_level_divide = 'newthree'
+        return 'ok'
+
 
     @verify_token_decorator
     def put(self):
@@ -99,8 +99,6 @@ class TestToken(MethodView):
 
 class ErrorTest(MethodView):
     def get(self):
-        import ipdb
-
         return jsonify(BaseError('test'))
 
 def create_test_url(app):
