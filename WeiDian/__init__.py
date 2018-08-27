@@ -6,8 +6,7 @@ from flask.json import JSONEncoder as _JSONEncoder
 from werkzeug.exceptions import HTTPException
 
 from WeiDian.apis.v1 import AActivity, AHotMessage, ABanner, ASearchField, ATopNav, \
-    ASuperUser, AProduct, ARecommendBanner, AShoppingCart, AActivityComment, AUser, ARecommend
-from WeiDian.common.base_error import BaseError
+    ASuperUser, AProduct, ARecommendBanner, AShoppingCart, AActivityComment, AUser, ARecommend, AOrder
 from test.test_maketoken import create_test_url
 
 
@@ -64,6 +63,7 @@ def register_route(app):
     app.add_url_rule('/recommend/<string:recommend>', view_func=ARecommend.as_view('recommend'))
     app.add_url_rule('/activitycomment/<string:activitycomment>', view_func=AActivityComment.as_view('activitycomment'))
     app.add_url_rule('/user/<string:user>', view_func=AUser.as_view('user'))
+    app.add_url_rule('/order/<string:order>', view_func=AOrder.as_view('order'))
 
 
 def create_app():

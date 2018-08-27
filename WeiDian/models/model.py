@@ -376,11 +376,22 @@ class OrderProductInfo(Base):
     OPIid = Column(String(64), primary_key=True)
     OIid = Column(String(64), nullable=False)  # 订单
     PRid = Column(String(64), nullable=False)  # 商品id
-    OPIsku = Column(Text, nullable=False)  # 订单中的sku值(无需存skuid)
+    # OPIsku = Column(Text, nullable=False)  # 订单中的sku值(无需存skuid)
+    _PSKproperkey = Column(Text, nullable=False)  # 商品sku属性的key, json
     OIproductprice = Column(Float, nullable=False)   # 商品价格(购买时候的价格)
     OPIproductname = Column(String(64))  # 商品的名字(购买之时的)
     OPIproductimages = Column(String(64))  # 商品主图
     OPIproductnum = Column(Integer, default=1)  # 购买数量
+
+    @property
+    def PSKproperkey(self):
+        return eval(self._PSKproperkey)
+
+    @PSKproperkey.setter
+    def PSKproperkey(self, raw):
+        self._PSKproperkey = str(raw)
+
+
 
 
 class ProductCategory(Base):

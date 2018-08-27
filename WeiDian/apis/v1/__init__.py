@@ -10,3 +10,4 @@ from .ARecommend import ARecommend
 from .AShoppingCart import AShoppingCart
 from .AActivityComment import AActivityComment
 from .AUser import AUser
+from .AOrder import AOrder
