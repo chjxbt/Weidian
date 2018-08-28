@@ -23,7 +23,7 @@ class CRecommend(BaseProductControl):
         self.ssuperuser = SSuperUser()
 
     @verify_token_decorator
-    def get_one_by_reid(self):
+    def get_list(self):
         args = request.args.to_dict()
         reid = args.get('reid')
         if not reid:
