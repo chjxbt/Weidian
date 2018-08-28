@@ -568,7 +568,6 @@ class SearchField(BaseModel):
     SFstarttime = Column(String(14))  # 上线时间
     SFendtime = Column(String(14))  # 下线时间
     SFsort = Column(Integer)  # 顺序
-    ACisended = Column(Boolean, default=False)  # 是否被手动截止
 
     @orm.reconstructor
     @auto_createtime
