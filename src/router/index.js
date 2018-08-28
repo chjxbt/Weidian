@@ -6,7 +6,8 @@ Vue.use(Router)
 
 
 export const constantRouterMap = [
-  { path: '/login', component: Layout, hidden: true },
+  { path: '/login', component: () => import('../views/login/login'), hidden: true },
+  {path: '/register', component: () => import('../views/login/register'),hidden: true  },
   {
     path: '/',
     component: Layout,
