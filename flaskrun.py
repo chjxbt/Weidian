@@ -5,13 +5,13 @@ from WeiDian.common.base_error import BaseError
 wd = create_app()
 
 
-@wd.errorhandler(Exception)
-def framework_error(e):
-    if isinstance(e, BaseError):
-        return e
-    if not wd.config['DEBUG']:
-        raise BaseError()
-    raise e
+# @wd.errorhandler(Exception)
+# def framework_error(e):
+#     if isinstance(e, BaseError):
+#         return e
+#     if not wd.config['DEBUG']:
+#         raise BaseError()
+#     raise e
 
 
 if __name__ == '__main__':
