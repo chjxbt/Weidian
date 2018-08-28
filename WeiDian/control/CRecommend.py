@@ -9,6 +9,9 @@ from WeiDian.config.response import AUTHORITY_ERROR, PARAMS_MISS, TIME_ERROR
 from WeiDian.control.BaseControl import BaseProductControl
 from WeiDian.service.SProduct import SProduct
 from flask import request
+
+from WeiDian.service.SSuperUser import SSuperUser
+
 sys.path.append(os.path.dirname(os.getcwd()))
 
 
@@ -17,6 +20,7 @@ class CRecommend(BaseProductControl):
         from WeiDian.service.SRecommend import SRecommend
         self.srecommend = SRecommend()
         self.sproduct = SProduct()
+        self.ssuperuser = SSuperUser()
 
     @verify_token_decorator
     def get_one_by_reid(self):
@@ -27,15 +31,15 @@ class CRecommend(BaseProductControl):
         if not is_partner():
             return AUTHORITY_ERROR
         print '是合伙人'
-        recommend = self.srecommend.get_recommend_by_reid(reid)
+        recommend = self.srecommend.get_recommend_list()
         lasting = args.get('lasting', 'true')  # 是否正在展示
         if lasting == 'true':
             now_time = datetime.strftime(datetime.now(), format_for_db)
             recommend = filter(lambda re: re.REstarttime < now_time < re.REendtime, recommend)
         map(self.fill_product, recommend)
         map(self.fill_recommend_nums, recommend)
+        map(self.fill_super, recommend)
         self.srecommend.update_view_num(reid)
-        self.srecommend.update_like_num(reid)
         data = import_status('get_recommend_success', 'OK')
         data['data'] = recommend
         return data

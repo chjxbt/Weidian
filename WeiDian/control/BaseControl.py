@@ -169,6 +169,18 @@ class BaseProductControl():
         product.add('prsoldnum', 'prlikenum', 'prviewnum') 
         return product
 
+    def fill_suser(self, obj):
+        """给对象添加一个用户字段"""
+        obj.suuser = self.suser.get_user_by_user_id(obj.USid)  # 对象的用户
+        obj.add('super')
+        return obj
+
+    def fill_super(self, obj):
+        """添加一个管理员字段"""
+        obj.suuser = self.ssuperuser.get_one_super_by_suid(obj.SUid)  # 超级用户
+        obj.add('suuser')
+        return obj
+
     def fill_recommend_nums(self, recommend):
         """日荐页中部浏览数和笑脸数"""
         # reid = recommend.REid

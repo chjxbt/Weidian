@@ -22,9 +22,7 @@ class SSuperUser(SBase):
     @close_session
     def get_one_super_by_suid(self, suid):
         """通过suid获取超级用户"""
-        super = self.session.query(SuperUser).filter_by(SUid=suid).first()
-        if super:
-            return super
+        return self.session.query(SuperUser).filter_by(SUid=suid).first()
 
     @close_session
     def verify_super(self, suname, supassword):
