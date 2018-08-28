@@ -3,7 +3,7 @@ import sys
 import os
 
 from SBase import SBase, close_session
-from WeiDian.models.model import Recommend, RecommendLike
+from WeiDian.models.model import Recommend
 
 sys.path.append(os.path.dirname(os.getcwd()))
 

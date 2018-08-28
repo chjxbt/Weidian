@@ -19,6 +19,7 @@ class CRecommendBanner():
         from WeiDian.service.SProduct import SProduct
         self.sproduct = SProduct()
 
+    @verify_token_decorator
     def get_all(self):
         args = request.args.to_dict()
         if not is_partner():
@@ -33,6 +34,7 @@ class CRecommendBanner():
         data['data'] = banner_list
         return data
 
+    @verify_token_decorator
     def get_one(self):
         args = request.args.to_dict()
         if not is_partner():
@@ -73,7 +75,7 @@ class CRecommendBanner():
         if not rbimage or not prid:
             return PARAMS_MISS
         if not self.sproduct.get_product_by_prid(prid):
-            return SYSTEM_ERROR
+            return SYSTEM_ERROR("缺少对应的商品id")
         add_model('RecommendBanner', **{
             'RBid': rbid,
             'RBimage': rbimage,
@@ -98,7 +100,7 @@ class CRecommendBanner():
         if not rbid:
             return PARAMS_MISS
         if not self.srecommendbanner.del_banner(rbid):
-            return SYSTEM_ERROR
+            return SYSTEM_ERROR("轮播图不存在")
         response_make_banner = import_status(
             'del_recommendbanner_success', 'OK')
         response_make_banner['data'] = {'rbid': rbid}

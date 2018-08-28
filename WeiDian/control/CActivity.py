@@ -56,7 +56,9 @@ class CActivity(BaseActivityControl):
             activity_list = self.sactivity.get_activity_by_suid(suid)
         if lasting == 'true':
             now_time = datetime.strftime(datetime.now(), format_for_db)
-            activity_list = filter(lambda act: act.ACstarttime < now_time < act.ACendtime and not act.ACisended, activity_list)
+            activity_list = filter(
+                lambda act: act.ACstarttime < now_time < act.ACendtime and not act.ACisended,
+                activity_list)
         len_aclist = len(activity_list)
         if count > 30:
             count = 30
@@ -99,7 +101,10 @@ class CActivity(BaseActivityControl):
         if not acid:
             return PARAMS_MISS
         self.sactivity.delete_activity(acid)
-        return delete_activity_success
+        response_del_activity = import_status('delete_activity_success', 'OK')
+        response_del_activity['data'] = {}
+        response_del_activity['data']['acid'] = acid
+        return response_del_activity
 
     @verify_token_decorator
     def stop_one(self):
@@ -113,7 +118,10 @@ class CActivity(BaseActivityControl):
         if not acid:
             return PARAMS_MISS
         self.sactivity.stop_activity(acid)
-        return stop_activity_success
+        response_stop_activity = import_status('stop_activity_success', 'OK')
+        response_stop_activity['data'] = {}
+        response_stop_activity['data']['acid'] = acid
+        return response_stop_activity
 
     @verify_token_decorator
     def add_one(self):
@@ -147,6 +155,8 @@ class CActivity(BaseActivityControl):
         if not media or not actext or not prid or not topnavid:
             return PARAMS_MISS
         relation_product = self.sproduct.get_product_by_prid(prid)  # 关联的商品
+        if not relation_product:  # 如果没有该商品
+            return SYSTEM_ERROR("prid错误，没有该商品")
         # 创建活动
         acid = str(uuid.uuid1())
         add_model('Activity', **{
@@ -211,13 +221,13 @@ class CActivity(BaseActivityControl):
         if not is_admin():
             return AUTHORITY_ERROR  # 权限不足
         data = request.json
-        if not 'acid' in data.keys():
+        if 'acid' not in data.keys():
             return PARAMS_MISS
         acid = data.pop('acid')
         res = self.sactivity.update_activity(acid, **data)
         if not res:
-            return SYSTEM_ERROR
-        response_update_activity = import_status('update_activity_success', 'OK')
+            return SYSTEM_ERROR("acid错误，要修改的活动不存在")
+        response_update_activity = import_status(
+            'update_activity_success', 'OK')
         response_update_activity['data'] = {'acid': acid}
         return response_update_activity
-
