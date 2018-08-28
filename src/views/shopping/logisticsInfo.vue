@@ -203,6 +203,7 @@
     .line-two {
       width: 2px;
       height: 106px;
+      opacity: 0.5;
       background-color: @grey;
       margin: -110px 0 0 20px;
     }
