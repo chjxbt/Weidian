@@ -20,7 +20,7 @@ class CSuperUser():
             return PARAMS_MISS
         suuser = self.ssuperuser.verify_super(suname, supassword)
         if not suuser:
-            return SYSTEM_ERROR
+            return SYSTEM_ERROR('用户名或密码错误')
         token = usid_to_token(suuser.SUid, 'SuperUser')
         token_data = {'token': token}
         data = import_status('generic_token_success', 'OK')
