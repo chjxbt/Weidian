@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from WeiDian.common.TransformToList import add_model
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db
-from WeiDian.common.token_required import verify_token_decorator, is_admin
+from WeiDian.common.token_required import verify_token_decorator, is_admin, is_partner
 from WeiDian.config.response import SYSTEM_ERROR, AUTHORITY_ERROR, TOKEN_ERROR, PARAMS_MISS
 sys.path.append(os.path.dirname(os.getcwd()))
 

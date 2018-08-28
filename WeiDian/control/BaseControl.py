@@ -147,8 +147,6 @@ class BaseProductControl():
     def trans_product_for_fans(self, product):
         """调整为粉丝版本"""
         # 粉丝页面显示本身价格和店主价, 以及相关商品推荐(规则?)
-        import ipdb
-        ipdb.set_trace()
         prkeeperprice = product.PRprice * (1 - self.partner.one_level_divide)
         product.prkeeperprice = prkeeperprice
         product.add('prkeeperprice')
