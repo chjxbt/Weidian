@@ -149,18 +149,20 @@ class BaseProductControl():
         # 粉丝页面显示本身价格和店主价, 以及相关商品推荐(规则?)
         prkeeperprice = product.PRprice * (1 - self.partner.one_level_divide)
         product.prkeeperprice = prkeeperprice
-        product.add('prkeeperprice')
+        product.prsavemonty = prkeeperprice - prkeeperprice
+        product.add('prkeeperprice', 'prsavemonty')
         return product
 
     def trans_product_for_shopkeeper(self, product):
         """调整为店主版本"""
         # 店主页面需要显示赚多少, '买'和'卖'分别省多少和赚多少(10%)
         # 暂定为赚取金额为店主价-普通价格
-        prkeeperprice = product.PRprice * self.partner.one_level_divide
-        # 节省或赚取的价格
-        product.prsavemonty = product.PRprice - prkeeperprice
-        product.add('prsavemonty')
-        return product
+        # prkeeperprice = product.PRprice * self.partner.one_level_divide
+        # # 节省或赚取的价格
+        # product.prsavemonty = prkeeperprice
+        # product.add('prsavemonty')
+        # return product
+        return self.trans_product_for_fans(product)  # 返回数据一致
     
     def fill_product_nums(self, product):
         prid = product.PRid
