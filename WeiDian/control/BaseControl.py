@@ -230,8 +230,9 @@ class BaseShoppingCart(BaseProductControl):
             sku.add('PSKproperkey')
             # 价格计算, 合伙人优惠
             cart.PRprice = sku.PSKprice * Partner().one_level_divide if is_partner() else sku.PSKprice
+            cart.subtotal = cart.PRprice * cart.SCnums
             cart.sku = sku
-            cart.add('sku')
+            cart.add('sku', 'subtotal')
         return cart
 
     def fill_product(self, cart):
@@ -280,3 +281,6 @@ class BaseActivityCommentControl():
         comment.add('parent_apply_user')
         return comment
 
+
+class BaseOrder():
+    pass

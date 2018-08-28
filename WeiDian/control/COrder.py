@@ -65,6 +65,7 @@ class COrder():
         orderproductinfo_dict['opiproductname'] = product.PRname
         orderproductinfo_dict['opiproductimages'] = product.PRmainpic
         orderproductinfo_dict['opiproductnum'] = int(sku.get('num', 1))
+
         return orderproductinfo_dict
 
     @verify_token_decorator
