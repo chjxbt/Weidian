@@ -2,12 +2,12 @@
   <div class="product-params">
 
     <div v-if="!choose" class="product-params-choose" @click="productParams">
-      <div class="product-params-text">规格数量选择</div>
+      <div class="product-params-text m-ft-26 m-grey tl">规格数量选择</div>
       <img src="/static/images/icon-list-right.png" class="more-params">
     </div>
 
     <div v-if="choose" class="product-params-show" @click="productParams">
-      <span class="product-params-detail">尺寸：{{size}}</span><span class="product-params-detail">颜色：{{color}}</span>
+      <span class="product-params-detail m-ft-22 m-grey">尺寸：{{size}}</span><span class="product-params-detail">颜色：{{color}}</span>
       <img v-if="popupVisible" src="../../../static/images/icon-list-down.png" class="list-right-down">
       <img v-if="!popupVisible" src="../../../static/images/icon-list-right.png" class="list-right-down">
     </div>
@@ -16,22 +16,22 @@
       <div class="product-params-content">
         <img src="/static/images/product1.png" class="product-img">
         <div class="product-params-center">
-          <p class="product-price">￥<span class="product-price-number">160</span></p>
-          <div class="choose-prompt">{{prompt}}</div>
+          <p class="product-price m-ft-20 m-red m-ft-b tl">￥<span class="product-price-number m-ft-34">160</span></p>
+          <div class="choose-prompt m-ft-26 tl">{{prompt}}</div>
         </div>
         <img src="/static/images/delete.png" class="close-popup" @click="productParams">
       </div>
       <div class="line"></div>
       <div class="product-size-color" v-for="(option, index) in options">
-        <p class="product-size-color-text">{{option.name}}</p>
+        <p class="product-size-color-text m-ft-30 tl">{{option.name}}</p>
         <span :class="{select: sel[index] == ind}" v-for="(item, ind) in option.items" @click="select(index, ind)">{{item.msg}}</span>
       </div>
       <div class="line"></div>
       <div class="product-quantity">
-        <div class="product-quantity-text">购买数量</div>
+        <div class="product-quantity-text m-ft-30 tl">购买数量</div>
         <product-quantity :quantity="quantity" class="product-quantity-edit"></product-quantity>
       </div>
-      <div class="choose-done" @click="chooseDone">确定</div>
+      <div class="choose-done m-ft-28 m-bg-main-color" @click="chooseDone">确定</div>
     </mt-popup>
   </div>
 </template>
@@ -133,9 +133,6 @@
       display: flex;
       .product-params-text {
         flex: 1;
-        color: @grey;
-        font-size: 26px;
-        text-align: left;
         margin: 15px 0 25px 35px;
       }
       .more-params {
@@ -147,8 +144,6 @@
     .product-params-show {
       .product-params-detail {
         float: left;
-        color: @grey;
-        font-size: 22px;
         margin: 8px 20px 10px 0;
       }
       .list-right-down {
@@ -172,17 +167,6 @@
         margin: 15px 0 0 35px;
         .product-price {
           margin: 20px 0;
-          font-size: 20px;
-          text-align: left;
-          font-weight: bold;
-          color: @mainColor;
-          .product-price-number {
-            font-size: 34px;
-          }
-        }
-        .choose-prompt {
-          font-size: 26px;
-          text-align: left;
         }
       }
       .close-popup {
@@ -195,11 +179,9 @@
       height: 150px;
       .product-size-color-text {
         padding-left: 40px;
-        font-size: 30px;
-        text-align: left;
       }
       .select {
-        color: #ffffff;
+        color: @bgMainColor;
         background-color: @mainColor;
       }
       span {
@@ -222,8 +204,6 @@
     .product-quantity {
       .product-quantity-text {
         width: 535px;
-        font-size: 30px;
-        text-align: left;
         margin: 20px 0 40px 40px;
       }
       .product-quantity-edit {
@@ -233,8 +213,6 @@
     }
     .choose-done {
       padding: 30px;
-      font-size: 28px;
-      color: @bgMainColor;
       letter-spacing: 10px;
       background-color: @mainColor;
     }

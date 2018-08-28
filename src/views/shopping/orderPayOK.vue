@@ -1,12 +1,12 @@
 <template>
   <div>
     <img src="/static/images/order_pay_OK.png" class="m-ok-img">
-    <p class="pay-text">订单支付成功</p>
-    <p class="price-text">￥<span class="price-number">159.00</span></p>
-    <p class="order-text">仓库正为您备货中</p>
+    <p class="m-ft-40 m-black m-ft-b">订单支付成功</p>
+    <p class="price-text m-black m-ft-b">￥<span class="m-ft-34">159.00</span></p>
+    <p class="order-text m-ft-30 m-grey">仓库正为您备货中</p>
     <div class="m-btn">
-      <div class="m-btn-text" @click="orderDetail">查看订单</div>
-      <div class="m-btn-text" @click="returnHome">返回首页</div>
+      <div class="m-btn-text m-ft-28 m-grey-color" @click="orderDetail">查看订单</div>
+      <div class="m-btn-text m-ft-28 m-grey-color" @click="returnHome">返回首页</div>
     </div>
   </div>
 </template>
@@ -46,30 +46,16 @@
     height: 191px;
     margin: 260px 0 70px 0;
   }
-  .pay-text {
-    color: @black;
-    font-size: 40px;
-    font-weight: bold;
-  }
   .price-text {
-    color: @black;
     margin-top: 60px;
-    font-weight: bold;
-    .price-number {
-      font-size: 34px;
-    }
   }
   .order-text {
-    color: @grey;
-    font-size: 30px;
     margin: 20px 0 80px 0;
   }
   .m-btn {
     display: flex;
     .m-btn-text {
       width: 115px;
-      font-size: 28px;
-      color: @greyColor;
       margin: 0 65px;
       padding: 26px 63px;
       border-radius: 4px;

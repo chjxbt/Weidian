@@ -1,5 +1,5 @@
 <template>
-  <div class="product-quantity">
+  <div class="product-quantity m-ft-24">
     <div class="deduct-add" @click="deductQuantity">-</div>
     <div class="quantity" @click="changeQuantity">{{quantity}}</div>
     <div class="deduct-add" @click="addQuantity">+</div>
@@ -66,7 +66,6 @@
   .product-quantity {
     width: 100%;
     display: flex;
-    font-size: 24px;
     .deduct-add {
       height: 25px;
       padding: 5px 14px;

@@ -1,58 +1,58 @@
 <template>
   <div>
     <div class="order-no-box">
-      <div class="order-no">订单号：RRK65S6R332SD654S613DF65SAD5</div>
-      <div class="copy-order-no">复制</div>
+      <div class="order-no m-ft-26 m-black tl">订单号：RRK65S6R332SD654S613DF65SAD5</div>
+      <div class="copy-order-no m-ft-20 m-grey">复制</div>
     </div>
     <div class="line-one"></div>
     <div class="order-address">
       <div class="consignee-info">
         <img src="/static/images/order_address.png" class="order-address-img">
-        <div class="consignee-name">收货人： 茉莉</div>
-        <div class="consignee-phone">13588718806</div>
+        <div class="consignee-name m-ft-26 m-black">收货人： 茉莉</div>
+        <div class="consignee-phone m-ft-26 m-black tr">13588718806</div>
       </div>
-      <div class="consignee-address">收货地址：北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京</div>
+      <div class="consignee-address m-ft-26 m-black">收货地址：北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京</div>
     </div>
     <div class="line-two"></div>
     <div class="store-product">
       <div class="store-title">
         <img src="/static/images/store-img.png" class="store-img">
-        <div class="store-name">衣衣旗舰店</div>
+        <div class="store-name m-ft-28 m-black tl">衣衣旗舰店</div>
       </div>
       <div class="line-one"></div>
       <div class="order-product">
         <img src="http://img1.imgtn.bdimg.com/it/u=661395716,3070712851&fm=214&gp=0.jpg" class="product-img">
         <div class="product-info">
-          <div class="product-name">2018早秋新款显瘦秋新款显瘦款显瘦瘦2018早秋新款显瘦秋新款显瘦款显瘦瘦</div>
-          <div class="product-params">尺寸：L   颜色：红色</div>
-          <span class="product-price">￥ 149</span>
-          <span class="product-quantity">X1</span>
+          <div class="product-name m-ft-24 m-black">2018早秋新款显瘦秋新款显瘦款显瘦瘦2018早秋新款显瘦秋新款显瘦款显瘦瘦</div>
+          <div class="product-params m-ft-24 m-black tl">尺寸：L   颜色：红色</div>
+          <span class="product-price m-ft-24 m-red tl">￥ 149</span>
+          <span class="product-quantity m-ft-20 m-black">X1</span>
         </div>
       </div>
       <div class="order-product">
         <img src="http://img1.imgtn.bdimg.com/it/u=661395716,3070712851&fm=214&gp=0.jpg" class="product-img">
         <div class="product-info">
-          <div class="product-name">2018早秋新款显瘦秋新款显瘦款显瘦瘦2018早秋新款显瘦秋新款显瘦款显瘦瘦</div>
-          <div class="product-params">尺寸：L   颜色：红色</div>
-          <span class="product-price">￥ 149</span>
-          <span class="product-quantity">X1</span>
+          <div class="product-name m-ft-24 m-black">2018早秋新款显瘦秋新款显瘦款显瘦瘦2018早秋新款显瘦秋新款显瘦款显瘦瘦</div>
+          <div class="product-params m-ft-24 m-black tl">尺寸：L   颜色：红色</div>
+          <span class="product-price m-ft-24 m-red tl">￥ 149</span>
+          <span class="product-quantity m-ft-20 m-black">X1</span>
         </div>
       </div>
       <div class="line-one"></div>
       <div class="price-detail">
-        <p class="price-detail-box">
-          <span class="price-detail-text">商品总价</span>
-          <span class="price-detail-number">￥298.00</span>
+        <p class="price-detail-box m-ft-26 m-grey">
+          <span class="price-detail-text tl">商品总价</span>
+          <span class="price-detail-number tr">￥298.00</span>
         </p>
-        <p class="price-detail-box">
-          <span class="price-detail-text">使用新衣币</span>
-          <span class="price-detail-number">-￥3.00</span>
+        <p class="price-detail-box m-ft-26 m-grey">
+          <span class="price-detail-text tl">使用新衣币</span>
+          <span class="price-detail-number tr">-￥3.00</span>
         </p>
       </div>
       <div class="line-one"></div>
-      <div class="total-price">
-        <div class="total-price-detail">总计￥273 运费￥0</div>
-        <div class="total-price-total">共2件商品 合计￥ 273</div>
+      <div class="total-price m-ft-22 m-grey-color">
+        <div class="total-price-detail tl">总计￥273 运费￥0</div>
+        <div class="total-price-total tr">共2件商品 合计￥ 273</div>
       </div>
       <div class="line-one"></div>
     </div>
@@ -83,17 +83,12 @@
   .order-no-box {
     display: flex;
     .order-no {
-      color: @black;
-      font-size: 26px;
-      text-align: left;
       margin: 35px 23px 20px 23px;
       white-space: nowrap;
     }
     .copy-order-no {
       width: 50px;
       height: 35px;
-      color: @grey;
-      font-size: 20px;
       padding: 5px 21px;
       white-space: nowrap;
       margin: 28px 0 0 25px;
@@ -119,24 +114,17 @@
       .order-address-img {
         width: 30px;
         height: 45px;
-        margin: 25px 50px;
+        margin: 25px 30px 25px 50px;
       }
       .consignee-name {
-        color: @black;
-        font-size: 26px;
         margin: 30px -10px;
       }
       .consignee-phone {
         flex: 1;
         margin: 33px;
-        color: @black;
-        font-size: 26px;
-        text-align: right;
       }
     }
     .consignee-address {
-      color: @black;
-      font-size: 26px;
       letter-spacing: 1px;
       margin: 0 33px 20px 40px;
       display: -webkit-box;
@@ -155,10 +143,7 @@
       }
       .store-name {
         flex: 1;
-        color: @black;
         margin: 20px 0;
-        font-size: 28px;
-        text-align: left;
       }
     }
     .order-product {
@@ -172,32 +157,22 @@
         flex: 1;
         .product-name {
           width: 435px;
-          color: @black;
-          font-size: 24px;
           margin: 30px 0 14px 0;
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
         }
         .product-params {
-          color: @black;
-          font-size: 24px;
-          text-align: left;
           margin-left: 10px;
         }
         .product-price {
           float: left;
           width: 200px;
-          font-size: 24px;
-          text-align: left;
           margin: 35px 0 0 5px;
-          color: @mainColor;
         }
         .product-quantity {
           width: 130px;
           float: right;
-          color: @black;
-          font-size: 18px;
           margin: 40px 0 0 30px;
         }
       }
@@ -205,28 +180,18 @@
     .price-detail {
       .price-detail-box {
         display: flex;
-        color: @grey;
-        font-size: 26px;
         margin: 20px 29px;
-        .price-detail-text {
-          text-align: left;
-        }
         .price-detail-number {
           flex: 1;
-          text-align: right;
         }
       }
     }
     .total-price {
-      font-size: 22px;
-      color: @greyColor;
       .total-price-detail {
         margin: 30px;
-        text-align: left;
       }
       .total-price-total {
         margin: 30px;
-        text-align: right;
       }
     }
   }

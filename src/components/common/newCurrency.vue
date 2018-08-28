@@ -1,13 +1,13 @@
 <template>
   <div>
     <div class="new-currency" @click="chooseNewCurrency">
-      <span class="user-new-content">优惠：5元新衣币</span>
+      <span class="m-ft-26 m-black">优惠：5元新衣币</span>
       <img src="/static/images/icon-list-right.png" class="user-new-more">
     </div>
 
     <!--底部弹框-->
     <mt-popup v-model="popupVisible" position="bottom" class="new-currency-popup">
-      <div class="popup-title">新衣币</div>
+      <div class="popup-title 36 m-black tl">新衣币</div>
       <mt-navbar v-model="selected">
         <mt-tab-item id="1" @click="tabName">可使用</mt-tab-item>
         <mt-tab-item id="2" @click="tabName">不可用</mt-tab-item>
@@ -18,14 +18,14 @@
           <div class="m-scroll">
             <ul class="m-new-info">
               <li class="m-already-back">
-                <div class="m-new-info-left">
+                <div class="m-new-info-left m-ft-24">
                   <p class="m-red m-ft-b tc m-new-info-num">
                     <span class="m-ft-30">￥</span>
                     <span class="m-ft-60">5</span>
                   </p>
                   <p class="m-red">满6元使用</p>
                 </div>
-                <div class="m-new-info-right">
+                <div class="m-new-info-right m-ft-22 m-bg-main-color tl">
                   <p class="m-ft-24">限时分享贝币</p>
                   <p class="m-red">退回时间：2017.12.11 20:40</p>
                   <div class="m-new-person-info">
@@ -40,14 +40,14 @@
                 </div>
               </li>
               <li class="m-already-back">
-                <div class="m-new-info-left">
+                <div class="m-new-info-left m-ft-24">
                   <p class="m-red m-ft-b tc m-new-info-num">
                     <span class="m-ft-30">￥</span>
                     <span class="m-ft-60">5</span>
                   </p>
                   <p class="m-red">满6元使用</p>
                 </div>
-                <div class="m-new-info-right">
+                <div class="m-new-info-right m-ft-22 m-bg-main-color tl">
                   <p class="m-ft-24">限时分享贝币</p>
                   <p class="m-red">退回时间：2017.12.11 20:40</p>
                   <div class="m-new-person-info">
@@ -62,14 +62,14 @@
                 </div>
               </li>
               <li class="m-already-back">
-                <div class="m-new-info-left">
+                <div class="m-new-info-left m-ft-24">
                   <p class="m-red m-ft-b tc m-new-info-num">
                     <span class="m-ft-30">￥</span>
                     <span class="m-ft-60">5</span>
                   </p>
                   <p class="m-red">满6元使用</p>
                 </div>
-                <div class="m-new-info-right">
+                <div class="m-new-info-right m-ft-22 m-bg-main-color tl">
                   <p class="m-ft-24">限时分享贝币</p>
                   <p class="m-red">退回时间：2017.12.11 20:40</p>
                   <div class="m-new-person-info">
@@ -88,12 +88,12 @@
 
           <div class="line"></div>
           <div class="m-un-use">
-            <div class="un-use-text">不使用</div>
+            <div class="un-use-text m-ft-30 m-grey-color tl">不使用</div>
             <img v-if="chooseNewVisible" src="/static/images/icon-complain-check-active.png" class="un-use-img" @click="chooseNew">
             <img v-if="!chooseNewVisible" src="/static/images/icon-complain-check.png" class="un-use-img" @click="chooseNew">
           </div>
           <div class="line-black"></div>
-          <div class="m-scroll-close" @click="closeScroll">关闭</div>
+          <div class="m-scroll-close m-ft-30 m-red tc" @click="closeScroll">关闭</div>
 
         </mt-tab-container-item>
         <mt-tab-container-item id="2">
@@ -101,14 +101,14 @@
           <div class="m-un-scroll">
             <ul class="m-new-info">
               <li class="m-already-used">
-                <div class="m-new-info-left">
+                <div class="m-new-info-left m-ft-24">
                   <p class="m-red m-ft-b tc m-new-info-num">
                     <span class="m-ft-30">￥</span>
                     <span class="m-ft-60">5</span>
                   </p>
                   <p class="m-red">满6元使用</p>
                 </div>
-                <div class="m-new-info-right">
+                <div class="m-new-info-right m-ft-22 m-bg-main-color tl">
                   <p class="m-ft-24">限时分享贝币</p>
                   <p class="m-red">退回时间：2017.12.11 20:40</p>
                   <div class="m-new-person-info">
@@ -119,14 +119,14 @@
                 </div>
               </li>
               <li class="m-already-back">
-                <div class="m-new-info-left">
+                <div class="m-new-info-left m-ft-24">
                   <p class="m-red m-ft-b tc m-new-info-num">
                     <span class="m-ft-30">￥</span>
                     <span class="m-ft-60">5</span>
                   </p>
                   <p class="m-red">满6元使用</p>
                 </div>
-                <div class="m-new-info-right">
+                <div class="m-new-info-right m-ft-22 m-bg-main-color tl">
                   <p class="m-ft-24">限时分享贝币</p>
                   <p class="m-red">退回时间：2017.12.11 20:40</p>
                   <div class="m-new-person-info">
@@ -136,14 +136,14 @@
                 </div>
               </li>
               <li class="m-Unavailable">
-                <div class="m-new-info-left">
+                <div class="m-new-info-left m-ft-24">
                   <p class="m-red m-ft-b tc m-new-info-num">
                     <span class="m-ft-30">￥</span>
                     <span class="m-ft-60">5</span>
                   </p>
                   <p class="m-red">满6元使用</p>
                 </div>
-                <div class="m-new-info-right">
+                <div class="m-new-info-right m-ft-22 m-bg-main-color tl">
                   <p class="m-ft-24">限时分享贝币</p>
                   <p class="m-red">退回时间：2017.12.11 20:40</p>
                   <div class="m-new-person-info">
@@ -154,7 +154,7 @@
             </ul>
           </div>
           <div class="line-black"></div>
-          <div class="m-scroll-close" @click="closeScroll">关闭</div>
+          <div class="m-scroll-close m-ft-30 m-red tc" @click="closeScroll">关闭</div>
 
         </mt-tab-container-item>
       </mt-tab-container>
@@ -207,10 +207,6 @@
   @import "../../common/css/index";
 
   .new-currency {
-    .user-new-content {
-      color: @black;
-      font-size: 26px;
-    }
     .user-new-more {
       width: 22px;
       height: 22px;
@@ -221,10 +217,7 @@
     width: 750px;
     height: 830px;
     .popup-title {
-      color: @black;
-      font-size: 36px;
       margin: 20px 25px 0 25px;
-      text-align: left;
     }
     .m-scroll{
       height: 440px;
@@ -234,9 +227,7 @@
     .m-un-scroll {
       height: 540px;
       overflow-y: auto;
-      margin-top: 20px;
-      margin-left: 60px;
-      margin-bottom: 20px;
+      margin: 20px 0 20px 60px;
     }
     .m-new-info{
       li{
@@ -264,7 +255,6 @@
         }
         .m-new-info-left{
           width: 130px;
-          font-size: 24px;
           .m-new-info-num{
             margin-bottom: 20px;
           }
@@ -272,9 +262,6 @@
         .m-new-info-right{
           padding-left: 60px ;
           padding-top: 20px;
-          font-size: 21px;
-          text-align: left;
-          color: #fff;
           line-height: 32px;
           .m-new-person-info{
             margin-top: 35px;
@@ -332,9 +319,6 @@
       display: flex;
       .un-use-text {
         flex: 1;
-        font-size: 30px;
-        color: @greyColor;
-        text-align: left;
         margin: 0 0 30px 42px;
       }
       .un-use-img {
@@ -350,9 +334,6 @@
     }
     .m-scroll-close {
       margin: 22px 0;
-      font-size: 30px;
-      color: @mainColor;
-      text-align: center;
     }
   }
 </style>
