@@ -52,7 +52,7 @@
       <div class="line-one"></div>
       <div class="total-price m-ft-22 m-grey-color">
         <div class="total-price-detail tl">总计￥273 运费￥0</div>
-        <div class="total-price-total tr">共2件商品 合计￥ 273</div>
+        <div class="total-price-total tr">共2件商品 合计￥ 2730</div>
       </div>
       <div class="line-one"></div>
     </div>
@@ -79,7 +79,7 @@
 </script>
 
 <style lang="less" rel="stylesheet/less" scoped>
-  @import "../../common/css/index";
+  @import "../../../common/css/index";
   .order-no-box {
     display: flex;
     .order-no {

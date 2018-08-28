@@ -89,8 +89,8 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import productParams from "../../components/common/productParams";
-  import productQuantity from "../../components/common/productQuantity";
+  import productParams from "../shopping/components/productParams";
+  import productQuantity from "../shopping/components/productQuantity";
   import { MessageBox } from 'mint-ui';
 
   export default {

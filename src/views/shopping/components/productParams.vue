@@ -8,8 +8,8 @@
 
     <div v-if="choose" class="product-params-show" @click="productParams">
       <span class="product-params-detail m-ft-22 m-grey">尺寸：{{size}}</span><span class="product-params-detail">颜色：{{color}}</span>
-      <img v-if="popupVisible" src="../../../static/images/icon-list-down.png" class="list-right-down">
-      <img v-if="!popupVisible" src="../../../static/images/icon-list-right.png" class="list-right-down">
+      <img v-if="popupVisible" src="/static/images/icon-list-down.png" class="list-right-down">
+      <img v-if="!popupVisible" src="/static/images/icon-list-right.png" class="list-right-down">
     </div>
 
     <mt-popup v-model="popupVisible" position="bottom">
@@ -37,7 +37,7 @@
 </template>
 
 <script>
-  import productQuantity from "../../components/common/productQuantity";
+  import productQuantity from "../components/productQuantity";
   export default {
     data() {
       return {
@@ -47,7 +47,7 @@
         sel: [],
         colorSizeList: ['', ''],
         options: [ {name: "颜色", items: [{id: 0, msg: "黄色"}, {id: 1, msg: "绿色"}, {id: 2, msg: "红色"}, {id:3, msg: "蓝色"}]},
-                  {name: "尺寸", items: [{id: 0, msg: "S"}, {id: 1, msg: "M"}, {id: 2, msg: "L"}, {id: 3, msg: "XL"}, {id: 4, msg: "2XL"}, {id: 5, msg: "3XL"}]} ],
+          {name: "尺寸", items: [{id: 0, msg: "S"}, {id: 1, msg: "M"}, {id: 2, msg: "L"}, {id: 3, msg: "XL"}, {id: 4, msg: "2XL"}, {id: 5, msg: "3XL"}]} ],
       }
     },
     components: { productQuantity },
@@ -116,6 +116,7 @@
       chooseDone() {
         if(this.colorSizeList[0] != "" && this.colorSizeList[1] != "") {
           console.log(this.colorSizeList);
+          this.popupVisible = false;
         }
       }
     },
@@ -125,7 +126,7 @@
 </script>
 
 <style lang="less" rel="stylesheet/less">
-  @import "../../common/css/index";
+  @import "../../../common/css/index";
 
   .product-params {
     .product-params-choose {

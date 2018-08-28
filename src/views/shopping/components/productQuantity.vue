@@ -60,7 +60,7 @@
 </script>
 
 <style lang="less" rel="stylesheet/less">
-  @import "../../common/css/index";
+  @import "../../../common/css/index";
 
   .product-quantity {
     width: 100%;

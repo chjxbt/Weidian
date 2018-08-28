@@ -107,7 +107,7 @@
 </template>
 
 <script>
-  import productParams from "../../components/common/productParams";
+  import productParams from "../shopping/components/productParams";
   export default {
     data() {
       return {

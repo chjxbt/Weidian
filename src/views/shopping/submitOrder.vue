@@ -60,7 +60,7 @@
 </template>
 
 <script>
-  import newCurrency from "../../components/common/newCurrency";
+  import newCurrency from "../shopping/components/newCurrency";
 
   export default {
     data() {

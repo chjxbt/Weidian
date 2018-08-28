@@ -204,7 +204,7 @@
 </script>
 
 <style lang="less" rel="stylesheet/less">
-  @import "../../common/css/index";
+  @import "../../../common/css/index";
 
   .new-currency {
     .user-new-more {
@@ -215,7 +215,7 @@
   }
   .new-currency-popup {
     width: 750px;
-    height: 830px;
+    height: 800px;
     .popup-title {
       margin: 20px 25px 0 25px;
     }
@@ -225,7 +225,7 @@
       margin-top: 20px;
     }
     .m-un-scroll {
-      height: 540px;
+      height: 543px;
       overflow-y: auto;
       margin: 20px 0 20px 60px;
     }

@@ -82,7 +82,7 @@
 </template>
 
 <script>
-  import orderProduct from "../../components/common/orderProduct";
+  import orderProduct from "../shopping/components/orderProduct";
 
   export default {
     data() {
