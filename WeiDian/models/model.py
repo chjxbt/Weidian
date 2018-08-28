@@ -322,6 +322,7 @@ class RecommendProduct(BaseModel):
     def __init__(self):
         self.fields = self.all
 
+
 class RecommendLike(BaseModel):
     """每日十荐页点赞笑脸"""
     __tablename__ = 'recommendlike'
@@ -329,6 +330,11 @@ class RecommendLike(BaseModel):
     USid = Column(String(64))  # 用户id
     REid = Column(String(64))  # 推荐商品id
     RLcreatetime = Column(String(14))  # 推荐页点赞时间
+
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = self.all
 
 
 class ShoppingCart(BaseModel):
@@ -386,8 +392,6 @@ class OrderProductInfo(BaseModel):
     @PSKproperkey.setter
     def PSKproperkey(self, raw):
         self._PSKproperkey = str(raw)
-
-
 
 
 class ProductCategory(BaseModel):
@@ -506,7 +510,7 @@ class User(BaseModel):
     USlevel = Column(Integer, default=0)
     # 上级
     UPPerd = Column(String(64), default=0)
- 
+
     @orm.reconstructor
     @auto_createtime
     def __init__(self):

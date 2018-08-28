@@ -1,7 +1,6 @@
 # *- coding:utf8 *-
 from flask import jsonify
 from flask_restful import Resource
-
 from WeiDian.control.CProductLike import CProductLike
 
 

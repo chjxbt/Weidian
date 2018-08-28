@@ -5,7 +5,6 @@ import os
 from WeiDian.common.token_required import verify_token_decorator, is_admin
 from WeiDian.common.TransformToList import add_model
 from WeiDian.common.import_status import import_status
-from WeiDian.config.messages import delete_topnav_success
 from WeiDian.config.response import PARAMS_MISS, AUTHORITY_ERROR, TOKEN_ERROR, SYSTEM_ERROR
 
 sys.path.append(os.path.dirname(os.getcwd()))

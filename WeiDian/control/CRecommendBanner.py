@@ -21,6 +21,9 @@ class CRecommendBanner():
 
     def get_all(self):
         args = request.args.to_dict()
+        if not is_partner():
+            return AUTHORITY_ERROR
+        print '是合伙人'
         lasting = args.get('lasting', 'true')  # 有效时间内的轮播
         if lasting == 'true':
             banner_list = self.srecommendbanner.get_all_lasting_banner()
@@ -32,6 +35,9 @@ class CRecommendBanner():
 
     def get_one(self):
         args = request.args.to_dict()
+        if not is_partner():
+            return AUTHORITY_ERROR
+        print '是合伙人'
         rbid = args.get('rbid')
         if rbid:
             banner = self.srecommendbanner.get_one_by_rbid(rbid)

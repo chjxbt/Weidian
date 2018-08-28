@@ -35,6 +35,7 @@ class CRecommend(BaseProductControl):
         map(self.fill_product, recommend)
         map(self.fill_recommend_nums, recommend)
         self.srecommend.update_view_num(reid)
+        self.srecommend.update_like_num(reid)
         data = import_status('get_recommend_success', 'OK')
         data['data'] = recommend
         return data
