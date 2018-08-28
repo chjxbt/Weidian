@@ -60,7 +60,6 @@
       line-height: 80px;
       border-radius: 40px;
       font-size: 32px;
-      box-shadow: 0px 13px 22px 0 rgba(244, 59, 81, 0.35);
     }
   }
 }
