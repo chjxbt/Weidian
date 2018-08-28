@@ -163,7 +163,8 @@ class BaseProductControl():
         # product.prsavemonty = prkeeperprice
         # product.add('prsavemonty')
         # return product
-        return self.trans_product_for_fans(product)  # 返回数据一致
+        # 返回数据一致, 不再区分
+        return self.trans_product_for_fans(product)
     
     def fill_product_nums(self, product):
         prid = product.PRid
