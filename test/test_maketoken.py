@@ -14,13 +14,20 @@ class TestToken(MethodView):
     def post(self):
         """generic token test"""
         usid = '6882ad09-bf5f-4607-8ad1-1cd46b6158e0'
+        pn = Partner()
+        import ipdb
+        ipdb.set_trace()
         raise BaseError(message='测试信d息')
 
     @verify_token_decorator
     def get(self):
         """verfity token test"""
         pn = Partner()
+        import ipdb
+        ipdb.set_trace()
         pn.three_level_divide = 'newthree'
+        pn.three_level_divide
+
         return 'ok'
 
 
