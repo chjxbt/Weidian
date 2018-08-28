@@ -6,6 +6,7 @@ from flask import request
 from WeiDian.common.TransformToList import list_add_models, dict_add_models
 from WeiDian.common.divide import Partner
 from WeiDian.common.token_required import is_partner
+from WeiDian.config.activitytype import activity_type
 
 
 class BaseActivityControl():
@@ -24,6 +25,9 @@ class BaseActivityControl():
         act.soldnum = self.sactivity.get_product_soldnum_by_acid(acid)  # 销量
         act.add('suuser', 'media', 'tags', 'foward', 'likenum', 'soldnum')
         return act
+
+    def fill_type(self, act):
+        act.ACtype = activity_type.get(str(act.ACtype))
 
     def fill_suser(self, obj):
         """给对象添加一个用户字段"""
@@ -143,6 +147,8 @@ class BaseProductControl():
     def trans_product_for_fans(self, product):
         """调整为粉丝版本"""
         # 粉丝页面显示本身价格和店主价, 以及相关商品推荐(规则?)
+        import ipdb
+        ipdb.set_trace()
         prkeeperprice = product.PRprice * (1 - self.partner.one_level_divide)
         product.prkeeperprice = prkeeperprice
         product.add('prkeeperprice')

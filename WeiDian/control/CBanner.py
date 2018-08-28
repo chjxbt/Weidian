@@ -70,8 +70,8 @@ class CBanner():
         acid = data.get('acid')
         if not baimage or not acid:
             return PARAMS_MISS
-        if not self.sactivity.get_activity_by_acid(acid):
-            return SYSTEM_ERROR
+        # if not self.sactivity.get_activity_by_acid(acid):
+        #     return SYSTEM_ERROR
         add_model('Banner', **{
             'BAid': baid,
             'BAimage': baimage,
