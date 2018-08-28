@@ -39,7 +39,7 @@
 </script>
 
 <style lang="less" rel="stylesheet/less" scoped>
-  @import "../../common/css/_variate";
+  @import "../../common/css/index";
 
   .m-ok-img {
     width: 198px;

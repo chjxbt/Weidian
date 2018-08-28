@@ -170,7 +170,7 @@
 
 <style lang="less" rel="stylesheet/less" scoped>
   @import "../../common/css/discover";
-  @import "../../common/css/_variate";
+  @import "../../common/css/index";
   .back-img {
     float: left;
     width: 18px;

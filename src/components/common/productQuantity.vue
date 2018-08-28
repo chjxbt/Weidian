@@ -13,15 +13,15 @@
     data() {
       return {
         name: 'productQuantity',
-        // quantity: 1,
+        quantity: 1,
         inputValue: 1
       }
     },
     props:{
-      quantity:{
+      /*quantity:{
         type: Number,
         default: 1
-      }
+      }*/
     },
     methods: {
       // 产品数量减 1
@@ -60,8 +60,7 @@
 </script>
 
 <style lang="less" rel="stylesheet/less">
-  @import "../../common/css/_variate";
-  @import "../../common/css/_remint";
+  @import "../../common/css/index";
 
   .product-quantity {
     width: 100%;

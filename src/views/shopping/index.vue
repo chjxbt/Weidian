@@ -198,7 +198,7 @@
   }
 </script>
 <style lang="less" rel="stylesheet/less" scoped>
-  @import "../../common/css/_variate";
+  @import "../../common/css/index";
   .m-swipe-box {
     .mint-swipe{
       width: 750px;

@@ -95,7 +95,7 @@
 
 <style lang="less" rel="stylesheet/less" scoped>
   @import "../../common/css/discover";
-  @import "../../common/css/_variate";
+  @import "../../common/css/index";
   .line-one {
     height: 15px;
     background-color: #f2f5f7;

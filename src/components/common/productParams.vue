@@ -125,7 +125,7 @@
 </script>
 
 <style lang="less" rel="stylesheet/less">
-  @import "../../common/css/_variate";
+  @import "../../common/css/index";
 
   .product-params {
     .product-params-choose {
@@ -179,6 +179,7 @@
       height: 150px;
       .product-size-color-text {
         padding-left: 40px;
+        margin-bottom: 20px;
       }
       .select {
         color: @bgMainColor;

@@ -79,7 +79,7 @@
 </script>
 
 <style lang="less" rel="stylesheet/less" scoped>
-  @import "../../common/css/_variate";
+  @import "../../common/css/index";
   .order-no-box {
     display: flex;
     .order-no {

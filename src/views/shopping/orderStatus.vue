@@ -151,7 +151,8 @@
 </script>
 
 <style lang="less" rel="stylesheet/less" scoped>
-  @import "../../common/css/_variate";
+  @import "../../common/css/index";
+
   .order-status-title {
     display: flex;
     background-color: #f53b52;
@@ -195,7 +196,7 @@
     .truck-img {
       width: 45px;
       height: 33px;
-      margin: 50px 30px;
+      margin: 50px 0 0 30px;
     }
     .logistics-info {
       flex: 1;
