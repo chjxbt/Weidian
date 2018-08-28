@@ -66,15 +66,15 @@ class CActivity(BaseActivityControl):
         if end > len_aclist:
             end = len_aclist
         activity_list = map(self.fill_detail, activity_list)
-        map(self.fill_comment, activity_list)
+        # map(self.fill_comment, activity_list)
         activity_list = activity_list[start:end]
+        map(self.fill_type, activity_list)
         data = import_status("get_activity_list_success", "OK")
         data["data"] = activity_list
         return data
 
     def get_one(self):
         """通过acid获取活动及活动下的评论
-        http://127.0.0.1:5000/activity/get_one?acid=2
         """
         args = request.args.to_dict()
         acid = args.get('acid')  # 活动id

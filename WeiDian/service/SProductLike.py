@@ -21,3 +21,9 @@ class SProductLike(SBase):
     def get_productlike_by_usidprid(self, usid, prid):
         return self.session.query(ProductLike).filter_by(USid=usid, PRid=prid).first()
 
+    @close_session
+    def del_productlike_usidprid(self, usid, prid):
+        """删除"""
+        return self.session.query(ProductLike).filter_by(USid=usid, PRid=prid).delete()
+
+

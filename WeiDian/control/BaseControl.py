@@ -6,6 +6,7 @@ from flask import request
 from WeiDian.common.TransformToList import list_add_models, dict_add_models
 from WeiDian.common.divide import Partner
 from WeiDian.common.token_required import is_partner
+from WeiDian.config.activitytype import activity_type
 
 
 class BaseActivityControl():
@@ -24,6 +25,9 @@ class BaseActivityControl():
         act.soldnum = self.sactivity.get_product_soldnum_by_acid(acid)  # 销量
         act.add('suuser', 'media', 'tags', 'foward', 'likenum', 'soldnum')
         return act
+
+    def fill_type(self, act):
+        act.ACtype = activity_type.get(str(act.ACtype))
 
     def fill_suser(self, obj):
         """给对象添加一个用户字段"""
@@ -129,6 +133,7 @@ class BaseProductControl():
         if not sku_value:
             return
         sku_value.PSVpropervalue = sku_value.PSVpropervalue
+        sku_value.hide('PRid')
         product.sku_value = sku_value
         product.add('sku_value')
         return product
@@ -145,18 +150,21 @@ class BaseProductControl():
         # 粉丝页面显示本身价格和店主价, 以及相关商品推荐(规则?)
         prkeeperprice = product.PRprice * (1 - self.partner.one_level_divide)
         product.prkeeperprice = prkeeperprice
-        product.add('prkeeperprice')
+        product.prsavemonty = prkeeperprice - prkeeperprice
+        product.add('prkeeperprice', 'prsavemonty')
         return product
 
     def trans_product_for_shopkeeper(self, product):
         """调整为店主版本"""
         # 店主页面需要显示赚多少, '买'和'卖'分别省多少和赚多少(10%)
         # 暂定为赚取金额为店主价-普通价格
-        prkeeperprice = product.PRprice * self.partner.one_level_divide
-        # 节省或赚取的价格
-        product.prsavemonty = product.PRprice - prkeeperprice
-        product.add('prsavemonty')
-        return product
+        # prkeeperprice = product.PRprice * self.partner.one_level_divide
+        # # 节省或赚取的价格
+        # product.prsavemonty = prkeeperprice
+        # product.add('prsavemonty')
+        # return product
+        # 返回数据一致, 不再区分
+        return self.trans_product_for_fans(product)
     
     def fill_product_nums(self, product):
         prid = product.PRid

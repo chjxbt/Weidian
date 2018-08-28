@@ -17,14 +17,14 @@ class CProductLike():
 
     @verify_token_decorator
     def add_like(self):
-        """添加喜欢(收藏)"""
+        """添加(删除)喜欢(收藏)"""
         if is_tourist():
             return TOKEN_ERROR()
         json_data = parameter_required('prid')
         prid = json_data.get('prid')
+        # 该用户是否已经收藏了此商品
         already_like = self.sproductlike.get_productlike_by_usidprid(
             request.user.id, prid)
-        # 该用户是否已经收藏了此商品
         if not already_like:
             pl_dict = dict(
                 plid=str(uuid.uuid4()),
@@ -32,12 +32,19 @@ class CProductLike():
                 prid=prid
             )
             dict_add_models('ProductLike', pl_dict)
+            self.sproduct.update_like_num(prid)
+            data = import_status('add_productlike_success', 'OK')
+        else:
+            # 删除
+            self.sproductlike.del_productlike_usidprid(request.user.id, prid)
+            self.sproduct.update_like_num(prid, -1)
+            data = import_status('cancel_product_like_success', 'OK')
         plid = already_like.PLid if already_like else pl_dict['plid']
-        data = import_status('add_productlike_success', 'OK')
         data['data'] = {
             'plid': plid
         }
         return data
+
 
     @verify_token_decorator
     def get_like_list(self):

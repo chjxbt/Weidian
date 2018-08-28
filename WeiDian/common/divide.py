@@ -14,7 +14,7 @@ class Partner(object):
 
     @property
     def one_level_divide(self):
-        return self.cf.get('divide', 'one_level')
+        return float(self.cf.get('divide', 'one_level'))
 
     @one_level_divide.setter
     def one_level_divide(self, raw):
@@ -23,7 +23,7 @@ class Partner(object):
 
     @property
     def two_level_divide(self):
-        return self.cf.get('divide', 'two_level')
+        return float(self.cf.get('divide', 'two_level'))
 
     @two_level_divide.setter
     def two_level_divide(self, raw):
@@ -32,7 +32,7 @@ class Partner(object):
 
     @property
     def three_level_divide(self):
-        return self.cf.get('divide', 'three_level')
+        return float(self.cf.get('divide', 'three_level'))
 
     @three_level_divide.setter
     def three_level_divide(self, raw):
