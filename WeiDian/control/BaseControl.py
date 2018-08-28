@@ -133,6 +133,7 @@ class BaseProductControl():
         if not sku_value:
             return
         sku_value.PSVpropervalue = sku_value.PSVpropervalue
+        sku_value.hide('PRid')
         product.sku_value = sku_value
         product.add('sku_value')
         return product
