@@ -130,6 +130,7 @@
   import share from '../../components/common/share';
   import api from '../../api/api';
   import axios from 'axios';
+  import Toast from 'mint-ui';
     export default {
         data() {
             return {
@@ -149,29 +150,7 @@
               hot_index:0,
               interval:null,
               activity_list:[],
-              nav_list:[
-                {
-                  name:'上新',
-                  url:'',
-                  dot:false,
-                  click:true
-                },{
-                  name:'特卖',
-                  url:'',
-                  dot:false,
-                  click:false
-                },{
-                  name:'爆款',
-                  url:'',
-                  dot:true,
-                  click:false
-                },{
-                  name:'预告',
-                  url:'',
-                  dot:true,
-                  click:false
-                }
-              ],
+              nav_list:[],
               icon_list:[
                 {
                   src:'icon-like',
@@ -208,9 +187,19 @@
         methods: {
           /*获取导航*/
           getTopnav(){
-            axios.get(api.get_all_topnav).then(res => {
+            axios.get(api.get_all_topnav,{
+              params:{
+                tntype:1
+              }
+            }).then(res => {
               if(res.data.status == 200){
-
+                this.nav_list = res.data.data.slice(0,4);
+                for(let i=0;i<this.nav_list.length;i++){
+                  this.nav_list[i].click =false;
+                }
+                this.nav_list[0].click =true;
+              }else{
+                Toast(res.data.message);
               }
             })
           },
@@ -221,6 +210,8 @@
               }}).then(res => {
                if(res.data.status == 200){
                  this.swipe_items = res.data.data;
+               }else{
+                 Toast(res.data.message);
                }
             })
           },
@@ -231,20 +222,23 @@
               }}).then(res => {
               if(res.data.status == 200){
                 this.hot_list = res.data.data;
+              }else{
+                Toast(res.data.message);
               }
             })
           },
           /*获取活动列表*/
-          getActivity(){
+          getActivity(navid,start,count){
             axios.get(api.get_all_activity,{params:{
                 lasting:true,
                 start:0,
                 count:15,
-                navid:'6882ad09-bf5f-4607-8ad1-1cd46b6158e0',
-                suid:'6882ad09-bf5f-4607-8ad1-1cd46b6158e0'
+                navid:'6882ad09-bf5f-4607-8ad1-1cd46b6158e0'
               }}).then(res => {
               if(res.data.status == 200){
                 this.activity_list = res.data.data;
+              }else{
+                Toast(res.data.message);
               }
             })
           },
@@ -271,10 +265,13 @@
           },
           /*导航点击*/
           navClick(v){
-            for(let i=0;i<this.nav_list.length;i++){
-              this.nav_list[i].click = false;
+            let arr = this.nav_list;
+            for(let i=0;i<arr.length;i++){
+              arr[i].click = false;
             }
-            this.nav_list[v].click = true;
+            arr[v].click = true;
+            this.nav_list = [].concat(arr);
+            this.getActivity(this.nav_list[v].tnid);
           },
           /*每个活动icon点击*/
           iconClick(v){
