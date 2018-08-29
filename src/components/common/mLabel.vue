@@ -1,13 +1,21 @@
 <template>
   <div class="m-label">
     <span class="m-triangle"></span>
-    <span class="m-text">新品</span>
+    <span class="m-text">{{name}}</span>
   </div>
 </template>
 
 <script>
   export default {
-    name: "m-label"
+    data(){
+
+    },
+    props:{
+      name:{
+        type:String,
+        default:null
+      }
+    }
   }
 </script>
 

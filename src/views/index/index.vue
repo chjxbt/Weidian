@@ -9,7 +9,7 @@
       </div>
 
       <mt-swipe :auto="2000">
-        <mt-swipe-item v-for="item in swipe_items" :key="item.acid">
+        <mt-swipe-item v-for="item in swipe_items" >
           <a :href="item.href" rel="external nofollow" >
             <img :src="item.baimage" class="img"/>
             <span class="desc"></span>
@@ -25,7 +25,6 @@
             </span>
           </div>
         </template>
-
 
       </div>
 
@@ -130,7 +129,7 @@
   import share from '../../components/common/share';
   import api from '../../api/api';
   import axios from 'axios';
-  import Toast from 'mint-ui';
+  import {Toast} from 'mint-ui';
     export default {
         data() {
             return {
@@ -187,13 +186,9 @@
         methods: {
           /*获取导航*/
           getTopnav(){
-            axios.get(api.get_all_topnav,{
-              params:{
-                tntype:1
-              }
-            }).then(res => {
+            axios.get(api.get_home_topnav).then(res => {
               if(res.data.status == 200){
-                this.nav_list = res.data.data.slice(0,4);
+                this.nav_list = res.data.data;
                 for(let i=0;i<this.nav_list.length;i++){
                   this.nav_list[i].click =false;
                 }
@@ -233,10 +228,14 @@
                 lasting:true,
                 start:0,
                 count:15,
-                navid:'6882ad09-bf5f-4607-8ad1-1cd46b6158e0'
+                navid:'5ed4e908-a6db-11e8-b2ff-0cd292f93404'
               }}).then(res => {
               if(res.data.status == 200){
                 this.activity_list = res.data.data;
+                for(let i=0;i<this.activity_list.length;i++){
+                  this.activity_list[i].icon = this.icon_list;
+                  this.activity_list[i].icon[0].name = this.activity_list[i].likenum;
+                }
               }else{
                 Toast(res.data.message);
               }
