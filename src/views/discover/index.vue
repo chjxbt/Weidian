@@ -53,22 +53,22 @@
           show_modal:false,
           nav_list:[
             {
-              name:'每日10荐',
+              tnname:'每日10荐',
               url:'every',
               dot:false,
               click:true
             },{
-              name:'素材圈',
+              tnname:'素材圈',
               url:'fodder',
               dot:false,
               click:false
             },{
-              name:'公告',
+              tnname:'公告',
               url:'announcement',
               dot:true,
               click:false
             },{
-              name:'教程',
+              tnname:'教程',
               url:'course',
               dot:true,
               click:false
