@@ -12,19 +12,19 @@
       <div class="m-scroll">
         <ul class="m-img-list">
           <li>
-            <img src="" class="m-img-list-img" alt="">
+            <img src="http://images.51bi.com/opt/siteimg/pb/20140307/c29ad52051879f0d13f1da57472abe88.jpeg" class="m-img-list-img" alt="">
             <p><span class="m-price">￥169</span><span class="m-red">赚12</span></p>
           </li>
           <li>
-            <img src="" class="m-img-list-img" alt="">
+            <img src="http://img.eelly.com/G01/M00/00/89/small_oYYBAFWOxpSIBiLzAAMKSN5SRlQAAA1rgDeJeEAAwpg61.jpeg" class="m-img-list-img" alt="">
             <p><span class="m-price">￥69</span><span class="m-red">赚12</span></p>
           </li>
           <li>
-            <img src="" class="m-img-list-img" alt="">
+            <img src="http://img.eelly.com/G02/M00/00/7F/small_pIYBAFVfLxCIItqyAATKYNG5CMEAAAxsQHbafcABMp4028.jpg" class="m-img-list-img" alt="">
             <p><span class="m-price">￥69</span><span class="m-red">赚12</span></p>
           </li>
           <li>
-            <img src="" class="m-img-list-img" alt="">
+            <img src="http://img5.imgtn.bdimg.com/it/u=2506569644,813669471&fm=26&gp=0.jpg" class="m-img-list-img" alt="">
             <p><span class="m-price">￥69</span><span class="m-red">赚12</span></p>
           </li>
         </ul>
@@ -69,10 +69,10 @@
             return {
               items: [{
                 title: '你的名字',
-                href: 'http://google.com',   url: 'http://www.baidu.com/img/bd_logo1.png'
+                href: 'http://google.com',   url: 'http://img.zcool.cn/community/013a6159532b74a8012193a314e51c.png'
               }, {
                 title: '我的名字',
-                href: 'http://baidu.com',   url: 'http://www.baidu.com/img/bd_logo1.png'
+                href: 'http://baidu.com',   url: 'http://img.zcool.cn/community/015b8556fca6f16ac7257948ffdc3d.jpg'
               }]
             }
         },
@@ -85,4 +85,8 @@
 </script>
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/css/discover";
+  .img {
+
+    border-radius: 20px;
+  }
 </style>
