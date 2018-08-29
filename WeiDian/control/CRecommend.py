@@ -1,11 +1,14 @@
 # *- coding:utf8 *-
 import sys
 import os
-from datetime import datetime
+import uuid
+from datetime import datetime, timedelta
+
+from WeiDian.common.TransformToList import add_model
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db
-from WeiDian.common.token_required import verify_token_decorator, is_partner
-from WeiDian.config.response import AUTHORITY_ERROR
+from WeiDian.common.token_required import verify_token_decorator, is_partner, is_admin
+from WeiDian.config.response import AUTHORITY_ERROR, TOKEN_ERROR, PARAMS_MISS, SYSTEM_ERROR
 from WeiDian.control.BaseControl import BaseProductControl
 from WeiDian.service.SProduct import SProduct
 from flask import request
@@ -41,7 +44,68 @@ class CRecommend(BaseProductControl):
         data['data'] = recommend
         return data
 
+    @verify_token_decorator
+    def add_one(self):
+        if not hasattr(request, 'user'):
+            return TOKEN_ERROR  # 未登录, 或token错误
+        if not is_admin():
+            return AUTHORITY_ERROR  # 权限不足
+        data = request.json
+        now_time = datetime.strftime(datetime.now(), format_for_db)
+        restarttime = data.get('restarttime', now_time)  # 上线时间, 默认当前时间
+        restarttime_str_to_time = datetime.strptime(restarttime, format_for_db)
+        # 1天以后
+        one_days_later = datetime.strftime(restarttime_str_to_time + timedelta(days=7),
+            format_for_db)
+        reendtime = data.get('reendtime', one_days_later)  # 推荐下线时间, 默认1天以后
+        relikefakenum = data.get('relikenum', 0)  # 喜欢数
+        refakeviewnum = data.get('reviewnum', 0)  # 浏览数
+        reid = str(uuid.uuid1())
+        add_model('Recommend', **{
+            'REid': reid,
+            'SUid': request.user.id,
+            'RElikefakenum': relikefakenum,
+            'REfakeviewnum': refakeviewnum,
+            'REstarttime': restarttime,
+            'REendtime': reendtime,
+        })
+        response_make_recommend = import_status('add_recommend_success', 'OK')
+        response_make_recommend['data'] = {}
+        response_make_recommend['data']['reid'] = reid
+        return response_make_recommend
 
-    # if is_tourist() or is_ordirnaryuser():
-    #     print '是游客或者普通用户'
-    #     product = self.trans_product_for_fans(product)
+    @verify_token_decorator
+    def update_recommend(self):
+        if not hasattr(request, 'user'):
+            return TOKEN_ERROR  # 未登录, 或token错误
+        if not is_admin():
+            return AUTHORITY_ERROR  # 权限不足
+        data = request.json
+        if not'reid' in data.keys():
+            return PARAMS_MISS
+        # import ipdb
+        # ipdb.set_trace()
+        reid = data.pop('reid')
+        res = self.srecommend.update_recommend(reid, data)
+        if not res:
+            return SYSTEM_ERROR("reid错误，要修改的内容不存在")
+        response_update_recommend = import_status(
+            'update_recommend_success', 'OK')
+        response_update_recommend['data'] = {'reid': reid}
+        return response_update_recommend
+
+    @verify_token_decorator
+    def del_one(self):
+        if not hasattr(request, 'user'):
+            return TOKEN_ERROR  # 未登录, 或token错误
+        if not is_admin():
+            return AUTHORITY_ERROR  # 权限不足
+        data = request.json
+        reid = data.get('reid')
+        if not reid:
+            return PARAMS_MISS
+        self.srecommend.del_recommend(reid)
+        response_del_recommend = import_status('del_recommend_success', 'OK')
+        response_del_recommend['data'] = {}
+        response_del_recommend['data']['reid'] = reid
+        return response_del_recommend

@@ -23,6 +23,32 @@ class SRecommend(SBase):
         return recommend
 
     @close_session
+    def add_recommend(self, recommend):
+        self.session.add(recommend)
+
+    @close_session
+    def del_recommend(self, reid):
+        recommend = self.session.query(Recommend).filter_by(REid=reid).first()
+        recommend.REisdelete = True
+        self.session.add(recommend)
+
+    @close_session
+    def update_recommend(self, reid, kwargs):
+        recommend = self.session.query(Recommend).filter_by(REid=reid).first()
+        if recommend:
+            if 'restarttime' in kwargs.keys():
+                recommend.REstarttime = kwargs['restarttime']
+            if 'reendtime' in kwargs.keys():
+                recommend.REendtime = kwargs['reendtime']
+            if 'reviewnum' in kwargs.keys():
+                recommend.REfakeviewnum = kwargs['reviewnum']
+            if 'relikenum' in kwargs.keys():
+                recommend.RElikefakenum = kwargs['relikenum']
+            self.session.add(recommend)
+            return True
+
+
+    @close_session
     def update_view_num(self, reid):
         recommend = self.session.query(Recommend).filter_by(REid=reid).first()
         recommend.REviewnum = recommend.REviewnum + 1
