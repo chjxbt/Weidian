@@ -16,7 +16,7 @@ sys.path.append(os.path.dirname(os.getcwd()))
 
 
 class CRecommend(BaseProductControl):
-    
+
     def __init__(self):
         from WeiDian.service.SRecommend import SRecommend
         self.srecommend = SRecommend()
