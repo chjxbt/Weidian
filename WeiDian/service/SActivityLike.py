@@ -28,6 +28,11 @@ class SActivityLike(SBase):
         self.session.add(aclike)
 
     @close_session
+    def is_like(self, usid, acid):
+        """是否点赞"""
+        return self.session.query(ActivityLike).filter_by(ACid=acid, USid=usid).first()
+
+    @close_session
     def add_like(self, aclike):
         """取消喜欢"""
         acid = aclike.acid

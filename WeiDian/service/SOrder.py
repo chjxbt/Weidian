@@ -1,9 +1,7 @@
 # *- coding:utf8 *-
 import sys
 import os
-from datetime import datetime
 
-from WeiDian.common.timeformat import format_for_db
 from WeiDian.models.model import OrderInfo, OrderProductInfo
 
 sys.path.append(os.path.dirname(os.getcwd()))
@@ -31,4 +29,8 @@ class SOrder(SBase):
     def get_orderinfowithproduct_by_opiid(self, oiid):
         """联合查询测试"""
         return self.session.query(OrderInfo).join(OrderProductInfo, OrderInfo.OIid == OrderProductInfo.OIid).filter(OrderInfo.OIid == oiid).all()
+
+    @close_session
+    def get_orderproductinfo_by_oiid(self, oiid):
+        return self.session.query(OrderProductInfo).filter_by(OIid=oiid).first()
 
