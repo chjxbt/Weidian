@@ -3,7 +3,7 @@ import sys
 import os
 
 from SBase import SBase, close_session
-from WeiDian.models.model import Recommend
+from WeiDian.models.model import Recommend, RecommendProduct
 
 sys.path.append(os.path.dirname(os.getcwd()))
 
@@ -33,8 +33,9 @@ class SRecommend(SBase):
         self.session.add(recommend)
 
     @close_session
-    def update_recommend(self, reid, kwargs):
+    def update_recommend(self, reid, **kwargs):
         recommend = self.session.query(Recommend).filter_by(REid=reid).first()
+        self.session.query(RecommendProduct).filter_by(REid=reid).delete
         if recommend:
             if 'restarttime' in kwargs.keys():
                 recommend.REstarttime = kwargs['restarttime']
@@ -86,15 +87,15 @@ class SRecommend(SBase):
     #     self.session.add(recommend)
     #     self.session.commit()
 
-    @close_session
-    def add_recommend(self, recommend):
-        self.session.add(recommend)
-
-    @close_session
-    def update_recommend(self):
-        pass
-
-    @close_session
-    def del_recommend(self):
-        pass
+    # @close_session
+    # def add_recommend(self, recommend):
+    #     self.session.add(recommend)
+    #
+    # @close_session
+    # def update_recommend(self):
+    #     pass
+    #
+    # @close_session
+    # def del_recommend(self):
+    #     pass
 
