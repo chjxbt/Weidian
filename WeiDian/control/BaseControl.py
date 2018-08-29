@@ -43,7 +43,7 @@ class BaseActivityControl():
         if product:
             prkeeperprice = product.PRprice * (1 - Partner().one_level_divide)
             product.prkeeperprice = prkeeperprice
-            product.prsavemonty = prkeeperprice - prkeeperprice
+            product.prsavemonty = product.PRprice - prkeeperprice
             product.add('prkeeperprice', 'prsavemonty')
         act.product = product
         act.add('product')
@@ -164,7 +164,7 @@ class BaseProductControl():
         # 粉丝页面显示本身价格和店主价, 以及相关商品推荐(规则?)
         prkeeperprice = product.PRprice * (1 - self.partner.one_level_divide)
         product.prkeeperprice = prkeeperprice
-        product.prsavemonty = prkeeperprice - prkeeperprice
+        product.prsavemonty = product.PRprice - prkeeperprice
         product.add('prkeeperprice', 'prsavemonty')
         return product
 

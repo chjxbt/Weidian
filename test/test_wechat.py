@@ -9,8 +9,8 @@ from weixin.oauth2 import OAuth2AuthExchangeError
 
 app = Flask(__name__)
 
-APP_ID = 'appid'
-APP_SECRET = 'app secret'
+APP_ID = 'wxa7109d8534a2d837'
+APP_SECRET = 'd9c41da65656c27e55f5d2710a220f1d'
 REDIRECT_URI = 'http://localhost.com/authorization'
 
 
@@ -28,8 +28,8 @@ def authorization():
 
 @app.route("/login")
 def login():
-    api = WeixinAPI(appid='wxa7109d8534a2d837',
-                    app_secret='d9c41da65656c27e55f5d2710a220f1d',
+    api = WeixinAPI(appid=APP_ID,
+                    app_secret=APP_SECRET,
                     redirect_uri=REDIRECT_URI)
     redirect_uri = api.get_authorize_login_url(scope=("snsapi_login",))
     return redirect(redirect_uri)
