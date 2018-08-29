@@ -57,7 +57,7 @@
       },
       methods:{
         iconClick(v){
-          this.$emit('iconClick',v)
+          this.$emit('iconClick',v,this.list)
         }
       }
     }

@@ -273,7 +273,7 @@
             this.getActivity(this.nav_list[v].tnid);
           },
           /*每个活动icon点击*/
-          iconClick(v){
+          iconClick(v,list){
             switch (v){
               case 0:
                 break;
