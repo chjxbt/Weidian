@@ -9,7 +9,7 @@ def test(config_file_path):
     res = cf.get('divide', 'one_level')
     print res
     print cf.items('divide')
-    cf.set('divide', 'one_level', 'ne3w')
+    # cf.set('divide', 'one_level', 'ne3w')
     cf.write(open(config_file_path, "w"))
 
 

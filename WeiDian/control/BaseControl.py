@@ -35,6 +35,20 @@ class BaseActivityControl():
         obj.add('user')
         return obj
 
+    def fill_product(self, act):
+        """填充活动商品"""
+        # 粉丝页面显示本身价格和店主价, 以及相关商品推荐(规则?)
+        prid = act.PRid
+        product = self.sproduct.get_product_by_prid(prid)
+        if product:
+            prkeeperprice = product.PRprice * (1 - Partner().one_level_divide)
+            product.prkeeperprice = prkeeperprice
+            product.prsavemonty = prkeeperprice - prkeeperprice
+            product.add('prkeeperprice', 'prsavemonty')
+        act.product = product
+        act.add('product')
+        return act
+
     def fill_comment(self, act):
         """给活动对象附加一个评论属性"""
         acid = act.ACid

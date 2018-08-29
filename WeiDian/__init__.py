@@ -3,6 +3,7 @@ from datetime import date
 
 from flask import Flask as _Flask
 from flask.json import JSONEncoder as _JSONEncoder
+from flask_cors import CORS
 from werkzeug.exceptions import HTTPException
 
 from WeiDian.apis.v1 import AActivity, AHotMessage, ABanner, ASearchField, ATopNav, \
@@ -75,4 +76,5 @@ def create_app():
     app.config.from_object('WeiDian.config.setting')
     register_route(app)
     create_test_url(app)  # 测试用
+    CORS(app, supports_credentials=True)
     return app
