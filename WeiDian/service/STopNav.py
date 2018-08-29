@@ -12,6 +12,14 @@ from WeiDian.models.model import TopNav
 class STopNav(SBase):
 
     @close_session
+    def get_home_list_by_parentid(self, tnparentid=0):
+        return self.session.query(TopNav).filter_by(Tisdelete=False, TNparentid=tnparentid, TNtype = 1).order_by(TopNav.TSort).all()
+
+    @close_session
+    def get_dp_list_by_parentid(self, tnparentid=0):
+        return self.session.query(TopNav).filter_by(Tisdelete=False, TNparentid=tnparentid, TNtype = 2).order_by(TopNav.TSort).all()
+
+    @close_session
     def get_list_by_parentid(self, tnparentid=0):
         return self.session.query(TopNav).filter_by(Tisdelete=False, TNparentid=tnparentid).order_by(TopNav.TSort).all()
 

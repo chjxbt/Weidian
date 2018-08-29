@@ -17,7 +17,8 @@ class ATopNav(Resource):
     def get(self, topnav):
         print topnav
         apis = {
-            'get_all': 'self.ctopnav.get_all()'
+            'get_home': 'self.ctopnav.get_home()',
+            'get_dp': 'self.ctopnav.get_dp()'
         }
         res = eval(apis[topnav])
         return jsonify(res)
