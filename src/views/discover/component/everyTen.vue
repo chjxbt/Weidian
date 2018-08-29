@@ -72,18 +72,14 @@
               // console.log(res.data.data);
               this.recommend = res.data.data;
               console.log(this.recommend);
-              for(let i=0;i<5;i++) {
-                this.list.push(this.recommend[0].products[0]);
-              }
-              console.log(this.list);
 
-              for(let i=0;i<this.list.length;i++) {
+              for(let i = 0; i < this.recommend[0].products.length;i++) {
                 var elem_li = document.createElement('li'); // 生成一个 li元素
-                elem_li.innerHTML = "<img src=\"http://img.eelly.com/G02/M00/00/7F/small_pIYBAFVfLxCIItqyAATKYNG5CMEAAAxsQHbafcABMp4028.jpg\" class=\"m-img-list-img\" alt=\"\"><p><span class=\"m-price\">￥69</span><span class=\"m-red\">赚12</span></p>"; // 设置元素的内容
-
+                // 设置元素的内容
+                elem_li.innerHTML = "<img src=" + this.recommend[0].products[i].prmainpic + " class='m-img-list-img'><p><span class='m-price'>￥" + this.recommend[0].products[0].prprice +
+                  "</span><span class='m-red'>赚" + (this.recommend[0].products[0].prprice - this.recommend[0].products[0].proldprice).toFixed(2) + "</span></p>";
                 document.getElementById('m-img-list').appendChild(elem_li);
               }
-              console.log(document.getElementById('m-img-list'));
 
             }else{
               Toast({ message: '操作失败', className: 'm-toast-fail' });
