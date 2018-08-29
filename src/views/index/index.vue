@@ -9,21 +9,30 @@
       </div>
 
       <mt-swipe :auto="2000">
-        <mt-swipe-item v-for="item in items" :key="item.id">
+        <mt-swipe-item v-for="item in swipe_items" :key="item.acid">
           <a :href="item.href" rel="external nofollow" >
-            <img :src="item.url" class="img"/>
+            <img :src="item.baimage" class="img"/>
             <span class="desc"></span>
           </a>
         </mt-swipe-item>
       </mt-swipe>
       <div class="m-recommend">
-        <span class="m-recommend-label">热文</span>
-        <span>全新鞋面设计，阿迪新款首发，先到先得</span>
+        <template v-for="(item,index) in hot_list" ><!--:key="item.hmid"-->
+          <div class="m-recommend-one" :class="index == hot_index?'active':''">
+            <span class="m-recommend-span">
+              <span class="m-recommend-label">热文</span>
+              <span>{{item.hmtext}}</span>
+            </span>
+          </div>
+        </template>
+
+
       </div>
 
       <div class="m-index-section">
-        <ctx :icon="icon_list" @iconClick="iconClick"></ctx>
-        <ctx></ctx>
+        <template v-for="(item,index) in activity_list">
+          <ctx :icon="icon_list" :list="item" @iconClick="iconClick"></ctx>
+        </template>
       </div>
 
 
@@ -119,19 +128,27 @@
   import search from '../../components/common/search';
   import ctx from './components/ctx';
   import share from '../../components/common/share';
+  import api from '../../api/api';
+  import axios from 'axios';
     export default {
         data() {
             return {
               show_modal: false,
               show_task:false,
               show_fixed:false,
-              items: [{
+              swipe_items: [{
                 title: '你的名字',
                 href: 'http://google.com',   url: 'http://www.baidu.com/img/bd_logo1.png'
               }, {
                 title: '我的名字',
                 href: 'http://baidu.com',   url: 'http://www.baidu.com/img/bd_logo1.png'
               }],
+              hot_list:[
+
+              ],
+              hot_index:0,
+              interval:null,
+              activity_list:[],
               nav_list:[
                 {
                   name:'上新',
@@ -180,22 +197,86 @@
           ctx,
           share
         },
+      mounted(){
+          this.getSwipe();
+          this.getHot();
+        this.getActivity();
+        this.getTopnav();
+          let that =this;
+        this.interval = window.setInterval(that.animation,3000)
+      },
         methods: {
+          /*获取导航*/
+          getTopnav(){
+            axios.get(api.get_all_topnav).then(res => {
+              if(res.data.status == 200){
+
+              }
+            })
+          },
+          /*获取滚动轮播图*/
+          getSwipe(){
+            axios.get(api.get_all_banner,{params:{
+                lasting:true
+              }}).then(res => {
+               if(res.data.status == 200){
+                 this.swipe_items = res.data.data;
+               }
+            })
+          },
+          /*获取热文*/
+          getHot(){
+            axios.get(api.get_all_hotmessage,{params:{
+                lasting:true
+              }}).then(res => {
+              if(res.data.status == 200){
+                this.hot_list = res.data.data;
+              }
+            })
+          },
+          /*获取活动列表*/
+          getActivity(){
+            axios.get(api.get_all_activity,{params:{
+                lasting:true,
+                start:0,
+                count:15,
+                navid:'6882ad09-bf5f-4607-8ad1-1cd46b6158e0',
+                suid:'6882ad09-bf5f-4607-8ad1-1cd46b6158e0'
+              }}).then(res => {
+              if(res.data.status == 200){
+                this.activity_list = res.data.data;
+              }
+            })
+          },
+          /*热文轮播*/
+          animation(v){
+            v = v || 1;
+            if(this.hot_index == this.hot_list.length -1){
+              this.hot_index = 0;
+            }else{
+              this.hot_index = this.hot_index + v;
+            }
+          },
+          /*关闭模态框*/
           closeModal(v){
             this[v]  = false;
           },
+          /*开启模态框*/
           showModal(v){
             this[v] = true;
           },
+          /*分享按钮点击*/
           fixedClick(){
             this.show_fixed = false;
           },
+          /*导航点击*/
           navClick(v){
             for(let i=0;i<this.nav_list.length;i++){
               this.nav_list[i].click = false;
             }
             this.nav_list[v].click = true;
           },
+          /*每个活动icon点击*/
           iconClick(v){
             switch (v){
               case 0:
@@ -208,9 +289,6 @@
                 break;
             }
           }
-        },
-        created() {
-
         }
     }
 </script>
@@ -226,18 +304,33 @@
     height: 44px;
     line-height: 44px;
     font-size: 22px;
-    .flex-row(center);
-    .m-recommend-label{
-      display: inline-block;
-      padding: 0 10px;
-      height: 27px;
-      line-height: 27px;
-      font-size: 20px;
-      color: @mainColor;
-      border: 1px solid @mainColor;
-      border-radius: 4px;
-      margin-right: 12px;
+    overflow: hidden;
+    position: relative;
+    .m-recommend-one{
+      position: absolute;
+      bottom:-44px;
+      text-align: center;
+      width: 100%;
+      &.active{
+        bottom:0;
+      }
+     .m-recommend-span{
+       display: inline-block;
+       .m-recommend-label{
+         display: inline-block;
+         padding: 0 10px;
+         height: 27px;
+         line-height: 27px;
+         font-size: 20px;
+         color: @mainColor;
+         border: 1px solid @mainColor;
+         border-radius: 4px;
+         margin-right: 12px;
+       }
+     }
+
     }
+
   }
   .m-index-section{
 

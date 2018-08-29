@@ -1,27 +1,20 @@
 <template>
   <div class="m-section-one">
-    <img class="m-section-img"/>
+    <img :src="list.suuser.suheader" class="m-section-img"/>
     <div class="m-section-content">
       <div class="m-section-title">
-        <span class="m-title">拉夏贝尔La Chapelle</span>
-        <span class="m-sale">已售1981件</span>
+        <span class="m-title">{{list.suuser.suname}}</span>
+        <span class="m-sale">已售{{list.soldnum}}件</span>
       </div>
       <div class="m-section-text">
-        <p>    7月9日上午9:00开播99款，本次活动2天。
-          La Chapelle她崇尚精神性的外在表达，探索
-          真实的美，作为一个快速发展的时尚品牌，全
-          国31个省市均有店铺存在，</p>
+        <p>    {{list.actext}}</p>
         <span class="m-section-more">展开全文</span>
         <ul class="m-img-list">
-          <li>
-            <img src="" class="m-section-text-img" alt="">
-          </li>
-          <li>
-            <img src="" class="m-section-text-img" alt="">
-          </li>
-          <li>
-            <img src="" class="m-section-text-img" alt="">
-          </li>
+          <template v-for="(item,index) in list.media">
+            <li>
+              <img :src="item" class="m-section-text-img" alt="">
+            </li>
+          </template>
         </ul>
         <div class="m-section-bottom">
           <div>
@@ -54,6 +47,10 @@
       props:{
         icon:{
           type:Array,
+          default:null
+        },
+        list:{
+          type:Object,
           default:null
         }
       },
