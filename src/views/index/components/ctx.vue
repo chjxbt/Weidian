@@ -27,12 +27,12 @@
             <div class="m-red m-ft-22">距活动结束仅剩2天10小时</div>
           </div>
           <div>
-            <icon-list :list="icon" @iconClick="iconClick"></icon-list>
+            <icon-list :list="list.icon" @iconClick="iconClick"></icon-list>
           </div>
         </div>
       </div>
     </div>
-    <m-label :name="list.tags[0].atname"></m-label>
+    <m-label :name="list.tags[0].atname" v-if="list.tags[0]"></m-label>
   </div>
 </template>
 
