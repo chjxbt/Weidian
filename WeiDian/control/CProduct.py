@@ -42,8 +42,11 @@ class CProduct(BaseProductControl):
 
     def get_product_list(self):
         args = request.args.to_dict()
+        page = int(args.get('page', 1))  # 页码
         start = int(args.get('start', 0))  # 起始位置
         count = int(args.get('count', 15))  # 取出条数
+        if not start:
+            start = (page -1) * count
         product_list = self.sproduct.get_all()
         len_product_list = len(product_list)
         if count > 30:
@@ -52,6 +55,7 @@ class CProduct(BaseProductControl):
         if end > len_product_list:
             end = len_product_list
         product_list = product_list[start: end]
+        print start, end
         data = import_status('get_product_list_success', 'OK')
         data['data'] = product_list
         return data

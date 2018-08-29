@@ -13,6 +13,7 @@ from WeiDian.service.SOrder import SOrder
 from WeiDian.service.SProductImage import SProductImage
 from WeiDian.service.SProductSkuKey import SProductSkuKey
 from WeiDian.service.SProduct import SProduct
+from WeiDian.service.SUser import SUser
 from WeiDian.config.response import PARAMS_MISS, SYSTEM_ERROR, AUTHORITY_ERROR, TOKEN_ERROR
 from WeiDian.common.token_required import is_tourist
 
@@ -24,6 +25,7 @@ class COrder():
         self.sproductskukey = SProductSkuKey()
         self.sproduct = SProduct()
         self.sproductimage = SProductImage()
+        self.suser = SUser()
 
     @verify_token_decorator
     def add_one(self):
@@ -32,7 +34,7 @@ class COrder():
         data = request.json
         if not data:
             return PARAMS_MISS
-        required = ['oiaddress', 'oisingername', 'oisingerphone', 'sku']
+        required = ['oiaddress', 'oirecvname', 'oirecvphone', 'sku']
         missed = filter(lambda x: x not in data, required)
         if missed:
             return PARAMS_MISS('必要参数缺失: ' + '/'.join(missed))
@@ -41,15 +43,30 @@ class COrder():
             oisn=datetime.strftime(datetime.now(), format_for_db) + str(random.randint(10000, 100000)),
             oileavetext=data.get('oileavetext') or '',
             oiaddress=data.get('oiaddress'),
-            oisingername=data.get('oisingername'),
-            oisingerphone=data.get('oisingerphone'),
+            oirecvname=data.get('oirecvname'),
+            oirecvphone=data.get('oirecvphone'),
         )
         sku = data.get('sku')
         orderproductinfo_dict_list = self.fix_orderproduct_info(sku, order_dict['oiid'])
         list_add_models('OrderProductInfo', orderproductinfo_dict_list)
-        order_dict['OIproductprice'] = sum([x['OIproductprice'] for x in orderproductinfo_dict_list])
+        order_dict['oimount'] = sum([x['OIproductprice'] for x in orderproductinfo_dict_list]) # 总价
         dict_add_models('OrderInfo', order_dict)
-        return 'ok'
+        data = import_status('add_order_success', 'OK')
+        data['data'] = {
+            'oiid': order_dict['oiid']
+        }
+        return data
+
+    @verify_token_decorator
+    def get_order_list(self):
+        if is_tourist():
+            return TOKEN_ERROR
+        order_list = self.sorder.get_order_by_usid(request.user.id)
+
+    @verify_token_decorator
+    def update_order(self):
+        if is_tourist():
+            return TOKEN_ERROR 
 
     def fix_orderproduct_info(self, sku_list, oiid):
         """
@@ -78,20 +95,10 @@ class COrder():
             orderproductinfo_dict['opiproductimages'] = product.PRmainpic
             # 商品数量
             orderproductinfo_dict['opiproductnum'] = int(sku.get('num', 1))
-            # 商品价格
+            # 商品价格(小计)
             orderproductinfo_dict['OIproductprice'] = self.sproductskukey.get_true_price(pskid, partner=is_partner()) *\
                                                       orderproductinfo_dict['opiproductnum']
             sku_dict_list.append(orderproductinfo_dict)
-            import ipdb
-            ipdb.set_trace()
         return sku_dict_list
 
-    @verify_token_decorator
-    def get_order_list(self):
-        if is_tourist():
-            return TOKEN_ERROR
-
-    @verify_token_decorator
-    def update_order(self):
-        if is_tourist():
-            return TOKEN_ERROR 
+ 

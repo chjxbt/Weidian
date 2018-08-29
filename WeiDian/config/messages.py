@@ -1,4 +1,4 @@
-# *- coding:utf8 *-测试信息
+# *- coding:utf8 *-
 error_system_error = "System is error !"
 messages_get_item_ok = "获取信息成功"
 get_activity_list_success = "获取活动成功"
@@ -41,3 +41,5 @@ cancel_product_like_success = '取消商品收藏成功'
 delete_searchfield_success = '删除搜索字段成功'
 add_searchfield_success = '添加搜索字段成功'
 update_searchfield_success = '修改搜索字段成功'
+add_order_success = '添加订单成功'
+get_order_list_success = '获取订单列表成功'
