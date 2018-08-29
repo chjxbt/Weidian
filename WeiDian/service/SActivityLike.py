@@ -1,10 +1,9 @@
 # *- coding:utf8 *-
 import sys
 import os
-
-sys.path.append(os.path.dirname(os.getcwd()))
 from SBase import SBase, close_session
 from WeiDian.models.model import ActivityLike, Activity
+sys.path.append(os.path.dirname(os.getcwd()))
 
 
 class SActivityLike(SBase):
@@ -28,18 +27,32 @@ class SActivityLike(SBase):
         self.session.add(aclike)
 
     @close_session
+    def add_like_by_acid(self, acid):
+        cur_activity = self.session.query(Activity).filter_by(ACid=acid).first()
+        if cur_activity.AClikeFakeNum:
+            cur_activity.AClikeFakeNum += 1
+        self.session.add(cur_activity)
+        self.session.commit()
+
+    @close_session
     def is_like(self, usid, acid):
         """是否点赞"""
         return self.session.query(ActivityLike).filter_by(ACid=acid, USid=usid).first()
 
     @close_session
-    def add_like(self, aclike):
-        """取消喜欢"""
-        acid = aclike.acid
+    def del_like(self, usid, acid):
+        """删除点赞"""
+        return self.session.query(ActivityLike).filter_by(ACid=acid, USid=usid).delete()
+
+    @close_session
+    def cancel_like_by_acid(self, acid):
+        """取消点赞"""
+        # acid = aclike.acid
         cur_activity = self.session.query(Activity).filter_by(ACid=acid).first()
         if cur_activity.AClikeFakeNum:
             cur_activity.AClikeFakeNum -= 1
-            self.session.add(cur_activity)
+        self.session.add(cur_activity)
+        self.session.commit()
 
 
 
