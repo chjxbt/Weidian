@@ -17,8 +17,15 @@ class CTopNav():
         from WeiDian.service.STopNav import STopNav
         self.s_topnav = STopNav()
 
-    def get_all(self):
-        parent_nav_list = self.s_topnav.get_list_by_parentid()
+    def get_home(self):
+        parent_nav_list = self.s_topnav.get_home_list_by_parentid()
+        map(self.fill_detail, parent_nav_list)
+        data = import_status('get_nav_list_success', "OK")
+        data['data'] = parent_nav_list
+        return data
+
+    def get_dp(self):
+        parent_nav_list = self.s_topnav.get_dp_list_by_parentid()
         map(self.fill_detail, parent_nav_list)
         data = import_status('get_nav_list_success', "OK")
         data['data'] = parent_nav_list
