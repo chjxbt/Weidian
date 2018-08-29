@@ -15,4 +15,4 @@ wd = create_app()
 
 
 if __name__ == '__main__':
-    wd.run(debug=True)
+    wd.run('0.0.0.0', 7443, debug=True)
