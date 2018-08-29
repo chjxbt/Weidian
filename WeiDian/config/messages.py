@@ -1,4 +1,4 @@
-# *- coding:utf8 *-测试信息
+# *- coding:utf8 *-
 error_system_error = "System is error !"
 messages_get_item_ok = "获取信息成功"
 get_activity_list_success = "获取活动成功"
