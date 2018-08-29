@@ -23,9 +23,14 @@ class CUser():
         user = self.suser.verify_user(usname, uspassword)
         if not user:
             raise SYSTEM_ERROR('用户名或者密码错误')
+        if user.USlevel == 0:
+            level = 'ordinary'
+        if user.USlevel > 0:
+            level = 'partner'
         token = usid_to_token(user.USid)
         data = import_status('generic_token_success', "OK")
         data['data'] = {
-            'token': token
+            'token': token,
+            'level': level,
         }
         return data

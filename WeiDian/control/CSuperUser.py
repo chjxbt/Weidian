@@ -21,8 +21,17 @@ class CSuperUser():
         suuser = self.ssuperuser.verify_super(suname, supassword)
         if not suuser:
             return SYSTEM_ERROR('用户名或密码错误')
+        if suuser.SUlevel == 0:
+            level = 'customerservice'
+        if suuser.SUlevel == 1:
+            level = 'ordinaryadmin'
+        if suuser.SUlevel == 2:
+            level = 'superadmin'
         token = usid_to_token(suuser.SUid, 'SuperUser')
-        token_data = {'token': token}
+        token_data = {
+            'token': token,
+            'level': level
+        }
         data = import_status('generic_token_success', 'OK')
         data['data'] = token_data
         return data
