@@ -146,7 +146,7 @@
               Toast(res.data.message);
             }
           },error => {
-            Toast(error.data.message);
+            // Toast(error.data.message);
           })
         },
         // 获取banner
@@ -160,7 +160,7 @@
               Toast(res.data.message);
             }
           },error => {
-            Toast(error.data.message);
+            // Toast(error.data.message);
           })
         }
       },
