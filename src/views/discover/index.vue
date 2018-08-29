@@ -43,56 +43,62 @@
   import announcement from './component/announcement';
   import course from './component/course';
   import iconList from'../../components/common/iconList';
-    export default {
-        data() {
-            return {
-              show_modal:false,
-              nav_list:[
-                {
-                  name:'每日10荐',
-                  url:'every',
-                  dot:false,
-                  click:true
-                },{
-                  name:'素材圈',
-                  url:'fodder',
-                  dot:false,
-                  click:false
-                },{
-                  name:'公告',
-                  url:'announcement',
-                  dot:true,
-                  click:false
-                },{
-                  name:'教程',
-                  url:'course',
-                  dot:true,
-                  click:false
-                }
-              ],
-              nav_select:'every'
-            }
-        },
-        components: {
-          navbar,
-          fodder,
-          every,
-          announcement,
-          course,
-          iconList
-        },
-        methods: {
-          navClick(v){
-            for(let i=0;i<this.nav_list.length;i++){
-              this.nav_list[i].click = false;
-            }
-            this.nav_list[v].click = true;
-            this.nav_select = this.nav_list[v].url
-          }
-        },
-        created() {
 
+  import api from '../../api/api';
+  import axios from 'axios';
+
+    export default {
+      data() {
+        return {
+          show_modal:false,
+          nav_list:[
+            {
+              name:'每日10荐',
+              url:'every',
+              dot:false,
+              click:true
+            },{
+              name:'素材圈',
+              url:'fodder',
+              dot:false,
+              click:false
+            },{
+              name:'公告',
+              url:'announcement',
+              dot:true,
+              click:false
+            },{
+              name:'教程',
+              url:'course',
+              dot:true,
+              click:false
+            }
+          ],
+          nav_select:'every'
         }
+      },
+      components: {
+        navbar,
+        fodder,
+        every,
+        announcement,
+        course,
+        iconList
+      },
+      methods: {
+        navClick(v){
+          for(let i=0;i<this.nav_list.length;i++){
+            this.nav_list[i].click = false;
+          }
+          this.nav_list[v].click = true;
+          this.nav_select = this.nav_list[v].url
+        }
+      },
+      created() {
+
+        let token = "eyJhbGciOiJIUzI1NiIsImV4cCI6MTUzNTU4NDU2NywiaWF0IjoxNTM1NTEyNTY3fQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0wOC0yOSAxMToxNjowNyJ9._LSlRme_ktLk35dcuIGNVrze7xmdK-VtqPaXO-ZLmkc";
+        localStorage.setItem('token', token);
+      }
     }
 </script>
 <style lang="less" rel="stylesheet/less">

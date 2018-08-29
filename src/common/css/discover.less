@@ -45,48 +45,6 @@
 
   }
   .m-item-one{
-    .m-title{
-      .flex-row(space-between);
-      border-bottom: 1px solid @borderColor;
-      padding: 20px 45px;
-      color: #a3a3a3;
-      font-size: 20px;
-      line-height: 36px;
-      .m-item-title-img{
-        display: inline-block;
-        width: 34px;
-        height: 34px;
-        margin-right: 10px;
-        border-radius: 10px;
-        background-color: #666666;
-        vertical-align:middle;
-      }
-      .m-lookinfo-box{
-        .m-look-icon{
-          display: inline-block;
-          width: 25px;
-          height: 34px;
-          margin-top: -7px;
-          background: url("/static/images/icon-look.png")no-repeat center;
-          background-size: 100%;
-          vertical-align:middle;
-        }
-        .m-smile-icon{
-          display: inline-block;
-          width: 25px;
-          height: 34px;
-          margin-top: -7px;
-          background: url("/static/images/icon-smile.png")no-repeat center;
-          background-size: 100%;
-          margin-left: 20px;
-          vertical-align:middle;
-          &.active{
-            background: url("/static/images/icon-smile-active.png")no-repeat center;
-            background-size: 100%;
-          }
-        }
-      }
-    }
     .m-item-img-list{
       padding: 20px 45px ;
       .flex-row(flex-start);
@@ -107,6 +65,48 @@
         margin-right: 10px;
         background-color: #666666;
         border-radius: 10px;
+      }
+    }
+  }
+  .m-title{
+    .flex-row(space-between);
+    border-bottom: 1px solid @borderColor;
+    padding: 20px 0;
+    color: #a3a3a3;
+    font-size: 20px;
+    line-height: 36px;
+    .m-item-title-img{
+      display: inline-block;
+      width: 34px;
+      height: 34px;
+      margin-right: 10px;
+      border-radius: 10px;
+      background-color: #666666;
+      vertical-align:middle;
+    }
+    .m-lookinfo-box{
+      .m-look-icon{
+        display: inline-block;
+        width: 25px;
+        height: 34px;
+        margin-top: -7px;
+        background: url("/static/images/icon-look.png")no-repeat center;
+        background-size: 100%;
+        vertical-align:middle;
+      }
+      .m-smile-icon{
+        display: inline-block;
+        width: 25px;
+        height: 34px;
+        margin-top: -7px;
+        background: url("/static/images/icon-smile.png")no-repeat center;
+        background-size: 100%;
+        margin-left: 20px;
+        vertical-align:middle;
+        &.active{
+          background: url("/static/images/icon-smile-active.png")no-repeat center;
+          background-size: 100%;
+        }
       }
     }
   }
