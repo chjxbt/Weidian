@@ -50,10 +50,11 @@ class CActivityComment(BaseActivityCommentControl):
         acid = args.get('acid')
         if not acid:
             return PARAMS_MISS
-        start = int(args.get('start', 0))
-        count = int(args.get('count', 30))  # 默认显示30条评论
-        if count > 50:
-            count = 50
+        page = int(args.get('page', 1))  # 页码
+        start = int(args.get('start', 0))  # 起始位置
+        count = int(args.get('count', 15))  # 取出条数
+        if not start:
+            start = (page -1) * count
         comment_list = self.sactivitycomment.get_comment_by_activity_id(acid)
         end = start + count
         len_comment_list = len(comment_list)

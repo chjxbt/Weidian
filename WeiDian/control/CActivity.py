@@ -46,8 +46,11 @@ class CActivity(BaseActivityControl):
         navid = args.get('navid')  # 导航id
         suid = args.get('suid')  # 管理员id
         lasting = args.get('lasting', 'true')  # 是否正在进行的活动
+        page = int(args.get('page', 1))  # 页码
         start = int(args.get('start', 0))  # 起始位置
-        count = int(args.get('count', 15))  # 取出活动条数
+        count = int(args.get('count', 15))  # 取出条数
+        if not start:
+            start = (page -1) * count
         if not (navid or suid):
             return PARAMS_MISS
         if navid:

@@ -28,6 +28,10 @@ class SProduct(SBase):
         return product_list
 
     @close_session
+    def get_all_by_filter(self, pagenum, pagesize):
+        pass
+
+    @close_session
     def get_product_list_by_reid(self, reid):
         return self.session.query(Product).join(
             RecommendProduct, Product.PRid == RecommendProduct.PRid).filter(

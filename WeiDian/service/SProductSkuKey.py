@@ -23,8 +23,11 @@ class SProductSkuKey(SBase):
 
     @close_session
     def get_true_price(self, pskid, partner=False):
+        """获取真实价格"""
         psk = self.session.query(ProductSkuKey).filter_by(PSKid=pskid).first()
-        return Partner().one_level_divide * psk.PSKprice
+        if partner:
+            return Partner().one_level_divide * psk.PSKprice
+        return psk.PSKprice
 
 
 
