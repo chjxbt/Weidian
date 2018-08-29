@@ -18,3 +18,13 @@ class ARecommend(Resource):
         }
         res = eval(apis[recommend])
         return jsonify(res)
+
+    def post(self, recommend):
+        print recommend
+        apis = {
+            "add_one": "self.control_recommend.add_one()",
+            "update": "self.control_recommend.update_recommend()",
+            "del_one": "self.control_recommend.del_one()"
+        }
+        res = eval(apis[recommend])
+        return jsonify(res)
