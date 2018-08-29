@@ -8,11 +8,12 @@
       </div>
       <div class="m-section-text">
         <p>    {{list.actext}}</p>
-        <span class="m-section-more">展开全文</span>
+        <!--<span class="m-section-more">展开全文</span>-->
         <ul class="m-img-list">
           <template v-for="(item,index) in list.media">
             <li>
-              <img :src="item" class="m-section-text-img" alt="">
+              <img v-if="item.amimage" :src="item.amimage" class="m-section-text-img" alt="">
+              <video v-if="item.amvideo" :src="item.amvideo"></video>
             </li>
           </template>
         </ul>
@@ -26,12 +27,12 @@
             <div class="m-red m-ft-22">距活动结束仅剩2天10小时</div>
           </div>
           <div>
-            <icon-list :list="icon" @iconClick="iconClick"></icon-list>
+            <icon-list :list="list.icon" @iconClick="iconClick"></icon-list>
           </div>
         </div>
       </div>
     </div>
-    <m-label></m-label>
+    <m-label :name="list.tags[0].atname" v-if="list.tags[0]"></m-label>
   </div>
 </template>
 
@@ -45,10 +46,6 @@
         }
       },
       props:{
-        icon:{
-          type:Array,
-          default:null
-        },
         list:{
           type:Object,
           default:null
@@ -60,7 +57,7 @@
       },
       methods:{
         iconClick(v){
-          this.$emit('iconClick',v)
+          this.$emit('iconClick',v,this.list)
         }
       }
     }
@@ -116,7 +113,6 @@
             height: 180px;
             margin-right: 10px;
             margin-top: 10px;
-            background-color: #666666;
             &:nth-child(3n){
               margin-right: 0;
             }

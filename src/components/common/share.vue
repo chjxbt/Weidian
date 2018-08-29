@@ -4,15 +4,15 @@
       <h3>转发到</h3>
       <ul class="m-share-list">
         <li>
-          <img src="/static/images/icon-wei.jpg" class="m-share-icon" alt="">
+          <img src="/static/images/icon-wei.png" class="m-share-icon" alt="">
           转发到微信好友
         </li>
         <li>
-          <img src="/static/images/icon-peng.jpg" class="m-share-icon" alt="">
+          <img src="/static/images/icon-peng.png" class="m-share-icon" alt="">
           转发到朋友圈
         </li>
         <li>
-          <img src="/static/images/icon-link.jpg" class="m-share-icon" alt="">
+          <img src="/static/images/icon-link.png" class="m-share-icon" alt="">
           转发商品链接
         </li>
       </ul>
