@@ -38,6 +38,7 @@ class CActivity(BaseActivityControl):
         self.sproduct = SProduct()
         self.session = Session()
 
+    @verify_token_decorator
     def get_all(self):
         """获取条件下的所有活动
         http://127.0.0.1:5000/activity/get_all?navid=q&lasting=true

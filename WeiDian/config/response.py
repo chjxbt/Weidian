@@ -14,6 +14,12 @@ class TOKEN_ERROR(BaseError):
     message = "未登录"
 
 
+class MethodNotAllowed(BaseError):
+    status = 405
+    status_code = 405002
+    message = "方法不支持"
+
+
 class AUTHORITY_ERROR(BaseError):
     status = 405
     status_code = 405001

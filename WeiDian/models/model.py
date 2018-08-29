@@ -371,6 +371,10 @@ class OrderInfo(BaseModel):
     OIcreatetime = Column(String(14))  # 订单创建时间
     OIisdelete = Column(Boolean, default=False)  # 是否删除
 
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = self.all
 
 class OrderProductInfo(BaseModel):
     """订单商品详情, 多个订单商品详情对应一个订单"""
@@ -392,6 +396,13 @@ class OrderProductInfo(BaseModel):
     @PSKproperkey.setter
     def PSKproperkey(self, raw):
         self._PSKproperkey = str(raw)
+
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = self.all
+        self.add('PSKproperkey').hide('_PSKproperkey')
+
 
 
 class ProductCategory(BaseModel):

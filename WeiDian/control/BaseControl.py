@@ -22,8 +22,13 @@ class BaseActivityControl():
         act.tags = self.stags.get_show_tags_by_acid(acid)  # 右上角tag
         act.foward = self.foward.get_fowardnum_by_acid(acid)  # 转发数
         act.likenum = self.salike.get_likenum_by_acid(acid)  # 喜欢数
+        if hasattr(request, 'user'):
+            alreadylike = self.salike.is_like(request.user.id, acid)
+            act.alreadylike = True if alreadylike else False
+        else:
+            act.alreadylike = False
         act.soldnum = self.sactivity.get_product_soldnum_by_acid(acid)  # 销量
-        act.add('suuser', 'media', 'tags', 'foward', 'likenum', 'soldnum')
+        act.add('suuser', 'media', 'tags', 'foward', 'likenum', 'soldnum', 'alreadylike')
         return act
 
     def fill_type(self, act):

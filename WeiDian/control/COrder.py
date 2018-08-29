@@ -40,6 +40,7 @@ class COrder():
             return PARAMS_MISS('必要参数缺失: ' + '/'.join(missed))
         order_dict = dict(
             oiid=str(uuid.uuid4()),
+            usid=request.user.id,
             oisn=datetime.strftime(datetime.now(), format_for_db) + str(random.randint(10000, 100000)),
             oileavetext=data.get('oileavetext') or '',
             oiaddress=data.get('oiaddress'),
@@ -61,7 +62,24 @@ class COrder():
     def get_order_list(self):
         if is_tourist():
             return TOKEN_ERROR
+        args = request.args.to_dict()
+        page = int(args.get('page', 1))  # 页码
+        start = int(args.get('start', 0))  # 起始位置
+        count = int(args.get('count', 15))  # 取出条数
+        if not start:
+            start = (page - 1) * count
         order_list = self.sorder.get_order_by_usid(request.user.id)
+        len_order_list = len(order_list)
+        if count > 30:
+            count = 30
+        end = start + count
+        if end > len_order_list:
+            end = len_order_list
+        order_list = order_list[start: end]
+        map(self.fill_productinfo, order_list)
+        data = import_status('get_order_list_success', 'OK')
+        data['data'] = order_list
+        return data
 
     @verify_token_decorator
     def update_order(self):
@@ -102,3 +120,8 @@ class COrder():
         return sku_dict_list
 
  
+    def fill_productinfo(self, order):
+        oiid = order.OIid
+        order.productinfo = self.sorder.get_orderproductinfo_by_oiid(oiid)
+        order.add('productinfo')
+        return order
