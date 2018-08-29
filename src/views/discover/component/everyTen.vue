@@ -8,8 +8,8 @@
         </mt-swipe-item>
       </mt-swipe>
       <div class="m-scroll">
-        <ul class="m-img-list">
-          <li>
+        <ul class="m-img-list" id="m-img-list">
+          <!--<li>
             <img src="http://images.51bi.com/opt/siteimg/pb/20140307/c29ad52051879f0d13f1da57472abe88.jpeg" class="m-img-list-img" alt="">
             <p><span class="m-price">￥169</span><span class="m-red">赚12</span></p>
           </li>
@@ -24,8 +24,14 @@
           <li>
             <img src="http://img5.imgtn.bdimg.com/it/u=2506569644,813669471&fm=26&gp=0.jpg" class="m-img-list-img" alt="">
             <p><span class="m-price">￥69</span><span class="m-red">赚12</span></p>
-          </li>
+          </li>-->
         </ul>
+        <!--<ul class="m-img-list" v-for="item in list">
+          <li>
+            <img :src="item.prmainpic" class="m-img-list-img" alt="">
+            <p><span class="m-price">￥{{item.prprice}}</span><span class="m-red">赚{{(item.prprice-item.proldprice).toFixed(2)}}</span></p>
+          </li>
+        </ul>-->
       </div>
       <div class="m-title">
         <div>
@@ -52,6 +58,8 @@
       data() {
         return {
           bannerList: [],
+          recommend: {},
+          list: []
         }
       },
       components: {},
@@ -61,7 +69,22 @@
           let token = localStorage.getItem('token');
           axios.get(api.get_info_recommend + '?token=' + token).then(res => {
             if(res.data.status == 200) {
-              console.log(res.data.data);
+              // console.log(res.data.data);
+              this.recommend = res.data.data;
+              console.log(this.recommend);
+              for(let i=0;i<5;i++) {
+                this.list.push(this.recommend[0].products[0]);
+              }
+              console.log(this.list);
+
+              for(let i=0;i<this.list.length;i++) {
+                var elem_li = document.createElement('li'); // 生成一个 li元素
+                elem_li.innerHTML = "<img src=\"http://img.eelly.com/G02/M00/00/7F/small_pIYBAFVfLxCIItqyAATKYNG5CMEAAAxsQHbafcABMp4028.jpg\" class=\"m-img-list-img\" alt=\"\"><p><span class=\"m-price\">￥69</span><span class=\"m-red\">赚12</span></p>"; // 设置元素的内容
+
+                document.getElementById('m-img-list').appendChild(elem_li);
+              }
+              console.log(document.getElementById('m-img-list'));
+
             }else{
               Toast({ message: '操作失败', className: 'm-toast-fail' });
             }
@@ -76,7 +99,7 @@
             if(res.data.status == 200) {
               this.bannerList = res.data.data;
               // console.log(res.data.data);
-              // Toast({ message: '操作成功', className: 'm-toast-fail' });
+              // Toast({ message: '操作成功', className: 'm-toast-success' });
             }else{
               Toast({ message: '操作失败', className: 'm-toast-fail' });
             }
@@ -97,7 +120,10 @@
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/css/discover";
   .img {
-
     border-radius: 20px;
+  }
+  /*滚动条样式*/
+  ::-webkit-scrollbar {
+    height: 0;
   }
 </style>
