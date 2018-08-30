@@ -12,7 +12,9 @@
           </div>
           <p class="m-fodder-time">{{item.accreatetime}} 发布</p>
           <div class="m-section-text">
-            <p>7月9日上午9:00开播99款，本次活动2天。</p>
+            <p>{{item.actext}}</p>
+            <!--<span class="m-section-more" v-if="list.show_text" @click="showMoreText(false)">展开全文</span>-->
+            <!--<span class="m-section-more" v-if="list.actext.length >92 && !list.show_text" @click="showMoreText(true)">收起全文</span>-->
             <ul class="m-img-list">
               <li>
                 <img src="" class="m-section-text-img" alt="">
@@ -77,6 +79,9 @@
             if(res.data.status == 200){
               this.activity_list = res.data.data;
 
+              // console.log(this.activity_list);
+
+              // 判断今天、昨天和直接显示日期
               let now = new Date();
               let year = now.getFullYear(); //得到年份
               let month = now.getMonth();//得到月份
@@ -93,36 +98,27 @@
               let time = year + month + date + hour + minu + sec;
               let time1 = time.slice(0,4);// 当前年份
               let time2 = time.slice(4,8);// 当前日期
-
-
               for(let i = 0; i < this.activity_list.length; i ++) {
                 let createTime = this.activity_list[i].accreatetime;
                 let createTime1 = createTime.slice(0,4);// 发布年份
                 let createTime2 = createTime.slice(4,8);// 发布日期
-                // 判断今天、昨天和直接显示日期
                 if(time1 == createTime1 && time2.slice(0, 2) == createTime2.slice(0, 2)) {
                   if(Number(time2.slice(2, 4)) == Number(createTime2.slice(2, 4))) {
-                    this.activity_list[i].accreatetime = "今天 " + createTime.slice(8, 10) + ":" + createTime.slice(10, 12)
-                    // + ":" + createTime.slice(12, 14);
+                    this.activity_list[i].accreatetime = "今天 " + createTime.slice(8, 10) + ":" + createTime.slice(10, 12);
                   }else if(Number(time2.slice(2, 4)) == Number(createTime2.slice(2, 4)) + 1) {
-                    this.activity_list[i].accreatetime = "昨天 " + createTime.slice(8, 10) + ":" + createTime.slice(10, 12)
-                    // + ":" + createTime.slice(12, 14);
+                    this.activity_list[i].accreatetime = "昨天 " + createTime.slice(8, 10) + ":" + createTime.slice(10, 12);
                   }else {
                     let createTime3 = createTime.slice(0, 4) + "-" + createTime.slice(4, 6) + "-" + createTime.slice(6, 8) + " "
-                      + createTime.slice(8, 10) + ":" + createTime.slice(10, 12)
-                    // + ":" + createTime.slice(12, 14);
+                      + createTime.slice(8, 10) + ":" + createTime.slice(10, 12);
                     this.activity_list[i].accreatetime = createTime3;
                   }
                 }else {
                   let createTime3 = createTime.slice(0, 4) + "-" + createTime.slice(4, 6) + "-" + createTime.slice(6, 8) + " "
-                    + createTime.slice(8, 10) + ":" + createTime.slice(10, 12)
-                    // + ":" + createTime.slice(12, 14);
+                    + createTime.slice(8, 10) + ":" + createTime.slice(10, 12);
                   this.activity_list[i].accreatetime = createTime3;
                 }
-
               }
 
-              // console.log(this.activity_list[0]);
             }else{
               Toast({ message: res.data.message, className: 'm-toast-fail' });
             }
