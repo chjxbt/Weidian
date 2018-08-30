@@ -110,7 +110,7 @@
         /*获取活动列表*/
         getActivity(start, count, tnid){
           axios.get(api.get_all_activity, {
-            params: { start: 0, count: 15, tnid: '5ed4e908-a6db-11e8-b2ff-0cd292f93404' }}).then(res => {
+            params: { start: 0, count: 15, tnid: this.tnid }}).then(res => {
             if(res.data.status == 200){
               this.activity_list = res.data.data;
               console.log(this.activity_list);

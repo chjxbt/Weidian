@@ -52,7 +52,7 @@
       data() {
         return {
           show_modal:false,
-          nav_list:[],
+          nav_list:[{}],
           nav_select: '0'
         }
       },
