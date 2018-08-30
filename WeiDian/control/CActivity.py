@@ -135,13 +135,13 @@ class CActivity(BaseActivityControl):
         now_time = datetime.strftime(datetime.now(), format_for_db)
         acstarttime = data.get('acstarttime', now_time)  # 活动开始时间, 默认当前时间
         asstarttime_str_to_time = datetime.strptime(acstarttime, format_for_db)
-        # 7天以后
-        seven_days_later = datetime.strftime(
+        # 3天以后
+        three_days_later = datetime.strftime(
             asstarttime_str_to_time +
             timedelta(
-                days=7),
+                days=3),
             format_for_db)
-        acendtime = data.get('acendtime', seven_days_later)  # 活动结束时间, 默认7天以后
+        acendtime = data.get('acendtime', three_days_later)  # 活动结束时间, 默认7天以后
         actext = data.get('actext')  # 文字内容
         actype = data.get('actype')  # 类型
         forwardnum = data.get('fowardnum', 0)  # 转发数量
