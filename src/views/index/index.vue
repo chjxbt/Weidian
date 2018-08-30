@@ -237,7 +237,7 @@
                   this.activity_list[i].icon = this.icon_list;
                   this.activity_list[i].icon[0].name = this.activity_list[i].likenum;
                   this.activity_list[i].icon[0].alreadylike = this.activity_list[i].alreadylike;
-                  this.activity_list[i].show_text = this.activity_list[i].actext.length >92 ? true:false
+                  this.activity_list[i].actext.length >92 && (this.activity_list[i].show_text = true) ;
                 }
               }else{
                 Toast(res.data.message);
@@ -288,9 +288,9 @@
                 break;
             }
           },
-          showMoreText(v){
+          showMoreText(bool,v){
             let arr = [].concat(this.activity_list);
-            arr[v] = Object.assign({}, arr[v], { show_text: false });
+            arr[v] = Object.assign({}, arr[v], { show_text: bool });
             this.activity_list = [].concat(arr);
           },
           loadTop() {
