@@ -14,7 +14,7 @@
       <div class="m-modal" v-if="show_modal">
         <div class="m-modal-state">
           <div class="m-modal-head">
-            <img src="" class="m-modal-img" alt="">
+            <img src="" class="m-modal-img">
           </div>
           <div class="m-modal-content">
             <h2>升级成为店主·方可使用此功能</h2>
@@ -51,9 +51,10 @@
     export default {
       data() {
         return {
-          show_modal:false,
-          nav_list:[{tnid: "5ed4e908-a6db-11e8-b2ff-0cd292f93404"}],
-          nav_select: '0'
+          show_modal: false,
+          nav_list: [{ tnid: "1" }, { tnid: "1" },
+            { tnid: "1" }, { tnid: "1" }],// 5ed4e908-a6db-11e8-b2ff-0cd292f93404
+          nav_select: '1'
         }
       },
       components: { navbar, fodder, every, announcement, course, iconList },
@@ -73,8 +74,7 @@
           axios.get(api.get_dp_topnav).then(res => {
             if(res.data.status == 200) {
               this.nav_list = res.data.data;
-              this.nav_list[0].click = true;
-              console.log(this.nav_list[0]);
+              this.nav_list[1].click = true;
             }else{
               Toast({ message: res.data.message, className: 'm-toast-fail' });
             }
