@@ -98,8 +98,8 @@ class ActivityMedia(BaseModel):
     __tablename__ = 'activatymedia'
     AMid = Column(String(64), primary_key=True)
     ACid = Column(String(64), nullable=False)  # 商品图片对应的活动
-    AMimage = Column(String(64))  # 图片对应的路径
-    AMvideo = Column(String(64))  # 视频地址
+    AMimage = Column(String(255))  # 图片对应的路径
+    AMvideo = Column(String(255))  # 视频地址
     AMsort = Column(Integer)  # 图片的顺序, 用于表明图片的位置
 
     @orm.reconstructor
@@ -141,7 +141,7 @@ class Product(BaseModel):
     __tablename__ = 'product'
     PRid = Column(String(64), primary_key=True)
     PRdetail = Column(LONGTEXT)  # 商品详情, 大文本
-    PRmainpic = Column(String(64), nullable=False)  # 商品主图
+    PRmainpic = Column(String(255), nullable=False)  # 商品主图
     PRactivityid = Column(String(64))  # 活动id, 可能不需要
     Maketlias = Column(String(64))  # 店铺别名
     PRalias = Column(String(64))  # 别名
@@ -246,7 +246,7 @@ class ProductImage(BaseModel):
     __tablename__ = 'productimage'
     PIid = Column(String(64), primary_key=True)
     PRid = Column(String(64), nullable=False)  # 商品id
-    PIurl = Column(String(50), nullable=False)  # 图片链接(七牛云)
+    PIurl = Column(String(255), nullable=False)  # 图片链接(七牛云)
     PIsort = Column(Integer)  # 图片顺序
 
     @orm.reconstructor
@@ -272,7 +272,7 @@ class RecommendBanner(BaseModel):
     """每日十荐页上部轮播图"""
     __tablename__ = 'recommendbanner'
     RBid = Column(String(64), primary_key=True)
-    RBimage = Column(String(64))  # 图片
+    RBimage = Column(String(255))  # 图片
     PRid = Column(String(64))  # 推荐页轮播图对应的商品
     RBcreatetime = Column(String(14))  # 创建时间
     RBstarttime = Column(String(14))  # 上线时间
@@ -386,7 +386,7 @@ class OrderProductInfo(BaseModel):
     _PSKproperkey = Column(Text, nullable=False)  # 商品sku属性的key, json
     OIproductprice = Column(Float, nullable=False)   # 商品价格(购买时候的价格)
     OPIproductname = Column(String(64))  # 商品的名字(购买之时的)
-    OPIproductimages = Column(String(64))  # 商品主图
+    OPIproductimages = Column(String(255))  # 商品主图
     OPIproductnum = Column(Integer, default=1)  # 购买数量
 
     @property
@@ -479,7 +479,7 @@ class Banner(BaseModel):
     """
     __tablename__ = 'banner'
     BAid = Column(String(64), primary_key=True)
-    BAimage = Column(String(64))  # 图片
+    BAimage = Column(String(255))  # 图片
     ACid = Column(String(64))  # 轮播图对应的活动
     BAcreatetime = Column(String(14))  # 创建时间
     BAstarttime = Column(String(14))  # 上线时间
@@ -592,8 +592,8 @@ class IndexAdAlert(BaseModel):
     """
     __tablename__ = 'indexadalert'
     IAid = Column(String(64), primary_key=True)
-    IAimage = Column(String(64))  # 图片
-    IAurl = Column(String(128))  # 暂存url(点击弹窗后的效果未知)
+    IAimage = Column(String(255))  # 图片
+    IAurl = Column(String(255))  # 暂存url(点击弹窗后的效果未知)
     # 弹窗所针对的用户: {0 普通用户, 1 普通合伙人, 2 中级合伙人, 4 高级合伙人, 5 全部}
     IAtype = Column(Integer, default=0)
 

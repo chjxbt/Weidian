@@ -18,9 +18,9 @@ class SActivity(SBase):
         return activity_list
 
     @close_session
-    def get_activity_by_topnavid(self, navid):
+    def get_activity_by_topnavid(self, tnid):
         """根据导航的id获取活动"""
-        acvitity_list = self.session.query(Activity).filter_by(ACisdelete=False, TopnavId=navid).order_by(Activity.ACcreatetime.desc()).all()
+        acvitity_list = self.session.query(Activity).filter_by(ACisdelete=False, TopnavId=tnid).order_by(Activity.ACcreatetime.desc()).all()
         return acvitity_list
 
     @close_session

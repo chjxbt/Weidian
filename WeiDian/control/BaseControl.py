@@ -1,8 +1,7 @@
 # *- coding:utf8 *   -
 import uuid
-
+from datetime import datetime
 from flask import request
-
 from WeiDian.common.TransformToList import list_add_models, dict_add_models
 from WeiDian.common.divide import Partner
 from WeiDian.common.token_required import is_partner
@@ -28,7 +27,17 @@ class BaseActivityControl():
         else:
             act.alreadylike = False
         act.soldnum = self.sactivity.get_product_soldnum_by_acid(acid)  # 销量
-        act.add('suuser', 'media', 'tags', 'foward', 'likenum', 'soldnum', 'alreadylike')
+        """活动剩余时间"""
+        endtime = datetime.strptime(act.ACendtime, "%Y%m%d%H%M%S")
+        remain = endtime - datetime.now()
+        if remain.total_seconds() >= 21600:
+            remaindays = remain.days
+            remainhours = remain.seconds/3600
+            act.remaintime = [remaindays, remainhours, 0]
+        else:
+            remainminutes = remain.total_seconds()/60
+            act.remaintime = [0, remainminutes, 0]
+        act.add('suuser', 'media', 'tags', 'foward', 'likenum', 'soldnum', 'alreadylike', 'remaintime')
         return act
 
     def fill_type(self, act):
