@@ -3,7 +3,7 @@
       <div class="m-suspend-btn" @click.stop="showModal('show_task')">
         <span>开始转发</span>
       </div>
-      <mt-loadmore :top-method="loadTop" :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="loadmore">
+      <mt-loadmore :top-method="loadTop"  ref="loadmore">
           <div class="m-top">
             <search></search>
             <navbar :list="nav_list" @navClick="navClick"></navbar>
