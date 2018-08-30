@@ -17,21 +17,6 @@
               <li>
                 <img src="" class="m-section-text-img" alt="">
               </li>
-              <li>
-                <img src="" class="m-section-text-img" alt="">
-              </li>
-              <li>
-                <img src="" class="m-section-text-img" alt="">
-              </li>
-              <li>
-                <img src="" class="m-section-text-img" alt="">
-              </li>
-              <li>
-                <img src="" class="m-section-text-img" alt="">
-              </li>
-              <li>
-                <img src="" class="m-section-text-img" alt="">
-              </li>
             </ul>
             <div class="m-section-bottom">
               <div>
@@ -114,13 +99,25 @@
                 let createTime = this.activity_list[i].accreatetime;
                 let createTime1 = createTime.slice(0,4);// 发布年份
                 let createTime2 = createTime.slice(4,8);// 发布日期
-
-                if(time1 != createTime1) {
+                // 判断今天、昨天和直接显示日期
+                if(time1 == createTime1 && time2.slice(0, 2) == createTime2.slice(0, 2)) {
+                  if(Number(time2.slice(2, 4)) == Number(createTime2.slice(2, 4))) {
+                    this.activity_list[i].accreatetime = "今天 " + createTime.slice(8, 10) + ":" + createTime.slice(10, 12)
+                    // + ":" + createTime.slice(12, 14);
+                  }else if(Number(time2.slice(2, 4)) == Number(createTime2.slice(2, 4)) + 1) {
+                    this.activity_list[i].accreatetime = "昨天 " + createTime.slice(8, 10) + ":" + createTime.slice(10, 12)
+                    // + ":" + createTime.slice(12, 14);
+                  }else {
+                    let createTime3 = createTime.slice(0, 4) + "-" + createTime.slice(4, 6) + "-" + createTime.slice(6, 8) + " "
+                      + createTime.slice(8, 10) + ":" + createTime.slice(10, 12)
+                    // + ":" + createTime.slice(12, 14);
+                    this.activity_list[i].accreatetime = createTime3;
+                  }
+                }else {
                   let createTime3 = createTime.slice(0, 4) + "-" + createTime.slice(4, 6) + "-" + createTime.slice(6, 8) + " "
-                    + createTime.slice(8, 10) + ":" + createTime.slice(10, 12) + ":" + createTime.slice(12, 14);
+                    + createTime.slice(8, 10) + ":" + createTime.slice(10, 12)
+                    // + ":" + createTime.slice(12, 14);
                   this.activity_list[i].accreatetime = createTime3;
-                }else if(time1 == createTime1) {
-
                 }
 
               }
