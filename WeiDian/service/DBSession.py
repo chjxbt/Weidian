@@ -1,16 +1,13 @@
 # *- coding:utf8 *-
 import sys
 import os
-
-from test.base_model import Query
-
-sys.path.append(os.path.dirname(os.getcwd()))
 from sqlalchemy.orm import sessionmaker
 from WeiDian.models import model
+sys.path.append(os.path.dirname(os.getcwd()))
 
-# from sqlalchemy.orm import Query as _Query
-# db_session = sessionmaker(bind=model.mysql_engine, query_cls=Query)
+
 db_session = sessionmaker(bind=model.mysql_engine)
+
 
 def get_session():
     try:
