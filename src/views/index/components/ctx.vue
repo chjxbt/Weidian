@@ -7,8 +7,9 @@
         <span class="m-sale">已售{{list.soldnum}}件</span>
       </div>
       <div class="m-section-text">
-        <p>    {{list.actext}}</p>
-        <!--<span class="m-section-more">展开全文</span>-->
+        <p  class="textP" :class="!list.show_text ? 'active':''">  {{list.actext}}</p>
+        <span class="m-section-more" v-if="list.show_text" @click="showMoreText(false)">展开全文</span>
+        <span class="m-section-more" v-if="list.actext.length >92 && !list.show_text" @click="showMoreText(true)">收起全文</span>
         <ul class="m-img-list">
           <template v-for="(item,index) in list.media">
             <li>
@@ -21,8 +22,8 @@
           <div>
             <div>
               <span class="m-price-unit">￥</span>
-              <span class="m-price">58.00</span>
-              <span class="m-red m-ft-30">赚12</span>
+              <span class="m-price " v-if="list.product != null && list.product.prprice" >{{list.product.prprice}}</span>
+              <span class="m-red m-ft-30" v-if="list.product != null && list.product.prsavemonty">赚{{list.product.prsavemonty}}</span>
             </div>
             <div class="m-red m-ft-22">距活动结束仅剩2天10小时</div>
           </div>
@@ -49,15 +50,25 @@
         list:{
           type:Object,
           default:null
+        },
+        index:{
+          type:Number,
+          default:null
         }
       },
       components: {
         'm-label':mLabel,
         'icon-list':iconList
       },
+      mounted(){
+
+      },
       methods:{
         iconClick(v){
           this.$emit('iconClick',v,this.list)
+        },
+        showMoreText(v){
+          this.$emit('showMoreText',v,this.index)
         }
       }
     }
@@ -96,9 +107,15 @@
       }
       .m-section-text{
         text-align: left;
-        p{
+        .textP{
           text-indent: 2em;
           margin: 10px 0;
+          height: 152px;
+          overflow: hidden;
+          clear: both;
+          &.active{
+            height: auto;
+          }
         }
         .m-section-more{
           color: @blue;

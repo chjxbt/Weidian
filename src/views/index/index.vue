@@ -3,37 +3,38 @@
       <div class="m-suspend-btn" @click.stop="showModal('show_task')">
         <span>开始转发</span>
       </div>
-      <div class="m-top">
-        <search></search>
-        <navbar :list="nav_list" @navClick="navClick"></navbar>
-      </div>
-
-      <mt-swipe :auto="2000">
-        <mt-swipe-item v-for="item in swipe_items" :key="item.id">
-          <a :href="item.href" rel="external nofollow">
-            <img :src="item.baimage" class="img"/>
-            <span class="desc"></span>
-          </a>
-        </mt-swipe-item>
-      </mt-swipe>
-      <div class="m-recommend">
-        <template v-for="(item,index) in hot_list" ><!--:key="item.hmid"-->
-          <div class="m-recommend-one" :class="index == hot_index?'active':''">
-            <span class="m-recommend-span">
-              <span class="m-recommend-label">热文</span>
-              <span>{{item.hmtext}}</span>
-            </span>
+      <mt-loadmore :top-method="loadTop" :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="loadmore">
+          <div class="m-top">
+            <search></search>
+            <navbar :list="nav_list" @navClick="navClick"></navbar>
           </div>
-        </template>
 
-      </div>
+          <mt-swipe :auto="2000">
+            <mt-swipe-item v-for="item in swipe_items" :key="item.baid" >
+              <a :href="item.href" rel="external nofollow" >
+                <img :src="item.baimage" class="img"/>
+                <span class="desc"></span>
+              </a>
+            </mt-swipe-item>
+          </mt-swipe>
+          <div class="m-recommend">
+            <template v-for="(item,index) in hot_list" ><!---->
+              <div class="m-recommend-one" :class="index == hot_index?'active':''" :keys="item.hmid">
+                <span class="m-recommend-span">
+                  <span class="m-recommend-label">热文</span>
+                  <span>{{item.hmtext}}</span>
+                </span>
+              </div>
+            </template>
 
-      <div class="m-index-section">
-        <template v-for="(item,index) in activity_list">
-          <ctx :icon="icon_list" :list="item" @iconClick="iconClick"></ctx>
-        </template>
-      </div>
+          </div>
 
+          <div class="m-index-section">
+            <template v-for="(item,index) in activity_list">
+              <ctx :icon="icon_list" :list="item" :index="index" @iconClick="iconClick" @showMoreText="showMoreText"></ctx>
+            </template>
+          </div>
+      </mt-loadmore>
 
       <div class="m-modal" v-if="show_modal">
         <div class="m-modal-state">
@@ -228,13 +229,15 @@
                 lasting:true,
                 start:0,
                 count:15,
-                navid:'5ed4e908-a6db-11e8-b2ff-0cd292f93404'
+                tnid:'5ed4e908-a6db-11e8-b2ff-0cd292f93404'
               }}).then(res => {
               if(res.data.status == 200){
                 this.activity_list = res.data.data;
                 for(let i=0;i<this.activity_list.length;i++){
                   this.activity_list[i].icon = this.icon_list;
                   this.activity_list[i].icon[0].name = this.activity_list[i].likenum;
+                  this.activity_list[i].icon[0].alreadylike = this.activity_list[i].alreadylike;
+                  this.activity_list[i].actext.length >92 && (this.activity_list[i].show_text = true) ;
                 }
               }else{
                 Toast(res.data.message);
@@ -284,6 +287,19 @@
                 this.show_fixed = true;
                 break;
             }
+          },
+          showMoreText(bool,v){
+            let arr = [].concat(this.activity_list);
+            arr[v] = Object.assign({}, arr[v], { show_text: bool });
+            this.activity_list = [].concat(arr);
+          },
+          loadTop() {
+            for(let i=0;i<this.nav_list.length;i++){
+              if(this.nav_list[i].click){
+                this.getActivity(this.nav_list[i].tnid);
+              }
+            }
+            this.$refs.loadmore.onTopLoaded();
           }
         }
     }
@@ -299,7 +315,7 @@
     background-color: #F9F9F9;
     height: 44px;
     line-height: 44px;
-    font-size: 22px;
+    font-size: 20px;
     overflow: hidden;
     position: relative;
     .m-recommend-one{
@@ -307,8 +323,10 @@
       bottom:-44px;
       text-align: center;
       width: 100%;
+      z-index: -1;
       &.active{
         bottom:0;
+        z-index: 1;
       }
      .m-recommend-span{
        display: inline-block;
@@ -333,8 +351,9 @@
   }
 .m-suspend-btn{
   position: fixed;
-  bottom: 211px;
+  top:50%;
   right: 5px;
+  transform: translateY(-56.5px);
   width: 113px;
   height: 113px;
   box-shadow: 0 7px 13px rgba(245, 78, 100, 0.83) ;
