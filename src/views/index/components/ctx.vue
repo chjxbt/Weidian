@@ -25,7 +25,7 @@
               <span class="m-price " v-if="list.product != null && list.product.prprice" >{{list.product.prprice}}</span>
               <span class="m-red m-ft-30" v-if="list.product != null && list.product.prsavemonty">赚{{list.product.prsavemonty}}</span>
             </div>
-            <div class="m-red m-ft-22">距活动结束仅剩2天10小时</div>
+            <div class="m-red m-ft-22">距活动结束仅剩{{list.remaintime[0] || '0'}}天{{list.remaintime[1] || '0'}}小时{{list.remaintime[2] || '0'}}分钟</div>
           </div>
           <div>
             <icon-list :list="list.icon" :index="index" @iconClick="iconClick"></icon-list>
