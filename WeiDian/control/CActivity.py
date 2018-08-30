@@ -2,20 +2,16 @@
 import sys
 import os
 from datetime import datetime, timedelta
-
-from WeiDian.config.messages import delete_activity_success, stop_activity_success
+from flask import request
+import uuid
 from sqlalchemy.orm import Session
-
 from WeiDian.common.token_required import verify_token_decorator, is_admin
 from WeiDian.common.TransformToList import add_model
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db
 from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR
 from WeiDian.control.BaseControl import BaseActivityControl
-
 sys.path.append(os.path.dirname(os.getcwd()))
-from flask import request
-import uuid
 
 
 class CActivity(BaseActivityControl):
@@ -44,7 +40,7 @@ class CActivity(BaseActivityControl):
         http://127.0.0.1:5000/activity/get_all?navid=q&lasting=true
         """
         args = request.args.to_dict()
-        navid = args.get('navid')  # 导航id
+        tnid = args.get('tnid')  # 导航id
         suid = args.get('suid')  # 管理员id
         lasting = args.get('lasting', 'true')  # 是否正在进行的活动
         page = int(args.get('page', 1))  # 页码
@@ -52,10 +48,10 @@ class CActivity(BaseActivityControl):
         count = int(args.get('count', 15))  # 取出条数
         if not start:
             start = (page -1) * count
-        if not (navid or suid):
+        if not (tnid or suid):
             return PARAMS_MISS
-        if navid:
-            activity_list = self.sactivity.get_activity_by_topnavid(navid)
+        if tnid:
+            activity_list = self.sactivity.get_activity_by_topnavid(tnid)
         if suid:
             activity_list = self.sactivity.get_activity_by_suid(suid)
         if lasting == 'true':
@@ -115,7 +111,7 @@ class CActivity(BaseActivityControl):
     def stop_one(self):
         """手动截止活动"""
         if not hasattr(request, 'user'):
-            return TOKEN_ERROR  # 未登录, 或token错误
+            return TOKEN_ERROR  # 未登录, 或token
         if not is_admin():
             return AUTHORITY_ERROR  # 权限不足
         data = request.json

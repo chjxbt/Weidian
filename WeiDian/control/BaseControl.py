@@ -28,6 +28,9 @@ class BaseActivityControl():
         else:
             act.alreadylike = False
         act.soldnum = self.sactivity.get_product_soldnum_by_acid(acid)  # 销量
+
+
+
         act.add('suuser', 'media', 'tags', 'foward', 'likenum', 'soldnum', 'alreadylike')
         return act
 
