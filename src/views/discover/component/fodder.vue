@@ -4,7 +4,7 @@
       <span class="m-filtrate" :class="index == filtrateActivity?'active':''" @click="changefiltrateActivity(item, index)">{{item.tnname}}</span>
     </span>
     <div class="m-discover-fodder-content">
-      <div class="m-section-one" v-for="item in activity_list">
+      <div class="m-section-one" v-for="(item, index) in activity_list">
         <img :src="item.suuser.suheader" class="m-section-img"/>
         <div class="m-section-content">
           <div class="m-section-title">
@@ -12,12 +12,12 @@
           </div>
           <p class="m-fodder-time">{{item.accreatetime}} 发布</p>
           <div class="m-section-text">
-            <p>{{item.actext}}</p>
-            <!--<span class="m-section-more" v-if="list.show_text" @click="showMoreText(false)">展开全文</span>-->
-            <!--<span class="m-section-more" v-if="list.actext.length >92 && !list.show_text" @click="showMoreText(true)">收起全文</span>-->
+            <p class="textP" :class="!item.show_text ? 'active':''">{{item.actext}}</p>
+            <span class="m-section-more" v-if="item.show_text" @click="showMore(false, index)">展开全文</span>
+            <span class="m-section-more" v-if="item.actext.length >86 && !item.show_text" @click="showMore(true, index)">收起全文</span>
             <ul class="m-img-list">
               <li>
-                <img src="" class="m-section-text-img" alt="">
+                <img src="" class="m-section-text-img">
               </li>
             </ul>
             <div class="m-section-bottom">
@@ -119,17 +119,8 @@
                 }
 
                 // 展开全文、显示全文
-
-                if(this.activity_list[i].actext.length > 90) {
-                  this.activity_list[i].show_text = true;
-                  this.activity_list[i].actext = this.activity_list[i].actext.slice(0, 90) + "......";
-                }else {
-                  this.activity_list[i].show_text = false;
-                }
-
-                // console.log(this.activity_list[i].show_text);
+                this.activity_list[i].actext.length > 90 && (this.activity_list[i].show_text = true) ;
               }
-
             }else{
               Toast({ message: res.data.message, className: 'm-toast-fail' });
             }
@@ -155,6 +146,12 @@
         changefiltrateActivity(item, index) {
           this.filtrateActivity = index;
           this.getActivity(0, 15, item.tnid);
+        },
+        // 展开全文、显示全文
+        showMore(status, index){
+          let arr = [].concat(this.activity_list);
+          arr[index] = Object.assign({}, arr[index], { show_text: status });
+          this.activity_list = [].concat(arr);
         }
       },
       mounted() {
