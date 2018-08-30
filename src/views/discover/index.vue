@@ -3,13 +3,13 @@
       <navbar :list="nav_list" @navClick="navClick"></navbar>
 
       <!--每日10荐-->
-      <every v-if="nav_select == 'every'"></every>
+      <every v-if="nav_select == '0'"></every>
       <!--素材圈-->
-      <fodder v-if="nav_select == 'fodder'"></fodder>
+      <fodder v-if="nav_select == '1'"></fodder>
       <!--公告-->
-      <announcement v-if="nav_select == 'announcement'"></announcement>
+      <announcement v-if="nav_select == '2'"></announcement>
       <!--教程-->
-      <course v-if="nav_select == 'course'"></course>
+      <course v-if="nav_select == '3'"></course>
 
       <div class="m-modal" v-if="show_modal">
         <div class="m-modal-state">
@@ -74,7 +74,7 @@
               click:false
             }
           ],
-          nav_select:'every'
+          nav_select: '0'
         }
       },
       components: {
@@ -86,17 +86,32 @@
         iconList
       },
       methods: {
-        navClick(v){
-          for(let i=0;i<this.nav_list.length;i++){
-            this.nav_list[i].click = false;
-          }
-          this.nav_list[v].click = true;
-          this.nav_select = this.nav_list[v].url
-        }
-      },
-      created() {
 
-        let token = "eyJhbGciOiJIUzI1NiIsImV4cCI6MTUzNTU4NDU2NywiaWF0IjoxNTM1NTEyNTY3fQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0wOC0yOSAxMToxNjowNyJ9._LSlRme_ktLk35dcuIGNVrze7xmdK-VtqPaXO-ZLmkc";
+        navClick(v){
+          let arr = this.nav_list;
+          for(let i = 0; i < arr.length; i ++){
+            arr[i].click = false;
+          }
+          arr[v].click = true;
+          this.nav_list = [].concat(arr);
+          this.nav_select = v;
+        },
+        // 获取上部导航
+        getTopnav() {
+          axios.get(api.get_dp_topnav).then(res => {
+            if(res.data.status == 200) {
+              console.log("12", res.data.data);
+            }else{
+              Toast({ message: '操作失败', className: 'm-toast-fail' });
+            }
+          },error => {
+            Toast({ message: '操作失败', className: 'm-toast-fail' });
+          })
+        },
+      },
+      mounted() {
+        this.getTopnav();
+        let token = "eyJhbGciOiJIUzI1NiIsImV4cCI6MTUzNTY2MzkyOCwiaWF0IjoxNTM1NTkxOTI4fQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0wOC0zMCAwOToxODo0OCJ9.lxgBU5RJ-wiVGoBFuDIhR9cz6RBvfcCf2MYmi-598Rk";
         localStorage.setItem('token', token);
       }
     }

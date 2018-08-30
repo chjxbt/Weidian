@@ -9,8 +9,8 @@
       </div>
 
       <mt-swipe :auto="2000">
-        <mt-swipe-item v-for="item in swipe_items" >
-          <a :href="item.href" rel="external nofollow" >
+        <mt-swipe-item v-for="item in swipe_items" :key="item.id">
+          <a :href="item.href" rel="external nofollow">
             <img :src="item.baimage" class="img"/>
             <span class="desc"></span>
           </a>

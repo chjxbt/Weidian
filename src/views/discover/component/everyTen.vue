@@ -9,43 +9,28 @@
       </mt-swipe>
       <div class="m-scroll">
         <ul class="m-img-list" id="m-img-list">
-          <!--<li>
-            <img src="http://images.51bi.com/opt/siteimg/pb/20140307/c29ad52051879f0d13f1da57472abe88.jpeg" class="m-img-list-img" alt="">
-            <p><span class="m-price">￥169</span><span class="m-red">赚12</span></p>
-          </li>
-          <li>
-            <img src="http://img.eelly.com/G01/M00/00/89/small_oYYBAFWOxpSIBiLzAAMKSN5SRlQAAA1rgDeJeEAAwpg61.jpeg" class="m-img-list-img" alt="">
-            <p><span class="m-price">￥69</span><span class="m-red">赚12</span></p>
-          </li>
-          <li>
-            <img src="http://img.eelly.com/G02/M00/00/7F/small_pIYBAFVfLxCIItqyAATKYNG5CMEAAAxsQHbafcABMp4028.jpg" class="m-img-list-img" alt="">
-            <p><span class="m-price">￥69</span><span class="m-red">赚12</span></p>
-          </li>
-          <li>
-            <img src="http://img5.imgtn.bdimg.com/it/u=2506569644,813669471&fm=26&gp=0.jpg" class="m-img-list-img" alt="">
-            <p><span class="m-price">￥69</span><span class="m-red">赚12</span></p>
-          </li>-->
         </ul>
-        <!--<ul class="m-img-list" v-for="item in list">
-          <li>
-            <img :src="item.prmainpic" class="m-img-list-img" alt="">
-            <p><span class="m-price">￥{{item.prprice}}</span><span class="m-red">赚{{(item.prprice-item.proldprice).toFixed(2)}}</span></p>
-          </li>
-        </ul>-->
       </div>
       <div class="m-title">
         <div>
-          <img src="" class="m-item-title-img" alt="">
-          <span>拉夏贝尔La Chapelle</span>
+          <img :src="recommend.suuser.suheader" class="m-item-title-img">
+          <span>{{recommend.suuser.suname}}</span>
         </div>
         <div class="m-lookinfo-box">
           <span class="m-look-icon"></span>
-          <span>1231</span>
+          <span>{{recommend.reviewnum}}</span>
           <span class="m-smile-icon"></span>
-          <span>21231</span>
+          <span>{{recommend.relikenum}}</span>
         </div>
       </div>
       <div class="line"></div>
+
+      <div class="m-index-section">
+        <template v-for="(item,index) in activity_list">
+          <ctx :icon="icon_list" :list="item" @iconClick="iconClick"></ctx>
+        </template>
+      </div>
+
     </div>
   </div>
 </template>
@@ -54,30 +39,50 @@
   import api from '../../../api/api';
   import axios from 'axios';
   import { Toast } from 'mint-ui';
+  import ctx from '../../index/components/ctx';
+
     export default {
       data() {
         return {
           bannerList: [],
-          recommend: {},
-          list: []
+          recommend: { suuser: {} },
+          activity_list:[],
+          icon_list:[
+            {
+              src:'icon-like',
+              name:'123123',
+              url:'icon-like'
+            },
+            {
+              src:'icon-lian',
+              name:'复制链接',
+              url:'icon-lian'
+            },
+            {
+              src:'icon-share',
+              name:'转发',
+              url:'icon-share'
+            }
+          ]
         }
       },
-      components: {},
+      components: { ctx },
       methods: {
         // 获取每日推荐内容
         getData(){
           let token = localStorage.getItem('token');
           axios.get(api.get_info_recommend + '?token=' + token).then(res => {
             if(res.data.status == 200) {
-              // console.log(res.data.data);
-              this.recommend = res.data.data;
-              console.log(this.recommend);
+              this.recommend = res.data.data[0];
+              this.suuser = this.recommend.suuser;
+              // console.log(this.recommend);
 
-              for(let i = 0; i < this.recommend[0].products.length;i++) {
+              // 往ul中添加li
+              for(let i = 0; i < this.recommend.products.length;i++) {
                 var elem_li = document.createElement('li'); // 生成一个 li元素
                 // 设置元素的内容
-                elem_li.innerHTML = "<img src=" + this.recommend[0].products[i].prmainpic + " class='m-img-list-img'><p><span class='m-price'>￥" + this.recommend[0].products[0].prprice +
-                  "</span><span class='m-red'>赚" + (this.recommend[0].products[0].prprice - this.recommend[0].products[0].proldprice).toFixed(2) + "</span></p>";
+                elem_li.innerHTML = "<img src=" + this.recommend.products[i].prmainpic + " class='m-img-list-img'><p><span class='m-price'>￥" + this.recommend.products[i].prprice +
+                  "</span><span class='m-red'>赚" + (this.recommend.products[i].prprice - this.recommend.products[i].proldprice).toFixed(2) + "</span></p>";
                 document.getElementById('m-img-list').appendChild(elem_li);
               }
 
@@ -95,7 +100,6 @@
             if(res.data.status == 200) {
               this.bannerList = res.data.data;
               // console.log(res.data.data);
-              // Toast({ message: '操作成功', className: 'm-toast-success' });
             }else{
               Toast({ message: '操作失败', className: 'm-toast-fail' });
             }
@@ -103,11 +107,44 @@
             Toast({ message: '操作失败', className: 'm-toast-fail' });
           })
         },
+        /*获取活动列表*/
+        getActivity(navid, start, count){
+          axios.get(api.get_all_activity,{params:{
+              lasting:true,
+              start:0,
+              count:15,
+              navid:'5ed4e908-a6db-11e8-b2ff-0cd292f93404'
+            }}).then(res => {
+            if(res.data.status == 200){
+              this.activity_list = res.data.data;
+              for(let i=0;i<this.activity_list.length;i++){
+                this.activity_list[i].icon = this.icon_list;
+                this.activity_list[i].icon[0].name = this.activity_list[i].likenum;
+              }
+            }else{
+              Toast(res.data.message);
+            }
+          })
+        },
+        // 去产品详情页
         toProduct(item) {
           console.log(item);
+        },
+        /*每个活动icon点击*/
+        iconClick(v,list){
+          switch (v){
+            case 0:
+              break;
+            case 1:
+              this.show_modal = true;
+              break;
+            case 2:
+              this.show_fixed = true;
+              break;
+          }
         }
       },
-      created() {
+      mounted() {
         this.getData();
         this.getBanner();
       }
