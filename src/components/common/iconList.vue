@@ -3,9 +3,7 @@
 
 
     <li v-for="(item,index) in list" @click="iconClick(index)">
-      <img :src="'/static/images/' + item.src +'.png'" class="m-icon" alt="" v-if="!item.alreadylike">
-      <img :src="'/static/images/' + item.src +'-active.png'" class="m-icon" alt="" v-else>
-
+      <img :src="'/static/images/' + item.src +'.png'" class="m-icon" alt="">
       {{item.name}}
     </li>
 
