@@ -253,6 +253,18 @@
               this.hot_index = this.hot_index + v;
             }
           },
+          /*点赞*/
+          changeLike(id){
+              axios.post(api.ac_like+'?token=' +  localStorage.getItem('token'),{
+                  acid:id
+                }).then(res => {
+                  if(res.data.status == 200){
+                    Toast({ message: res.data.message, className: 'm-toast-success' });
+                  }else{
+                    Toast({ message: res.data.message, className: 'm-toast-fail' });
+                  }
+              })
+          },
           /*关闭模态框*/
           closeModal(v){
             this[v]  = false;
@@ -277,8 +289,16 @@
           },
           /*每个活动icon点击*/
           iconClick(v,list){
+            console.log(list)
             switch (v){
               case 0:
+                this.activity_list[list].icon[0].alreadylike =  !this.activity_list[list].icon[0].alreadylike;
+                if( this.activity_list[list].icon[0].alreadylike){
+                  this.activity_list[list].icon[0].name = this.activity_list[list].icon[0].name +1 ;
+                }else{
+                  this.activity_list[list].icon[0].name = this.activity_list[list].icon[0].name -1 ;
+                }
+                this.changeLike(this.activity_list[list].acid);
                 break;
               case 1:
                 this.show_modal = true;

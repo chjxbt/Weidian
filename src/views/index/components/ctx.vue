@@ -28,7 +28,7 @@
             <div class="m-red m-ft-22">距活动结束仅剩2天10小时</div>
           </div>
           <div>
-            <icon-list :list="list.icon" @iconClick="iconClick"></icon-list>
+            <icon-list :list="list.icon" :index="index" @iconClick="iconClick"></icon-list>
           </div>
         </div>
       </div>
@@ -65,7 +65,7 @@
       },
       methods:{
         iconClick(v){
-          this.$emit('iconClick',v,this.list)
+          this.$emit('iconClick',v,this.index)
         },
         showMoreText(v){
           this.$emit('showMoreText',v,this.index)
