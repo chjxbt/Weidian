@@ -304,11 +304,11 @@
     }
   }
   .guess-product {
-    padding: 25px;
+    padding: 25px 25px 230px 25px;
     background-color: #f2f5f7;
     .guess-product-border {
       width: 700px;
-      height: 540px;
+      height: 560px;
       border-radius: 10px;
       background-color: @bgMainColor;
       .guess-product-title {
@@ -373,6 +373,7 @@
     }
     .choose-all-text {
       padding: 32px 0;
+      white-space: nowrap;
     }
     .pay-price-detail {
       width: 365px;

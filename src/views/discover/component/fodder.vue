@@ -56,33 +56,33 @@
   import iconList from '../../../components/common/iconList';
   import share from '../../../components/common/share';
     export default {
-        data() {
-            return {
-              show_fixed:false,
-              icon_list:[
-                {
-                  src:'icon-share',
-                  name:'转发',
-                  url:'icon-share'
-                }
-              ]
+      data() {
+        return {
+          show_fixed:false,
+          icon_list:[
+            {
+              src:'icon-share',
+              name:'转发',
+              url:'icon-share'
             }
-        },
-        components: {
-          'icon-list':iconList,
-          share
-        },
-        methods: {
-          iconClick(v){
-              this.show_fixed = true;
-          },
-          fixedClick(){
-            this.show_fixed = false;
-          },
-        },
-        created() {
-
+          ]
         }
+      },
+      props:{
+        tnid:{ type: String, default: null }
+      },
+      components: { 'icon-list':iconList, share },
+      methods: {
+        iconClick(v){
+            this.show_fixed = true;
+        },
+        fixedClick(){
+          this.show_fixed = false;
+        },
+      },
+      created() {
+
+      }
     }
 </script>
 <style lang="less" rel="stylesheet/less" >

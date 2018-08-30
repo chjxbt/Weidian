@@ -72,9 +72,10 @@
         ]
       }
     },
-    components: {
-      iconList
+    props:{
+      tnid:{ type: String, default: null }
     },
+    components: { iconList },
     methods: {
       iconClick(v){
 

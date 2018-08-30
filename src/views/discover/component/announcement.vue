@@ -49,33 +49,34 @@
 <script type="text/ecmascript-6">
   import iconList from'../../../components/common/iconList';
     export default {
-        data() {
-            return {
-              icon_list:[
-                {
-                  src:'icon-share',
-                  name:'转发',
-                  url:'icon-share'
-                },
-                {
-                  src:'icon-message',
-                  name:'评论',
-                  url:'icon-message'
-                }
-              ]
+      data() {
+        return {
+          icon_list:[
+            {
+              src:'icon-share',
+              name:'转发',
+              url:'icon-share'
+            },
+            {
+              src:'icon-message',
+              name:'评论',
+              url:'icon-message'
             }
-        },
-        components: {
-          iconList
-        },
-        methods: {
-          iconClick(v){
-
-          }
-        },
-        created() {
+          ]
+        }
+      },
+      props:{
+        tnid:{ type: String, default: null }
+      },
+      components: { iconList },
+      methods: {
+        iconClick(v){
 
         }
+      },
+      created() {
+
+      }
     }
 </script>
 <style lang="less" rel="stylesheet/less" scoped>

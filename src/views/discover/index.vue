@@ -3,13 +3,13 @@
       <navbar :list="nav_list" @navClick="navClick"></navbar>
 
       <!--每日10荐-->
-      <every v-if="nav_select == '0'"></every>
+      <every v-if="nav_select == '0'" :tnid="nav_list[0].tnid"></every>
       <!--素材圈-->
-      <fodder v-if="nav_select == '1'"></fodder>
+      <fodder v-if="nav_select == '1'" :tnid="nav_list[1].tnid"></fodder>
       <!--公告-->
-      <announcement v-if="nav_select == '2'"></announcement>
+      <announcement v-if="nav_select == '2'" :tnid="nav_list[2].tnid"></announcement>
       <!--教程-->
-      <course v-if="nav_select == '3'"></course>
+      <course v-if="nav_select == '3'" :tnid="nav_list[3].tnid"></course>
 
       <div class="m-modal" v-if="show_modal">
         <div class="m-modal-state">
@@ -46,6 +46,7 @@
 
   import api from '../../api/api';
   import axios from 'axios';
+  import { Toast } from 'mint-ui';
 
     export default {
       data() {
@@ -55,15 +56,9 @@
           nav_select: '0'
         }
       },
-      components: {
-        navbar,
-        fodder,
-        every,
-        announcement,
-        course,
-        iconList
-      },
+      components: { navbar, fodder, every, announcement, course, iconList },
       methods: {
+        // 点击导航栏
         navClick(v){
           let arr = this.nav_list;
           for(let i = 0; i < arr.length; i ++){
@@ -72,7 +67,6 @@
           arr[v].click = true;
           this.nav_list = [].concat(arr);
           this.nav_select = v;
-          console.log(this.nav_list);
         },
         // 获取上部导航
         getTopnav() {
@@ -80,14 +74,12 @@
             if(res.data.status == 200) {
               this.nav_list = res.data.data;
               this.nav_list[0].click = true;
-              console.log(this.nav_list);
+              // console.log(this.nav_list);
             }else{
-              Toast({ message: '操作失败', className: 'm-toast-fail' });
+              Toast({ message: res.data.message, className: 'm-toast-fail' });
             }
-          },error => {
-            Toast({ message: '操作失败', className: 'm-toast-fail' });
           })
-        },
+        }
       },
       mounted() {
         this.getTopnav();

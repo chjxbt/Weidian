@@ -24,13 +24,12 @@
         </div>
       </div>
       <div class="line"></div>
+    </div>
 
-      <div class="m-index-section">
-        <template v-for="(item,index) in activity_list">
-          <ctx :icon="icon_list" :list="item" @iconClick="iconClick"></ctx>
-        </template>
-      </div>
-
+    <div class="m-index-section">
+      <template v-for="item in activity_list">
+        <ctx :icon="icon_list" :list="item" @iconClick="iconClick"></ctx>
+      </template>
     </div>
   </div>
 </template>
@@ -63,8 +62,13 @@
               name:'转发',
               url:'icon-share'
             }
-          ]
+          ],
+          show_task: false,
+          show_fixed: false
         }
+      },
+      props:{
+        tnid:{ type: String, default: null }
       },
       components: { ctx },
       methods: {
@@ -87,10 +91,8 @@
               }
 
             }else{
-              Toast({ message: '操作失败', className: 'm-toast-fail' });
+              Toast({ message: res.data.message, className: 'm-toast-fail' });
             }
-          },error => {
-            Toast({ message: '操作失败', className: 'm-toast-fail' });
           })
         },
         // 获取banner
@@ -101,28 +103,24 @@
               this.bannerList = res.data.data;
               // console.log(res.data.data);
             }else{
-              Toast({ message: '操作失败', className: 'm-toast-fail' });
+              Toast({ message: res.data.message, className: 'm-toast-fail' });
             }
-          },error => {
-            Toast({ message: '操作失败', className: 'm-toast-fail' });
           })
         },
         /*获取活动列表*/
-        getActivity(navid, start, count){
-          axios.get(api.get_all_activity,{params:{
-              lasting:true,
-              start:0,
-              count:15,
-              navid:'5ed4e908-a6db-11e8-b2ff-0cd292f93404'
-            }}).then(res => {
+        getActivity(start, count, tnid){
+          axios.get(api.get_all_activity, {
+            params: { start: 0, count: 15, tnid: '5ed4e908-a6db-11e8-b2ff-0cd292f93404' }}).then(res => {
             if(res.data.status == 200){
               this.activity_list = res.data.data;
-              for(let i=0;i<this.activity_list.length;i++){
+              console.log(this.activity_list);
+
+              for(let i = 0; i < this.activity_list.length; i ++){
                 this.activity_list[i].icon = this.icon_list;
                 this.activity_list[i].icon[0].name = this.activity_list[i].likenum;
               }
             }else{
-              Toast(res.data.message);
+              Toast({ message: res.data.message, className: 'm-toast-fail' });
             }
           })
         },
@@ -131,7 +129,7 @@
           console.log(item);
         },
         /*每个活动icon点击*/
-        iconClick(v,list){
+        iconClick(v, list){
           switch (v){
             case 0:
               break;
@@ -147,6 +145,7 @@
       mounted() {
         this.getData();
         this.getBanner();
+        this.getActivity();
       }
     }
 </script>
