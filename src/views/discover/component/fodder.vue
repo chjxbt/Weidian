@@ -117,6 +117,17 @@
                     + createTime.slice(8, 10) + ":" + createTime.slice(10, 12);
                   this.activity_list[i].accreatetime = createTime3;
                 }
+
+                // 展开全文、显示全文
+
+                if(this.activity_list[i].actext.length > 90) {
+                  this.activity_list[i].show_text = true;
+                  this.activity_list[i].actext = this.activity_list[i].actext.slice(0, 90) + "......";
+                }else {
+                  this.activity_list[i].show_text = false;
+                }
+
+                console.log(this.activity_list[i].show_text);
               }
 
             }else{
