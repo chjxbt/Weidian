@@ -109,6 +109,7 @@
         },
         /*获取活动列表*/
         getActivity(start, count, tnid){
+          console.log(this.tnid);
           axios.get(api.get_all_activity, {
             params: { start: 0, count: 15, tnid: this.tnid }}).then(res => {
             if(res.data.status == 200){

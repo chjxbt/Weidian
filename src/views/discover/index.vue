@@ -52,7 +52,7 @@
       data() {
         return {
           show_modal:false,
-          nav_list:[{}],
+          nav_list:[{tnid: "5ed4e908-a6db-11e8-b2ff-0cd292f93404"}],
           nav_select: '0'
         }
       },
@@ -74,7 +74,7 @@
             if(res.data.status == 200) {
               this.nav_list = res.data.data;
               this.nav_list[0].click = true;
-              // console.log(this.nav_list);
+              console.log(this.nav_list[0]);
             }else{
               Toast({ message: res.data.message, className: 'm-toast-fail' });
             }
