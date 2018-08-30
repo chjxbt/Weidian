@@ -26,11 +26,15 @@
       <div class="line"></div>
     </div>
 
-    <div class="m-index-section">
-      <template v-for="item in activity_list">
-        <ctx :icon="icon_list" :list="item" @iconClick="iconClick"></ctx>
-      </template>
-    </div>
+    <mt-loadmore :top-method="loadTop"  ref="loadmore">
+      <div class="m-index-section">
+        <template v-for="(item,index) in activity_list">
+          <ctx :icon="icon_list" :list="item" :index="index" @iconClick="iconClick" @showMoreText="showMoreText"></ctx>
+        </template>
+      </div>
+    </mt-loadmore>
+
+    <share v-if="show_fixed" @fixedClick="fixedClick"></share>
   </div>
 </template>
 
@@ -39,6 +43,7 @@
   import axios from 'axios';
   import { Toast } from 'mint-ui';
   import ctx from '../../index/components/ctx';
+  import share from '../../../components/common/share';
 
     export default {
       data() {
@@ -70,7 +75,7 @@
       props:{
         tnid:{ type: String, default: null }
       },
-      components: { ctx },
+      components: { ctx, share },
       methods: {
         // 获取每日推荐内容
         getData(){
@@ -109,16 +114,17 @@
         },
         /*获取活动列表*/
         getActivity(start, count, tnid){
-          console.log(this.tnid);
           axios.get(api.get_all_activity, {
             params: { start: 0, count: 15, tnid: this.tnid }}).then(res => {
             if(res.data.status == 200){
               this.activity_list = res.data.data;
-              console.log(this.activity_list);
+              // console.log(this.activity_list);
 
               for(let i = 0; i < this.activity_list.length; i ++){
                 this.activity_list[i].icon = this.icon_list;
                 this.activity_list[i].icon[0].name = this.activity_list[i].likenum;
+                this.activity_list[i].icon[0].alreadylike = this.activity_list[i].alreadylike;
+                this.activity_list[i].actext.length >92 && (this.activity_list[i].show_text = true) ;
               }
             }else{
               Toast({ message: res.data.message, className: 'm-toast-fail' });
@@ -128,6 +134,10 @@
         // 去产品详情页
         toProduct(item) {
           console.log(item);
+        },
+        /*分享按钮点击*/
+        fixedClick(){
+          this.show_fixed = false;
         },
         /*每个活动icon点击*/
         iconClick(v, list){
@@ -141,6 +151,19 @@
               this.show_fixed = true;
               break;
           }
+        },
+        showMoreText(bool,v){
+          let arr = [].concat(this.activity_list);
+          arr[v] = Object.assign({}, arr[v], { show_text: bool });
+          this.activity_list = [].concat(arr);
+        },
+        loadTop() {
+          for(let i=0;i<this.nav_list.length;i++){
+            if(this.nav_list[i].click){
+              this.getActivity(this.nav_list[i].tnid);
+            }
+          }
+          this.$refs.loadmore.onTopLoaded();
         }
       },
       mounted() {
