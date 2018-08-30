@@ -11,7 +11,8 @@ class AUser(Resource):
     def post(self, user):
         print user
         apis = {
-            'login': 'self.cuser.login()'
+            'login': 'self.cuser.login()',
+            'get_openid': 'self.cuser.get_openid()'
         }
         res = eval(apis[user])
         return jsonify(res)

@@ -1,3 +1,5 @@
 # *- coding:utf8 *-
 SECRET_KEY = '4C2tAoH6fhI17OdNk0u93ez5DswvGVyprlFWa8PBgcEZiSLnjqQmRTxJUMKXYb'
 TOKEN_EXPIRATION = 3600 * 20  # token过期时间(秒)
+APP_ID = 'wx1f45a0dcd07c318e'
+APP_SECRET_KEY = '16cb827e02888736408d454ae5dfc6ff'

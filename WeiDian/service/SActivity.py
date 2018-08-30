@@ -55,9 +55,9 @@ class SActivity(SBase):
         """
         手动停止活动
         """
-        cur_activity = self.session.query(Activity).filter_by(ACid=acid).first()
-        cur_activity.ACisended = True
-        self.session.add(cur_activity)
+        return self.session.query(Activity).filter_by(ACid=acid).update({"ACisended": True})
+        # cur_activity.ACisended = True
+        # self.session.add(cur_activity)
 
     @close_session
     def get_activity_by_acid(self, acid):
