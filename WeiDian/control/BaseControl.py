@@ -226,11 +226,16 @@ class BaseProductControl():
         recommend.add('reviewnum', 'relikenum')
         return recommend
 
-    def fill_product(self, recommend):
+    def fill_recommend_product(self, recommend):
         """日荐页中中部商品填充"""
         reid = recommend.REid
-        product_lsit = self.sproduct.get_product_list_by_reid(reid)
-        recommend.products = product_lsit
+        products = self.sproduct.get_product_list_by_reid(reid)
+        for product in products:
+            prkeeperprice = product.PRprice * (1 - Partner().one_level_divide)
+            product.prkeeperprice = prkeeperprice
+            product.prsavemonty = product.PRprice - prkeeperprice
+            product.add('prkeeperprice', 'prsavemonty')
+        recommend.products = products
         recommend.add('products')
         return recommend
 

@@ -35,7 +35,7 @@ class CRecommend(BaseProductControl):
             now_time = datetime.strftime(datetime.now(), format_for_db)
             recommend = filter(lambda re: re.REstarttime <
                                now_time < re.REendtime, recommend)
-        map(self.fill_product, recommend)
+        map(self.fill_recommend_product, recommend)
         map(self.fill_recommend_nums, recommend)
         map(self.fill_super, recommend)
         data = import_status('get_recommend_success', 'OK')
