@@ -51,29 +51,7 @@
       data() {
         return {
           show_modal:false,
-          nav_list:[
-            {
-              tnname:'每日10荐',
-              url:'every',
-              dot:false,
-              click:true
-            },{
-              tnname:'素材圈',
-              url:'fodder',
-              dot:false,
-              click:false
-            },{
-              tnname:'公告',
-              url:'announcement',
-              dot:true,
-              click:false
-            },{
-              tnname:'教程',
-              url:'course',
-              dot:true,
-              click:false
-            }
-          ],
+          nav_list:[],
           nav_select: '0'
         }
       },
@@ -86,7 +64,6 @@
         iconList
       },
       methods: {
-
         navClick(v){
           let arr = this.nav_list;
           for(let i = 0; i < arr.length; i ++){
@@ -95,12 +72,15 @@
           arr[v].click = true;
           this.nav_list = [].concat(arr);
           this.nav_select = v;
+          console.log(this.nav_list);
         },
         // 获取上部导航
         getTopnav() {
           axios.get(api.get_dp_topnav).then(res => {
             if(res.data.status == 200) {
-              console.log("12", res.data.data);
+              this.nav_list = res.data.data;
+              this.nav_list[0].click = true;
+              console.log(this.nav_list);
             }else{
               Toast({ message: '操作失败', className: 'm-toast-fail' });
             }
