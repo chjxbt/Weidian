@@ -5,7 +5,7 @@
       <!--每日10荐-->
       <every v-if="nav_select == '0'" :tnid="nav_list[0].tnid"></every>
       <!--素材圈-->
-      <fodder v-if="nav_select == '1'" :tnid="nav_list[1].tnid"></fodder>
+      <fodder v-if="nav_select == '1'" :tnid="nav_list[1].tnid" @fodder="getData"></fodder>
       <!--公告-->
       <announcement v-if="nav_select == '2'" :tnid="nav_list[2].tnid"></announcement>
       <!--教程-->
@@ -79,10 +79,16 @@
               Toast({ message: res.data.message, className: 'm-toast-fail' });
             }
           })
+        },
+        // 接收子组件传的值
+        getData(list) {
+          this.nav_list = list;
+          this.nav_list[1].click = true;
+          // console.log(list);
         }
       },
       mounted() {
-        this.getTopnav();
+        // this.getTopnav();
         let token = "eyJhbGciOiJIUzI1NiIsImV4cCI6MTUzNTY2MzkyOCwiaWF0IjoxNTM1NTkxOTI4fQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0wOC0zMCAwOToxODo0OCJ9.lxgBU5RJ-wiVGoBFuDIhR9cz6RBvfcCf2MYmi-598Rk";
         localStorage.setItem('token', token);
       }

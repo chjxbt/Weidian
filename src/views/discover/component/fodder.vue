@@ -127,7 +127,7 @@
                   this.activity_list[i].show_text = false;
                 }
 
-                console.log(this.activity_list[i].show_text);
+                // console.log(this.activity_list[i].show_text);
               }
 
             }else{
@@ -139,6 +139,9 @@
         getTopnav() {
           axios.get(api.get_dp_topnav).then(res => {
             if(res.data.status == 200) {
+              // 向父组件传数据
+              this.$emit('fodder', res.data.data);
+
               this.filtrateList = res.data.data[1].sub;
               // console.log(this.filtrateList);
               this.getActivity(0, 15, this.filtrateList[0].tnid);
