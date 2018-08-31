@@ -123,15 +123,6 @@
 
                 // 展开全文、显示全文
                 this.activity_list[i].actext.length > 90 && (this.activity_list[i].show_text = true);
-
-                // 往ul中添加li
-               /* for(let j = 0; j < this.activity_list[i].media.length; j ++) {
-                  var elem_li = document.createElement('li'); // 生成一个 li元素
-                  // 设置元素的内容
-                  elem_li.innerHTML = "<img src=" + this.activity_list[i].media[j].amimage + "class='m-section-text-img'>";
-                  document.getElementById('m-img-list').appendChild(elem_li);
-                  // console.log(document.getElementById('m-img-list'))
-                }*/
               }
             }else{
               Toast({ message: res.data.message, className: 'm-toast-fail' });
