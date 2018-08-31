@@ -1,11 +1,9 @@
 # *- coding:utf8 *-
 import sys
 import os
-from collections import namedtuple
-
-sys.path.append(os.path.dirname(os.getcwd()))
 from SBase import SBase, close_session
-from WeiDian.models.model import ActivityMedia, Activity
+from WeiDian.models.model import ActivityMedia
+sys.path.append(os.path.dirname(os.getcwd()))
 # media = namedtuple('media', ['ACid', 'AMmedia', 'AMsort'])
 
 
@@ -25,4 +23,4 @@ class SActivityMedia(SBase):
             map(lambda x: x.add('AMvideo') if x.AMvideo else x.add('AMimage', 'AMsort'), cur_medias)  # 添加转字典需要的字段
             return cur_medias
         return []
-        
+

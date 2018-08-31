@@ -26,7 +26,7 @@ class CRecommendLike():
         json_data = parameter_required('reid')
         reid = json_data.get('reid')
         already_like = self.srecommendlike.get_recommend_like_by_usidreid(request.user.id, reid)
-        recommend = self.srecommend.get_recommend_by_reid(reid)
+        # recommend = self.srecommend.get_recommend_by_reid(reid)
         if not already_like:
             rl_dict = dict(
                 rlid=str(uuid.uuid4()),

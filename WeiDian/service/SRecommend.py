@@ -16,6 +16,10 @@ class SRecommend(SBase):
         return recommend_list
 
     @close_session
+    def get_one_recommend(self):
+        return self.session.query(Recommend).filter_by(REisdelete=False).order_by(Recommend.REcreatetime.desc()).first()
+
+    @close_session
     def get_recommend_by_reid(self, reid):
         recommend = self.session.query(Recommend).filter_by(REid=reid).first()
         return recommend
