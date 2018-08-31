@@ -1,10 +1,12 @@
 # *- coding:utf8 *-
+import sys
+import os
 from flask import request
-
 from WeiDian.common.token_required import verify_token_decorator, usid_to_token
 from WeiDian.common.import_status import import_status
 from WeiDian.service.SUser import SUser
 from WeiDian.config.response import PARAMS_MISS, SYSTEM_ERROR
+sys.path.append(os.path.dirname(os.getcwd()))
 
 
 class CUser():

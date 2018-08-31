@@ -43,6 +43,7 @@ class SHotMessage(SBase):
                 hotmessage.HMsort = kwargs['hmsort']
             self.session.add(hotmessage)
             return True
+    # TODO 热文修改
 
     @close_session
     def del_one_hot(self, hmid):

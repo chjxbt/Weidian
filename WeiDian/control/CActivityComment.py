@@ -1,17 +1,17 @@
 # *- coding:utf8 *-
+import sys
+import os
 import uuid
-from datetime import datetime, timedelta
-
 from flask import request
-
+from datetime import datetime, timedelta
 from WeiDian.config.messages import delete_activity_success, stop_activity_success
 from sqlalchemy.orm import Session
-
 from WeiDian.common.token_required import verify_token_decorator, is_admin, is_tourist
 from WeiDian.common.TransformToList import dict_add_models
 from WeiDian.common.import_status import import_status
 from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR
 from WeiDian.control.BaseControl import BaseActivityCommentControl
+sys.path.append(os.path.dirname(os.getcwd()))
 
 
 class CActivityComment(BaseActivityCommentControl):

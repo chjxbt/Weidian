@@ -1,10 +1,10 @@
 # *- coding:utf8 *-
+import sys
+import os
 import uuid
 import random
 from datetime import datetime
-
 from flask import request
-
 from WeiDian.common.TransformToList import dict_add_models, list_add_models
 from WeiDian.common.timeformat import format_for_db
 from WeiDian.common.token_required import verify_token_decorator, is_partner
@@ -16,7 +16,7 @@ from WeiDian.service.SProduct import SProduct
 from WeiDian.service.SUser import SUser
 from WeiDian.config.response import PARAMS_MISS, SYSTEM_ERROR, AUTHORITY_ERROR, TOKEN_ERROR
 from WeiDian.common.token_required import is_tourist
-
+sys.path.append(os.path.dirname(os.getcwd()))
 
 
 class COrder():

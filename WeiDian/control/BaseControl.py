@@ -58,8 +58,9 @@ class BaseActivityControl():
             prkeeperprice = product.PRprice * (1 - Partner().one_level_divide)
             product.prkeeperprice = ('%.2f' % prkeeperprice)
             prsavemonty = product.PRprice - prkeeperprice
+            product.PRprice = ('%.2f' % product.PRprice)
             product.prsavemonty = ('%.2f' % prsavemonty)
-            product.add('prkeeperprice', 'prsavemonty')
+            product.add('prkeeperprice', 'prsavemonty', 'prprice')
         act.product = product
         act.add('product')
         return act
@@ -239,10 +240,10 @@ class BaseProductControl():
         products = self.sproduct.get_product_list_by_reid(reid)
         for product in products:
             prkeeperprice = product.PRprice * (1 - Partner().one_level_divide)
-            product.prkeeperprice = prkeeperprice
+            product.prkeeperprice = ('%.2f' % prkeeperprice)
             prsavemonty = product.PRprice - prkeeperprice
-            product.prsavemonty = ('%.2f' %prsavemonty)
-            product.PRprice = ('%.2f' %product.PRprice)
+            product.prsavemonty = ('%.2f' % prsavemonty)
+            product.PRprice = ('%.2f' % product.PRprice)
             product.add('prkeeperprice', 'prsavemonty')
         recommend.products = products
         recommend.add('products')

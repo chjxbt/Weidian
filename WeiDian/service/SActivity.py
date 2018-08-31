@@ -46,18 +46,14 @@ class SActivity(SBase):
         """
         根据活动id删除
         """
-        cur_activity = self.session.query(Activity).filter_by(ACid=acid).first()
-        cur_activity.ACisdelete = True
-        self.session.add(cur_activity)
+        return self.session.query(Activity).filter_by(ACid=acid).update({Activity.ACisdelete: True})
 
     @close_session
     def stop_activity(self, acid):
         """
         手动停止活动
         """
-        cur_activity = self.session.query(Activity).filter_by(ACid=acid).first()
-        cur_activity.ACisended = True
-        self.session.add(cur_activity)
+        return self.session.query(Activity).filter_by(ACid=acid).update({Activity.ACisended: True})
 
     @close_session
     def get_activity_by_acid(self, acid):
@@ -114,6 +110,7 @@ class SActivity(SBase):
             cur_activity.ACupdatetime = now_time
             self.session.add(cur_activity)
             return True
+# TODO 更新活动待修改
 
     @close_session
     def foward_activity(self, forward):

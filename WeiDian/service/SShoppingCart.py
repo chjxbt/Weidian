@@ -1,13 +1,11 @@
 # *- coding:utf8 *-
 import sys
 import os
-from datetime import datetime
-
-from WeiDian.common.timeformat import format_for_db
+# from datetime import datetime
+# from WeiDian.common.timeformat import format_for_db
 from WeiDian.models.model import ShoppingCart
-
-sys.path.append(os.path.dirname(os.getcwd()))
 from SBase import SBase, close_session
+sys.path.append(os.path.dirname(os.getcwd()))
 
 
 class SShoppingCart(SBase):

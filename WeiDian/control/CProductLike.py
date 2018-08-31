@@ -1,4 +1,6 @@
 # *- coding:utf8 *-
+import sys
+import os
 from flask import request
 import uuid
 from WeiDian.common.TransformToList import dict_add_models
@@ -8,6 +10,7 @@ from WeiDian.common.token_required import verify_token_decorator, is_tourist
 from WeiDian.config.response import TOKEN_ERROR
 from WeiDian.service.SProduct import SProduct
 from WeiDian.service.SProductLike import SProductLike
+sys.path.append(os.path.dirname(os.getcwd()))
 
 
 class CProductLike():

@@ -2,7 +2,6 @@
 import sys
 import os
 import uuid
-
 from flask import request
 from datetime import datetime, timedelta
 from WeiDian.common.TransformToList import add_model
@@ -33,12 +32,8 @@ class CRecommend(BaseProductControl):
             return AUTHORITY_ERROR
         print '是合伙人'
         recommend = self.srecommend.get_one_recommend()
+        self.srecommend.update_view_num(recommend.REid)
         recommend_list = [recommend]
-        # lasting = args.get('lasting', 'true')  # 是否正在展示
-        # if lasting == 'true':
-        #     now_time = datetime.strftime(datetime.now(), format_for_db)
-        #     recommend_list = filter(lambda re: re.REstarttime <
-        #                        now_time < re.REendtime, recommend)
         map(self.fill_recommend_product, recommend_list)
         map(self.fill_recommend_nums, recommend_list)
         map(self.fill_super, recommend_list)

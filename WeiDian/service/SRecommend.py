@@ -12,7 +12,6 @@ class SRecommend(SBase):
     def get_recommend_list(self):
         """返回日推页商品区域信息, 列表"""
         recommend_list = self.session.query(Recommend).filter_by(REisdelete=False).order_by(Recommend.REcreatetime.desc()).all()
-        # recommend = self.session.query(Recommend).filter_by(REisdelete=False).all()
         return recommend_list
 
     @close_session
@@ -30,9 +29,7 @@ class SRecommend(SBase):
 
     @close_session
     def del_recommend(self, reid):
-        recommend = self.session.query(Recommend).filter_by(REid=reid).first()
-        recommend.REisdelete = True
-        self.session.add(recommend)
+        return self.session.query(Recommend).filter_by(REid=reid).update({Recommend.REisdelete: True})
 
     @close_session
     def update_recommend(self, reid, **kwargs):
@@ -49,6 +46,7 @@ class SRecommend(SBase):
                 recommend.RElikefakenum = kwargs['relikenum']
             self.session.add(recommend)
             return True
+# TODO 更新推荐未修改
 
     @close_session
     def update_view_num(self, reid):

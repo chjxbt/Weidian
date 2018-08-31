@@ -1,15 +1,12 @@
 # *- coding:utf8 *-
 import sys
 import os
-from datetime import datetime
-
+# from datetime import datetime
+# from WeiDian.common.timeformat import format_for_db
 from werkzeug.security import generate_password_hash, check_password_hash
-from WeiDian.common.timeformat import format_for_db
-
-
-sys.path.append(os.path.dirname(os.getcwd()))
 from SBase import SBase, close_session
 from WeiDian.models.model import SuperUser
+sys.path.append(os.path.dirname(os.getcwd()))
 
 
 class SSuperUser(SBase):
