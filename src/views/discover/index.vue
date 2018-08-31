@@ -14,7 +14,7 @@
       <div class="m-modal" v-if="show_modal">
         <div class="m-modal-state">
           <div class="m-modal-head">
-            <img src="" class="m-modal-img">
+            <img src="http://cdn2.55haitao.com/bbs/data/attachment/forum/201411/20/132745toqfxf1r19k3y333.jpg" class="m-modal-img">
           </div>
           <div class="m-modal-content">
             <h2>升级成为店主·方可使用此功能</h2>
@@ -26,8 +26,8 @@
             </ul>
           </div>
           <div class="m-modal-foot">
-            <span class="m-modal-foot-btn grey">去首页逛逛</span>
-            <span class="m-modal-foot-btn">我要成为店主</span>
+            <span class="m-modal-foot-btn grey" @click="toPage('index')">去首页逛逛</span>
+            <span class="m-modal-foot-btn" @click="toPage('partner')">我要成为店主</span>
           </div>
         </div>
       </div>
@@ -51,7 +51,7 @@
     export default {
       data() {
         return {
-          show_modal: false,
+          show_modal: true,
           nav_list: [{ tnid: "5ed4e908-a6db-11e8-b2ff-0cd292f93404" }, { tnid: "1" },
             { tnid: "1" }, { tnid: "1" }],// 5ed4e908-a6db-11e8-b2ff-0cd292f93404
           nav_select: '0',
@@ -81,6 +81,14 @@
               Toast({ message: res.data.message, className: 'm-toast-fail' });
             }
           })
+        },
+        // 跳转页面
+        toPage(page) {
+          if(page == "index") {
+            this.$router.push('/index');
+          }else if(page == "partner") {
+            this.$router.push('/inviteStore');
+          }
         }
       },
       mounted() {
@@ -92,14 +100,15 @@
 </script>
 <style lang="less" rel="stylesheet/less">
   @import "../../common/css/index";
+  @import "../../common/css/modal";
 .m-discover{
-
 
   .m-modal{
     .m-modal-state{
       height: 530px;
       .m-modal-head{
         padding: 0;
+        margin: -1px;
         .m-modal-img{
           display: block;
           width: 100%;
