@@ -19,7 +19,7 @@
         <div class="m-lookinfo-box">
           <span class="m-look-icon"></span>
           <span>{{recommend.reviewnum}}</span>
-          <span class="m-smile-icon" :class="index == filtrateActivity?'active':''" ></span>
+          <span class="m-smile-icon" :class="recommend.alreadylike?'active':''" @click="likeThis(recommend)"></span>
           <span>{{recommend.relikenum}}</span>
         </div>
       </div>
@@ -94,7 +94,6 @@
                   "</span><span class='m-red'>赚" + this.recommend.products[i].prsavemonty + "</span></p>";
                 document.getElementById('m-img-list').appendChild(elem_li);
               }
-
             }else{
               Toast({ message: res.data.message, className: 'm-toast-fail' });
             }
@@ -152,6 +151,35 @@
               break;
           }
         },
+        // 每日推荐的点赞
+        likeThis(recommend) {
+          if(recommend.alreadylike) {
+            axios.post(api.re_like + '?token=' +  localStorage.getItem('token'), {
+              reid: recommend.reid
+            }).then(res => {
+              if(res.data.status == 200){
+                this.recommend.relikenum -= 1;
+                this.recommend.alreadylike = false;
+                Toast({ message: res.data.message, className: 'm-toast-warning' });
+              }else{
+                Toast({ message: res.data.message, className: 'm-toast-fail' });
+              }
+            })
+          }else if(!recommend.alreadylike) {
+            axios.post(api.re_like + '?token=' +  localStorage.getItem('token'), {
+              reid: recommend.reid
+            }).then(res => {
+              if(res.data.status == 200){
+                this.recommend.relikenum += 1;
+                this.recommend.alreadylike = true;
+                Toast({ message: res.data.message, className: 'm-toast-success' });
+              }else{
+                Toast({ message: res.data.message, className: 'm-toast-fail' });
+              }
+            })
+          }
+        },
+        // 展开全文、收齐全文
         showMoreText(bool,v){
           let arr = [].concat(this.activity_list);
           arr[v] = Object.assign({}, arr[v], { show_text: bool });
