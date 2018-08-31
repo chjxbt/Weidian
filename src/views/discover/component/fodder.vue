@@ -14,10 +14,12 @@
           <div class="m-section-text">
             <p class="textP" :class="!item.show_text ? 'active':''">{{item.actext}}</p>
             <span class="m-section-more" v-if="item.show_text" @click="showMore(false, index)">展开全文</span>
-            <span class="m-section-more" v-if="item.actext.length >86 && !item.show_text" @click="showMore(true, index)">收起全文</span>
-            <ul class="m-img-list">
+            <span class="m-section-more" v-if="item.actext.length > 86 && !item.show_text" @click="showMore(true, index)">收起全文</span>
+            <ul class="m-img-list" id="m-img-list">
               <li>
-                <img src="" class="m-section-text-img">
+                <template v-for="img in item.media">
+                  <img :src="img.amimage" class="m-section-text-img">
+                </template>
               </li>
             </ul>
             <div class="m-section-bottom">
@@ -98,6 +100,7 @@
               let time = year + month + date + hour + minu + sec;
               let time1 = time.slice(0,4);// 当前年份
               let time2 = time.slice(4,8);// 当前日期
+
               for(let i = 0; i < this.activity_list.length; i ++) {
                 let createTime = this.activity_list[i].accreatetime;
                 let createTime1 = createTime.slice(0,4);// 发布年份
@@ -119,7 +122,16 @@
                 }
 
                 // 展开全文、显示全文
-                this.activity_list[i].actext.length > 90 && (this.activity_list[i].show_text = true) ;
+                this.activity_list[i].actext.length > 90 && (this.activity_list[i].show_text = true);
+
+                // 往ul中添加li
+               /* for(let j = 0; j < this.activity_list[i].media.length; j ++) {
+                  var elem_li = document.createElement('li'); // 生成一个 li元素
+                  // 设置元素的内容
+                  elem_li.innerHTML = "<img src=" + this.activity_list[i].media[j].amimage + "class='m-section-text-img'>";
+                  document.getElementById('m-img-list').appendChild(elem_li);
+                  // console.log(document.getElementById('m-img-list'))
+                }*/
               }
             }else{
               Toast({ message: res.data.message, className: 'm-toast-fail' });
