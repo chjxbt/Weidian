@@ -3,7 +3,7 @@
     <div class="m-fixed-state">
       <h3>转发到</h3>
       <ul class="m-share-list">
-        <li>
+        <li v-if="num == 3">
           <img src="/static/images/icon-wei.png" class="m-share-icon" alt="">
           转发到微信好友
         </li>
@@ -29,12 +29,17 @@
 
           }
       },
+      props: {
+          num: { type: Number, default: 3 }
+      },
       methods:{
         fixedClick(){
           this.$emit('fixedClick')
         }
+      },
+      mounted() {
+          console.log(this.num)
       }
-
     }
 </script>
 
@@ -62,7 +67,7 @@
       h3{
         font-size: 24px;
         color: #a4a4a4;
-        margin: 20px 0;
+        margin: 20px 0 35px 30px;
       }
       ul.m-share-list{
         .flex-row(space-around);
@@ -72,6 +77,7 @@
             width: 97px;
             height: 97px;
             display: block;
+            margin-bottom: 20px;
           }
         }
       }

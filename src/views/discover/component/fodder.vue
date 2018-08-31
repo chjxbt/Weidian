@@ -34,7 +34,7 @@
         </div>
       </div>
     </div>
-    <share v-if="show_fixed"  @fixedClick="fixedClick"></share>
+    <share v-if="show_fixed" :num="2" @fixedClick="fixedClick"></share>
   </div>
 
 </template>
@@ -61,7 +61,7 @@
           activity_list:[]
         }
       },
-      props:{
+      props: {
         tnid: { type: String, default: null }
       },
       components: { 'icon-list':iconList, share },
