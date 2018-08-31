@@ -19,7 +19,7 @@
         <div class="m-lookinfo-box">
           <span class="m-look-icon"></span>
           <span>{{recommend.reviewnum}}</span>
-          <span class="m-smile-icon"></span>
+          <span class="m-smile-icon" :class="index == filtrateActivity?'active':''" ></span>
           <span>{{recommend.relikenum}}</span>
         </div>
       </div>
