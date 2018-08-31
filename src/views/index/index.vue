@@ -301,12 +301,26 @@
                 this.changeLike(this.activity_list[list].acid);
                 break;
               case 1:
+                  for(let i=0;i<this.activity_list[list].media.length;i++){
+                     this.download(this.activity_list[list].media[i].amimage);
+                   }
                 this.show_modal = true;
                 break;
               case 2:
                 this.show_fixed = true;
                 break;
             }
+          },
+          download(url){
+            let a = document.createElement('a');
+            let event = new MouseEvent('click');
+
+            a.download = name || '下载图片名称';
+            a.href = url;
+            a.dispatchEvent(event);
+            // window.location.href = url
+
+
           },
           showMoreText(bool,v){
             let arr = [].concat(this.activity_list);
