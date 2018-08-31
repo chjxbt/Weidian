@@ -91,7 +91,7 @@
                 var elem_li = document.createElement('li'); // 生成一个 li元素
                 // 设置元素的内容
                 elem_li.innerHTML = "<img src=" + this.recommend.products[i].prmainpic + " class='m-img-list-img'><p><span class='m-price'>￥" + this.recommend.products[i].prprice +
-                  "</span><span class='m-red'>赚" + (this.recommend.products[i].prprice - this.recommend.products[i].proldprice).toFixed(2) + "</span></p>";
+                  "</span><span class='m-red'>赚" + this.recommend.products[i].prsavemonty + "</span></p>";
                 document.getElementById('m-img-list').appendChild(elem_li);
               }
 
@@ -124,7 +124,7 @@
                 this.activity_list[i].icon = this.icon_list;
                 this.activity_list[i].icon[0].name = this.activity_list[i].likenum;
                 this.activity_list[i].icon[0].alreadylike = this.activity_list[i].alreadylike;
-                this.activity_list[i].actext.length >92 && (this.activity_list[i].show_text = true) ;
+                this.activity_list[i].actext.length > 92 && (this.activity_list[i].show_text = true) ;
               }
             }else{
               Toast({ message: res.data.message, className: 'm-toast-fail' });
