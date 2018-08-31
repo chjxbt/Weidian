@@ -13,7 +13,7 @@
         <ul class="m-img-list">
           <template v-for="(item,index) in list.media">
             <li>
-              <img v-if="item.amimage" :src="item.amimage" class="m-section-text-img" alt="">
+              <img v-if="item.amimage" :src="item.amimage" class="m-section-text-imgs" alt="">
               <video v-if="item.amvideo" :src="item.amvideo"></video>
             </li>
           </template>
@@ -124,7 +124,7 @@
         .m-img-list{
           .flex-row(flex-start);
           flex-wrap: wrap;
-          .m-section-text-img{
+          .m-section-text-imgs{
             display: block;
             width: 180px;
             height: 180px;
