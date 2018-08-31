@@ -5,7 +5,7 @@
       <!--每日10荐-->
       <every v-if="nav_select == '0'" :tnid="nav_list[0].tnid"></every>
       <!--素材圈-->
-      <fodder v-if="nav_select == '1'" :tnid="nav_list[1].tnid" @fodder="getData"></fodder>
+      <fodder v-if="nav_select == '1'" :tnid="nav_list[1].tnid" :sub="sub"></fodder>
       <!--公告-->
       <announcement v-if="nav_select == '2'" :tnid="nav_list[2].tnid"></announcement>
       <!--教程-->
@@ -52,9 +52,10 @@
       data() {
         return {
           show_modal: false,
-          nav_list: [{ tnid: "1" }, { tnid: "1" },
+          nav_list: [{ tnid: "5ed4e908-a6db-11e8-b2ff-0cd292f93404" }, { tnid: "1" },
             { tnid: "1" }, { tnid: "1" }],// 5ed4e908-a6db-11e8-b2ff-0cd292f93404
-          nav_select: '1'
+          nav_select: '0',
+          sub: []
         }
       },
       components: { navbar, fodder, every, announcement, course, iconList },
@@ -74,21 +75,16 @@
           axios.get(api.get_dp_topnav).then(res => {
             if(res.data.status == 200) {
               this.nav_list = res.data.data;
-              this.nav_list[1].click = true;
+              this.sub = this.nav_list[1].sub;
+              this.nav_list[0].click = true;
             }else{
               Toast({ message: res.data.message, className: 'm-toast-fail' });
             }
           })
-        },
-        // 接收子组件传的值
-        getData(list) {
-          this.nav_list = list;
-          this.nav_list[1].click = true;
-          // console.log(list);
         }
       },
       mounted() {
-        // this.getTopnav();
+        this.getTopnav();
         let token = "eyJhbGciOiJIUzI1NiIsImV4cCI6MTUzNTc1MjA3NiwiaWF0IjoxNTM1NjgwMDc2fQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0wOC0zMSAwOTo0Nzo1NiJ9.CFAIfbfOIlnwBdp5pesqqs4YP5fJXxaLwE4A0kU9hhs";
         localStorage.setItem('token', token);
       }

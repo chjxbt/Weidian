@@ -1,6 +1,6 @@
 <template>
   <div class="m-discover-fodder">
-    <span class="m-filtrate-box" v-for="(item, index) in filtrateList">
+    <span class="m-filtrate-box" v-for="(item, index) in sub">
       <span class="m-filtrate" :class="index == filtrateActivity?'active':''" @click="changefiltrateActivity(item, index)">{{item.tnname}}</span>
     </span>
     <div class="m-discover-fodder-content">
@@ -57,12 +57,12 @@
             }
           ],
           filtrateActivity: 0,
-          filtrateList: [],
           activity_list:[]
         }
       },
       props: {
-        tnid: { type: String, default: null }
+        tnid: { type: String, default: null },
+        sub: { type: Array }
       },
       components: { 'icon-list':iconList, share },
       methods: {
@@ -138,22 +138,6 @@
             }
           })
         },
-        // 获取上部导航
-        getTopnav() {
-          axios.get(api.get_dp_topnav).then(res => {
-            if(res.data.status == 200) {
-              // 向父组件传数据
-              this.$emit('fodder', res.data.data);
-
-              this.filtrateList = res.data.data[1].sub;
-              // console.log(this.filtrateList);
-              this.getActivity(0, 15, this.filtrateList[0].tnid);
-            }else{
-              Toast({ message: res.data.message, className: 'm-toast-fail' });
-            }
-          });
-
-        },
         // 改变第二行导航
         changefiltrateActivity(item, index) {
           this.filtrateActivity = index;
@@ -167,7 +151,8 @@
         }
       },
       mounted() {
-        this.getTopnav();
+        console.log(this.sub);
+        this.getActivity(0, 15, this.sub[0].tnid);
       }
     }
 </script>
