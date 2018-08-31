@@ -151,7 +151,6 @@
         }
       },
       mounted() {
-        console.log(this.sub);
         this.getActivity(0, 15, this.sub[0].tnid);
       }
     }

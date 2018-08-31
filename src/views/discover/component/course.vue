@@ -73,7 +73,7 @@
       }
     },
     props:{
-      tnid:{ type: String, default: null }
+      tnid: { type: String, default: null }
     },
     components: { iconList },
     methods: {
@@ -81,8 +81,8 @@
 
       }
     },
-    created() {
-
+    mounted() {
+      console.log(this.tnid);
     }
   }
 </script>

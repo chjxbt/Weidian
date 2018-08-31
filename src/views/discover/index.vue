@@ -51,7 +51,7 @@
     export default {
       data() {
         return {
-          show_modal: true,
+          show_modal: false,
           nav_list: [{ tnid: "5ed4e908-a6db-11e8-b2ff-0cd292f93404" }, { tnid: "1" },
             { tnid: "1" }, { tnid: "1" }],// 5ed4e908-a6db-11e8-b2ff-0cd292f93404
           nav_select: '0',
@@ -88,6 +88,7 @@
             this.$router.push('/index');
           }else if(page == "partner") {
             this.$router.push('/inviteStore');
+            // this.show_modal = false;
           }
         }
       },

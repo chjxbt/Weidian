@@ -31,7 +31,6 @@
           </div>
 
           <div class="m-comment-box">
-
             <div class="m-comment-content">
               <span class="m-comment-s"></span>
               <p><span class="m-comment-name">A玲珑服饰有限责任公司</span> : 感谢平台31个省市去均有店铺的
@@ -66,7 +65,7 @@
         }
       },
       props:{
-        tnid:{ type: String, default: null }
+        tnid: { type: String, default: null }
       },
       components: { iconList },
       methods: {
@@ -74,8 +73,8 @@
 
         }
       },
-      created() {
-
+      mounted() {
+        console.log(this.tnid);
       }
     }
 </script>
