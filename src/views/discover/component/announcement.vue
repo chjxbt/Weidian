@@ -16,7 +16,14 @@
           <span class="m-section-more" v-if="item.show_text" @click="showMore(false, index)">展开全文</span>
           <span class="m-section-more" v-if="item.actext.length > 86 && !item.show_text" @click="showMore(true, index)">收起全文</span>
 
-          <img :src="item.media[0].amimage" class="m-img-l">
+          <ul class="m-img-list" id="m-img-list">
+            <li>
+              <template v-for="img in item.media">
+                <img :src="img.amimage" class="m-section-text-img">
+              </template>
+            </li>
+          </ul>
+
           <div class="m-section-bottom">
             <div>
               <div class="m-lookinfo-box">
