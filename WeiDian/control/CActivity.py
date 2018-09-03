@@ -33,6 +33,8 @@ class CActivity(BaseActivityControl):
         from WeiDian.service.SProduct import SProduct
         self.sproduct = SProduct()
         self.session = Session()
+        from WeiDian.service.SUser import SUser
+        self.suser = SUser()
 
     @verify_token_decorator
     def get_all(self):
@@ -66,7 +68,7 @@ class CActivity(BaseActivityControl):
         if end > len_aclist:
             end = len_aclist
         activity_list = map(self.fill_detail, activity_list)
-        # map(self.fill_comment, activity_list)
+        map(self.fill_comment_two, activity_list)
         activity_list = activity_list[start:end]
         map(self.fill_type, activity_list)
         map(self.fill_product, activity_list)
@@ -215,6 +217,24 @@ class CActivity(BaseActivityControl):
         response_make_activity['data']['acid'] = acid
         return response_make_activity
 
+    # @verify_token_decorator
+    # def update_activity(self):
+    #     if not hasattr(request, 'user'):
+    #         return TOKEN_ERROR  # 未登录, 或token错误
+    #     if not is_admin():
+    #         return AUTHORITY_ERROR  # 权限不足
+    #     data = request.json
+    #     if 'acid' not in data.keys():
+    #         return PARAMS_MISS
+    #     acid = data.pop('acid')
+    #     res = self.sactivity.update_activity(acid, **data)
+    #     if not res:
+    #         return SYSTEM_ERROR("acid错误，要修改的活动不存在")
+    #     response_update_activity = import_status(
+    #         'update_activity_success', 'OK')
+    #     response_update_activity['data'] = {'acid': acid}
+    #     return response_update_activity
+
     @verify_token_decorator
     def update_activity(self):
         if not hasattr(request, 'user'):
@@ -224,9 +244,32 @@ class CActivity(BaseActivityControl):
         data = request.json
         if 'acid' not in data.keys():
             return PARAMS_MISS
-        acid = data.pop('acid')
-        res = self.sactivity.update_activity(acid, **data)
-        if not res:
+        acid = data.get('acid')
+        act = {}
+        if 'prid' in data.keys():
+            act['PRid'] = data['prid']
+        if 'actype' in data.keys():
+            act['ACtype'] = data['actype']
+        if 'topnavid' in data.keys():
+            act['TopnavId'] = data['topnavid']
+        if 'actext' in data.keys():
+            act['ACtext'] = data['actext']
+        if 'aclikefakenum' in data.keys():
+            act['AClikeFakeNum'] = data['aclikefakenum']
+        if 'acforwardfakenum' in data.keys():
+            act['ACforwardFakenum'] = data['acforwardfakenum']
+        if 'acproductssoldfakenum' in data.keys():
+            act['ACProductsSoldFakeNum'] = data['acproductssoldfakenum']
+        if 'acstarttime' in data.keys():
+            act['ACstarttime'] = data['acstarttime']
+        if 'acendtime' in data.keys():
+            act['ACendtime'] = data['acendtime']
+        if 'acistop' in data.keys():
+            act['ACistop'] = data['acistop']
+        now_time = datetime.strftime(datetime.now(), format_for_db)
+        act['ACupdatetime'] = now_time
+        act_info = self.sactivity.update_activity_by_acid(acid, act)
+        if not act_info:
             return SYSTEM_ERROR("acid错误，要修改的活动不存在")
         response_update_activity = import_status(
             'update_activity_success', 'OK')

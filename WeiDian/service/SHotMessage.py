@@ -27,27 +27,31 @@ class SHotMessage(SBase):
     def add_one_hot(self, hot):
         self.session.add(hot)
 
+    # @close_session
+    # def update_one_hot(self, hmid, **kwargs):
+    #     hotmessage = self.session.query(HotMessage).filter_by(HMid=hmid).first()
+    #     if hotmessage:
+    #         if 'hmtext' in kwargs.keys():
+    #             hotmessage.HMtext = kwargs['hmtext']
+    #         if 'prid' in kwargs.keys():
+    #             hotmessage.PRid = kwargs['prid']
+    #         if 'hmstarttime' in kwargs.keys():
+    #             hotmessage.HMstarttime = kwargs['hmstarttime']
+    #         if 'hmendtime' in kwargs.keys():
+    #             hotmessage.HMendtime = kwargs['hmendtime']
+    #         if 'hmsort' in kwargs.keys():
+    #             hotmessage.HMsort = kwargs['hmsort']
+    #         self.session.add(hotmessage)
+    #         return True
+
     @close_session
-    def update_one_hot(self, hmid, **kwargs):
-        hotmessage = self.session.query(HotMessage).filter_by(HMid=hmid).first()
-        if hotmessage:
-            if 'hmtext' in kwargs.keys():
-                hotmessage.HMtext = kwargs['hmtext']
-            if 'prid' in kwargs.keys():
-                hotmessage.PRid = kwargs['prid']
-            if 'hmstarttime' in kwargs.keys():
-                hotmessage.HMstarttime = kwargs['hmstarttime']
-            if 'hmendtime' in kwargs.keys():
-                hotmessage.HMendtime = kwargs['hmendtime']
-            if 'hmsort' in kwargs.keys():
-                hotmessage.HMsort = kwargs['hmsort']
-            self.session.add(hotmessage)
-            return True
-    # TODO 热文修改
+    def update_hot_by_hmid(self, hmid, hotmessage):
+        self.session.query(HotMessage).filter_by(HMid=hmid).update(hotmessage)
+        return True
 
     @close_session
     def del_one_hot(self, hmid):
-        return self.session.query(HotMessage).filter(HotMessage.HMid == hmid).delete()
+        return self.session.query(HotMessage).filter_by(HMid == hmid).delete()
 
 
 

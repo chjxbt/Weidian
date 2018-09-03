@@ -82,8 +82,34 @@ class CRecommend(BaseProductControl):
         response_make_recommend['data']['reid'] = reid
         return response_make_recommend
 
+    # @verify_token_decorator
+    # def update_recommend(self):
+    #     if not hasattr(request, 'user'):
+    #         return TOKEN_ERROR  # 未登录, 或token错误
+    #     if not is_admin():
+    #         return AUTHORITY_ERROR  # 权限不足
+    #     data = request.json
+    #     if 'reid' not in data.keys():
+    #         return PARAMS_MISS
+    #     reid = data.pop('reid')
+    #     res = self.srecommend.update_recommend(reid, **data)
+    #     if not res:
+    #         return SYSTEM_ERROR("reid错误，要修改的内容不存在")
+    #     prid_list = data.get('prid_list')
+    #     for item in prid_list:
+    #         add_model('RecommendProduct', **{
+    #             'REid': reid,
+    #             'PRid': item.get('prid'),
+    #             'RPid': str(uuid.uuid4()),
+    #             'RPsort': item.get('rpsort')
+    #         })
+    #     response_update_recommend = import_status(
+    #         'update_recommend_success', 'OK')
+    #     response_update_recommend['data'] = {'reid': reid}
+    #     return response_update_recommend
+
     @verify_token_decorator
-    def update_recommend(self):
+    def update_recommend_by_reid(self):
         if not hasattr(request, 'user'):
             return TOKEN_ERROR  # 未登录, 或token错误
         if not is_admin():
@@ -91,8 +117,17 @@ class CRecommend(BaseProductControl):
         data = request.json
         if 'reid' not in data.keys():
             return PARAMS_MISS
-        reid = data.pop('reid')
-        res = self.srecommend.update_recommend(reid, **data)
+        reid = data.get('reid')
+        recommend = {}
+        if 'restarttime' in data.keys():
+            recommend['REstarttime'] = data['restarttime']
+        if 'reendtime' in data.keys():
+            recommend['REendtime'] = data['reendtime']
+        if 'reviewnum' in data.keys():
+            recommend['REfakeviewnum'] = data['reviewnum']
+        if 'relikenum' in data.keys():
+            recommend['RElikefakenum'] = data['relikenum']
+        res = self.srecommend.update_recommend_by_reid(reid, recommend)
         if not res:
             return SYSTEM_ERROR("reid错误，要修改的内容不存在")
         prid_list = data.get('prid_list')

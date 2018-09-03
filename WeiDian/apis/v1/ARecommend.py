@@ -23,7 +23,7 @@ class ARecommend(Resource):
         print recommend
         apis = {
             "add_one": "self.control_recommend.add_one()",
-            "update": "self.control_recommend.update_recommend()",
+            "update": "self.control_recommend.update_recommend_by_reid()",
             "del_one": "self.control_recommend.del_one()"
         }
         res = eval(apis[recommend])
