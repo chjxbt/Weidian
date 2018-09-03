@@ -31,22 +31,26 @@ class SRecommend(SBase):
     def del_recommend(self, reid):
         return self.session.query(Recommend).filter_by(REid=reid).update({Recommend.REisdelete: True})
 
+    # @close_session
+    # def update_recommend(self, reid, **kwargs):
+    #     recommend = self.session.query(Recommend).filter_by(REid=reid).first()
+    #     self.session.query(RecommendProduct).filter_by(REid=reid).delete
+    #     if recommend:
+    #         if 'restarttime' in kwargs.keys():
+    #             recommend.REstarttime = kwargs['restarttime']
+    #         if 'reendtime' in kwargs.keys():
+    #             recommend.REendtime = kwargs['reendtime']
+    #         if 'reviewnum' in kwargs.keys():
+    #             recommend.REfakeviewnum = kwargs['reviewnum']
+    #         if 'relikenum' in kwargs.keys():
+    #             recommend.RElikefakenum = kwargs['relikenum']
+    #         self.session.add(recommend)
+    #         return True
+
     @close_session
-    def update_recommend(self, reid, **kwargs):
-        recommend = self.session.query(Recommend).filter_by(REid=reid).first()
-        self.session.query(RecommendProduct).filter_by(REid=reid).delete
-        if recommend:
-            if 'restarttime' in kwargs.keys():
-                recommend.REstarttime = kwargs['restarttime']
-            if 'reendtime' in kwargs.keys():
-                recommend.REendtime = kwargs['reendtime']
-            if 'reviewnum' in kwargs.keys():
-                recommend.REfakeviewnum = kwargs['reviewnum']
-            if 'relikenum' in kwargs.keys():
-                recommend.RElikefakenum = kwargs['relikenum']
-            self.session.add(recommend)
-            return True
-# TODO 更新推荐未修改
+    def update_recommend_by_reid(self, reid, recommend):
+        self.session.query(RecommendProduct).filter_by(REid=reid).delete()
+        return self.session.query(Recommend).filter_by(REid=reid).update(recommend)
 
     @close_session
     def update_view_num(self, reid):

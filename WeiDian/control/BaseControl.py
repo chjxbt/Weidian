@@ -73,6 +73,20 @@ class BaseActivityControl():
         map(self.fill_comment_apply_for, act.comment)
         return act
 
+    def fill_comment_two(self, act):
+        """给活动对象附加一个评论属性"""
+        acid = act.ACid
+        comments = self.sacomment.get_comment_by_acid_two(acid)
+        for comment in comments:
+            usid = comment.USid
+            user = self.suser.get_user_by_user_id(usid)
+            comment.user = user
+        act.comment = comment
+        act.add('comment')
+        map(self.fill_comment_apply_for, act.comment)
+        return act
+    # TODO 修改未完成
+
     def fill_comment_apply_for(self, comment):
         """"如果既是评论又是回复则添加一个'所回复用户'属性"""
         acoid = comment.ACOid

@@ -9,6 +9,8 @@ from WeiDian.common.timeformat import format_for_db
 from WeiDian.common.token_required import verify_token_decorator, is_admin
 from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR
 from WeiDian.common.TransformToList import add_model
+import json
+
 sys.path.append(os.path.dirname(os.getcwd()))
 
 
@@ -65,19 +67,30 @@ class CHotMessage():
         return response_make_hotmesasge
 
     @verify_token_decorator
-    def update_one(self):
-        """热文修改"""
-
+    def update_hot(self):
+        """修改热文"""
         if not hasattr(request, 'user'):
             return TOKEN_ERROR  # 未登录, 或token错误
         if not is_admin():
             return AUTHORITY_ERROR  # 权限不足
         data = request.json
-        if not 'hmid' in data.keys():
+        if 'hmid'not in data.keys():
             return PARAMS_MISS
-        hmid = data.pop('hmid')
-        res = self.s_hotmessage.update_one_hot(hmid, **data)
-        if not res:
+        hmid = data.get('hmid')
+        hot = {}
+        hot['HMid'] = data['hmid']
+        if 'hmtext' in data.keys():
+            hot['HMtext'] = data['hmtext']
+        if 'prid' in data.keys():
+            hot['PRid'] = data['prid']
+        if 'hmstarttime' in data.keys():
+            hot['HMstarttime'] = data['hmstarttime']
+        if 'hmendtime' in data.keys():
+            hot['HMendtime'] = data['hmendtime']
+        if 'hmsort' in data:
+            hot['HMsort'] = data['hmsort']
+        update_info = self.s_hotmessage.update_hot_by_hmid(hmid, hot)
+        if not update_info:
             return SYSTEM_ERROR('热文不存在')
         response_update_hotmessage = import_status('update_hotmessage_success', 'OK')
         response_update_hotmessage['data'] = {'hmid': hmid}
