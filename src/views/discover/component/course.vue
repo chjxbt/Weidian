@@ -17,9 +17,7 @@
           <span class="m-section-more" v-if="item.actext.length > 86 && !item.show_text" @click="showMore(true, index)">收起全文</span>
 
           <div class="m-img-list">
-            <img class="m-section-text-img" :src="item.media[0].amimage" @click="clickImg($event)">
-            <!-- 放大图片 -->
-            <big-img v-if="showImg" @clickit="viewImg" :imgSrc="imgSrc"></big-img>
+            <img class="m-section-text-img" :src="item.media[0].amimage">
           </div>
           <div class="m-section-bottom">
             <div>
@@ -38,7 +36,7 @@
             <div class="m-comment-content">
               <span class="m-comment-s"></span>
               <p v-for="comment in item.comment">
-                <span class="m-comment-name">{{comment.actext}}</span>: {{comment.actext}}
+                <span class="m-comment-name">{{comment.user.usname}}</span>: {{comment.actext}}
               </p>
               <div v-if="show_input" class="new-comment-box">
                 <input type="text" class="new-comment-input" v-model="comment"/>
@@ -54,7 +52,6 @@
 
 <script type="text/ecmascript-6">
   import iconList from '../../../components/common/iconList';
-  import bigImg from '../../../components/common/bigImg';
   import api from '../../../api/api';
   import axios from 'axios';
   import { Toast } from 'mint-ui';
@@ -78,24 +75,13 @@
         show_fixed: false,
         show_input: false,
         comment: "",
-        showImg:false,
-        imgSrc: ''
       }
     },
     props:{
       tnid: { type: String, default: null }
     },
-    components: { iconList, bigImg },
+    components: { iconList },
     methods: {
-      clickImg(e) {
-        this.showImg = true;
-        // 获取当前图片地址
-        this.imgSrc = e.currentTarget.src;
-        console.log(e);
-      },
-      viewImg(){
-        this.showImg = false;
-      },
       /*获取活动列表*/
       getActivity(start, count, tnid){
         axios.get(api.get_all_activity, {

@@ -36,7 +36,7 @@
             <div class="m-comment-content">
               <span class="m-comment-s"></span>
               <p v-for="comment in item.comment">
-                <span class="m-comment-name">{{comment.actext}}</span>: {{comment.actext}}
+                <span class="m-comment-name">{{comment.user.usname}}</span>: {{comment.actext}}
               </p>
               <div v-if="show_input" class="new-comment-box">
                 <input type="text" class="new-comment-input" v-model="comment"/>
