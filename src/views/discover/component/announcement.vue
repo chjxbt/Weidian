@@ -11,7 +11,11 @@
         </div>
         <div class="m-section-text">
           <p><span class="m-mark">置顶</span>{{item.actype}}</p>
-          <p class="m-ft-30">{{item.actext}}</p>
+
+          <p class="textP m-ft-30" :class="!item.show_text ? 'active':''">{{item.actext}}</p>
+          <span class="m-section-more" v-if="item.show_text" @click="showMore(false, index)">展开全文</span>
+          <span class="m-section-more" v-if="item.actext.length > 86 && !item.show_text" @click="showMore(true, index)">收起全文</span>
+
           <img :src="item.media[0].amimage" class="m-img-l">
           <div class="m-section-bottom">
             <div>
@@ -64,228 +68,7 @@
         ],
         show_fixed: false,
         show_modal: false,
-        activity_list: [
-          {
-            "acbrowsenum": 0,
-            "accreatetime": "20180829142337",
-            "acendtime": "20180905142337",
-            "acid": "1095e152-ab54-11e8-8746-0cd292f93404",
-            "acisended": false,
-            "acistop": false,
-            "acstarttime": "20180829142337",
-            "actext": "速度来抢呀, 哈哈呀",
-            "actype": "满赠",
-            "alreadylike": false,
-            "foward": 0,
-            "likenum": 1,
-            "media": [
-              {
-                "amid": "1095e153-ab54-11e8-8746-0cd292f93404",
-                "amimage": "http://i1.ygimg.cn/pics/annzo/2010/99962601/99962601_03_b.jpg?94"
-              }
-            ],
-            "prid": "343ff445-c02d-4065-8f01-58608171aadc",
-            "product": {
-              "prchannelid": null,
-              "prchannelname": null,
-              "prid": "343ff445-c02d-4065-8f01-58608171aadc",
-              "primporturl": "http://primporturl.com",
-              "prishot": false,
-              "prkeeperprice": "181.98",
-              "prmainpic": "http://mainpi2.com",
-              "prname": "这是商品名字2",
-              "proldprice": 499,
-              "prprice": "202.20",
-              "prsavemonty": "20.22",
-              "prstock": 321321,
-              "prtitle": "这是商品的标题2",
-              "suid": "632303b0-d81c-42bf-a6b9-ca06ee18c559"
-            },
-            "remaintime": [
-              5,
-              22,
-              0
-            ],
-            "soldnum": 0,
-            "suuser": {
-              "suheader": "http://a.hiphotos.baidu.com/zhidao/pic/item/21a4462309f79052782f28490ff3d7ca7bcbd591.jpg",
-              "suid": "632303b0-d81c-42bf-a6b9-ca06ee18c559",
-              "suname": "这是用户名称"
-            },
-            "tags": [
-              {
-                "atid": "1095e154-ab54-11e8-8746-0cd292f93404",
-                "atname": "爆款"
-              }
-            ],
-            "topnavid": "5ed4e908-a6db-11e8-b2ff-0cd292f93404"
-          },
-          {
-            "acbrowsenum": 0,
-            "accreatetime": "20180829142337",
-            "acendtime": "20180905142337",
-            "acid": "1095e152-ab54-11e8-8746-0cd292f93404",
-            "acisended": false,
-            "acistop": false,
-            "acstarttime": "20180829142337",
-            "actext": "速度来抢呀, 哈哈呀",
-            "actype": "满赠",
-            "alreadylike": false,
-            "foward": 0,
-            "likenum": 1,
-            "media": [
-              {
-                "amid": "1095e153-ab54-11e8-8746-0cd292f93404",
-                "amimage": "http://i1.ygimg.cn/pics/annzo/2010/99962601/99962601_03_b.jpg?94"
-              }
-            ],
-            "prid": "343ff445-c02d-4065-8f01-58608171aadc",
-            "product": {
-              "prchannelid": null,
-              "prchannelname": null,
-              "prid": "343ff445-c02d-4065-8f01-58608171aadc",
-              "primporturl": "http://primporturl.com",
-              "prishot": false,
-              "prkeeperprice": "181.98",
-              "prmainpic": "http://mainpi2.com",
-              "prname": "这是商品名字2",
-              "proldprice": 499,
-              "prprice": "202.20",
-              "prsavemonty": "20.22",
-              "prstock": 321321,
-              "prtitle": "这是商品的标题2",
-              "suid": "632303b0-d81c-42bf-a6b9-ca06ee18c559"
-            },
-            "remaintime": [
-              5,
-              22,
-              0
-            ],
-            "soldnum": 0,
-            "suuser": {
-              "suheader": "http://a.hiphotos.baidu.com/zhidao/pic/item/21a4462309f79052782f28490ff3d7ca7bcbd591.jpg",
-              "suid": "632303b0-d81c-42bf-a6b9-ca06ee18c559",
-              "suname": "这是用户名称"
-            },
-            "tags": [
-              {
-                "atid": "1095e154-ab54-11e8-8746-0cd292f93404",
-                "atname": "爆款"
-              }
-            ],
-            "topnavid": "5ed4e908-a6db-11e8-b2ff-0cd292f93404"
-          },
-          {
-            "acbrowsenum": 0,
-            "accreatetime": "20180829142337",
-            "acendtime": "20180905142337",
-            "acid": "1095e152-ab54-11e8-8746-0cd292f93404",
-            "acisended": false,
-            "acistop": false,
-            "acstarttime": "20180829142337",
-            "actext": "速度来抢呀, 哈哈呀",
-            "actype": "满赠",
-            "alreadylike": false,
-            "foward": 0,
-            "likenum": 1,
-            "media": [
-              {
-                "amid": "1095e153-ab54-11e8-8746-0cd292f93404",
-                "amimage": "http://i1.ygimg.cn/pics/annzo/2010/99962601/99962601_03_b.jpg?94"
-              }
-            ],
-            "prid": "343ff445-c02d-4065-8f01-58608171aadc",
-            "product": {
-              "prchannelid": null,
-              "prchannelname": null,
-              "prid": "343ff445-c02d-4065-8f01-58608171aadc",
-              "primporturl": "http://primporturl.com",
-              "prishot": false,
-              "prkeeperprice": "181.98",
-              "prmainpic": "http://mainpi2.com",
-              "prname": "这是商品名字2",
-              "proldprice": 499,
-              "prprice": "202.20",
-              "prsavemonty": "20.22",
-              "prstock": 321321,
-              "prtitle": "这是商品的标题2",
-              "suid": "632303b0-d81c-42bf-a6b9-ca06ee18c559"
-            },
-            "remaintime": [
-              5,
-              22,
-              0
-            ],
-            "soldnum": 0,
-            "suuser": {
-              "suheader": "http://a.hiphotos.baidu.com/zhidao/pic/item/21a4462309f79052782f28490ff3d7ca7bcbd591.jpg",
-              "suid": "632303b0-d81c-42bf-a6b9-ca06ee18c559",
-              "suname": "这是用户名称"
-            },
-            "tags": [
-              {
-                "atid": "1095e154-ab54-11e8-8746-0cd292f93404",
-                "atname": "爆款"
-              }
-            ],
-            "topnavid": "5ed4e908-a6db-11e8-b2ff-0cd292f93404"
-          },
-          {
-            "acbrowsenum": 0,
-            "accreatetime": "20180829142337",
-            "acendtime": "20180905142337",
-            "acid": "1095e152-ab54-11e8-8746-0cd292f93404",
-            "acisended": false,
-            "acistop": false,
-            "acstarttime": "20180829142337",
-            "actext": "速度来抢呀, 哈哈呀",
-            "actype": "满赠",
-            "alreadylike": false,
-            "foward": 0,
-            "likenum": 1,
-            "media": [
-              {
-                "amid": "1095e153-ab54-11e8-8746-0cd292f93404",
-                "amimage": "http://i1.ygimg.cn/pics/annzo/2010/99962601/99962601_03_b.jpg?94"
-              }
-            ],
-            "prid": "343ff445-c02d-4065-8f01-58608171aadc",
-            "product": {
-              "prchannelid": null,
-              "prchannelname": null,
-              "prid": "343ff445-c02d-4065-8f01-58608171aadc",
-              "primporturl": "http://primporturl.com",
-              "prishot": false,
-              "prkeeperprice": "181.98",
-              "prmainpic": "http://mainpi2.com",
-              "prname": "这是商品名字2",
-              "proldprice": 499,
-              "prprice": "202.20",
-              "prsavemonty": "20.22",
-              "prstock": 321321,
-              "prtitle": "这是商品的标题2",
-              "suid": "632303b0-d81c-42bf-a6b9-ca06ee18c559"
-            },
-            "remaintime": [
-              5,
-              22,
-              0
-            ],
-            "soldnum": 0,
-            "suuser": {
-              "suheader": "http://a.hiphotos.baidu.com/zhidao/pic/item/21a4462309f79052782f28490ff3d7ca7bcbd591.jpg",
-              "suid": "632303b0-d81c-42bf-a6b9-ca06ee18c559",
-              "suname": "这是用户名称"
-            },
-            "tags": [
-              {
-                "atid": "1095e154-ab54-11e8-8746-0cd292f93404",
-                "atname": "爆款"
-              }
-            ],
-            "topnavid": "5ed4e908-a6db-11e8-b2ff-0cd292f93404"
-          }
-        ]
+        activity_list: []
       }
     },
     props:{
@@ -298,7 +81,7 @@
         axios.get(api.get_all_activity, {
           params: { start: 0, count: 15, tnid: this.tnid }}).then(res => {
           if(res.data.status == 200){
-            // this.activity_list = res.data.data;
+            this.activity_list = res.data.data;
             console.log(this.activity_list);
 
             // 判断今天、昨天和直接显示日期
@@ -346,8 +129,28 @@
               }
 
               // 展开全文、显示全文
-              // this.activity_list[i].actext.length > 90 && (this.activity_list[i].show_text = true);
+              this.activity_list[i].actext.length > 90 && (this.activity_list[i].show_text = true);
             }
+          }else{
+            Toast({ message: res.data.message, className: 'm-toast-fail' });
+          }
+        })
+      },
+      // 展开全文、显示全文
+      showMore(status, index){
+        let arr = [].concat(this.activity_list);
+        arr[index] = Object.assign({}, arr[index], { show_text: status });
+        this.activity_list = [].concat(arr);
+      },
+      // 获取评论
+      getCommentList() {
+        for(let i = 0; i < this.activity_list.length; i ++) {
+
+        }
+        axios.post(api.ac_like, { acid: item.acid }).then(res => {
+          if(res.data.status == 200){
+
+            console.log(res.data.data);
           }else{
             Toast({ message: res.data.message, className: 'm-toast-fail' });
           }
@@ -400,7 +203,7 @@
     },
     mounted() {
       this.getActivity();
-      // console.log(this.tnid);
+      // this.getCommentList();
     }
   }
 </script>
