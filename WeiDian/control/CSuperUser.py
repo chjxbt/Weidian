@@ -1,10 +1,12 @@
 # *- coding:utf8 *-
+import sys
+import os
+from flask import request
 from WeiDian.common.token_required import usid_to_token
 from WeiDian.common.import_status import import_status
 from WeiDian.service.SSuperUser import SSuperUser
 from WeiDian.config.response import PARAMS_MISS, SYSTEM_ERROR
-
-from flask import request
+sys.path.append(os.path.dirname(os.getcwd()))
 
 
 class CSuperUser():

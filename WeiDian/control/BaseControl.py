@@ -56,9 +56,11 @@ class BaseActivityControl():
         product = self.sproduct.get_product_by_prid(prid)
         if product:
             prkeeperprice = product.PRprice * (1 - Partner().one_level_divide)
-            product.prkeeperprice = prkeeperprice
-            product.prsavemonty = product.PRprice - prkeeperprice
-            product.add('prkeeperprice', 'prsavemonty')
+            product.prkeeperprice = ('%.2f' % prkeeperprice)
+            prsavemonty = product.PRprice - prkeeperprice
+            product.PRprice = ('%.2f' % product.PRprice)
+            product.prsavemonty = ('%.2f' % prsavemonty)
+            product.add('prkeeperprice', 'prsavemonty', 'prprice')
         act.product = product
         act.add('product')
         return act
@@ -177,8 +179,9 @@ class BaseProductControl():
         """调整为粉丝版本"""
         # 粉丝页面显示本身价格和店主价, 以及相关商品推荐(规则?)
         prkeeperprice = product.PRprice * (1 - self.partner.one_level_divide)
-        product.prkeeperprice = prkeeperprice
-        product.prsavemonty = product.PRprice - prkeeperprice
+        product.prkeeperprice = ('%.2f' % prkeeperprice)
+        prsavemonty = product.PRprice - prkeeperprice
+        product.prsavemonty = ('%.2f' % prsavemonty)
         product.add('prkeeperprice', 'prsavemonty')
         return product
 
@@ -219,18 +222,30 @@ class BaseProductControl():
 
     def fill_recommend_nums(self, recommend):
         """日荐页中部浏览数和笑脸数"""
+        if hasattr(request, 'user'):
+            alreadylike = self.srecommendlike.get_recommend_like_by_usidreid(request.user.id, recommend.REid)
+            recommend.alreadylike = True if alreadylike else False
+        else:
+            recommend.alreadylike = False
         viewnum = recommend.REfakeviewnum or recommend.REviewnum  # 浏览数
         likenum = recommend.RElikefakenum or recommend.RElikenum  # 笑脸数
         recommend.reviewnum = viewnum
         recommend.relikenum = likenum
-        recommend.add('reviewnum', 'relikenum')
+        recommend.add('reviewnum', 'relikenum', 'alreadylike')
         return recommend
 
-    def fill_product(self, recommend):
+    def fill_recommend_product(self, recommend):
         """日荐页中中部商品填充"""
         reid = recommend.REid
-        product_lsit = self.sproduct.get_product_list_by_reid(reid)
-        recommend.products = product_lsit
+        products = self.sproduct.get_product_list_by_reid(reid)
+        for product in products:
+            prkeeperprice = product.PRprice * (1 - Partner().one_level_divide)
+            product.prkeeperprice = ('%.2f' % prkeeperprice)
+            prsavemonty = product.PRprice - prkeeperprice
+            product.prsavemonty = ('%.2f' % prsavemonty)
+            product.PRprice = ('%.2f' % product.PRprice)
+            product.add('prkeeperprice', 'prsavemonty')
+        recommend.products = products
         recommend.add('products')
         return recommend
 

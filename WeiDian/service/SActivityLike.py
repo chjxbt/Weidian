@@ -53,13 +53,3 @@ class SActivityLike(SBase):
             cur_activity.AClikeFakeNum -= 1
         self.session.add(cur_activity)
         self.session.commit()
-
-
-
-
-
-
-
-
-if __name__ == '__main__':
-    print(SActivityLike().get_likenum_by_acid(1))

@@ -1,12 +1,14 @@
 # *- coding:utf8 *-
+import sys
+import os
 from flask import request
-
 from WeiDian.common.token_required import verify_token_decorator, is_admin, is_tourist, is_ordirnaryuser, is_customerservice
 from WeiDian.common.TransformToList import list_add_models
 from WeiDian.common.import_status import import_status
 from WeiDian.common.divide import Partner
 from WeiDian.config.response import TOKEN_ERROR, AUTHORITY_ERROR, PARAMS_MISS, SYSTEM_ERROR
 from WeiDian.control.BaseControl import BaseProductControl
+sys.path.append(os.path.dirname(os.getcwd()))
 
 
 class CProduct(BaseProductControl):

@@ -1,12 +1,10 @@
 # *- coding:utf8 *-
 import sys
 import os
-
 from WeiDian.common.divide import Partner
-
-sys.path.append(os.path.dirname(os.getcwd()))
 from SBase import SBase, close_session
 from WeiDian.models.model import ProductSkuKey
+sys.path.append(os.path.dirname(os.getcwd()))
 
 
 class SProductSkuKey(SBase):

@@ -1,10 +1,9 @@
 # *- coding:utf8 *-
 import sys
 import os
-
-sys.path.append(os.path.dirname(os.getcwd()))
 from SBase import SBase, close_session
 from WeiDian.models.model import ActivityComment, User
+sys.path.append(os.path.dirname(os.getcwd()))
 
 
 class SActivityComment(SBase):
@@ -35,9 +34,7 @@ class SActivityComment(SBase):
     @close_session
     def delete_comment_by_acoid(self, acoid):
         """删除单条评论"""
-        cur_comment = self.session.query(ActivityComment).filter_by(ACOid=acoid)
-        cur_comment.ACisdelete = True
-        self.session.add(cur_comment)
+        return self.session.query(ActivityComment).filter_by(ACOid=acoid).update({ActivityComment.ACisdelete: True})
 
     @close_session
     def add_comment(self, comment):

@@ -1,6 +1,9 @@
 # *- coding:utf8 *-
+import sys
+import os
 from flask import json
 from werkzeug.exceptions import HTTPException
+sys.path.append(os.path.dirname(os.getcwd()))
 
 
 class BaseError(HTTPException):

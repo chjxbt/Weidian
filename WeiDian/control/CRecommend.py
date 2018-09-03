@@ -13,6 +13,7 @@ from WeiDian.control.BaseControl import BaseProductControl
 from WeiDian.service.SProduct import SProduct
 from WeiDian.service.SSuperUser import SSuperUser
 from WeiDian.service.SRecommend import SRecommend
+from WeiDian.service.SRecommendLike import SRecommendLike
 sys.path.append(os.path.dirname(os.getcwd()))
 
 
@@ -22,24 +23,22 @@ class CRecommend(BaseProductControl):
         self.srecommend = SRecommend()
         self.sproduct = SProduct()
         self.ssuperuser = SSuperUser()
+        self.srecommendlike = SRecommendLike()
 
     @verify_token_decorator
-    def get_list(self):
-        args = request.args.to_dict()
+    def get_one(self):
+        # args = request.args.to_dict()
         if not is_partner():
             return AUTHORITY_ERROR
         print '是合伙人'
-        recommend = self.srecommend.get_recommend_list()
-        lasting = args.get('lasting', 'true')  # 是否正在展示
-        if lasting == 'true':
-            now_time = datetime.strftime(datetime.now(), format_for_db)
-            recommend = filter(lambda re: re.REstarttime <
-                               now_time < re.REendtime, recommend)
-        map(self.fill_product, recommend)
-        map(self.fill_recommend_nums, recommend)
-        map(self.fill_super, recommend)
+        recommend = self.srecommend.get_one_recommend()
+        self.srecommend.update_view_num(recommend.REid)
+        recommend_list = [recommend]
+        map(self.fill_recommend_product, recommend_list)
+        map(self.fill_recommend_nums, recommend_list)
+        map(self.fill_super, recommend_list)
         data = import_status('get_recommend_success', 'OK')
-        data['data'] = recommend
+        data['data'] = recommend_list
         return data
 
     @verify_token_decorator

@@ -37,7 +37,8 @@ class SSearchField(SBase):
                 searchfield.SFsort = kwargs['sfsort']
             self.session.add(searchfield)
             return True
-
+# TODO 更新搜索
+    
     @close_session
     def del_searchfield(self, sfid):
         return self.session.query(SearchField).filter(SearchField.SFid == sfid).delete()

@@ -1,15 +1,13 @@
 # *- coding:utf8 *-
 import sys
 import os
-
+import uuid
+from flask import request
 from WeiDian.common.token_required import verify_token_decorator, is_admin
 from WeiDian.common.TransformToList import add_model
 from WeiDian.common.import_status import import_status
 from WeiDian.config.response import PARAMS_MISS, AUTHORITY_ERROR, TOKEN_ERROR, SYSTEM_ERROR
-
 sys.path.append(os.path.dirname(os.getcwd()))
-from flask import request
-import uuid
 
 
 class CTopNav():

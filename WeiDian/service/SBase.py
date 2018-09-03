@@ -1,11 +1,11 @@
 # *- coding:utf8 *-
 import sys
 import os
-sys.path.append(os.path.dirname(os.getcwd()))
 import DBSession
 from WeiDian.common.weidian_error import dberror
 import WeiDian.models.model as models
 from WeiDian.models.base_model import BaseModel
+sys.path.append(os.path.dirname(os.getcwd()))
 
 
 def close_session(fn):

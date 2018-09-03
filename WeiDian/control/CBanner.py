@@ -12,7 +12,6 @@ from WeiDian.common.timeformat import format_for_db
 sys.path.append(os.path.dirname(os.getcwd()))
 
 
-
 class CBanner():
     def __init__(self):
         from WeiDian.service.SBanner import SBnner

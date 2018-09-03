@@ -1,6 +1,5 @@
 # *- coding:utf8 *-
 
-
 def get_model_return_list(model_list):
     """
     从数据库中获取到的list(列表)中每一个是一个数据库查询结果对象，
