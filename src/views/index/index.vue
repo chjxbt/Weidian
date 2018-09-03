@@ -1,6 +1,6 @@
 <template>
-    <div class="m-index">
-      <div class="m-suspend-btn" @click.stop="showModal('show_task')">
+    <div class="m-index" @touchstart="touchStart" @touchend="touchEnd">
+      <div class="m-suspend-btn" v-if="show_task_btn" @click.stop="showModal('show_task')">
         <span>开始转发</span>
       </div>
       <mt-loadmore :top-method="loadTop"  ref="loadmore">
@@ -136,6 +136,7 @@
               show_modal: false,
               show_task:false,
               show_fixed:false,
+              show_task_btn:true,
               swipe_items: [{
                 title: '你的名字',
                 href: 'http://google.com',   url: 'http://www.baidu.com/img/bd_logo1.png'
@@ -188,6 +189,15 @@
 
       },
         methods: {
+        /*手指滑动显示隐藏*/
+
+          touchStart(){
+            this.show_task_btn = false;
+          },
+          touchEnd(){
+            this.show_task_btn = true;
+          },
+        /*分享*/
           wxRegCallback () {
             this.wxShare()
           },
