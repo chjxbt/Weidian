@@ -29,7 +29,7 @@
               <div class="m-lookinfo-box">
                 <span class="m-look-icon"></span>
                 <span>{{item.acbrowsenum}}</span>
-                <span class="m-smile-icon" :class="item.alreadylike?'active':''" @click="likeThis(item, index)"></span>
+                <span class="m-good-icon" :class="item.alreadylike?'active':''" @click="likeThis(item, index)"></span>
                 <span>{{item.likenum}}</span>
               </div>
             </div>
@@ -40,8 +40,11 @@
           <div class="m-comment-box">
             <div class="m-comment-content">
               <span class="m-comment-s"></span>
-              <p><span class="m-comment-name">A玲珑服饰有限责任公司</span> : 感谢平台31个省市去均有店铺的
-                库存</p>
+              <p><span class="m-comment-name">A玲珑服饰有限责任公司</span> : 感谢平台31个省市去均有店铺的库存</p>
+              <div v-if="show_input" class="new-comment-box">
+                <input type="text" class="new-comment-input" v-model="comment"/>
+                <div class="new-comment-done" :class="comment!=''?'active':''" @click="commentDone">发送</div>
+              </div>
             </div>
           </div>
         </div>
@@ -74,8 +77,9 @@
           }
         ],
         show_fixed: false,
-        show_modal: false,
-        activity_list: []
+        show_input: false,
+        activity_list: [],
+        comment: ""
       }
     },
     props:{
@@ -89,7 +93,7 @@
           params: { start: 0, count: 15, tnid: this.tnid }}).then(res => {
           if(res.data.status == 200){
             this.activity_list = res.data.data;
-            console.log(this.activity_list);
+            // console.log(this.activity_list);
 
             // 判断今天、昨天和直接显示日期
             let now = new Date();
@@ -137,6 +141,8 @@
 
               // 展开全文、显示全文
               this.activity_list[i].actext.length > 90 && (this.activity_list[i].show_text = true);
+
+              // console.log(this.activity_list[i].alreadylike, this.activity_list[i].likenum);
             }
           }else{
             Toast({ message: res.data.message, className: 'm-toast-fail' });
@@ -165,13 +171,16 @@
       },
       /*每个活动icon点击*/
       iconClick(v){
-        console.log(v)
         switch (v){
           case 0:
             this.show_fixed = true;
             break;
           case 1:
-            // this.show_modal = true;
+            if(this.show_input) {
+              this.show_input = false;
+            }else if(!this.show_input) {
+              this.show_input = true;
+            }
             break;
         }
       },
@@ -186,7 +195,7 @@
             acid: item.acid
           }).then(res => {
             if(res.data.status == 200){
-              this.activity_list[index].relikenum -= 1;
+              this.activity_list[index].likenum -= 1;
               this.activity_list[index].alreadylike = false;
               Toast({ message: res.data.message, className: 'm-toast-warning' });
             }else{
@@ -198,7 +207,7 @@
             acid: item.acid
           }).then(res => {
             if(res.data.status == 200){
-              this.activity_list[index].relikenum += 1;
+              this.activity_list[index].likenum += 1;
               this.activity_list[index].alreadylike = true;
               Toast({ message: res.data.message, className: 'm-toast-success' });
             }else{
@@ -207,6 +216,10 @@
           })
         }
       },
+      // 添加评论
+      commentDone() {
+        console.log(this.comment);
+      }
     },
     mounted() {
       this.getActivity();

@@ -338,6 +338,7 @@
               display: inline-block;
               width: 25px;
               height: 34px;
+              margin-top: -10px;
               background: url("/static/images/icon-look.png")no-repeat center;
               background-size: 100%;
               vertical-align:middle;
@@ -348,6 +349,7 @@
               height: 34px;
               background: url("/static/images/icon-smile.png")no-repeat center;
               background-size: 100%;
+              margin-top: -10px;
               margin-left: 20px;
               vertical-align:middle;
               &.active{
@@ -361,10 +363,11 @@
               height: 34px;
               background: url("/static/images/icon-good.png")no-repeat center;
               background-size: 100%;
+              margin-top: -10px;
               margin-left: 20px;
               vertical-align:middle;
               &.active{
-                background: url("/static/images/icon-smile-active.png")no-repeat center;
+                background: url("/static/images/icon-good-active.png")no-repeat center;
                 background-size: 100%;
               }
             }
@@ -401,6 +404,26 @@
             width: 90%;
             span.m-comment-name{
               color: #7499d7;
+            }
+          }
+        }
+        .new-comment-box {
+          display: flex;
+          .new-comment-input {
+            width: 80%;
+            height: auto;
+            margin: 0 15px;
+            border-radius: 5px;
+            border: 2px solid @grey;
+          }
+          .new-comment-done {
+            font-size: 26px;
+            padding: 5px 15px;
+            border-radius: 10px;
+            border: 2px solid @grey;
+            &.active{
+              color: @bgMainColor;
+              background-color: @mainColor;
             }
           }
         }
