@@ -35,20 +35,19 @@
             </template>
           </div>
       </mt-loadmore>
-      <div class="m-modal" v-if="show_modal">
+      <div class="m-modal m-copy-text" v-if="show_modal">
         <div class="m-modal-state">
           <div class="m-modal-head">
             <span class="m-close" @click="closeModal('show_modal')"> x </span>
           </div>
           <div class="m-modal-content">
-            <h3>文案、图片已保存成功</h3>
-            <p>图片已保存完成，复制文案即可
-              一键发圈。
+            <h3>链接已经复制成功</h3>
+            <p>您可以去分享给好友啦！
             </p>
           </div>
-          <div class="m-modal-foot">
-            <span class="m-modal-foot-btn">复制文案</span>
-          </div>
+          <!--<div class="m-modal-foot">-->
+            <!--<span class="m-modal-foot-btn">复制文案</span>-->
+          <!--</div>-->
         </div>
       </div>
       <div class="m-modal" v-if="show_task">
@@ -193,10 +192,11 @@
             this.wxShare()
           },
           wxShare (v) {
+            const url = window.location.href;
             let opstion = {
-              title: '胡小呆&曹小萌的情侣博客', // 分享标题
-              link: 'http://www.jzdlink.com',      // 分享链接
-              imgUrl: 'http://www.jzdlink.com/wordpress/wp-content/themes/wordpress_thems/images/lib/logo.png',// 分享图标
+              title: '微点', // 分享标题
+              link: url,      // 分享链接
+              // imgUrl: 'http://www.jzdlink.com/wordpress/wp-content/themes/wordpress_thems/images/lib/logo.png',// 分享图标
               success: function () {
                 alert('分享成功')
               },
@@ -212,7 +212,6 @@
               case 'line':
                 wxapi.ShareAppMessage(opstion)
             }
-
           },
           share(v){
             this.wxShare(v);
@@ -334,8 +333,8 @@
                 this.changeLike(this.activity_list[list].acid);
                 break;
               case 1:
+                this.download('121312312')
 
-                this.show_modal = true;
                 break;
               case 2:
                 this.show_fixed = true;
@@ -343,7 +342,11 @@
             }
           },
           download(url){
+            this.$copyText(url).then(function (e) {
+              this.show_modal = true;
+            }, function (e) {
 
+            })
 
           },
           showMoreText(bool,v){
@@ -428,6 +431,13 @@
 }
 .m-index{
   .m-modal{
+    &.m-copy-text{
+      .m-modal-state{
+        /*height: auto;*/
+        width: 620px;
+        height: 250px;
+      }
+    }
     .m-modal-state{
       /*height: auto;*/
       width: 620px;
