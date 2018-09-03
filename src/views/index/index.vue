@@ -190,9 +190,9 @@
       },
         methods: {
           wxRegCallback () {
-            this.wxShareTimeline()
+            this.wxShare()
           },
-          wxShareTimeline () {
+          wxShare (v) {
             let opstion = {
               title: '胡小呆&曹小萌的情侣博客', // 分享标题
               link: 'http://www.jzdlink.com',      // 分享链接
@@ -205,12 +205,17 @@
               }
             }
             // 将配置注入通用方法
-            wxapi.ShareTimeline(opstion)
-          },
-          share(){
-            console.log('12222')
+            switch (v){
+              case 'appmessage':
+                wxapi.ShareTimeline(opstion);
+                break;
+              case 'line':
+                wxapi.ShareAppMessage(opstion)
+            }
 
-            this.wxShareTimeline();
+          },
+          share(v){
+            this.wxShare(v);
           },
           /*获取导航*/
           getTopnav(){

@@ -11,13 +11,8 @@ export const constantRouterMap = [
   {
     path: '/',
     component: Layout,
-    redirect: 'index',
-    children: [{
-      path: 'index',
-      component: () => import('../views/index/index'),
-      name: 'index',
-      meta: { title: 'index', icon: 'index', noCache: true }
-    }
+    redirect: 'login',
+    children: [{ path: '/login', component: () => import('../views/login/login'), hidden: true }
     ],
   },
   {
