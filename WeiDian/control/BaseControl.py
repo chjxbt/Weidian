@@ -81,11 +81,11 @@ class BaseActivityControl():
             usid = comment.USid
             user = self.suser.get_user_by_user_id(usid)
             comment.user = user
-        act.comment = comment
+            comment.add('user').hide('USid')
+        act.comment = comments
         act.add('comment')
         map(self.fill_comment_apply_for, act.comment)
         return act
-    # TODO 修改未完成
 
     def fill_comment_apply_for(self, comment):
         """"如果既是评论又是回复则添加一个'所回复用户'属性"""
