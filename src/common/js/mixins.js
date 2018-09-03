@@ -31,6 +31,7 @@ const wxApi = {
   },
   wxRegister (callback) {
     // let data = {params: {reqUrl: window.location.href}}
+
     axios.get('https://daaiti.cn/user/get_wx_config').then((res) => {
       if(res.data.status == 200)
         wx.config({
@@ -42,19 +43,46 @@ const wxApi = {
           jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage']
         });
     }).catch((error) => {
-      console.log(error)
+      console.log(error ,'1111')
     })
     wx.ready((res) => {
       // 如果需要定制ready回调方法
-      wxApi.ShareTimeline();
+      wx.onMenuShareTimeline({
+        title: '1111', // 分享标题
+        link: 'http://www.jzdlink.com',      // 分享链接
+        imgUrl: 'http://www.jzdlink.com/wordpress/wp-content/themes/wordpress_thems/images/lib/logo.png',// 分享图标
+        success () {
+          // 用户成功分享后执行的回调函数
 
-      if (callback) {
-        callback()
-      }
+        },
+        cancel () {
+          // 用户取消分享后执行的回调函数
+
+
+        },error(){
+          console.log('1112')
+        }
+      });
+      wx.onMenuShareAppMessage({
+        title: '1111', // 分享标题
+        link: 'http://www.jzdlink.com',      // 分享链接
+        imgUrl: 'http://www.jzdlink.com/wordpress/wp-content/themes/wordpress_thems/images/lib/logo.png',// 分享图标
+        success () {
+          // 用户成功分享后执行的回调函数
+
+        },
+        cancel () {
+          // 用户取消分享后执行的回调函数
+
+
+        },error(){
+          console.log('1112')
+        }
+      })
+
     })
   },
   ShareTimeline (opstion) {
-    console.log(opstion)
     wx.onMenuShareTimeline({
       title: opstion.title || '1111', // 分享标题
       link: opstion.link || '', // 分享链接
@@ -71,6 +99,25 @@ const wxApi = {
         console.log('1112')
       }
     })
+  },
+  ShareAppMessage (opstion) {
+    wx.onMenuShareAppMessage({
+      title: opstion.title || '1111', // 分享标题
+      link: opstion.link || '', // 分享链接
+      imgUrl: opstion.imgUrl || '', // 分享图标
+      success () {
+        // 用户成功分享后执行的回调函数
+        opstion.success()
+      },
+      cancel () {
+        // 用户取消分享后执行的回调函数
+
+        opstion.error()
+      },error(){
+        console.log('1112')
+      }
+    })
   }
+
 }
 export default wxApi

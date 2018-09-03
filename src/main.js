@@ -11,7 +11,10 @@ Vue.config.productionTip = false
 import Mint from 'mint-ui';
 Vue.use(Mint);
 import 'mint-ui/lib/style.css'
+import VueClipboard from 'vue-clipboard2'
 
+VueClipboard.config.autoSetContainer = true // add this line
+Vue.use(VueClipboard)
 
 //处理移动端click事件300毫秒延迟。
 import FastClick from 'fastclick'
@@ -26,32 +29,32 @@ Vue.prototype.$http = axios;
 // 超时时间
 axios.defaults.timeout = 60000
 // http请求拦截器
-var loadinginstace
-axios.interceptors.request.use(config => {
-  // element ui Loading方法
-  // loadinginstace = Loading.service({ fullscreen: true });
-  // console.log(loadinginstace)
-  return config
-}, error => {
-  // Message({
-  //   message:'加载超时',
-  //   type:'warning'
-  // });
-  // loadinginstace.close()
-  return Promise.reject(error)
-})
-// http响应拦截器
-axios.interceptors.response.use(data => {// 响应成功关闭loading
-  // loadinginstace.close()
-  return data
-}, error => {
-  // Message({
-  //   message:'请求失败',
-  //   type:'warning'
-  // });
-  // loadinginstace.close()
-  return Promise.reject(error)
-})
+// var loadinginstace
+// axios.interceptors.request.use(config => {
+//   // element ui Loading方法
+//   // loadinginstace = Loading.service({ fullscreen: true });
+//   // console.log(loadinginstace)
+//   return config
+// }, error => {
+//   // Message({
+//   //   message:'加载超时',
+//   //   type:'warning'
+//   // });
+//   // loadinginstace.close()
+//   return Promise.reject(error)
+// })
+// // http响应拦截器
+// axios.interceptors.response.use(data => {// 响应成功关闭loading
+//   // loadinginstace.close()
+//   return data
+// }, error => {
+//   // Message({
+//   //   message:'请求失败',
+//   //   type:'warning'
+//   // });
+//   // loadinginstace.close()
+//   return Promise.reject(error)
+// })
 
 //引入微信
 import 'weixin-js-sdk';

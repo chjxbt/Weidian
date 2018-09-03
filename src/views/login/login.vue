@@ -2,7 +2,7 @@
     <div class="m-login">
       <img src="" class="m-login-logo" alt="">
       <div class="m-login-btn">
-        <span>微信登录</span></div>
+        <span @click="login">微信登录</span></div>
       <div class="m-login-bottom">
         <span class="m-login-check-box">
           <span class="m-login-check"></span>
@@ -15,6 +15,8 @@
 </template>
 
 <script type="text/ecmascript-6">
+  import axios from 'axios';
+  import common from '../../common/js/common'
     export default {
         data() {
             return {
@@ -22,7 +24,37 @@
             }
         },
         components: {},
-        methods: {},
+        methods: {
+          isWeiXin() {
+            let ua = window.navigator.userAgent.toLowerCase();
+            console.log(ua);//mozilla/5.0 (iphone; cpu iphone os 9_1 like mac os x) applewebkit/601.1.46 (khtml, like gecko)version/9.0 mobile/13b143 safari/601.1
+            if (ua.match(/MicroMessenger/i) == 'micromessenger') {
+              return true;
+            } else {
+              return false;
+            }
+
+          },
+          login() {
+            const id = 'wxe8e8f6b9351d3587'
+            const url = window.location.href;
+            // const  url = 'http://10.0.0.35:8080/#/login';
+
+            window.location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid='
+            +  id + '&redirect_uri='+ encodeURIComponent(url) + '&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect'
+
+          }
+        },
+      mounted(){
+        if(this.isWeiXin()){    //是来自微信内置浏览器
+          // 获取微信信息，如果之前没有使用微信登陆过，将进行授权登录
+
+          if(common.GetQueryString('code')){
+            window.localStorage.setItem("code",common.GetQueryString('code'));
+            this.$router.push('/index');
+          }
+        }
+      },
         created() {
 
         }

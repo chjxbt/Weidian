@@ -83,7 +83,6 @@
             let h=Math.floor(t/1000/60/60%24);
             let m=Math.floor(t/1000/60%60);
             let arr = [].concat(this.list.remaintime);
-            // console.log(d,h,m)
             arr[0] = d;
             arr[1] = h;
             arr[2] = m;

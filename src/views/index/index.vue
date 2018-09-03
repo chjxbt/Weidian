@@ -1,6 +1,6 @@
 <template>
-    <div class="m-index">
-      <div class="m-suspend-btn" @click.stop="showModal('show_task')">
+    <div class="m-index" @touchstart="touchStart" @touchend="touchEnd">
+      <div class="m-suspend-btn " :class="show_task_btn ? '':'active'" @click.stop="showModal('show_task')">
         <span>开始转发</span>
       </div>
       <mt-loadmore :top-method="loadTop"  ref="loadmore">
@@ -35,20 +35,19 @@
             </template>
           </div>
       </mt-loadmore>
-      <div class="m-modal" v-if="show_modal">
+      <div class="m-modal m-copy-text" v-if="show_modal">
         <div class="m-modal-state">
           <div class="m-modal-head">
             <span class="m-close" @click="closeModal('show_modal')"> x </span>
           </div>
           <div class="m-modal-content">
-            <h3>文案、图片已保存成功</h3>
-            <p>图片已保存完成，复制文案即可
-              一键发圈。
+            <h3>链接已经复制成功</h3>
+            <p>您可以去分享给好友啦！
             </p>
           </div>
-          <div class="m-modal-foot">
-            <span class="m-modal-foot-btn">复制文案</span>
-          </div>
+          <!--<div class="m-modal-foot">-->
+            <!--<span class="m-modal-foot-btn">复制文案</span>-->
+          <!--</div>-->
         </div>
       </div>
       <div class="m-modal" v-if="show_task">
@@ -137,6 +136,7 @@
               show_modal: false,
               show_task:false,
               show_fixed:false,
+              show_task_btn:true,
               swipe_items: [{
                 title: '你的名字',
                 href: 'http://google.com',   url: 'http://www.baidu.com/img/bd_logo1.png'
@@ -189,14 +189,24 @@
 
       },
         methods: {
-          wxRegCallback () {
-            this.wxShareTimeline()
+        /*手指滑动显示隐藏*/
+
+          touchStart(){
+            this.show_task_btn = false;
           },
-          wxShareTimeline () {
+          touchEnd(){
+            this.show_task_btn = true;
+          },
+        /*分享*/
+          wxRegCallback () {
+            this.wxShare()
+          },
+          wxShare (v) {
+            const url = window.location.href;
             let opstion = {
-              title: '胡小呆&曹小萌的情侣博客', // 分享标题
-              link: 'http://www.jzdlink.com',      // 分享链接
-              imgUrl: 'http://www.jzdlink.com/wordpress/wp-content/themes/wordpress_thems/images/lib/logo.png',// 分享图标
+              title: '微点', // 分享标题
+              link: url,      // 分享链接
+              // imgUrl: 'http://www.jzdlink.com/wordpress/wp-content/themes/wordpress_thems/images/lib/logo.png',// 分享图标
               success: function () {
                 alert('分享成功')
               },
@@ -205,12 +215,16 @@
               }
             }
             // 将配置注入通用方法
-            wxapi.ShareTimeline(opstion)
+            switch (v){
+              case 'appmessage':
+                wxapi.ShareTimeline(opstion);
+                break;
+              case 'line':
+                wxapi.ShareAppMessage(opstion)
+            }
           },
-          share(){
-            console.log('12222')
-
-            this.wxShareTimeline();
+          share(v){
+            this.wxShare(v);
           },
           /*获取导航*/
           getTopnav(){
@@ -329,8 +343,8 @@
                 this.changeLike(this.activity_list[list].acid);
                 break;
               case 1:
+                this.download('121312312')
 
-                this.show_modal = true;
                 break;
               case 2:
                 this.show_fixed = true;
@@ -338,7 +352,11 @@
             }
           },
           download(url){
+            this.$copyText(url).then(function (e) {
+              this.show_modal = true;
+            }, function (e) {
 
+            })
 
           },
           showMoreText(bool,v){
@@ -420,9 +438,20 @@
   align-items: center;
   justify-content: center;
   font-size: 24px;
+  transition: right 0.5s;
+  &.active{
+    right: -113px;
+  }
 }
 .m-index{
   .m-modal{
+    &.m-copy-text{
+      .m-modal-state{
+        /*height: auto;*/
+        width: 620px;
+        height: 250px;
+      }
+    }
     .m-modal-state{
       /*height: auto;*/
       width: 620px;
