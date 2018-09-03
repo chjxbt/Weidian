@@ -69,6 +69,17 @@
         },
         showMoreText(v){
           this.$emit('showMoreText',v,this.index)
+        },
+        getDJS(){
+          let EndTime= new Date(2016,11,31,23,59,59);//初始化结束日期2016年12月31日23点59分59秒
+          let NowTime = new Date();
+          let t =EndTime.getTime() - NowTime.getTime();
+          if(t>0){
+            let d=Math.floor(t/1000/60/60/24);
+            let h=Math.floor(t/1000/60/60%24);
+            let m=Math.floor(t/1000/60%60);
+
+          }
         }
       }
     }
