@@ -40,7 +40,7 @@ class CUser():
         }
         return data
 
-    def get_openid(self):
+    def get_accesstoken(self):
         args = request.args.to_dict()
         logging.info("args", args)
         true_params = ["code"]
@@ -49,7 +49,7 @@ class CUser():
                 return PARAMS_MISS
 
         from WeiDian.config.setting import APP_ID, APP_SECRET_KEY
-        request_url = "https://api.weixin.qq.com/sns/jscode2session?appid={0}&secret={1}&js_code={2}&grant_type={3}" \
+        request_url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid={0}&secret={1}&code={2}&grant_type=authorization_code" \
             .format(APP_ID, APP_SECRET_KEY, args["code"], "authorization_code")
         strResult = None
         try:
@@ -63,11 +63,37 @@ class CUser():
             print(e)
             return NETWORK_ERROR
         import json
+
         jsonResult = json.loads(strResult)
-        if "openid" not in strResult or "session_key" not in strResult:
+        print("!!!get result = ", jsonResult)
+        if "access_token" not in strResult or "session_key" not in strResult:
             return jsonResult
-        openid = jsonResult["openid"]
+        openid = jsonResult["access_token"]
         response = import_status("SUCCESS_GET_OPENID", "OK")
         response["data"] = {}
-        response["data"]["openid"] = openid
+        response["data"]["access_token"] = openid
+        return response
+
+    def get_wx_config(self):
+        from WeiDian.config.setting import APP_ID, APP_SECRET_KEY
+        import random
+        import string
+        import time
+        import hashlib
+        noncestr = ''.join(random.sample(string.ascii_letters + string.digits, 8))
+        data = {
+            "appid": APP_ID,
+            'timestamp': int(time.time()),
+            "nonceStr": noncestr,
+            "secret": APP_SECRET_KEY
+        }
+        try:
+            response_str = "&".join([str(k)+'='+str(v) for k, v in data.items()])
+            signature = hashlib.sha1(response_str).hexdigest()
+            data['signature'] = signature
+        except Exception, e:
+            logging.error(e)
+            return SYSTEM_ERROR
+        response = import_status("SUCCESS_GET_CONFIG", "OK")
+        response['data'] = data
         return response

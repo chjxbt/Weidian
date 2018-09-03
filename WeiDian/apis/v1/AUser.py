@@ -15,7 +15,15 @@ class AUser(Resource):
         print user
         apis = {
             'login': 'self.cuser.login()',
-            'get_openid': 'self.cuser.get_openid()'
+        }
+        res = eval(apis[user])
+        return jsonify(res)
+
+    def get(self, user):
+        print user
+        apis = {
+            'get_accesstoken': 'self.cuser.get_accesstoken()',
+            'get_wx_config': 'self.cuser.get_wx_config()'
         }
         res = eval(apis[user])
         return jsonify(res)
