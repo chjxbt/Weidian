@@ -4,6 +4,8 @@
       <span class="m-filtrate" :class="index == filtrateActivity?'active':''" @click="changefiltrateActivity(item, index)">{{item.tnname}}</span>
     </span>
     <div class="m-discover-fodder-content">
+      <!-- 放大图片 -->
+      <big-img v-if="showImg" @clickit="viewImg" :imgSrc="imgSrc"></big-img>
       <div class="m-section-one" v-for="(item, index) in activity_list">
         <img :src="item.suuser.suheader" class="m-section-img"/>
         <div class="m-section-content">
@@ -18,7 +20,7 @@
             <ul class="m-img-list" id="m-img-list">
               <li>
                 <template v-for="img in item.media">
-                  <img :src="img.amimage" class="m-section-text-img">
+                  <img :src="img.amimage" class="m-section-text-img" @click="clickImg($event)">
                 </template>
               </li>
             </ul>
@@ -40,6 +42,7 @@
 
 <script type="text/ecmascript-6">
   import iconList from '../../../components/common/iconList';
+  import bigImg from '../../../components/common/bigImg';
   import share from '../../../components/common/share';
   import api from '../../../api/api';
   import axios from 'axios';
@@ -56,15 +59,26 @@
             }
           ],
           filtrateActivity: 0,
-          activity_list:[]
+          activity_list:[],
+          showImg:false,
+          imgSrc: ''
         }
       },
       props: {
         tnid: { type: String, default: null },
         sub: { type: Array }
       },
-      components: { 'icon-list':iconList, share },
+      components: { iconList, share, bigImg },
       methods: {
+        clickImg(e) {
+          // 获取当前图片地址
+          this.imgSrc = e.path[0].currentSrc;
+          console.log(e.path[0].currentSrc);
+          this.showImg = true;
+        },
+        viewImg(){
+          this.showImg = false;
+        },
         // 转发按钮list
         iconClick(){
             this.show_fixed = true;
@@ -80,7 +94,7 @@
             if(res.data.status == 200){
               this.activity_list = res.data.data;
 
-              console.log(this.activity_list);
+              // console.log(this.activity_list);
 
               // 判断今天、昨天和直接显示日期
               let now = new Date();
