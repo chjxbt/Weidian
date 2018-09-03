@@ -16,14 +16,9 @@
           <span class="m-section-more" v-if="item.show_text" @click="showMore(false, index)">展开全文</span>
           <span class="m-section-more" v-if="item.actext.length > 86 && !item.show_text" @click="showMore(true, index)">收起全文</span>
 
-          <ul class="m-img-list" id="m-img-list">
-            <li>
-              <template v-for="img in item.media">
-                <img :src="img.amimage" class="m-section-text-img">
-              </template>
-            </li>
-          </ul>
-
+          <div class="m-img-list">
+            <img class="m-section-text-img" :src="item.media[0].amimage">
+          </div>
           <div class="m-section-bottom">
             <div>
               <div class="m-lookinfo-box">
@@ -40,10 +35,12 @@
           <div class="m-comment-box">
             <div class="m-comment-content">
               <span class="m-comment-s"></span>
-              <p><span class="m-comment-name">A玲珑服饰有限责任公司</span> : 感谢平台31个省市去均有店铺的库存</p>
+              <p v-for="comment in item.comment">
+                <span class="m-comment-name">{{comment.actext}}</span>: {{comment.actext}}
+              </p>
               <div v-if="show_input" class="new-comment-box">
                 <input type="text" class="new-comment-input" v-model="comment"/>
-                <div class="new-comment-done" :class="comment!=''?'active':''" @click="commentDone">发送</div>
+                <div class="new-comment-done" :class="comment!=''?'active':''" @click="commentDone(item, index)">发送</div>
               </div>
             </div>
           </div>
@@ -79,7 +76,7 @@
         show_fixed: false,
         show_input: false,
         activity_list: [],
-        comment: ""
+        comment: "",
       }
     },
     props:{
@@ -142,7 +139,7 @@
               // 展开全文、显示全文
               this.activity_list[i].actext.length > 90 && (this.activity_list[i].show_text = true);
 
-              // console.log(this.activity_list[i].alreadylike, this.activity_list[i].likenum);
+              console.log(this.activity_list[i].comment);
             }
           }else{
             Toast({ message: res.data.message, className: 'm-toast-fail' });
@@ -179,6 +176,7 @@
             if(this.show_input) {
               this.show_input = false;
             }else if(!this.show_input) {
+              this.comment = "";
               this.show_input = true;
             }
             break;
@@ -217,8 +215,18 @@
         }
       },
       // 添加评论
-      commentDone() {
-        console.log(this.comment);
+      commentDone(item, index) {
+        axios.post(api.add_comment + '?token=' +  localStorage.getItem('token'), {
+          acid: item.acid, ACtext: this.comment
+        }).then(res => {
+          if(res.data.status == 200){
+            this.show_input = false;
+            this.activity_list[index].comment.splice(0, 0, {usname: "我", actext: this.comment});
+            Toast({ message: "评论成功", className: 'm-toast-success' });
+          }else{
+            Toast({ message: "评论失败", className: 'm-toast-fail' });
+          }
+        })
       }
     },
     mounted() {
