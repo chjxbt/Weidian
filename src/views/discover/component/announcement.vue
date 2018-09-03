@@ -138,8 +138,6 @@
 
               // 展开全文、显示全文
               this.activity_list[i].actext.length > 90 && (this.activity_list[i].show_text = true);
-
-              console.log(this.activity_list[i].comment);
             }
           }else{
             Toast({ message: res.data.message, className: 'm-toast-fail' });
