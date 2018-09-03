@@ -38,7 +38,7 @@
         }
       },
       mounted() {
-          console.log(this.num)
+          // console.log(this.num)
       }
     }
 </script>

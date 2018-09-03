@@ -36,7 +36,6 @@
     </div>
     <share v-if="show_fixed" :num="2" @fixedClick="fixedClick"></share>
   </div>
-
 </template>
 
 <script type="text/ecmascript-6">
@@ -81,7 +80,7 @@
             if(res.data.status == 200){
               this.activity_list = res.data.data;
 
-              // console.log(this.activity_list);
+              console.log(this.activity_list);
 
               // 判断今天、昨天和直接显示日期
               let now = new Date();
@@ -106,12 +105,16 @@
                 let createTime1 = createTime.slice(0,4);// 发布年份
                 let createTime2 = createTime.slice(4,8);// 发布日期
                 // 今年发布的
-                if(time1 == createTime1 && time2.slice(0, 2) == createTime2.slice(0, 2)) {
-                  if(Number(time2.slice(2, 4)) == Number(createTime2.slice(2, 4))) {
-                    this.activity_list[i].accreatetime = "今天 " + createTime.slice(8, 10) + ":" + createTime.slice(10, 12);
-                  }else if(Number(time2.slice(2, 4)) == Number(createTime2.slice(2, 4)) + 1) {
-                    this.activity_list[i].accreatetime = "昨天 " + createTime.slice(8, 10) + ":" + createTime.slice(10, 12);
+                if(time1 == createTime1) {
+                  // 今年发布且月份相同
+                  if(time2.slice(0, 2) == createTime2.slice(0, 2)) {
+                    if(Number(time2.slice(2, 4)) == Number(createTime2.slice(2, 4))) {
+                      this.activity_list[i].accreatetime = "今天 " + createTime.slice(8, 10) + ":" + createTime.slice(10, 12);
+                    }else if(Number(time2.slice(2, 4)) == Number(createTime2.slice(2, 4)) + 1) {
+                      this.activity_list[i].accreatetime = "昨天 " + createTime.slice(8, 10) + ":" + createTime.slice(10, 12);
+                    }
                   }else {
+                    // 今年发布的不显示年份
                     let createTime3 = createTime.slice(4, 6) + "-" + createTime.slice(6, 8) + " "
                       + createTime.slice(8, 10) + ":" + createTime.slice(10, 12);
                     this.activity_list[i].accreatetime = createTime3;

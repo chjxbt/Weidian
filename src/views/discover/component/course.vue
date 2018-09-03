@@ -2,16 +2,13 @@
   <div class="m-discover-announcement">
     <div class="m-section-one">
       <div class="m-section-content">
-
         <div class="m-section-title">
           <img class="m-section-img"/>
           <div>
             <span class="m-title">茉莉</span>
             <p class="m-fodder-time">昨天 13:54发布</p>
           </div>
-
         </div>
-
         <div class="m-section-text">
           <p><span class="m-mark">置顶</span>周周奖励发得完吗？不存在！</p>
           <p class="m-ft-30">新鲜出炉的周周奖现已发放，还不快去查收！</p>
@@ -22,7 +19,6 @@
               Your browser does not support the video tag.
             </video>
           </div>
-
           <div class="m-section-bottom">
             <div>
               <div class="m-lookinfo-box">
@@ -36,9 +32,7 @@
               <icon-list :list="icon_list" @iconClick="iconClick"></icon-list>
             </div>
           </div>
-
           <div class="m-comment-box">
-
             <div class="m-comment-content">
               <span class="m-comment-s"></span>
               <p><span class="m-comment-name">A玲珑服饰有限责任公司</span> : 感谢平台31个省市去均有店铺的
@@ -48,13 +42,15 @@
         </div>
       </div>
     </div>
-
   </div>
-
 </template>
 
 <script type="text/ecmascript-6">
   import iconList from'../../../components/common/iconList';
+  import api from '../../../api/api';
+  import axios from 'axios';
+  import { Toast } from 'mint-ui';
+
   export default {
     data() {
       return {
@@ -69,7 +65,8 @@
             name:'评论',
             url:'icon-message'
           }
-        ]
+        ],
+        activity_list: []
       }
     },
     props:{
@@ -77,12 +74,27 @@
     },
     components: { iconList },
     methods: {
+
+      /*获取活动列表*/
+      getActivity(start, count, tnid){
+        axios.get(api.get_all_activity, {
+          params: { start: 0, count: 15, tnid: this.tnid }}).then(res => {
+          if(res.data.status == 200){
+            this.activity_list = res.data.data;
+            console.log(this.activity_list);
+
+          }else{
+            Toast({ message: res.data.message, className: 'm-toast-fail' });
+          }
+        })
+      },
       iconClick(v){
 
       }
     },
     mounted() {
-      console.log(this.tnid);
+      this.getActivity();
+      // console.log(this.tnid);
     }
   }
 </script>
