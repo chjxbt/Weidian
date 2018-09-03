@@ -25,7 +25,7 @@
               <span class="m-price " v-if="list.product != null && list.product.prprice" >{{list.product.prprice}}</span>
               <span class="m-red m-ft-30" v-if="list.product != null && list.product.prsavemonty">赚{{list.product.prsavemonty}}</span>
             </div>
-            <div class="m-red m-ft-22">距活动结束仅剩{{list.remaintime[0] || '0'}}天{{list.remaintime[1] || '0'}}小时{{list.remaintime[2] || '0'}}分钟</div>
+            <div class="m-red m-ft-22">距活动结束仅剩{{list.remaintime[0] || '0'}}天{{list.remaintime[1] || '0'}}小时<span v-if="list.remaintime[0] == 0">{{list.remaintime[2] || '0'}}分钟</span> </div>
           </div>
           <div>
             <icon-list :list="list.icon" :index="index" @iconClick="iconClick"></icon-list>
@@ -61,7 +61,8 @@
         'icon-list':iconList
       },
       mounted(){
-
+        let that = this;
+        window.setInterval(that.getDJS,1000)
       },
       methods:{
         iconClick(v){
@@ -71,14 +72,23 @@
           this.$emit('showMoreText',v,this.index)
         },
         getDJS(){
-          let EndTime= new Date(2016,11,31,23,59,59);//初始化结束日期2016年12月31日23点59分59秒
+
+          let EndTime= new Date(this.list.acendtime.slice(0,4),this.list.acendtime.slice(4,6)-1,this.list.acendtime.slice(6,8),this.list.acendtime.slice(8,10),this.list.acendtime.slice(10,12),this.list.acendtime.slice(12));//初始化结束日期2016年12月31日23点59分59秒
+
           let NowTime = new Date();
           let t =EndTime.getTime() - NowTime.getTime();
+
           if(t>0){
             let d=Math.floor(t/1000/60/60/24);
             let h=Math.floor(t/1000/60/60%24);
             let m=Math.floor(t/1000/60%60);
+            let arr = [].concat(this.list.remaintime);
+            console.log(d,h,m)
+            arr[0] = d;
+            arr[1] = h;
+            arr[2] = m;
 
+            this.list.remaintime = [].concat(arr);
           }
         }
       }

@@ -3,7 +3,7 @@
     <div class="m-fixed-state">
       <h3>转发到</h3>
       <ul class="m-share-list">
-        <li v-if="num == 3">
+        <li v-if="num == 3" @click.stop="share">
           <img src="/static/images/icon-wei.png" class="m-share-icon" alt="">
           转发到微信好友
         </li>
@@ -35,6 +35,9 @@
       methods:{
         fixedClick(){
           this.$emit('fixedClick')
+        },
+        share(){
+          this.$emit('share')
         }
       },
       mounted() {

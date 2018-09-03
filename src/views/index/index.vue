@@ -179,13 +179,14 @@
       mounted(){
           this.getSwipe();
           this.getHot();
-        this.getActivity();
         this.getTopnav();
           let that =this;
         this.interval = window.setInterval(that.animation,3000);
 
+        this.$nextTick(function () {
+          wxapi.wxRegister(this.wxRegCallback)
+        })
 
-        wxapi.wxRegister(this.wxRegCallback)
       },
         methods: {
           wxRegCallback () {
@@ -206,6 +207,11 @@
             // 将配置注入通用方法
             wxapi.ShareTimeline(opstion)
           },
+          share(){
+            console.log('12222')
+
+            this.wxShareTimeline();
+          },
           /*获取导航*/
           getTopnav(){
             axios.get(api.get_home_topnav).then(res => {
@@ -215,6 +221,7 @@
                   this.nav_list[i].click =false;
                 }
                 this.nav_list[0].click =true;
+                this.getActivity(this.nav_list[0].tnid);
               }else{
                 Toast(res.data.message);
               }
@@ -245,12 +252,12 @@
             })
           },
           /*获取活动列表*/
-          getActivity(navid,start,count){
+          getActivity(tnid,start,count){
             axios.get(api.get_all_activity,{params:{
                 lasting:true,
                 start:0,
                 count:15,
-                tnid:'5ed4e908-a6db-11e8-b2ff-0cd292f93404'
+                tnid:'shangxin'
               }}).then(res => {
               if(res.data.status == 200){
                 this.activity_list = res.data.data;
@@ -347,11 +354,7 @@
             }
             this.$refs.loadmore.onTopLoaded();
           },
-          share(){
-            console.log('12222')
 
-            this.wxShareTimeline();
-          }
         }
     }
 </script>

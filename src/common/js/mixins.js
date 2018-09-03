@@ -32,19 +32,21 @@ const wxApi = {
   wxRegister (callback) {
     // let data = {params: {reqUrl: window.location.href}}
     axios.get('https://daaiti.cn/user/get_wx_config').then((res) => {
-      wx.config({
-        debug: false,
-        appId: res.appid,
-        timestamp: res.timestamp,
-        nonceStr: res.nonceStr,
-        signature: res.signature,
-        jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage']
-      });
+      if(res.data.status == 200)
+        wx.config({
+          debug: false,
+          appId: res.data.data.appid,
+          timestamp: res.data.data.timestamp,
+          nonceStr: res.data.data.nonceStr,
+          signature: res.data.data.signature,
+          jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage']
+        });
     }).catch((error) => {
       console.log(error)
     })
     wx.ready((res) => {
       // 如果需要定制ready回调方法
+      wxApi.ShareTimeline();
 
       if (callback) {
         callback()
@@ -53,10 +55,10 @@ const wxApi = {
   },
   ShareTimeline (opstion) {
     console.log(opstion)
-    wx.onMenuShareAppMessage({
-      title: opstion.title, // 分享标题
-      link: opstion.link, // 分享链接
-      imgUrl: opstion.imgUrl, // 分享图标
+    wx.onMenuShareTimeline({
+      title: opstion.title || '1111', // 分享标题
+      link: opstion.link || '', // 分享链接
+      imgUrl: opstion.imgUrl || '', // 分享图标
       success () {
         // 用户成功分享后执行的回调函数
         opstion.success()
