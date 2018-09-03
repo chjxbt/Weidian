@@ -35,7 +35,6 @@
             </template>
           </div>
       </mt-loadmore>
-
       <div class="m-modal" v-if="show_modal">
         <div class="m-modal-state">
           <div class="m-modal-head">
@@ -117,8 +116,7 @@
 
         </div>
       </div>
-
-      <share v-if="show_fixed" @fixedClick="fixedClick"></share>
+      <share v-if="show_fixed" @fixedClick="fixedClick" @share="share"></share>
     </div>
 
 </template>
@@ -131,7 +129,9 @@
   import api from '../../api/api';
   import axios from 'axios';
   import {Toast} from 'mint-ui';
+  import wxapi from '../../common/js/mixins';
     export default {
+      mixins: [wxapi],
         data() {
             return {
               show_modal: false,
@@ -182,9 +182,30 @@
         this.getActivity();
         this.getTopnav();
           let that =this;
-        this.interval = window.setInterval(that.animation,3000)
+        this.interval = window.setInterval(that.animation,3000);
+
+
+        wxapi.wxRegister(this.wxRegCallback)
       },
         methods: {
+          wxRegCallback () {
+            this.wxShareTimeline()
+          },
+          wxShareTimeline () {
+            let opstion = {
+              title: '胡小呆&曹小萌的情侣博客', // 分享标题
+              link: 'http://www.jzdlink.com',      // 分享链接
+              imgUrl: 'http://www.jzdlink.com/wordpress/wp-content/themes/wordpress_thems/images/lib/logo.png',// 分享图标
+              success: function () {
+                alert('分享成功')
+              },
+              error: function () {
+                alert('分享失败')
+              }
+            }
+            // 将配置注入通用方法
+            wxapi.ShareTimeline(opstion)
+          },
           /*获取导航*/
           getTopnav(){
             axios.get(api.get_home_topnav).then(res => {
@@ -301,9 +322,7 @@
                 this.changeLike(this.activity_list[list].acid);
                 break;
               case 1:
-                  for(let i=0;i<this.activity_list[list].media.length;i++){
-                     this.download(this.activity_list[list].media[i].amimage);
-                   }
+
                 this.show_modal = true;
                 break;
               case 2:
@@ -312,13 +331,6 @@
             }
           },
           download(url){
-            let a = document.createElement('a');
-            let event = new MouseEvent('click');
-
-            a.download = name || '下载图片名称';
-            a.href = url;
-            a.dispatchEvent(event);
-            // window.location.href = url
 
 
           },
@@ -334,6 +346,11 @@
               }
             }
             this.$refs.loadmore.onTopLoaded();
+          },
+          share(){
+            console.log('12222')
+
+            this.wxShareTimeline();
           }
         }
     }
