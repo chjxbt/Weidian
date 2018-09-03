@@ -1,6 +1,6 @@
 <template>
     <div class="m-index" @touchstart="touchStart" @touchend="touchEnd">
-      <div class="m-suspend-btn" v-if="show_task_btn" @click.stop="showModal('show_task')">
+      <div class="m-suspend-btn " :class="show_task_btn ? '':'active'" @click.stop="showModal('show_task')">
         <span>开始转发</span>
       </div>
       <mt-loadmore :top-method="loadTop"  ref="loadmore">
@@ -438,6 +438,10 @@
   align-items: center;
   justify-content: center;
   font-size: 24px;
+  transition: right 0.5s;
+  &.active{
+    right: -113px;
+  }
 }
 .m-index{
   .m-modal{
