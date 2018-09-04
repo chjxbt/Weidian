@@ -125,11 +125,9 @@
                 this.activity_list[i].icon[0].alreadylike = this.activity_list[i].alreadylike;
                 this.activity_list[i].actext.length > 92 && (this.activity_list[i].show_text = true);
 
-                if(this.activity_list[i].alreadylike) {
+                /*if(this.activity_list[i].alreadylike) {
                   this.icon_list[0].src = "icon-like-active";
-                }
-
-                console.log(this.activity_list[i].alreadylike);
+                }*/
               }
             }else{
               Toast({ message: res.data.message, className: 'm-toast-fail' });
