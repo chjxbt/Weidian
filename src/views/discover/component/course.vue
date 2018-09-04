@@ -150,9 +150,9 @@
       },
       // 获取评论
       getCommentList() {
-        for(let i = 0; i < this.activity_list.length; i ++) {
+        /*for(let i = 0; i < this.activity_list.length; i ++) {
 
-        }
+        }*/
         axios.post(api.ac_like, { acid: item.acid }).then(res => {
           if(res.data.status == 200){
 
@@ -180,35 +180,28 @@
       },
       // 点赞
       likeThis(item, index) {
-        if(item.alreadylike) {
-          axios.post(api.ac_like + '?token=' +  localStorage.getItem('token'), {
-            acid: item.acid
-          }).then(res => {
-            if(res.data.status == 200){
+        axios.post(api.ac_like + '?token=' + localStorage.getItem('token'), {
+          acid: item.acid
+        }).then(res => {
+          if(res.data.status == 200){
+            if(this.activity_list[index].alreadylike) {
               this.activity_list[index].likenum -= 1;
               this.activity_list[index].alreadylike = false;
               Toast({ message: res.data.message, className: 'm-toast-warning' });
-            }else{
-              Toast({ message: res.data.message, className: 'm-toast-fail' });
-            }
-          })
-        }else if(!item.alreadylike) {
-          axios.post(api.ac_like + '?token=' +  localStorage.getItem('token'), {
-            acid: item.acid
-          }).then(res => {
-            if(res.data.status == 200){
+
+            }else if(!this.activity_list[index].alreadylike) {
               this.activity_list[index].likenum += 1;
               this.activity_list[index].alreadylike = true;
               Toast({ message: res.data.message, className: 'm-toast-success' });
-            }else{
-              Toast({ message: res.data.message, className: 'm-toast-fail' });
             }
-          })
-        }
+          }else{
+            Toast({ message: res.data.message, className: 'm-toast-fail' });
+          }
+        })
       },
       // 添加评论
       commentDone(item, index) {
-        axios.post(api.add_comment + '?token=' +  localStorage.getItem('token'), {
+        axios.post(api.add_comment + '?token=' + localStorage.getItem('token'), {
           acid: item.acid, ACtext: this.comment
         }).then(res => {
           if(res.data.status == 200){

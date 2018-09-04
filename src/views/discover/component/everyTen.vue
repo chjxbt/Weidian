@@ -54,7 +54,7 @@
           icon_list:[
             {
               src:'icon-like',
-              name:'123123',
+              name:'收藏',
               url:'icon-like'
             },
             {
@@ -99,7 +99,7 @@
             }
           })
         },
-        // 获取banner
+        // 获取banner滚动图
         getBanner() {
           let token = localStorage.getItem('token');
           axios.get(api.get_all_recommendbanner + '?token=' + token).then(res => {
@@ -123,7 +123,13 @@
                 this.activity_list[i].icon = this.icon_list;
                 this.activity_list[i].icon[0].name = this.activity_list[i].likenum;
                 this.activity_list[i].icon[0].alreadylike = this.activity_list[i].alreadylike;
-                this.activity_list[i].actext.length > 92 && (this.activity_list[i].show_text = true) ;
+                this.activity_list[i].actext.length > 92 && (this.activity_list[i].show_text = true);
+
+                if(this.activity_list[i].alreadylike) {
+                  this.icon_list[0].src = "icon-like-active";
+                }
+
+                console.log(this.activity_list[i].alreadylike);
               }
             }else{
               Toast({ message: res.data.message, className: 'm-toast-fail' });
@@ -182,7 +188,6 @@
         },
         // 活动点赞
         changeLike(index) {
-
           axios.post(api.ac_like + '?token=' + localStorage.getItem('token'), {
             acid: this.activity_list[index].acid
           }).then(res => {
