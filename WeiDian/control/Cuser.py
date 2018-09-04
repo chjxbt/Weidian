@@ -85,7 +85,7 @@ class CUser():
             "appid": APP_ID,
             'timestamp': int(time.time()),
             "nonceStr": noncestr,
-            "secret": APP_SECRET_KEY
+            # "secret": APP_SECRET_KEY
         }
         try:
             response_str = "&".join([str(k)+'='+str(v) for k, v in data.items()])
