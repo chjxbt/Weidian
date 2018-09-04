@@ -132,6 +132,7 @@
           text-indent: 2em;
           margin: 10px 0;
           height: 160px;
+          line-height: 42px;
           overflow: hidden;
           clear: both;
           &.active{
