@@ -120,6 +120,7 @@
           font-size: 26px;
         }
         .m-sale{
+          white-space: nowrap;
           color: #a4a4a4;
           font-size: 22px;
           margin-right: 40px;
@@ -130,7 +131,7 @@
         .textP{
           text-indent: 2em;
           margin: 10px 0;
-          height: 152px;
+          height: 160px;
           overflow: hidden;
           clear: both;
           &.active{

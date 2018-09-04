@@ -63,7 +63,7 @@
         tnid: { type: String, default: null },
         sub: { type: Array }
       },
-      components: { iconList, share, bigImg },
+      components: { iconList, share },
       methods: {
         // 转发按钮list
         iconClick(){

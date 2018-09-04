@@ -10,7 +10,7 @@
           </div>
         </div>
         <div class="m-section-text">
-          <p><span class="m-mark">置顶</span>{{item.actype}}</p>
+          <p class="m-ft-32"><span class="m-mark" v-if="item.acistop">置顶</span>{{item.actype}}</p>
 
           <p class="textP m-ft-28" :class="!item.show_text ? 'active':''">{{item.actext}}</p>
           <span class="m-section-more" v-if="item.show_text" @click="showMore(false, index)">展开全文</span>
@@ -90,7 +90,6 @@
           params: { start: 0, count: 15, tnid: this.tnid }}).then(res => {
           if(res.data.status == 200){
             this.activity_list = res.data.data;
-            // console.log(this.activity_list);
 
             // 判断今天、昨天和直接显示日期
             let now = new Date();
@@ -138,6 +137,8 @@
 
               // 展开全文、显示全文
               this.activity_list[i].actext.length > 90 && (this.activity_list[i].show_text = true);
+
+              console.log(this.activity_list[i]);
             }
           }else{
             Toast({ message: res.data.message, className: 'm-toast-fail' });
