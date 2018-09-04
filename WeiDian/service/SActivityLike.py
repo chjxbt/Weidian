@@ -14,7 +14,7 @@ class SActivityLike(SBase):
         cur_activity = self.session.query(Activity).filter_by(ACid=acid).first()
         if cur_activity.AClikeFakeNum:
             return cur_activity.AClikeFakeNum
-        return self.session.query(Activity).filter_by(ACid=acid).count()
+        return cur_activity.AClikenum
 
     @close_session
     def add_like(self, aclike):
@@ -29,6 +29,7 @@ class SActivityLike(SBase):
     @close_session
     def add_like_by_acid(self, acid):
         cur_activity = self.session.query(Activity).filter_by(ACid=acid).first()
+        cur_activity.AClikenum += 1
         if cur_activity.AClikeFakeNum:
             cur_activity.AClikeFakeNum += 1
         self.session.add(cur_activity)
@@ -49,6 +50,7 @@ class SActivityLike(SBase):
         """取消点赞"""
         # acid = aclike.acid
         cur_activity = self.session.query(Activity).filter_by(ACid=acid).first()
+        cur_activity.AClikenum -= 1
         if cur_activity.AClikeFakeNum:
             cur_activity.AClikeFakeNum -= 1
         self.session.add(cur_activity)

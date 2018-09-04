@@ -24,8 +24,8 @@ class BaseActivityControl():
         if hasattr(request, 'user'):
             alreadylike = self.salike.is_like(request.user.id, acid)
             act.alreadylike = True if alreadylike else False
-        else:
-            act.alreadylike = False
+        # else:
+        #     act.alreadylike = False
         act.soldnum = self.sactivity.get_product_soldnum_by_acid(acid)  # 销量
         """活动剩余时间"""
         endtime = datetime.strptime(act.ACendtime, "%Y%m%d%H%M%S")
