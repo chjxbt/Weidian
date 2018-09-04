@@ -37,8 +37,8 @@
           },
           login() {
             const id = 'wxe8e8f6b9351d3587'
-            // const url = window.location.href;
-            const  url = 'https://daaiti.cn/WeiDian/#/login';
+            const url = window.location.href;
+            // const  url = 'https://daaiti.cn/WeiDian/#/login';
 
             window.location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid='
             +  id + '&redirect_uri='+ encodeURIComponent(url) + '&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect'
@@ -46,16 +46,10 @@
           }
         },
       mounted(){
-
         if(this.isWeiXin()){    //是来自微信内置浏览器
           // 获取微信信息，如果之前没有使用微信登陆过，将进行授权登录
-          // if(common.GetQueryString('code')){
-          //   alert(common.GetQueryString('code'))
-          //   window.localStorage.setItem("code",common.GetQueryString('code'));
-          //   this.$router.push('/index');
-          // }
-          if(this.$route.query.code){
-            window.localStorage.setItem("code",this.$route.query.code);
+          if(common.GetQueryString('code')){
+            window.localStorage.setItem("code",common.GetQueryString('code'));
             this.$router.push('/index/index');
           }
         }
