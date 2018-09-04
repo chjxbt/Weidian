@@ -38,6 +38,13 @@ class SActivity(SBase):
         return all_lasting_activity
 
     @close_session
+    def update_view_num(self, acid):
+        cur_activity = self.session.query(Activity).filter_by(ACid=acid).first()
+        cur_activity.ACbrowsenum += 1
+        self.session.add(cur_activity)
+        self.session.commit()
+
+    @close_session
     def add_activity(self, activity):
         self.session.add(activity)
 

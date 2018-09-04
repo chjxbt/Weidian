@@ -38,6 +38,7 @@ class Activity(BaseModel):
     ACisended = Column(Boolean, default=False)  # 是否被手动截止
     ACisdelete = Column(Boolean, default=False)  # 是否删除
     ACistop = Column(Boolean, default=False)  # 是否置顶
+    ACtitle = Column(Text, nullable=False)  # 活动标题（公告、教程页）
 
     @orm.reconstructor
     @auto_createtime
@@ -53,7 +54,8 @@ class Activity(BaseModel):
             'ACendtime',
             'ACistop',
             'ACisended',
-            'TopnavId']
+            'TopnavId',
+            'ACtitle']
 
 
 class ActivityComment(BaseModel):
@@ -359,7 +361,7 @@ class OrderInfo(BaseModel):
     OIsn = Column(String(64))  # 订单号
     USid = Column(String(64))  # 用户
     OItradenum = Column(String(125))  # 交易号, (如果有)
-    # 订单状态: {0: 待支付, 1: 支付成功, 2: 超时关闭, 3: 支付关闭}
+    # 订单状态: {0: 待支付, 1: 支付成功, 2: 超时关闭, 3: 支付关闭, 4:待发货, 5:已发货 }
     OIpaystatus = Column(Integer, default=0)
     OIpaytype = Column(Integer)  # 支付类型: {0: 银行卡支付, 1: 微信支付}
     OIleavetext = Column(String(255))  # 订单留言
@@ -370,6 +372,7 @@ class OrderInfo(BaseModel):
     OIrecvphone = Column(String(16), nullable=False)  # 收货人电话
     OIcreatetime = Column(String(14))  # 订单创建时间
     OIisdelete = Column(Boolean, default=False)  # 是否删除
+    Sellerid = Column(String(64))  # 卖家id
 
     @orm.reconstructor
     @auto_createtime
@@ -618,6 +621,24 @@ class MonthMonthReward(BaseModel):
     MMRendtime = Column(String(16), nullable=False)  # 结束时间
     MMRaverage = Column(Float)  # 需要人均销售额
     MMRmount = Column(Float)  # 需要的团队销售总额
+
+
+class MyCenter(BaseModel):
+    """我的"""
+    __tablename__ = 'mycenter'
+    MYid = Column(String(64), primary_key=True)
+    USid = Column(String(64), nullable=False)
+    MYranking = Column(String(64))  # 我的排名
+    Myrewards = Column(String(64))  # 额外奖励
+
+
+
+
+    # TODO 我的
+
+
+
+
 
 
 # 交易相关
