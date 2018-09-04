@@ -1,6 +1,6 @@
 <template>
     <div>
-      <m-header></m-header>
+      <!--<m-header></m-header>-->
       <m-content></m-content>
 
       <m-footer></m-footer>

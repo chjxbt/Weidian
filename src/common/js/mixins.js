@@ -32,7 +32,7 @@ const wxApi = {
   wxRegister (callback) {
     // let data = {params: {reqUrl: window.location.href}}
 
-    axios.get('https://daaiti.cn/user/get_wx_config').then((res) => {
+    axios.get('https://daaiti.cn/user/get_wx_config' ).then((res) => {
       if(res.data.status == 200)
         wx.config({
           debug: false,
