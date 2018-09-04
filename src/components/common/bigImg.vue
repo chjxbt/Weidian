@@ -16,7 +16,5 @@
 </script>
 
 <style lang="less" rel="stylesheet/less" scoped>
-  @import "../../common/css/index";
-  @import "../../common/css/modal";
 
 </style>
