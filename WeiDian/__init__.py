@@ -3,13 +3,13 @@ from datetime import date
 
 from flask import Flask as _Flask
 from flask.json import JSONEncoder as _JSONEncoder
-from flask.
+
 # from flask_cors import CORS
 from werkzeug.exceptions import HTTPException
 from WeiDian.apis.v1 import AActivity, AHotMessage, ABanner, ASearchField, ATopNav, \
     ASuperUser, AProduct, ARecommendBanner, AShoppingCart, AActivityComment, AUser, ARecommend, AOrder, AProductLike, \
     ARecommendLike, AActivityLike
-from test.test_maketoken import create_test_url
+# from test.test_maketoken import create_test_url
 
 
 class JSONEncoder(_JSONEncoder):
@@ -75,8 +75,8 @@ def register_route(app):
 def create_app():
     app = Flask(__name__)
     app.config.from_object('WeiDian.config.setting')
-    ws = GeventWebSocket(app)
-    register_route(app)
-    create_test_url(app)  # 测试用
+    # ws = GeventWebSocket(app)
+    register_route(app)   # 对app进行路由设置
+    # create_test_url(app)  # 测试用
     # CORS(app, supports_credentials=True)
     return app
