@@ -10,7 +10,7 @@
           </div>
         </div>
         <div class="m-section-text">
-          <p class="m-ft-32"><span class="m-mark" v-if="item.acistop">置顶</span>{{item.actype}}</p>
+          <p class="m-ft-30"><span class="m-mark" v-if="item.acistop">置顶</span>{{item.actitle}}</p>
 
           <p class="textP m-ft-28" :class="!item.show_text ? 'active':''">{{item.actext}}</p>
           <span class="m-section-more" v-if="item.show_text" @click="showMore(false, index)">展开全文</span>
@@ -86,7 +86,7 @@
     methods: {
       /*获取活动列表*/
       getActivity(start, count, tnid){
-        axios.get(api.get_all_activity, {
+        axios.get(api.get_all_activity + "?token=" + localStorage.getItem('token'), {
           params: { start: 0, count: 15, tnid: this.tnid }}).then(res => {
           if(res.data.status == 200){
             this.activity_list = res.data.data;
@@ -137,8 +137,6 @@
 
               // 展开全文、显示全文
               this.activity_list[i].actext.length > 90 && (this.activity_list[i].show_text = true);
-
-              console.log(this.activity_list[i]);
             }
           }else{
             Toast({ message: res.data.message, className: 'm-toast-fail' });
@@ -188,7 +186,7 @@
       // 点赞
       likeThis(item, index) {
         if(item.alreadylike) {
-          axios.post(api.ac_like + '?token=' +  localStorage.getItem('token'), {
+          axios.post(api.ac_like + '?token=' + localStorage.getItem('token'), {
             acid: item.acid
           }).then(res => {
             if(res.data.status == 200){
@@ -200,7 +198,7 @@
             }
           })
         }else if(!item.alreadylike) {
-          axios.post(api.ac_like + '?token=' +  localStorage.getItem('token'), {
+          axios.post(api.ac_like + '?token=' + localStorage.getItem('token'), {
             acid: item.acid
           }).then(res => {
             if(res.data.status == 200){
@@ -215,7 +213,7 @@
       },
       // 添加评论
       commentDone(item, index) {
-        axios.post(api.add_comment + '?token=' +  localStorage.getItem('token'), {
+        axios.post(api.add_comment + '?token=' + localStorage.getItem('token'), {
           acid: item.acid, ACtext: this.comment
         }).then(res => {
           if(res.data.status == 200){

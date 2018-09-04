@@ -10,7 +10,7 @@
           </div>
         </div>
         <div class="m-section-text">
-          <p class="m-ft-32"><span class="m-mark" v-if="item.acistop">置顶</span>{{item.actype}}</p>
+          <p class="m-ft-30"><span class="m-mark" v-if="item.acistop">置顶</span>{{item.actitle}}</p>
 
           <p class="textP m-ft-28" :class="!item.show_text ? 'active':''">{{item.actext}}</p>
           <span class="m-section-more" v-if="item.show_text" @click="showMore(false, index)">展开全文</span>

@@ -41,7 +41,12 @@
       },
       methods:{
         iconClick(v){
-          this.$emit('iconClick',v)
+          this.$emit('iconClick',v);
+          if(this.list[v].src == "icon-like") {
+            this.list[v].src = "icon-like-active";
+          }else if(this.list[v].src == "icon-like-active") {
+            this.list[v].src = "icon-like";
+          }
         }
       }
     }

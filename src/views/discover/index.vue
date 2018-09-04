@@ -92,7 +92,7 @@
       },
       mounted() {
         this.getTopnav();
-        let token = "eyJhbGciOiJIUzI1NiIsImV4cCI6MTUzNjA5NDc5MSwiaWF0IjoxNTM2MDIyNzkxfQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0wOS0wNCAwODo1OTo1MSJ9._c2RDU4rMGTFyWnF4HA6Q1xAsBLkHsSNgKmu8-CnsMw";
+        let token = "eyJhbGciOiJIUzI1NiIsImV4cCI6MTUzNjEwMzgyOSwiaWF0IjoxNTM2MDMxODI5fQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0wOS0wNCAxMTozMDoyOSJ9.NC-ej9dhQ2slWATLkWCFMlJu3DCmxrpcrXOo0-mfsZs";
         localStorage.setItem('token', token);
       }
     }
