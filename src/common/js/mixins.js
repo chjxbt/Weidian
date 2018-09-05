@@ -119,7 +119,7 @@ const wxApi = {
     })
   },
   // 预览图片
-  previewImage(current, urls) {
+  /*previewImage(current, urls) {
     wx.previewImage({
       current: '', // 当前显示图片的http链接
       urls: [urls], // 需要预览的图片http链接列表
@@ -133,7 +133,7 @@ const wxApi = {
         console.log("complete", current, urls);
       }
     });
-  }
+  }*/
 
 }
 export default wxApi
