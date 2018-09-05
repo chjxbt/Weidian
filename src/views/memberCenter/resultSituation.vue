@@ -119,6 +119,8 @@
         isIncome: true,
         earningList: [
           { src: "/static/images/product1.png", name: "商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称", orderNo: "123456789000",
+            status: "交易完成", payNum: "29.36",  earning: "2.36", from: "省钱了XXX", time: "2018-08-08 16:49:07"},
+          { src: "/static/images/product1.png", name: "商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称", orderNo: "123456789000",
             status: "交易完成", payNum: "29.36",  earning: "2.36", from: "省钱了XXX", time: "2018-08-08 16:49:07"}
         ]
       }
@@ -283,6 +285,7 @@
         height: 46px;
         .m-money-type{
           .flex-row(flex-start);
+          margin-bottom: 80px;
           span{
             display: block;
             width: 50%;
@@ -298,8 +301,8 @@
           }
         }
         .order-box {
-          margin: 20px 25px;
           padding: 20px 25px;
+          margin: -40px 25px 80px 25px;
           box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.15);
           .order-top {
             width: 100%;
