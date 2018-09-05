@@ -18,7 +18,7 @@ export const constantRouterMap = [
   {
     path: '/index',
     component: Layout,
-    redirect: 'index',
+    redirect: 'index/index',
     children: [{
       path: 'index',
       component: () => import('../views/index/index'),

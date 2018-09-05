@@ -30,6 +30,7 @@
         },
       watch: {
         selected: function (val, oldVal) {
+          console.log(val,'121321321')
           this.$store.state.tabbar_select = val;
           common.changeTitle(val);
           switch(val){

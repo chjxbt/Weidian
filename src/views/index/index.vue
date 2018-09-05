@@ -1,6 +1,6 @@
 <template>
-    <div class="m-index" @touchstart="touchStart" @touchend="touchEnd">
-      <div class="m-suspend-btn " :class="show_task_btn ? '':'active'" @click.stop="showModal('show_task')">
+    <div class="m-index" @touchmove="touchStart" @touchend="touchEnd">
+      <div class="m-suspend-btn " id="m-suspend-btn" :class="show_task_btn ? '':'active'" @click.stop="showModal('show_task')" >
         <span>开始转发</span>
       </div>
       <mt-loadmore :top-method="loadTop"  ref="loadmore">
@@ -190,12 +190,30 @@
       },
         methods: {
         /*手指滑动显示隐藏*/
-
           touchStart(){
             this.show_task_btn = false;
           },
           touchEnd(){
             this.show_task_btn = true;
+          },
+          touchStartBtn(ev){
+            console.log(ev)
+            ev = ev || event;
+            ev.preventDefault();
+            if(ev.changedTouches.length == 1) {    //tounches类数组，等于1时表示此时有只有一只手指在触摸屏幕
+              // this.endX = ev.changedTouches[0].clientX; // 记录开始位置
+              let ele = document.getElementById('m-suspend-btn');
+              ele.style.top = ev.changedTouches[0].clientY;
+            }
+          },
+          touchEndBtn(ev){
+            ev = ev || event;
+            ev.preventDefault();
+            if(ev.changedTouches.length == 1) {    //tounches类数组，等于1时表示此时有只有一只手指在触摸屏幕
+              // this.endX = ev.changedTouches[0].clientX; // 记录开始位置
+              let ele = document.getElementById('m-suspend-btn');
+              ele.style.top = ev.changedTouches[0].clientY;
+            }
           },
         /*分享*/
           wxRegCallback () {

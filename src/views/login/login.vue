@@ -16,6 +16,7 @@
 
 <script type="text/ecmascript-6">
   import axios from 'axios';
+  import api from '../../api/api';
   import common from '../../common/js/common'
     export default {
         data() {
@@ -49,7 +50,15 @@
         if(this.isWeiXin()){    //是来自微信内置浏览器
           // 获取微信信息，如果之前没有使用微信登陆过，将进行授权登录
           if(common.GetQueryString('code')){
+            alert(common.GetQueryString('code'))
             window.localStorage.setItem("code",common.GetQueryString('code'));
+            axios.get(api.get_accesstoken,{
+              params:{
+                code: common.GetQueryString('code')
+              }
+            }).then(res => {
+
+            });
             this.$router.push('/index/index');
           }
         }
