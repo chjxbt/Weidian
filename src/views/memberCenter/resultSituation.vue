@@ -1,9 +1,9 @@
 <template>
   <div>
     <navbar :list="nav_list" @navClick="navClick"></navbar>
-    <different-days></different-days>
 
-    <div class="detail-table">
+    <div class="detail-table" v-if="nav_select == 0 || nav_select == 1">
+      <different-days></different-days>
       <div class="detail-table-header">
         <div class="detail-th detail-th-text">微信名</div>
         <div class="detail-th">
@@ -21,6 +21,21 @@
         </div>
       </div>
     </div>
+
+    <div class="since-selling" v-if="nav_select == 2">
+      <div class="since-selling-top">
+        <div class="since-selling-bac"></div>
+        <div class="top-left">
+          <div class="m-ft-30 m-grey-color">预估到账金额</div>
+          <div class="m-ft-40 m-red m-ft-b m_t_5">230.00</div>
+        </div>
+        <div class="top-right">
+          <div class="m-ft-30 m-grey-color">已到账金额</div>
+          <div class="m-ft-40 m-red m-ft-b m_t_5">230.00</div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -33,28 +48,29 @@
     data(){
       return{
         nav_list: [
-          { click: true, tnname: "店主销售额" },
+          { click: false, tnname: "店主销售额" },
           { click: false, tnname: "合伙人销售额" },
-          { click: false, tnname: "自卖销售额" }
+          { click: true, tnname: "自卖销售额" }
         ],
         trList: [
-        { src: "/static/images/product1.png", name: "xxx", order: { quantity: "200", reduce: true }, forwarding: { quantity: "200", reduce: true }, people: { quantity: "200", reduce: true } },
-        { src: "/static/images/product1.png", name: "xxx", order: { quantity: "200", reduce: true }, forwarding: { quantity: "200", reduce: true }, people: { quantity: "200", reduce: true } },
-        { src: "/static/images/product1.png", name: "xxx", order: { quantity: "200", reduce: true }, forwarding: { quantity: "200", reduce: true }, people: { quantity: "200", reduce: true } }
-      ]
+          { src: "/static/images/product1.png", name: "xxx", order: { quantity: "200", reduce: true }, forwarding: { quantity: "200", reduce: true }, people: { quantity: "200", reduce: true } },
+          { src: "/static/images/product1.png", name: "xxx", order: { quantity: "200", reduce: true }, forwarding: { quantity: "200", reduce: true }, people: { quantity: "200", reduce: true } },
+          { src: "/static/images/product1.png", name: "xxx", order: { quantity: "200", reduce: true }, forwarding: { quantity: "200", reduce: true }, people: { quantity: "200", reduce: true } }
+        ],
+        nav_select: 2
       }
     },
     components: { navbar, differentDays },
     methods: {
       // 点击导航栏
       navClick(v){
-        console.log(v);
         let arr = this.nav_list;
         for(let i = 0; i < arr.length; i ++){
           arr[i].click = false;
         }
         arr[v].click = true;
         this.nav_list = [].concat(arr);
+        this.nav_select = v;
       },
     }
   }
@@ -120,6 +136,33 @@
             color: @mainColor;
           }
         }
+      }
+    }
+  }
+  .since-selling {
+    .since-selling-top {
+      .since-selling-bac {
+        width: 750px;
+        height: 366px;
+        background-image: linear-gradient(to right, #F8629A, #F37965);
+      }
+      .top-left {
+        position: fixed;
+        top: 100px;
+        left: 60px;
+        width: 200px;
+        padding: 30px 40px;
+        border-radius: 20px;
+        background-color: @bgMainColor;
+      }
+      .top-right {
+        position: fixed;
+        top: 100px;
+        right: 60px;
+        width: 200px;
+        padding: 30px 40px;
+        border-radius: 20px;
+        background-color: @bgMainColor;
       }
     }
   }
