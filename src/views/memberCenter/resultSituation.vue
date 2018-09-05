@@ -65,7 +65,7 @@
             <span :class="isIncome ? 'active':''" @click="moneyTypeClick(true)">我的收益</span>
             <span :class="!isIncome ? 'active':''" @click="moneyTypeClick(false)">额外赚</span>
           </p>
-          <div v-if="isIncome" v-for="item in earningList">
+          <div class="order-box" v-if="isIncome" v-for="item in earningList">
             <div class="order-top">
               <img class="order-top-img" :src="item.src">
               <div class="order-top-right">
@@ -74,6 +74,18 @@
                 <span class="m-red">{{item.status}}</span>
               </div>
             </div>
+            <div class="order-line-two">
+              <div class="order-line-text">付款金额</div>
+              <div class="order-line-text">已入账收入</div>
+              <div class="order-line-text">收入来源</div>
+            </div>
+            <div class="order-line-three">
+              <p class="one-product-price m-red m-ft-20 m-ft-b">￥<span class="m-ft-34">{{item.payNum}}</span></p>
+              <p class="one-product-price m-red m-ft-20 m-ft-b">￥<span class="m-ft-34">{{item.earning}}</span></p>
+              <span class="one-product-price m-red m-ft-26 m-ft-b">{{item.from}}</span>
+            </div>
+            <div class="order-line-four m-ft-20 m-grey tl">{{item.time}} 创建</div>
+            <div class="order-line-five"></div>
           </div>
           <div v-else>
 
@@ -202,7 +214,7 @@
       }
       .top-left {
         position: fixed;
-        top: 100px;
+        top: 120px;
         left: 60px;
         width: 200px;
         padding: 30px 40px;
@@ -211,7 +223,7 @@
       }
       .top-right {
         position: fixed;
-        top: 100px;
+        top: 120px;
         right: 60px;
         width: 200px;
         padding: 30px 40px;
@@ -220,7 +232,7 @@
       }
       .member-info-bottoms {
         position: fixed;
-        top: 330px;
+        top: 350px;
         .member-detail {
           width: 690px;
           margin: 0 30px 30px 30px;
@@ -251,7 +263,7 @@
     }
 
     .m-details{
-      margin-top: 70px;
+      margin-top: 90px;
       .m-select-date{
         text-align: center;
         font-size: 24px;
@@ -285,28 +297,51 @@
             }
           }
         }
-        .order-top {
-          width: 100%;
-          display: flex;
-          .order-top-img {
-            width: 170px;
-            height: 170px;
-            margin: 40px 0 30px 50px;
-          }
-          .order-top-right {
-            flex: 1;
-            margin: 35px;
-            text-align: left;
-            .order-top-name {
-              width: 420px;
-              height: 100px;
-              margin-bottom: 40px;
-              display: -webkit-box;
-              -webkit-box-orient: vertical;
-              -webkit-line-clamp: 3;
-              overflow: hidden;
-              letter-spacing: 2px;
+        .order-box {
+          margin: 20px 25px;
+          padding: 20px 25px;
+          box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.15);
+          .order-top {
+            width: 100%;
+            display: flex;
+            .order-top-img {
+              width: 170px;
+              height: 170px;
             }
+            .order-top-right {
+              flex: 1;
+              text-align: left;
+              margin-left: 35px;
+              .order-top-name {
+                width: 420px;
+                height: 100px;
+                margin-bottom: 40px;
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 3;
+                overflow: hidden;
+                letter-spacing: 2px;
+              }
+            }
+          }
+          .order-line-two {
+            width: 100%;
+            display: flex;
+            margin: 30px 0;
+            .order-line-text {
+              width: 33%;
+              font-size: 26px;
+            }
+          }
+          .order-line-three {
+            width: 100%;
+            display: flex;
+            .one-product-price {
+              width: 33%;
+            }
+          }
+          .order-line-four {
+            margin: 40px 0 20px 50px;
           }
         }
       }
