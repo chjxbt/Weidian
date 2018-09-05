@@ -15,13 +15,13 @@ sys.path.append(os.path.dirname(os.getcwd()))
 class CActivityLike():
     def __init__(self):
         self.sactivity = SActivity()
-        self.sactivitylike = SActivityLike()
+        self.salike = SActivityLike()
 
     @verify_token_decorator
     def like_or_cancel(self):
         json_data = parameter_required('acid')
         acid = json_data.get('acid')
-        already_like = self.sactivitylike.is_like(request.user.id, acid)
+        already_like = self.salike.is_like(request.user.id, acid)
         if not already_like:
             al_dict = dict(
                 alid=str(uuid.uuid4()),
@@ -30,13 +30,13 @@ class CActivityLike():
             )
             dict_add_models('ActivityLike', al_dict)
             alid = already_like.ALid if already_like else al_dict['alid']
-            self.sactivitylike.add_like_by_acid(acid)
+            self.salike.add_like_by_acid(acid)
             data = import_status('add_activity_like_success', 'OK')
             data['data'] = {'alid': alid}
             return data
         else:
-            self.sactivitylike.del_like(request.user.id, acid)
-            self.sactivitylike.cancel_like_by_acid(acid)
+            self.salike.del_like(request.user.id, acid)
+            self.salike.cancel_like_by_acid(acid)
             data = import_status('cancel_activity_like_success', 'OK')
             data['data'] = {'acid': acid}
             return data

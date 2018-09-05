@@ -21,24 +21,40 @@ class BaseActivityControl():
         act.tags = self.stags.get_show_tags_by_acid(acid)  # 右上角tag
         act.foward = self.foward.get_fowardnum_by_acid(acid)  # 转发数
         act.likenum = self.salike.get_likenum_by_acid(acid)  # 喜欢数
-        if hasattr(request, 'user'):
-            alreadylike = self.salike.is_like(request.user.id, acid)
-            act.alreadylike = True if alreadylike else False
-        # else:
-        #     act.alreadylike = False
+        # if hasattr(request, 'user'):
+        #     alreadylike = self.salike.is_like(request.user.id, acid)
+        #     act.alreadylike = True if alreadylike else False
         act.soldnum = self.sactivity.get_product_soldnum_by_acid(acid)  # 销量
         """活动剩余时间"""
         endtime = datetime.strptime(act.ACendtime, "%Y%m%d%H%M%S")
         remain = endtime - datetime.now()
         if remain.total_seconds() >= 21600:
             remaindays = remain.days
-            remainhours = remain.seconds/3600
+            remainhours = remain.seconds / 3600
             act.remaintime = [remaindays, remainhours, 0]
         else:
-            remainminutes = remain.total_seconds()/60
+            remainminutes = remain.total_seconds() / 60
             act.remaintime = [0, remainminutes, 0]
-        act.add('suuser', 'media', 'tags', 'foward', 'likenum', 'soldnum', 'alreadylike', 'remaintime')
+        act.add(
+            'suuser',
+            'media',
+            'tags',
+            'foward',
+            'likenum',
+            'soldnum',
+            'remaintime')
         return act
+
+    def fill_like_num(self, activity):
+        """添加点赞相关字段"""
+        if hasattr(request, 'user'):
+            alreadylike = self.salike.is_like(request.user.id, activity.ACid)
+            activity.alreadylike = True if alreadylike else False
+        else:
+            activity.alreadylike = False
+        activity.likenum = activity.AClikeFakeNum or activity.AClikenum
+        activity.add('likenum', 'alreadylike')
+        return activity
 
     def fill_type(self, act):
         act.ACtype = activity_type.get(str(act.ACtype))
@@ -92,7 +108,8 @@ class BaseActivityControl():
         acoid = comment.ACOid
         if not comment.ACOparentid:
             return comment  # 如果ACOid没有值, 说明这不是回复的内容
-        comment.parent_apply_user = self.sacomment.get_apply_for_by_acoid(acoid)
+        comment.parent_apply_user = self.sacomment.get_apply_for_by_acoid(
+            acoid)
         comment.add('parent_apply_user')
         return comment
 
@@ -210,16 +227,17 @@ class BaseProductControl():
         # return product
         # 返回数据一致, 不再区分
         return self.trans_product_for_fans(product)
-    
+
     def fill_product_nums(self, product):
         prid = product.PRid
         soldnum = product.PRsalefakenum or product.PRsalesvolume  # 显示销量
         viewnum = product.PRfakeviewnum or product.PRviewnum  # 浏览数
-        likenum = product.PRfakelikenum or self.sproductlike.get_product_like_num_by_prid(prid)  # 收藏(喜欢)数目
+        likenum = product.PRfakelikenum or self.sproductlike.get_product_like_num_by_prid(
+            prid)  # 收藏(喜欢)数目
         product.prsoldnum = soldnum
         product.prviewnum = viewnum
         product.prlikenum = likenum
-        product.add('prsoldnum', 'prlikenum', 'prviewnum') 
+        product.add('prsoldnum', 'prlikenum', 'prviewnum')
         return product
 
     def fill_suser(self, obj):
@@ -237,7 +255,8 @@ class BaseProductControl():
     def fill_recommend_nums(self, recommend):
         """日荐页中部浏览数和笑脸数"""
         if hasattr(request, 'user'):
-            alreadylike = self.srecommendlike.get_recommend_like_by_usidreid(request.user.id, recommend.REid)
+            alreadylike = self.srecommendlike.get_recommend_like_by_usidreid(
+                request.user.id, recommend.REid)
             recommend.alreadylike = True if alreadylike else False
         else:
             recommend.alreadylike = False
@@ -277,7 +296,8 @@ class BaseShoppingCart(BaseProductControl):
                 return cart
             sku.add('PSKproperkey')
             # 价格计算, 合伙人优惠
-            cart.PRprice = sku.PSKprice * Partner().one_level_divide if is_partner() else sku.PSKprice
+            cart.PRprice = sku.PSKprice * \
+                Partner().one_level_divide if is_partner() else sku.PSKprice
             cart.subtotal = cart.PRprice * cart.SCnums
             cart.sku = sku
             cart.add('sku', 'subtotal')
@@ -301,10 +321,17 @@ class BaseShoppingCart(BaseProductControl):
 
     def total_price(self, cart_list):
         """总金额"""
-        has_price = filter(lambda x: hasattr(x, 'sku') and hasattr(x.sku, 'PSKprice'), cart_list)
+        has_price = filter(
+            lambda x: hasattr(
+                x,
+                'sku') and hasattr(
+                x.sku,
+                'PSKprice'),
+            cart_list)
         if not has_price:
             return 0
-        total = sum([x.sku.PSKprice * x.SCnums + x.sku.PSKpostfee for x in has_price])
+        total = sum([x.sku.PSKprice * x.SCnums +
+                     x.sku.PSKpostfee for x in has_price])
         return total
 
 
@@ -324,10 +351,20 @@ class BaseActivityCommentControl():
         if not comment.ACOparentid:
             comment.type = 'comment'
             return comment  # 如果ACOid没有值, 说明这不是回复的内容
-        comment.parent_apply_user = self.sactivitycomment.get_apply_for_by_acoid(acoid)
+        comment.parent_apply_user = self.sactivitycomment.get_apply_for_by_acoid(
+            acoid)
         comment.type = 'apply'
         comment.add('parent_apply_user')
         return comment
+
+
+class BaseMyCenterControl():
+
+    def fill_user_info(self, myinfo):
+        usid = myinfo.USid
+        myinfo.user = self.suser.get_user_by_user_id(usid)
+        myinfo.add('user')
+        return myinfo
 
 
 class BaseOrder():

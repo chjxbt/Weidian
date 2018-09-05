@@ -71,6 +71,7 @@ class CActivity(BaseActivityControl):
         for activity in activity_list:
             self.sactivity.update_view_num(activity.ACid)
         map(self.fill_comment_two, activity_list)
+        map(self.fill_like_num, activity_list)
         activity_list = activity_list[start:end]
         map(self.fill_type, activity_list)
         map(self.fill_product, activity_list)

@@ -60,15 +60,17 @@ class COrder():
 
     @verify_token_decorator
     def get_order_list(self):
+        """查看更多订单"""
         if is_tourist():
             return TOKEN_ERROR
         args = request.args.to_dict()
+        sell = args.get('sell')
         page = int(args.get('page', 1))  # 页码
         start = int(args.get('start', 0))  # 起始位置
         count = int(args.get('count', 15))  # 取出条数
         if not start:
             start = (page - 1) * count
-        order_list = self.sorder.get_order_by_usid(request.user.id)
+        order_list = self.sorder.get_order_by_usid(sell, request.user.id)
         len_order_list = len(order_list)
         if count > 30:
             count = 30
@@ -80,6 +82,88 @@ class COrder():
         data = import_status('get_order_list_success', 'OK')
         data['data'] = order_list
         return data
+
+    @verify_token_decorator
+    def get_order_list_by_status(self):
+        """根据支付状态获取订单"""
+        if is_tourist():
+            return TOKEN_ERROR
+        args = request.args.to_dict()
+        status = args.get('paystatus')
+        sell = args.get('sell')
+        page = int(args.get('page', 1))  # 页码
+        start = int(args.get('start', 0))  # 起始位置
+        count = int(args.get('count', 15))  # 取出条数
+        if sell:
+            order_list = self.sorder.get_sell_order_by_status(request.user.id, status)
+        else:
+            order_list = self.sorder.get_user_order_by_status(request.user.id, status)
+        len_order_list = len(order_list)
+        if not start:
+            start = (page - 1) * count
+        if count > 30:
+            count = 30
+        end = start + count
+        if end > len_order_list:
+            end = len_order_list
+        order_list = order_list[start: end]
+        map(self.fill_productinfo, order_list)
+        data = import_status('get_order_list_success', 'OK')
+        data['data'] = order_list
+        return data
+
+    @verify_token_decorator
+    def get_order_count(self):
+        """获取订单预览数"""
+        args = request.args.to_dict()
+        sell = args.get('sell')
+        if sell:
+            json_data = [
+                {
+                    'status': u'待付款',
+                    'count': self.sorder.get_sell_ordercount_by_status(request.user.id, 0)
+                },
+                {
+                    'status': u'待发货',
+                    'count': self.sorder.get_sell_ordercount_by_status(request.user.id, 4)
+                },
+                {
+                    'status': u'待收货',
+                    'count': self.sorder.get_sell_ordercount_by_status(request.user.id, 5)
+                },
+                {
+                    'status': u'待评价',
+                    'count': self.sorder.get_sell_ordercount_by_status(request.user.id, 6)
+                },
+                {
+                    'status': u'退换货',
+                    'count': self.sorder.get_sell_ordercount_by_status(request.user.id, 7)
+                }
+            ]
+        else:
+            json_data = [
+                {
+                    'status': u'待付款',
+                    'count': self.sorder.get_user_ordercount_by_status(request.user.id, 0)
+                },
+                {
+                    'status': u'待发货',
+                    'count': self.sorder.get_user_ordercount_by_status(request.user.id, 4)
+                },
+                {
+                    'status': u'待收货',
+                    'count': self.sorder.get_user_ordercount_by_status(request.user.id, 5)
+                },
+                {
+                    'status': u'待评价',
+                    'count': self.sorder.get_user_ordercount_by_status(request.user.id, 6)
+                },
+                {
+                    'status': u'退换货',
+                    'count': self.sorder.get_user_ordercount_by_status(request.user.id, 7)
+                }
+            ]
+        return json_data
 
     @verify_token_decorator
     def update_order(self):
