@@ -90,11 +90,11 @@
       font-size: 28px;
       white-space: nowrap;
       li{
-        padding: 10px 25px;
+        padding: 20px 25px;
         width: 25%;
         position: relative;
         span.m-navbar-text{
-          padding: 10px 20px;
+          padding: 20px 20px;
           font-weight: 600;
         }
         &.active{
