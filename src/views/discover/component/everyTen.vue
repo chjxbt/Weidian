@@ -46,7 +46,6 @@
   import share from '../../../components/common/share';
 
     export default {
-      mixins: [wxapi],
       data() {
         return {
           bannerList: [],
