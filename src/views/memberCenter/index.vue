@@ -16,7 +16,7 @@
     </div>
     <div class="member-info-bottoms">
       <div class="member-detail">
-        <div class="member-detail-top">
+        <div class="member-detail-top" @click="toPage('memberDetail')">
           <img class="member-detail-img" src="/static/images/product1.png">
           <div class="member-detail-title m-ft-30 m-black m-ft-b tl">会员详情</div>
           <div class="member-detail-to m-ft-22 m-grey">查看明细</div>
@@ -44,7 +44,7 @@
       </div>
 
       <div class="member-detail">
-        <div class="member-detail-top">
+        <div class="member-detail-top" @click="toPage('resultSituation')">
           <img class="member-detail-img" src="/static/images/product1.png">
           <div class="member-detail-title m-ft-30 m-black m-ft-b tl">业绩概况</div>
           <div class="member-detail-to m-ft-22 m-grey">查看明细</div>
@@ -72,7 +72,7 @@
       </div>
 
       <div class="member-detail">
-        <div class="member-detail-top">
+        <div class="member-detail-top" @click="toPage('upToSpeed')">
           <img class="member-detail-img" src="/static/images/product1.png">
           <div class="member-detail-title m-ft-30 m-black m-ft-b tl">成长速度</div>
           <div class="member-detail-to m-ft-22 m-grey">查看明细</div>
@@ -81,7 +81,7 @@
       </div>
 
       <div class="member-detail">
-        <div class="member-detail-top">
+        <div class="member-detail-top" @click="toPage('advancedClass')">
           <img class="member-detail-img" src="/static/images/product1.png">
           <div class="member-detail-title m-ft-30 m-black m-ft-b tl">进阶课堂</div>
           <div class="member-detail-to m-ft-22 m-grey">查看明细</div>
@@ -90,7 +90,7 @@
       </div>
 
       <div class="member-detail">
-        <div class="member-detail-top">
+        <div class="member-detail-top" @click="toPage('helpCenter')">
           <img class="member-detail-img" src="/static/images/product1.png">
           <div class="member-detail-title m-ft-30 m-black m-ft-b tl">帮助中心</div>
           <div class="member-detail-to m-ft-22 m-grey">查看明细</div>
@@ -111,8 +111,11 @@
 
       }
     },
-    methods() {
-
+    methods: {
+      // 从会员页跳转至支页面
+      toPage(page) {
+        this.$router.push(page);
+      }
     }
   }
 </script>

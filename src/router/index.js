@@ -122,6 +122,14 @@ export const constantRouterMap = [
   /*二三级页面*/
   // 会员中心
   { path: '/memberCenter', component: () => import('../views/memberCenter/index'), hidden: true },
+  // 会员详细
+  { path: '/memberDetail', component: () => import('../views/memberCenter/memberDetail'), hidden: true },
+  // 业绩概况
+  { path: '/resultSituation', component: () => import('../views/memberCenter/resultSituation'), hidden: true },
+  // 成长速度
+  { path: '/upToSpeed', component: () => import('../views/memberCenter/upToSpeed'), hidden: true },
+  // 进阶课堂
+  { path: '/advancedClass', component: () => import('../views/memberCenter/advancedClass'), hidden: true },
   // 帮助中心
   { path: '/helpCenter', component: () => import('../views/memberCenter/helpCenter'), hidden: true },
 ]

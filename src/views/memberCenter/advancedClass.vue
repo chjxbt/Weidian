@@ -1,12 +1,12 @@
 <template>
   <div>
-    helpCenter
+    advancedClass
   </div>
 </template>
 
 <script>
   export default {
-    name: "helpCenter",
+    name: "advancedClass",
     data(){
       return{
 

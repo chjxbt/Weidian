@@ -1,12 +1,12 @@
 <template>
   <div>
-    helpCenter
+    upToSpeed
   </div>
 </template>
 
 <script>
   export default {
-    name: "helpCenter",
+    name: "upToSpeed",
     data(){
       return{
 
