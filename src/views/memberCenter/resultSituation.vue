@@ -65,8 +65,15 @@
             <span :class="isIncome ? 'active':''" @click="moneyTypeClick(true)">我的收益</span>
             <span :class="!isIncome ? 'active':''" @click="moneyTypeClick(false)">额外赚</span>
           </p>
-          <div v-if="isIncome">
-
+          <div v-if="isIncome" v-for="item in earningList">
+            <div class="order-top">
+              <img class="order-top-img" :src="item.src">
+              <div class="order-top-right">
+                <div class="order-top-name">{{item.name}}</div>
+                <span class="m_r_8">订单号：{{item.orderNo}}</span>
+                <span class="m-red">{{item.status}}</span>
+              </div>
+            </div>
           </div>
           <div v-else>
 
@@ -97,7 +104,11 @@
           { src: "/static/images/product1.png", name: "xxx", order: { quantity: "200", reduce: true }, forwarding: { quantity: "200", reduce: true }, people: { quantity: "200", reduce: true } }
         ],
         nav_select: 2,
-        isIncome: true
+        isIncome: true,
+        earningList: [
+          { src: "/static/images/product1.png", name: "商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称", orderNo: "123456789000",
+            status: "交易完成", payNum: "29.36",  earning: "2.36", from: "省钱了XXX", time: "2018-08-08 16:49:07"}
+        ]
       }
     },
     components: { navbar, differentDays },
@@ -271,6 +282,30 @@
             &.active{
               background-color: @mainColor;
               color: #fff;
+            }
+          }
+        }
+        .order-top {
+          width: 100%;
+          display: flex;
+          .order-top-img {
+            width: 170px;
+            height: 170px;
+            margin: 40px 0 30px 50px;
+          }
+          .order-top-right {
+            flex: 1;
+            margin: 35px;
+            text-align: left;
+            .order-top-name {
+              width: 420px;
+              height: 100px;
+              margin-bottom: 40px;
+              display: -webkit-box;
+              -webkit-box-orient: vertical;
+              -webkit-line-clamp: 3;
+              overflow: hidden;
+              letter-spacing: 2px;
             }
           }
         }
