@@ -112,7 +112,7 @@
     }
   }
   .detail-prompt {
-    margin: 19px 0 40px 20%;
+    margin: 19px 0 40px 15%;
     .detail-prompt-text {
       font-size: 20px;
       text-align: left;
