@@ -54,6 +54,25 @@
           </div>
         </div>
       </div>
+
+      <div class="m-details">
+        <p class="m-select-date">
+          <span>2018年8月</span>
+          <span class="m-select-date-icon"></span>
+        </p>
+        <div class="m-money-details">
+          <p class="m-money-type">
+            <span :class="isIncome ? 'active':''" @click="moneyTypeClick(true)">我的收益</span>
+            <span :class="!isIncome ? 'active':''" @click="moneyTypeClick(false)">额外赚</span>
+          </p>
+          <div v-if="isIncome">
+
+          </div>
+          <div v-else>
+
+          </div>
+        </div>
+      </div>
     </div>
 
   </div>
@@ -77,7 +96,8 @@
           { src: "/static/images/product1.png", name: "xxx", order: { quantity: "200", reduce: true }, forwarding: { quantity: "200", reduce: true }, people: { quantity: "200", reduce: true } },
           { src: "/static/images/product1.png", name: "xxx", order: { quantity: "200", reduce: true }, forwarding: { quantity: "200", reduce: true }, people: { quantity: "200", reduce: true } }
         ],
-        nav_select: 2
+        nav_select: 2,
+        isIncome: true
       }
     },
     components: { navbar, differentDays },
@@ -92,6 +112,9 @@
         this.nav_list = [].concat(arr);
         this.nav_select = v;
       },
+      moneyTypeClick(v){
+        this.isIncome = v;
+      }
     }
   }
 </script>
@@ -215,5 +238,59 @@
         }
       }
     }
+
+    .m-details{
+      margin-top: 70px;
+      .m-select-date{
+        text-align: center;
+        font-size: 24px;
+        line-height: 32px;
+        color: #666666;
+        margin-bottom: 10px;
+        .m-select-date-icon{
+          display: inline-block;
+          width: 24px;
+          height: 12px;
+          background: url("/static/images/icon-select-date-personal.png") no-repeat;
+          background-size: 100%;
+          line-height: 32px;
+        }
+      }
+      .m-money-details{
+        height: 46px;
+        .m-money-type{
+          .flex-row(flex-start);
+          span{
+            display: block;
+            width: 50%;
+            height: 46px;
+            line-height: 46px;
+            font-size: 24px;
+            background-color: #e9e9e9;
+            color: #c1c1c1;
+            &.active{
+              background-color: @mainColor;
+              color: #fff;
+            }
+          }
+        }
+      }
+    }
+  }
+  /*滚动条样式*/
+  .m-scroll::-webkit-scrollbar {/*滚动条整体样式*/
+    width: 9px;     /*高宽分别对应横竖滚动条的尺寸*/
+    height: 9px;
+    border-radius: 10px;
+  }
+  .m-scroll::-webkit-scrollbar-thumb {/*滚动条里面小方块*/
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 5px #FBC6CC;
+    background: #FBC6CC;
+  }
+  .m-scroll::-webkit-scrollbar-track {/*滚动条里面轨道*/
+    -webkit-box-shadow: inset 0 0 5px #FDEAEC;
+    border-radius: 10px;
+    background: #FDEAEC;
   }
 </style>
