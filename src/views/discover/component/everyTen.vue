@@ -1,5 +1,6 @@
 <template>
   <div class="m-discover-every">
+    <!--<img src="http://imgsrc.baidu.com/imgad/pic/item/42166d224f4a20a4f066730e9a529822730ed0fb.jpg" >-->
     <div class="m-swipe-box">
       <mt-swipe :auto="2000">
         <mt-swipe-item v-for="item in bannerList" :key="item.id">
@@ -13,7 +14,7 @@
       </div>
       <div class="m-title">
         <div>
-          <img :src="recommend.suuser.suheader" class="m-item-title-img">
+          <img :src="recommend.suuser.suheader" class="m-item-title-img" @click="bigImage">
           <span>{{recommend.suuser.suname}}</span>
         </div>
         <div class="m-lookinfo-box">
@@ -44,8 +45,10 @@
   import { Toast } from 'mint-ui';
   import ctx from '../../index/components/ctx';
   import share from '../../../components/common/share';
+  import wxapi from '../../../common/js/mixins';
 
     export default {
+      mixins: [wxapi],
       data() {
         return {
           bannerList: [],
@@ -77,6 +80,11 @@
       },
       components: { ctx, share },
       methods: {
+        bigImage() {
+          let current = "http://imgsrc.baidu.com/imgad/pic/item/42166d224f4a20a4f066730e9a529822730ed0fb.jpg";
+          let urls = ["http://imgsrc.baidu.com/imgad/pic/item/42166d224f4a20a4f066730e9a529822730ed0fb.jpg"];
+          wxapi.previewImage(current, urls);
+        },
         // 获取每日推荐内容
         getData(){
           let token = localStorage.getItem('token');
