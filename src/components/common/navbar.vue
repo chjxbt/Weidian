@@ -42,7 +42,6 @@
       },
       mounted() {
         this.navNum = this.list.length;
-        console.log(this.navNum);
       }
     }
 </script>
