@@ -1,28 +1,35 @@
 <template>
-  <div class="m-navbar">
-    <ul>
-      <li v-for="(item,index) in list" :class="item.click?'active':''" @click="navClick(index)">
-        <span class="m-navbar-text">{{item.tnname}}</span>
-        <span class="m-dot" v-if="item.dot"></span>
-      </li>
-    </ul>
+  <div>
+    <div class="m-navbar" v-if="navNum == 4">
+      <ul class="ul-four">
+        <li v-for="(item,index) in list" :class="item.click?'active':''" @click="navClick(index)">
+          <span class="m-navbar-text">{{item.tnname}}</span>
+          <span class="m-dot" v-if="item.dot"></span>
+        </li>
+      </ul>
+    </div>
+    <div class="m-navbar" v-if="navNum == 3">
+      <ul class="ul-three">
+        <li v-for="(item,index) in list" :class="item.click?'active':''" @click="navClick(index)">
+          <span class="m-navbar-text">{{item.tnname}}</span>
+          <span class="m-dot" v-if="item.dot"></span>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script>
   import common from '../../common/js/common';
     export default {
-        name: "navbar",
+      name: "navbar",
       data(){
-          return{
-
-          }
+        return{
+          navNum: 4
+        }
       },
       props:{
-          list:{
-            type:Array,
-            default:null
-          }
+        list:{ type:Array, default:null }
       },
       methods:{
         navClick(v){
@@ -32,6 +39,10 @@
           common.changeTitle(this.list[v].tnname);
           this.$emit('navClick',v)
         }
+      },
+      mounted() {
+        this.navNum = this.list.length;
+        console.log(this.navNum);
       }
     }
 </script>
@@ -42,15 +53,45 @@
     margin-top: 10px;
     padding: 0 18px;
     border-bottom: 1px solid @borderColor;
-    ul{
+    .ul-four{
       display: flex;
       flex-flow: row;
       align-items: center;
       font-size: 32px;
       white-space: nowrap;
       li{
+        padding: 10px 0;
+        width: 25%;
+        position: relative;
+        span.m-navbar-text{
+          padding: 10px 20px;
+          font-weight: 600;
+        }
+        &.active{
+          span.m-navbar-text{
+            color: @mainColor;
+            border-bottom: 3px solid @mainColor;
+          }
+        }
+        .m-dot{
+          position: absolute;
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background-color: @mainColor;
+        }
+      }
+    }
+
+    .ul-three{
+      display: flex;
+      flex-flow: row;
+      align-items: center;
+      color: @black;
+      font-size: 28px;
+      white-space: nowrap;
+      li{
         padding: 10px 25px;
-        /*padding: 10px 0;*/
         width: 25%;
         position: relative;
         span.m-navbar-text{
