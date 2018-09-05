@@ -102,10 +102,8 @@
 </template>
 
 <script>
-  import BigImg from "../../components/common/bigImg";
   export default {
     name: "index",
-    components: {BigImg},
     data(){
       return{
 
