@@ -47,8 +47,10 @@
       flex-flow: row;
       align-items: center;
       font-size: 32px;
+      white-space: nowrap;
       li{
-        padding: 10px 0;
+        padding: 10px 25px;
+        /*padding: 10px 0;*/
         width: 25%;
         position: relative;
         span.m-navbar-text{
