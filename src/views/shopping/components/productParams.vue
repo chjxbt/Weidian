@@ -16,7 +16,7 @@
       <div class="product-params-content">
         <img src="/static/images/product1.png" class="product-img">
         <div class="product-params-center">
-          <p class="product-price m-ft-20 m-red m-ft-b tl">￥<span class="product-price-number m-ft-34">160</span></p>
+          <p class="product-price m-ft-20 m-red m-ft-b tl">￥<span class="m-ft-34">160</span></p>
           <div class="choose-prompt m-ft-26 tl">{{prompt}}</div>
         </div>
         <img src="/static/images/delete.png" class="close-popup" @click="productParams">
