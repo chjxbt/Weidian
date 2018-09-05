@@ -14,7 +14,16 @@ class AUser(Resource):
     def post(self, user):
         print user
         apis = {
-            'login': 'self.cuser.login()'
+            'login': 'self.cuser.login()',
+        }
+        res = eval(apis[user])
+        return jsonify(res)
+
+    def get(self, user):
+        print user
+        apis = {
+            'get_accesstoken': 'self.cuser.get_accesstoken()',
+            'get_wx_config': 'self.cuser.get_wx_config()'
         }
         res = eval(apis[user])
         return jsonify(res)

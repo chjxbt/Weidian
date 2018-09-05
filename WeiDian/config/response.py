@@ -37,7 +37,15 @@ class APIS_WRONG(BaseError):
     status_code = 405002
     message = "接口未注册"
 
+
 class TIME_ERROR(BaseError):
     status = 405
     status_code = 405003
     message = "敬请期待"
+
+
+class NETWORK_ERROR(BaseError):
+    status = 405
+    status_code = 405004
+    message = '网络异常'
+
