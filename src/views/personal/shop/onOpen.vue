@@ -8,7 +8,7 @@
             </router-link>
             <span>等级规则</span>
           </div>
-          <div class="m-flex-start m-shop">
+          <div class="m-flex-start m-shop" @click="toPage">
             <img src="" class="m-shop-top-img" alt="">
             <div class="m-shop-content">
               <h3>小居居</h3>
@@ -185,6 +185,10 @@
            if(v.url){
              this.$router.push(v.url);
            }
+          },
+          // 临时方法，去往二三级页面的会员中心
+          toPage() {
+            this.$router.push("/memberCenter");
           }
         },
         created() {

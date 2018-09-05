@@ -118,6 +118,12 @@ export const constantRouterMap = [
   { path: '/orderStatus', component: () => import('../views/shopping/orderStatus'), hidden: true },
   // 物流信息
   { path: '/logisticsInfo', component: () => import('../views/shopping/logisticsInfo'), hidden: true },
+
+  /*二三级页面*/
+  // 会员中心
+  { path: '/memberCenter', component: () => import('../views/memberCenter/index'), hidden: true },
+  // 帮助中心
+  { path: '/helpCenter', component: () => import('../views/memberCenter/helpCenter'), hidden: true },
 ]
 
 export default new Router({
