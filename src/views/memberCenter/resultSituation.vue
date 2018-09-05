@@ -33,6 +33,26 @@
           <div class="m-ft-30 m-grey-color">已到账金额</div>
           <div class="m-ft-40 m-red m-ft-b m_t_5">230.00</div>
         </div>
+        <div class="member-info-bottoms">
+          <div class="member-detail">
+            <ul class="m-part-list">
+              <li>
+                <span>今日销售额</span>
+                <span class="m-red m-num">1250</span>
+              </li>
+              <div class="line"></div>
+              <li>
+                <span>今日赚</span>
+                <span class="m-red m-num">900</span>
+              </li>
+              <div class="line"></div>
+              <li>
+                <span>额外赚</span>
+                <span class="m-red m-num">500</span>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -163,6 +183,36 @@
         padding: 30px 40px;
         border-radius: 20px;
         background-color: @bgMainColor;
+      }
+      .member-info-bottoms {
+        position: fixed;
+        top: 330px;
+        .member-detail {
+          width: 690px;
+          margin: 0 30px 30px 30px;
+          border-radius: 20px;
+          background-color: @bgMainColor;
+          box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.15);
+          .m-part-list{
+            .flex-row(space-around);
+            padding: 40px 0 35px 0;
+            li{
+              .flex-col(center);
+              .m-num{
+                font-size: 36px;
+                margin-top: 30px;
+                font-weight: bold;
+              }
+            }
+            .line {
+              width: 2px;
+              height: 80px;
+              opacity: 0.15;
+              background-color: @grey;
+              margin: 0 -100px;
+            }
+          }
+        }
       }
     }
   }
