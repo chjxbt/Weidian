@@ -215,7 +215,7 @@
         background-image: linear-gradient(to right, #F8629A, #F37965);
       }
       .top-left {
-        position: fixed;
+        position: absolute;
         top: 120px;
         left: 60px;
         width: 200px;
@@ -224,7 +224,7 @@
         background-color: @bgMainColor;
       }
       .top-right {
-        position: fixed;
+        position: absolute;
         top: 120px;
         right: 60px;
         width: 200px;
@@ -233,7 +233,7 @@
         background-color: @bgMainColor;
       }
       .member-info-bottoms {
-        position: fixed;
+        position: absolute;
         top: 350px;
         .member-detail {
           width: 690px;
