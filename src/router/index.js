@@ -63,7 +63,6 @@ export const constantRouterMap = [
       meta: { title: 'user', icon: 'user', noCache: true }
     }
     ],
-
   },
   {
     path: '/order',
@@ -91,7 +90,8 @@ export const constantRouterMap = [
       meta: {title: 'refund', icon: 'refund', noCache: true}
     }
     ]
-  },{
+  },
+  {
     path: '/activity',
     component: Layout,
     redirect: 'activity/discountCoupon',
@@ -157,7 +157,53 @@ export const constantRouterMap = [
       meta: {title: 'activityProductStepThree', icon: 'activityProductStepThree', noCache: true}
     }
     ]
-  }
+  },
+  {
+    path: '/commission',
+    component: Layout,
+    redirect: 'commission/index',
+    children: [{
+      path: 'index',
+      component: () => import('../views/commission/index'),
+      name: 'commission',
+      meta: { title: 'commission', icon: 'commission', noCache: true }
+    }
+    ],
+  },
+  {
+    path: '/member',
+    component: Layout,
+    redirect: 'member/index',
+    children: [{
+      path: 'index',
+      component: () => import('../views/member/index'),
+      name: 'member',
+      meta: { title: 'member', icon: 'member', noCache: true }
+    }
+    ],
+  },
+  {
+    path: '/content',
+    component: Layout,
+    redirect: 'content/index',
+    children: [{
+      path: 'index',
+      component: () => import('../views/content/index'),
+      name: 'content',
+      meta: { title: 'content', icon: 'content', noCache: true }
+    },{
+      path: 'discovery',
+      component: () => import('../views/content/discovery'),
+      name: 'discovery',
+      meta: { title: 'discovery', icon: 'discovery', noCache: true }
+    },{
+      path: 'modal',
+      component: () => import('../views/content/modal'),
+      name: 'modal',
+      meta: { title: 'modal', icon: 'modal', noCache: true }
+    }
+    ],
+  },
 
 
 ]

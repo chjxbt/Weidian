@@ -1,7 +1,7 @@
 <template>
   <div>
     <!--<router-link to="/index/adminIndex" key="user">-->
-        <h3 class="m-system-name" @click="indexClick">后台管理系统 </h3>
+        <h3 class="m-system-name" @click="indexClick">微点后台管理系统 </h3>
     <!--</router-link>-->
     <el-menu  class="el-menu-vertical-demo m-sidebar"
               mode="vertical"

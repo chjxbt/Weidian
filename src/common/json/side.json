@@ -82,6 +82,52 @@
           "MNicon":"none"
         }
       ]
+    },
+    {
+      "MNname":"内容管理",
+      "MNurl":"/content",
+      "MNicon":"icon-content",
+      "children":[
+        {
+          "MNname":"首页管理",
+          "MNurl":"index",
+          "MNicon":"none"
+        },
+        {
+          "MNname":"发现页管理",
+          "MNurl":"discovery",
+          "MNicon":"none"
+        },
+        {
+          "MNname":"弹框管理",
+          "MNurl":"modal",
+          "MNicon":"none"
+        }
+      ]
+    },
+    {
+      "MNname":"佣金管理",
+      "MNurl":"/commission",
+      "MNicon":"icon-commission",
+      "children":[
+        {
+          "MNname":"佣金管理",
+          "MNurl":"index",
+          "MNicon":"none"
+        }
+      ]
+    },
+    {
+      "MNname":"会员管理",
+      "MNurl":"/member",
+      "MNicon":"icon-member",
+      "children":[
+        {
+          "MNname":"会员",
+          "MNurl":"index",
+          "MNicon":"none"
+        }
+      ]
     }
   ]
 }
