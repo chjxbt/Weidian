@@ -8,8 +8,29 @@ from flask.json import JSONEncoder as _JSONEncoder
 from werkzeug.exceptions import HTTPException
 from WeiDian.apis.v1 import AActivity, AHotMessage, ABanner, ASearchField, ATopNav, \
     ASuperUser, AProduct, ARecommendBanner, AShoppingCart, AActivityComment, AUser, ARecommend, AOrder, AProductLike, \
-    ARecommendLike, AActivityLike, AMyCenter
+    ARecommendLike, AActivityLike, AMyCenter, AComplain
 # from test.test_maketoken import create_test_url
+import platform
+import logging
+import os
+logger = logging.getLogger(__name__)
+logger.setLevel(level=logging.DEBUG)
+
+log_path = "/tmp/error" if "Linux" == platform.system() else r"D:\error"
+if not os.path.isdir(log_path):
+    os.mkdir(log_path)
+filename = "error" + date.today().strftime("%Y%m%d") + ".log"
+log_dir = os.path.join(log_path, filename)
+hander = logging.FileHandler(log_dir)
+hander.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(levelname)s - %(asctime)s - %(name)s - %(message)s')
+hander.setFormatter(formatter)
+logger.addHandler(hander)
+# test
+logger.debug("that is debug")
+logger.info("that is info")
+logger.error("that is error")
+logger.warning("that is warning")
 
 
 class JSONEncoder(_JSONEncoder):
@@ -70,13 +91,14 @@ def register_route(app):
     app.add_url_rule('/recommendlike/<string:recommendlike>', view_func=ARecommendLike.as_view('recommendlike'))
     app.add_url_rule('/activitylike/<string:activitylike>', view_func=AActivityLike.as_view('activitylike'))
     app.add_url_rule('/mycenter/<string:myinfo>', view_func=AMyCenter.as_view('mycenter'))
+    app.add_url_rule('/complain/<string:complain>', view_func=AMyCenter.as_view('complain'))
 
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object('WeiDian.config.setting')
-    from raven.contrib.flask import Sentry
-    sentry = Sentry(app, dsn='http://5ffc9de0629a4a58a7e76958dd4c6a2a:edc93accdb934ad1b7e16cf7fbb407e2@s.wkt.ooo:7443/3')
+    # from raven.contrib.flask import Sentry
+    # sentry = Sentry(app, dsn='http://5ffc9de0629a4a58a7e76958dd4c6a2a:edc93accdb934ad1b7e16cf7fbb407e2@s.wkt.ooo:7443/3')
     # ws = GeventWebSocket(app)
     register_route(app)   # 对app进行路由设置
     # create_test_url(app)  # 测试用

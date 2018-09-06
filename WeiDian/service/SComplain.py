@@ -12,3 +12,7 @@ class SComplain(SBase):
     @close_session
     def get_complain_by_usid(self, usid):
         return self.session.query(Complain).filter(Complain.USid == usid).order_by(Complain.COcreateTime).all()
+
+    @close_session
+    def get_complain_by_orid(self, orid):
+        return self.session.query(Complain).filter(Complain.ORid == orid).first()

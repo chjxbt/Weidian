@@ -35,9 +35,9 @@ class MakeData():
         return [str(uuid.uuid4()) for i in range(info_count)]
 
     def add_super(self):
-        from WeiDian.models.model import SuperUser
+        # from WeiDian.models.model import SuperUser
         from werkzeug.security import generate_password_hash
-        super = SuperUser()
+        super = model.SuperUser()
         super.SUid = self.user_id[0]
         # super.SUid = '6882ad09-bf5f-4607-8ad1-1cd46b6158e0'
         super.header = '这是头像图片'
@@ -249,8 +249,9 @@ class databse_deal():
 
 
 def create():
-    databse_deal().create_database()
-    model.Base.metadata.create_all(model.mysql_engine)
+    # databse_deal().create_database()
+    from base_model import Base
+    Base.metadata.create_all(model.mysql_engine)
 
 
 def drop():
@@ -270,17 +271,17 @@ if __name__ == "__main__":
 
     else:
         create()
-        data = MakeData()
-        # tshop_ids = data.make_id()
-        # print("over")
-        data.add_activity()
-        data.add_media()
-        data.add_comment()
-        data.add_tags()
-        data.add_hotmessage()
-        data.add_banner()
-        data.add_product()
-        data.add_super()
-        data.add_recommendbanner()
-        data.add_user_ordinary()
-        data.add_user_partner()
+        # data = MakeData()
+        # # tshop_ids = data.make_id()
+        # # print("over")
+        # data.add_activity()
+        # data.add_media()
+        # data.add_comment()
+        # data.add_tags()
+        # data.add_hotmessage()
+        # data.add_banner()
+        # data.add_product()
+        # data.add_super()
+        # data.add_recommendbanner()
+        # data.add_user_ordinary()
+        # data.add_user_partner()

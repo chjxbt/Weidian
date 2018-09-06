@@ -53,3 +53,7 @@ class SProduct(SBase):
         if product and product.PRfakelikenum:
             product.PRfakelikenum = product.PRfakelikenum + num
             self.session.add(product)
+
+    @close_session
+    def get_products_by_prname(self, prname):
+        return self.session.query(Product).filter(Product.PRname.like("%{0}%".format(prname))).all()

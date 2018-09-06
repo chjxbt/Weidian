@@ -71,7 +71,7 @@ class SActivity(SBase):
         return activity
 
     @close_session
-    def get_activity_by_prid(self, prid):
+    def get_activity_by_prid(self, prid, page_num, page_size):
         return self.session.query(Activity).filter_by(PRid=prid, ACisdelete=False).all()
 
     @close_session

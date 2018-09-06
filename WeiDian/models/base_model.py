@@ -18,6 +18,7 @@ def auto_createtime(f):
 
 
 class BaseModel(AbstractConcreteBase, Base):
+    __table_args__ = {"useexisting": True}
 
     def __getitem__(self, item):
         if hasattr(self, item):
@@ -57,4 +58,3 @@ class BaseModel(AbstractConcreteBase, Base):
 
     class Meta:
         abstract = True
-

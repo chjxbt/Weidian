@@ -14,8 +14,7 @@ class AComplain(Resource):
     def get(self, complain):
         print complain
         apis = {
-            "get_all": "self.control_complain.get_all()",
-            "get_one": "self.control_complain.get_one()",
+            "get_all": "self.control_complain.get_complain_by_usid()",
         }
         res = eval(apis[complain])
         return jsonify(res)
@@ -24,10 +23,7 @@ class AComplain(Resource):
         """添加活动"""
         print complain
         apis = {
-            "add_one": "self.control_complain.add_one()",
-            "del_one": "self.control_complain.delete_one()",
-            "stop_one": "self.control_complain.stop_one()",
-            "update_act": "self.control_complain.update_complain()"
+            "add_one": "self.control_complain.add_complain()",
         }
         res = eval(apis[complain])
         return jsonify(res)

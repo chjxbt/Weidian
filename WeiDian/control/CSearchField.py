@@ -88,3 +88,42 @@ class CSearchField():
         response_del_searchfield['data'] = {'sfid': sfid}
         return response_del_searchfield
 
+
+    @verify_token_decorator
+    def get_content_by_seach(self):
+        if not hasattr(request, 'user'):
+            return TOKEN_ERROR  # 未登录, 或token错误
+        
+        args = request.args.to_dict()
+        # lasting = args.get('lasting', 'true')  # 是否正在进行的活动
+        page = int(args.get('page', 1))  # 页码
+        start = int(args.get('start', 0))  # 起始位置
+        count = int(args.get('count', 15))  # 取出条数
+        if not start:
+            start = (page -1) * count
+        from WeiDian.service.SProduct import SProduct
+        from WeiDian.service.SActivity import SActivity
+        from WeiDian.control.CActivity import CActivity
+
+        prid_list = SProduct().get_products_by_prname(args.get("PRname"))
+        sactivity = SActivity()
+        activity_list = [sactivity.get_activity_by_prid(prid) for prid in prid_list]
+        if count > 30:
+            count = 30
+        end = start + count
+        len_aclist = len(activity_list)
+        if end > len_aclist:
+            end = len_aclist
+        activity_list = map(CActivity.fill_detail, activity_list)
+        for activity in activity_list:
+            sactivity.update_view_num(activity.ACid)
+        cactivity = CActivity()
+        activity_list = activity_list[start:end]
+        map(cactivity.fill_comment_two, activity_list)
+        map(cactivity.fill_like_num, activity_list)
+
+        map(cactivity.fill_type, activity_list)
+        map(cactivity.fill_product, activity_list)
+        data = import_status("get_activity_list_success", "OK")
+        data["data"] = activity_list
+        return data

@@ -15,3 +15,4 @@ from .AProductLike import AProductLike
 from .ARecommendLike import ARecommendLike
 from .AActivityLike import AActivityLike
 from .AMyCenter import AMyCenter
+from .AComplain import AComplain

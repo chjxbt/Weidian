@@ -14,7 +14,8 @@ class ASearchField(Resource):
     def get(self, searchfield):
         print searchfield
         apis = {
-            "get_all": "self.control_searchfield.get_all()"
+            "get_all": "self.control_searchfield.get_all()",
+            "get_search": "self.control_searchfield.get_content_by_seach()"
         }
         res = eval(apis[searchfield])
         return jsonify(res)
