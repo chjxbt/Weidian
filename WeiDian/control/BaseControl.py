@@ -1,4 +1,4 @@
-# *- coding:utf8 *   -
+# -*- coding:utf8 -*-
 import uuid
 from datetime import datetime
 from flask import request
@@ -20,7 +20,7 @@ class BaseActivityControl():
         act.media = self.smedia.get_media_by_acid(acid)  # 图片或视频
         act.tags = self.stags.get_show_tags_by_acid(acid)  # 右上角tag
         act.foward = self.foward.get_fowardnum_by_acid(acid)  # 转发数
-        act.likenum = self.salike.get_likenum_by_acid(acid)  # 喜欢数
+        # act.likenum = self.salike.get_likenum_by_acid(acid)  # 喜欢数
         # if hasattr(request, 'user'):
         #     alreadylike = self.salike.is_like(request.user.id, acid)
         #     act.alreadylike = True if alreadylike else False
@@ -40,7 +40,6 @@ class BaseActivityControl():
             'media',
             'tags',
             'foward',
-            'likenum',
             'soldnum',
             'remaintime')
         return act
@@ -50,8 +49,6 @@ class BaseActivityControl():
         if hasattr(request, 'user'):
             alreadylike = self.salike.is_like(request.user.id, activity.ACid)
             activity.alreadylike = True if alreadylike else False
-        else:
-            activity.alreadylike = False
         activity.likenum = activity.AClikeFakeNum or activity.AClikenum
         activity.add('likenum', 'alreadylike')
         return activity

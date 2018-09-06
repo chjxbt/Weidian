@@ -1,4 +1,4 @@
-# *- coding:utf8 *-
+# -*- coding:utf8 -*-
 import sys
 import os
 import uuid
@@ -62,7 +62,8 @@ class COrder():
     def get_order_list(self):
         """查看更多订单"""
         if is_tourist():
-            return TOKEN_ERROR
+            return AUTHORITY_ERROR(u"未登录")
+        print '已登录'
         args = request.args.to_dict()
         sell = args.get('sell')
         page = int(args.get('page', 1))  # 页码
@@ -87,7 +88,8 @@ class COrder():
     def get_order_list_by_status(self):
         """根据支付状态获取订单"""
         if is_tourist():
-            return TOKEN_ERROR
+            return AUTHORITY_ERROR(u"未登录")
+        print '已登录'
         args = request.args.to_dict()
         status = args.get('paystatus')
         sell = args.get('sell')
@@ -115,6 +117,9 @@ class COrder():
     @verify_token_decorator
     def get_order_count(self):
         """获取订单预览数"""
+        if is_tourist():
+            return AUTHORITY_ERROR(u"未登录")
+        print '已登录'
         args = request.args.to_dict()
         sell = args.get('sell')
         if sell:

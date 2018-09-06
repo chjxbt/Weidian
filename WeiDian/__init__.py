@@ -1,4 +1,4 @@
-# *- coding:utf8 *-
+# -*- coding:utf8 -*-
 from datetime import date
 
 from flask import Flask as _Flask
@@ -72,10 +72,11 @@ def register_route(app):
     app.add_url_rule('/mycenter/<string:myinfo>', view_func=AMyCenter.as_view('mycenter'))
 
 
-
 def create_app():
     app = Flask(__name__)
     app.config.from_object('WeiDian.config.setting')
+    from raven.contrib.flask import Sentry
+    sentry = Sentry(app, dsn='http://5ffc9de0629a4a58a7e76958dd4c6a2a:edc93accdb934ad1b7e16cf7fbb407e2@s.wkt.ooo:7443/3')
     # ws = GeventWebSocket(app)
     register_route(app)   # 对app进行路由设置
     # create_test_url(app)  # 测试用
