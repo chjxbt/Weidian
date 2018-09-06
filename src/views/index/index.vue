@@ -3,7 +3,7 @@
       <div class="m-suspend-btn " id="m-suspend-btn" :class="show_task_btn ? '':'active'" @click.stop="showModal('show_task')" >
         <span>开始转发</span>
       </div>
-      <mt-loadmore :top-method="loadTop"  ref="loadmore">
+      <mt-loadmore :top-method="loadTop"  :bottom-method="loadBottom" ref="loadmore">
           <div class="m-top">
             <search></search>
             <navbar :list="nav_list" @navClick="navClick"></navbar>
@@ -296,10 +296,10 @@
           },
           /*获取活动列表*/
           getActivity(tnid,start,count){
-            axios.get(api.get_all_activity,{params:{
+            axios.get(api.get_all_activity +'?token=' +  localStorage.getItem('token'),{params:{
                 lasting:true,
-                start:0,
-                count:15,
+                start:start || 0,
+                count:count || 5,
                 tnid:'shangxin'
               }}).then(res => {
               if(res.data.status == 200){
@@ -407,6 +407,16 @@
               }
             }
             this.$refs.loadmore.onTopLoaded();
+          },
+          /*上拉加载更多**/
+          loadBottom() {
+            for(let i=0;i<this.nav_list.length;i++){
+              if(this.nav_list[i].click){
+                this.getActivity(this.nav_list[i].tnid,this.activity_list.length);
+              }
+            }
+            // this.allLoaded = true;// 若数据已全部获取完毕
+            this.$refs.loadmore.onBottomLoaded();
           },
           courseClick(){
             if(this.course <6){
