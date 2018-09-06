@@ -1,11 +1,12 @@
-# *- coding:utf8 *-
+# -*- coding:utf8 -*-
 import sys
 import os
 import uuid
 from WeiDian.common.TransformToList import dict_add_models
 from WeiDian.common.import_status import import_status
 from WeiDian.common.params_require import parameter_required
-from WeiDian.common.token_required import verify_token_decorator
+from WeiDian.common.token_required import verify_token_decorator, is_tourist
+from WeiDian.config.response import AUTHORITY_ERROR
 from WeiDian.service.SActivity import SActivity
 from WeiDian.service.SActivityLike import SActivityLike
 from flask import request
@@ -19,6 +20,9 @@ class CActivityLike():
 
     @verify_token_decorator
     def like_or_cancel(self):
+        if is_tourist():
+            return AUTHORITY_ERROR(u"未登录")
+        print '已登录'
         json_data = parameter_required('acid')
         acid = json_data.get('acid')
         already_like = self.salike.is_like(request.user.id, acid)

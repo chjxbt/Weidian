@@ -1,11 +1,11 @@
-# *- coding:utf8 *-
+# -*- coding:utf8 -*-
 import sys
 import os
 from datetime import datetime, timedelta
 from flask import request
 import uuid
 from sqlalchemy.orm import Session
-from WeiDian.common.token_required import verify_token_decorator, is_admin
+from WeiDian.common.token_required import verify_token_decorator, is_admin, is_tourist
 from WeiDian.common.TransformToList import add_model
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db
@@ -41,6 +41,9 @@ class CActivity(BaseActivityControl):
         """获取条件下的所有活动
         http://127.0.0.1:5000/activity/get_all?navid=q&lasting=true
         """
+        if is_tourist():
+            return AUTHORITY_ERROR(u"未登录")
+        print '已登录'
         args = request.args.to_dict()
         tnid = args.get('tnid')  # 导航id
         suid = args.get('suid')  # 管理员id

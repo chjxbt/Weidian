@@ -1,7 +1,7 @@
 # *- coding:utf8 *-
 import sys
 import os
-from flask import json
+from flask import json, request
 from werkzeug.exceptions import HTTPException
 sys.path.append(os.path.dirname(os.getcwd()))
 
@@ -14,7 +14,7 @@ class BaseError(HTTPException):
     def __init__(self, message=None, status=None, status_code=None, header=None):
         self.code = 200
         if message:
-            self.message = message
+            self.message = message + request.path
         if status_code:
             self.status_code = status_code
         if status:

@@ -1,4 +1,4 @@
-# *- coding:utf8 *-
+# -*- coding:utf8 -*-
 from sqlalchemy.dialects.mysql import LONGTEXT
 from sqlalchemy import Column, create_engine, Integer, String, Text, Float, Boolean, orm
 from WeiDian.config import dbconfig as cfg
