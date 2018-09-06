@@ -158,7 +158,7 @@
     }
   }
   .member-info-bottoms {
-    position: fixed;
+    position: absolute;
     top: 320px;
     .member-detail {
       width: 690px;
