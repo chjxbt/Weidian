@@ -165,7 +165,7 @@
             this.changeLike(list);
             break;
           case 1:
-            this.show_modal = true;
+            // this.show_modal = true;
             break;
           case 2:
             this.show_fixed = true;

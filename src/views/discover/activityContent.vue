@@ -92,12 +92,33 @@
             this.changeLike(list);
             break;
           case 1:
-            this.show_modal = true;
+            // this.show_modal = true;
             break;
           case 2:
             this.show_fixed = true;
             break;
         }
+      },
+      // 活动点赞
+      changeLike(index) {
+        axios.post(api.ac_like + '?token=' + localStorage.getItem('token'), {
+          acid: this.activity_list[index].acid
+        }).then(res => {
+          if(res.data.status == 200){
+            if(this.activity_list[index].alreadylike) {
+              this.activity_list[index].likenum -= 1;
+              this.activity_list[index].alreadylike = false;
+              Toast({ message: res.data.message, className: 'm-toast-warning' });
+
+            }else if(!this.activity_list[index].alreadylike) {
+              this.activity_list[index].likenum += 1;
+              this.activity_list[index].alreadylike = true;
+              Toast({ message: res.data.message, className: 'm-toast-success' });
+            }
+          }else{
+            Toast({ message: res.data.message, className: 'm-toast-fail' });
+          }
+        });
       },
       /*分享按钮点击*/
       fixedClick(){
