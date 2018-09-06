@@ -3,7 +3,7 @@
     <div class="m-swipe-box">
       <mt-swipe :auto="2000">
         <mt-swipe-item v-for="item in bannerList" :key="item.id">
-            <img :src="item.rbimage" class="img" @click="toProduct(item)">
+            <img :src="item.rbimage" class="img" @click="toActivity(item)">
             <!--<span class="desc"></span>-->
         </mt-swipe-item>
       </mt-swipe>
@@ -90,8 +90,8 @@
               for(let i = 0; i < this.recommend.products.length; i ++) {
                 var elem_li = document.createElement('li'); // 生成一个 li元素
                 // 设置元素的内容
-                elem_li.innerHTML = "<img src=" + this.recommend.products[i].prmainpic + " class='m-img-list-img'><p><span class='m-price'>￥" + this.recommend.products[i].prprice +
-                  "</span><span class='m-red'>赚" + this.recommend.products[i].prsavemonty + "</span></p>";
+                elem_li.innerHTML = "<img src=" + this.recommend.products[i].prmainpic + " class='m-img-list-img' @click='toActivity(" + this.recommend.products[i]
+                  + ")'><p><span class='m-price'>￥" + this.recommend.products[i].prprice + "</span><span class='m-red'>赚" + this.recommend.products[i].prsavemonty + "</span></p>";
                 document.getElementById('m-img-list').appendChild(elem_li);
               }
             }else{
@@ -113,8 +113,9 @@
         },
         /*获取活动列表*/
         getActivity(start, count, tnid){
-          axios.get(api.get_all_activity, {
-            params: { start: 0, count: 15, tnid: this.tnid }}).then(res => {
+          let token = localStorage.getItem('token');
+          axios.get(api.get_all_activity + '?token=' + token, {
+            params: { start: 0, count: 5, tnid: this.tnid }}).then(res => {
             if(res.data.status == 200){
               this.activity_list = res.data.data;
               // console.log(this.activity_list);
