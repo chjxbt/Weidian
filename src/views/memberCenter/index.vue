@@ -133,7 +133,7 @@
     name: "index",
     data(){
       return{
-        show_modal: true,
+        show_modal: false,
         nav_list: [
           { click: true, tnname: "周周奖" },
           { click: false, tnname: "本月奖励" }
