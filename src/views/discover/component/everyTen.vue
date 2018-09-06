@@ -146,7 +146,8 @@
       },
       // 去活动内容页
       toActivity(activity) {
-        this.$router.push({path: "/activityContent", query: { activity }});
+        let rbimage = activity.rbimage;
+        this.$router.push({path: "/activityContent", query: { rbimage }});
       },
       // 去产品详情页
       toProduct(i) {

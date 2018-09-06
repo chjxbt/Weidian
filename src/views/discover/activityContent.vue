@@ -111,7 +111,7 @@
       },
     },
     mounted() {
-      this.rbimage = this.$route.query.activity.rbimage;
+      this.rbimage = this.$route.query.rbimage;
       console.log(this.rbimage);
 
       this.getActivity();
