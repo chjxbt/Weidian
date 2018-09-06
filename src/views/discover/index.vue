@@ -92,8 +92,6 @@
       },
       mounted() {
         this.getTopnav();
-        let token = "eyJhbGciOiJIUzI1NiIsImV4cCI6MTUzNjI3MDU5NSwiaWF0IjoxNTM2MTk4NTk1fQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0wOS0wNiAwOTo0OTo1NSJ9.D4eE8S4DURn3-djkgCwxEzLk__pKi_uUTYudHYKApa0";
-        localStorage.setItem('token', token);
       }
     }
 </script>
