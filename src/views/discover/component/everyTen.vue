@@ -3,7 +3,7 @@
     <div class="m-swipe-box">
       <mt-swipe :auto="2000">
         <mt-swipe-item v-for="item in bannerList" :key="item.id">
-          <img :src="item.rbimage" class="img" @click="toProduct(item)">
+          <img :src="item.rbimage" class="img" @click="toActivity(item)">
           <!--<span class="desc"></span>-->
         </mt-swipe-item>
       </mt-swipe>
@@ -85,11 +85,6 @@
             this.recommend = res.data.data[0];
             this.suuser = this.recommend.suuser;
 
-            this.recommend.products.push(this.recommend.products[0]);
-            this.recommend.products.push(this.recommend.products[0]);
-            this.recommend.products.push(this.recommend.products[0]);
-            this.recommend.products.push(this.recommend.products[0]);
-
             // 往ul中添加li
             for(let i = 0; i < this.recommend.products.length; i ++) {
               var elem_li = document.createElement('li'); // 生成一个 li元素
@@ -150,8 +145,8 @@
         })
       },
       // 去活动内容页
-      toActivity(item) {
-        console.log(item);
+      toActivity(activity) {
+        this.$router.push({path: "/activityContent", query: { activity }});
       },
       // 去产品详情页
       toProduct(i) {
@@ -231,6 +226,7 @@
         arr[v] = Object.assign({}, arr[v], { show_text: bool });
         this.activity_list = [].concat(arr);
       },
+      // 下拉刷新
       loadTop() {
         for(let i=0;i<this.nav_list.length;i++){
           if(this.nav_list[i].click){
