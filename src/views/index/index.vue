@@ -116,6 +116,7 @@
         </div>
       </div>
       <share v-if="show_fixed" @fixedClick="fixedClick" @share="share"></share>
+      <img :src="'/static/images/course/course-'+ course + '.png'" v-if="show_course" class="m-course-img" alt="" @click.stop="courseClick">
     </div>
 
 </template>
@@ -133,6 +134,8 @@
       mixins: [wxapi],
         data() {
             return {
+              course:1,
+              show_course: true,
               show_modal: false,
               show_task:false,
               show_fixed:false,
@@ -314,12 +317,21 @@
             }
           },
           /*点赞*/
-          changeLike(id){
+          changeLike(id,index){
               axios.post(api.ac_like+'?token=' +  localStorage.getItem('token'),{
                   acid:id
                 }).then(res => {
                   if(res.data.status == 200){
-                    Toast({ message: res.data.message, className: 'm-toast-success' });
+                    if(this.activity_list[index].alreadylike) {
+                      this.activity_list[index].likenum -= 1;
+                      this.activity_list[index].alreadylike = false;
+                      Toast({ message: res.data.message, className: 'm-toast-warning' });
+
+                    }else if(!this.activity_list[index].alreadylike) {
+                      this.activity_list[index].likenum += 1;
+                      this.activity_list[index].alreadylike = true;
+                      Toast({ message: res.data.message, className: 'm-toast-success' });
+                    }
                   }else{
                     Toast({ message: res.data.message, className: 'm-toast-fail' });
                   }
@@ -352,13 +364,7 @@
             console.log(list)
             switch (v){
               case 0:
-                this.activity_list[list].icon[0].alreadylike =  !this.activity_list[list].icon[0].alreadylike;
-                if( this.activity_list[list].icon[0].alreadylike){
-                  this.activity_list[list].icon[0].name = this.activity_list[list].icon[0].name +1 ;
-                }else{
-                  this.activity_list[list].icon[0].name = this.activity_list[list].icon[0].name -1 ;
-                }
-                this.changeLike(this.activity_list[list].acid);
+                this.changeLike(this.activity_list[list].acid,list);
                 break;
               case 1:
                 this.download('121312312')
@@ -369,19 +375,23 @@
                 break;
             }
           },
+          /*复制链接*/
           download(url){
+            let that =this;
             this.$copyText(url).then(function (e) {
-              this.show_modal = true;
+              that.show_modal = true;
             }, function (e) {
 
             })
 
           },
+          /*展开全文*/
           showMoreText(bool,v){
             let arr = [].concat(this.activity_list);
             arr[v] = Object.assign({}, arr[v], { show_text: bool });
             this.activity_list = [].concat(arr);
           },
+          /*下拉刷新*/
           loadTop() {
             for(let i=0;i<this.nav_list.length;i++){
               if(this.nav_list[i].click){
@@ -390,7 +400,13 @@
             }
             this.$refs.loadmore.onTopLoaded();
           },
-
+          courseClick(){
+            if(this.course <6){
+              this.course += 1;
+            }else{
+              this.show_course = false;
+            }
+          }
         }
     }
 </script>
@@ -400,6 +416,14 @@
 .m-top{
   margin-top: 10px;
 }
+  .m-course-img{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+  }
   .m-recommend{
     width: 100%;
     background-color: #F9F9F9;
