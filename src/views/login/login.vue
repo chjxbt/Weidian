@@ -59,7 +59,7 @@
         if(this.isWeiXin()){    //是来自微信内置浏览器
           // 获取微信信息，如果之前没有使用微信登陆过，将进行授权登录
           if(common.GetQueryString('code')){
-            alert(common.GetQueryString('code'))
+            // alert(common.GetQueryString('code'))
             window.localStorage.setItem("code",common.GetQueryString('code'));
             axios.get(api.get_accesstoken,{
               params:{
