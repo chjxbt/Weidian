@@ -14,6 +14,33 @@
         <div class="member-info-question m-ft-24 m-bg-main-color" @click="show_modal = true">？</div>
       </div>
     </div>
+
+    <div class="m-modal" v-if="show_modal">
+      <div class="m-modal-state">
+        <div class="modal-close m-ft-30 m-grey tr" @click="closeModal">X</div>
+        <div class="m-modal-head">
+          <navbar :list="nav_list" @navClick="navClick"></navbar>
+        </div>
+        <div class="m-modal-content" v-for="item in weekList">
+          <div class="list-row-one m-ft-20 m-grey-color tl">{{item.time}}</div>
+          <div class="list-row-two">
+            <span class="list-row-text m-ft-26 m-red">￥{{item.money}}</span>
+            <span class="list-row-text m-ft-22 m-red">返佣{{item.percentage}}%</span>
+            <span class="list-row-text m-ft-22 m-red">{{item.date}}</span>
+          </div>
+          <div class="list-row-three">
+            <span class="list-row-text m-ft-20 m-grey-color">销售额</span>
+            <span class="list-row-text m-ft-20 m-grey-color">销售额达到2千</span>
+            <span class="list-row-text m-ft-20 m-grey-color">发奖日期</span>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <div class="foot-text m-ft-24 m-black tl">奖励规则</div>
+          <div class="m-ft-22 m-grey-color">本活动最终所有权贵本平台所有。</div>
+        </div>
+      </div>
+    </div>
+
     <div class="member-info-bottoms">
       <div class="member-detail">
         <div class="member-detail-top" @click="toPage('memberDetail')">
@@ -101,17 +128,54 @@
 </template>
 
 <script>
+  import navbar from '../../components/common/navbar';
   export default {
     name: "index",
     data(){
       return{
-        show_modal: false
+        show_modal: false,
+        nav_list: [
+          { click: true, tnname: "周周奖" },
+          { click: false, tnname: "本月奖励" }
+        ],
+        weekList: [
+          { time: "8月01号-8月07号（第1周）", money: "50.00", percentage: "20", date: "8月14日" },
+          { time: "8月01号-8月07号（第1周）", money: "50.00", percentage: "20", date: "8月14日" },
+          { time: "8月01号-8月07号（第1周）", money: "50.00", percentage: "20", date: "8月14日" },
+          { time: "8月01号-8月07号（第1周）", money: "50.00", percentage: "20", date: "8月14日" }
+        ]
       }
     },
+    components: { navbar },
     methods: {
       // 从会员页跳转至支页面
       toPage(page) {
         this.$router.push(page);
+      },
+      // 点击导航栏
+      navClick(v){
+        console.log(v);
+        let arr = this.nav_list;
+        for(let i = 0; i < arr.length; i ++){
+          arr[i].click = false;
+        }
+        arr[v].click = true;
+        this.nav_list = [].concat(arr);
+        // 本月奖励
+        if(v == 0) {
+          this.weekList = [
+            { time: "8月01号-8月07号（第1周）", money: "50.00", percentage: "20", date: "8月14日" },
+            { time: "8月01号-8月07号（第1周）", money: "50.00", percentage: "20", date: "8月14日" },
+            { time: "8月01号-8月07号（第1周）", money: "50.00", percentage: "20", date: "8月14日" },
+            { time: "8月01号-8月07号（第1周）", money: "50.00", percentage: "20", date: "8月14日" }
+          ];
+        }else if(v == 1) {
+          this.weekList = [{ time: "", money: "50.00", percentage: "20", date: "8月14日" }];
+        }
+      },
+      // 关闭modal
+      closeModal() {
+        this.show_modal = false;
       }
     }
   }
@@ -119,7 +183,45 @@
 
 <style lang="less" rel="stylesheet/less">
   @import "../../common/css/index";
+  @import "../../common/css/modal";
 
+  .m-modal{
+    .m-modal-state{
+      height: 980px;
+      .modal-close {
+        margin: 20px;
+      }
+      .m-modal-head{
+        width: 100%;
+        display: block;
+        margin: -80px 0 0 -20px;
+      }
+      .m-modal-content{
+        padding: 20px 30px;
+        border-bottom: 2px #E5E5E5 solid;
+        .list-row-one {
+
+        }
+        .list-row-two {
+          width: 100%;
+          display: flex;
+          margin: 30px 0 10px 0;
+        }
+        .list-row-three {
+          width: 100%;
+          display: flex;
+        }
+        .list-row-text {
+          width: 33%;
+        }
+      }
+      .modal-foot{
+        .foot-text {
+          margin: 40px 0 20px 30px;
+        }
+      }
+    }
+  }
   .member-info {
     width: 750px;
     height: 413px;
