@@ -11,7 +11,7 @@
           <p class="member-info-text m-ft-30 tl">已超过 58% 的合伙人</p>
           <p class="member-info-text m-ft-26 tl">还差￥3650元获得额外奖励</p>
         </div>
-        <img class="member-info-question" src="/static/images/icon-search.png">
+        <div class="member-info-question m-ft-24 m-bg-main-color" @click="show_modal = true">？</div>
       </div>
     </div>
     <div class="member-info-bottoms">
@@ -38,7 +38,7 @@
               <span>会员成单率</span>
               <span class="m-red m-num">30%</span>
             </li>
-            <img class="growth-reduce" src="/static/images/icon-more.png">
+            <img class="growth-reduce" src="/static/images/num-up.png">
           </ul>
         </div>
       </div>
@@ -66,7 +66,6 @@
               <span>自卖销售额</span>
               <span class="m-red m-num">3000.00</span>
             </li>
-            <img class="growth-reduce" src="/static/images/icon-more.png">
           </ul>
         </div>
       </div>
@@ -106,7 +105,7 @@
     name: "index",
     data(){
       return{
-
+        show_modal: false
       }
     },
     methods: {
@@ -151,9 +150,11 @@
         }
       }
       .member-info-question {
-        width: 33px;
-        height: 33px;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
         margin: 165px 0 0 20px;
+        background-color: @blue;
       }
     }
   }

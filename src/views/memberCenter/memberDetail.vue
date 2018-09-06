@@ -27,18 +27,18 @@
         <div class="detail-th detail-th-text">微信名</div>
         <div class="detail-th">
           <span class="detail-th-text">订单量</span>
-          <img class="growth-reduce-img" src="/static/images/icon-list-right.png"/>
-          <span class="detail-th-num">3%</span>
+          <img class="growth-reduce-img" src="/static/images/num_up.png"/>
+          <span class="detail-th-num m-red">3%</span>
         </div>
         <div class="detail-th">
           <span class="detail-th-text">转发量</span>
-          <img class="growth-reduce-img" src="/static/images/icon-list-right.png"/>
-          <span class="detail-th-num">3%</span>
+          <img class="growth-reduce-img" src="/static/images/num_up.png"/>
+          <span class="detail-th-num m-red">3%</span>
         </div>
         <div class="detail-th">
           <span class="detail-th-text">直收人数</span>
-          <img class="growth-reduce-img" src="/static/images/icon-list-right.png"/>
-          <span class="detail-th-num">3%</span>
+          <img class="growth-reduce-img" src="/static/images/num_down.png"/>
+          <span class="detail-th-num m-blue">3%</span>
         </div>
       </div>
       <div class="detail-table-row" v-for="(item, index) in trList">
@@ -46,15 +46,15 @@
         <div class="tr-name" :class="index == 0?'active':''">{{item.name}}</div>
         <div class="detail-tr">
           <span class="detail-tr-num" :class="index == 0?'active':''">20</span>
-          <img class="growth-reduce-img" src="/static/images/icon-list-right.png"/>
+          <img class="growth-reduce-img" src="/static/images/num_down.png"/>
         </div>
         <div class="detail-tr">
           <span class="detail-tr-num" :class="index == 0?'active':''">500</span>
-          <img class="growth-reduce-img" src="/static/images/icon-list-right.png"/>
+          <img class="growth-reduce-img" src="/static/images/num_up.png"/>
         </div>
         <div class="detail-tr">
           <span class="detail-tr-num" :class="index == 0?'active':''">6</span>
-          <img class="growth-reduce-img" src="/static/images/icon-list-right.png"/>
+          <img class="growth-reduce-img" src="/static/images/num_up.png"/>
         </div>
       </div>
     </div>
@@ -136,7 +136,6 @@
       }
       .detail-th-num {
         font-size: 18px;
-        color: @mainColor;
         margin-top: 6px;
       }
       .detail-th {

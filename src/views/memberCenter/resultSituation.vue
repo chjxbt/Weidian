@@ -8,8 +8,8 @@
         <div class="detail-th detail-th-text">微信名</div>
         <div class="detail-th">
           <span class="detail-th-text">销售额</span>
-          <img class="growth-reduce-img" src="/static/images/icon-list-right.png"/>
-          <span class="detail-th-num">3%</span>
+          <img class="growth-reduce-img" src="/static/images/num_down.png"/>
+          <span class="detail-th-num m-blue">3%</span>
         </div>
       </div>
       <div class="detail-table-row" v-for="(item, index) in trList">
@@ -17,7 +17,7 @@
         <div class="tr-name" :class="index == 0 || index == 1?'active':''">{{item.name}}</div>
         <div class="detail-tr">
           <span class="detail-tr-num" :class="index == 0 || index == 1?'active':''">9000</span>
-          <img class="growth-reduce-img" src="/static/images/icon-list-right.png"/>
+          <img class="growth-reduce-img" src="/static/images/num_up.png"/>
         </div>
       </div>
     </div>
@@ -185,7 +185,6 @@
       }
       .detail-th-num {
         font-size: 18px;
-        color: @mainColor;
         margin-top: 6px;
       }
       .detail-th {
@@ -291,7 +290,7 @@
     }
 
     .m-details{
-      margin-top: 90px;
+      margin-top: 110px;
       .m-select-date{
         text-align: center;
         font-size: 24px;
