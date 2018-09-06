@@ -5,7 +5,8 @@
         <span @click="login">微信登录</span></div>
       <div class="m-login-bottom">
         <span class="m-login-check-box">
-          <span class="m-login-check"></span>
+          <span class="m-login-check" :class="check?'active':''" @click.stop="checkClick"></span>
+          <!--<input type="checkbox" class="m-login-check">-->
           <span>我已阅读并同意《用户使用协议》</span>
         </span>
       </div>
@@ -21,7 +22,8 @@
     export default {
         data() {
             return {
-                name: ''
+                name: '',
+              check:true
             }
         },
         components: {},
@@ -37,13 +39,20 @@
 
           },
           login() {
-            const id = 'wxe8e8f6b9351d3587'
-            const url = window.location.href;
-            // const  url = 'https://daaiti.cn/WeiDian/#/login';
+            if(this.check){
+              const id = 'wxe8e8f6b9351d3587'
+              const url = window.location.href;
+              // const  url = 'https://daaiti.cn/WeiDian/#/login';
+              window.location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid='
+                +  id + '&redirect_uri='+ encodeURIComponent(url) + '&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect'
+            }else{
 
-            window.location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid='
-            +  id + '&redirect_uri='+ encodeURIComponent(url) + '&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect'
+            }
 
+
+          },
+          checkClick(){
+            this.check = !this.check;
           }
         },
       mounted(){
@@ -102,9 +111,13 @@
       display: inline-block;
       width: 23px;
       height: 23px;
-      border: 1px solid #a4a4a4;
+      background: url("/static/images/icon-check-personal.png") no-repeat center;
+      background-size: 100% 100%;
       vertical-align: bottom;
-
+      &.active{
+        background: url("/static/images/icon-check-personal-active.png") no-repeat center;
+        background-size: 100% 100%;
+      }
     }
   }
 }
