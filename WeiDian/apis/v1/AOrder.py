@@ -22,7 +22,9 @@ class AOrder(Resource):
     def get(self, order):
         print order
         apis = {
-            'get_list': 'self.corder.get_order_list()'
+            'get_more': 'self.corder.get_order_list()',
+            'get_count': 'self.corder.get_order_count()',
+            'get_list': 'self.corder.get_order_list_by_status()'
         }
         res = eval(apis[order])
         return jsonify(res)

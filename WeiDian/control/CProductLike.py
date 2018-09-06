@@ -55,4 +55,3 @@ class CProductLike():
         if is_tourist():
             return TOKEN_ERROR()
         productlike_list = self.sproductlike.get_productlike_list_by_usid(request.user.id)
-        pass

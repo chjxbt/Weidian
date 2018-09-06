@@ -14,3 +14,4 @@ from .AOrder import AOrder
 from .AProductLike import AProductLike
 from .ARecommendLike import ARecommendLike
 from .AActivityLike import AActivityLike
+from .AMyCenter import AMyCenter

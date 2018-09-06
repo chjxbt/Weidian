@@ -361,7 +361,7 @@ class OrderInfo(BaseModel):
     OIsn = Column(String(64))  # 订单号
     USid = Column(String(64))  # 用户
     OItradenum = Column(String(125))  # 交易号, (如果有)
-    # 订单状态: {0: 待支付, 1: 支付成功, 2: 超时关闭, 3: 支付关闭, 4:待发货, 5:已发货 }
+    # 订单状态: {0: 待付款, 1: 支付成功, 2: 超时关闭, 3: 支付关闭, 4:待发货, 5:待收货, 6:待评价, 7:退换货 }
     OIpaystatus = Column(Integer, default=0)
     OIpaytype = Column(Integer)  # 支付类型: {0: 银行卡支付, 1: 微信支付}
     OIleavetext = Column(String(255))  # 订单留言
@@ -378,6 +378,7 @@ class OrderInfo(BaseModel):
     @auto_createtime
     def __init__(self):
         self.fields = self.all
+
 
 class OrderProductInfo(BaseModel):
     """订单商品详情, 多个订单商品详情对应一个订单"""
@@ -516,7 +517,7 @@ class User(BaseModel):
     USname = Column(String(64), nullable=False)  # 用户名
     USpassword = Column(String(255))  # 密码
     USphone = Column(String(16))  # 手机号
-    UShader = Column(String(255))  # 头像
+    USheader = Column(String(255))  # 头像
     USgender = Column(String(64))  # 性别
     USage = Column(Integer)  # 年龄
     USlastlogin = Column(String(64))  # 用户上次登录时间
@@ -528,7 +529,7 @@ class User(BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['USid', 'USname', 'UShader']
+        self.fields = ['USid', 'USname', 'USheader']
 
 
 class UserLoginTime(BaseModel):
@@ -559,7 +560,7 @@ class SuperUser(BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['SUid', 'SUname', 'SUheader']
+        self.fields = self.all
 
 
 class UserAddress(BaseModel):
@@ -587,6 +588,23 @@ class SearchField(BaseModel):
     @auto_createtime
     def __init__(self):
         self.fields = ['SFid', 'SFtext', 'SFsort']
+
+
+class MyCenter(BaseModel):
+    """我的"""
+    __tablename__ = 'mycenter'
+    MYid = Column(String(64), primary_key=True)
+    USid = Column(String(64), nullable=False)
+    MYranking = Column(String(64))  # 我的排名
+    Myrewards = Column(String(64))  # 额外奖励
+
+    @orm.reconstructor
+    def __init__(self):
+        self.fields = ['MYid', 'MYranking', 'MYrewards']
+
+
+
+    # TODO 我的
 
 
 class IndexAdAlert(BaseModel):
@@ -623,19 +641,6 @@ class MonthMonthReward(BaseModel):
     MMRmount = Column(Float)  # 需要的团队销售总额
 
 
-class MyCenter(BaseModel):
-    """我的"""
-    __tablename__ = 'mycenter'
-    MYid = Column(String(64), primary_key=True)
-    USid = Column(String(64), nullable=False)
-    MYranking = Column(String(64))  # 我的排名
-    Myrewards = Column(String(64))  # 额外奖励
-
-
-
-
-    # TODO 我的
-
 
 
 class Complain(BaseModel):
@@ -647,7 +652,6 @@ class Complain(BaseModel):
     ORid = Column(String(64))          # 关联订单id
     USid = Column(String(64))          # 发起人id
     COcreateTime = Column(String(14))  # 创建时间
-
 
 
 # 交易相关
