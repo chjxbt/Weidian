@@ -1,15 +1,7 @@
 <template>
   <div>
-    <div class="m-navbar" v-if="navNum == 4">
+    <div class="m-navbar" >
       <ul class="ul-four">
-        <li v-for="(item,index) in list" :class="item.click?'active':''" @click="navClick(index)">
-          <span class="m-navbar-text">{{item.tnname}}</span>
-          <span class="m-dot" v-if="item.dot"></span>
-        </li>
-      </ul>
-    </div>
-    <div class="m-navbar" v-if="navNum == 3">
-      <ul class="ul-three">
         <li v-for="(item,index) in list" :class="item.click?'active':''" @click="navClick(index)">
           <span class="m-navbar-text">{{item.tnname}}</span>
           <span class="m-dot" v-if="item.dot"></span>
@@ -25,7 +17,7 @@
       name: "navbar",
       data(){
         return{
-          navNum: 4
+
         }
       },
       props:{
@@ -41,7 +33,7 @@
         }
       },
       mounted() {
-        this.navNum = this.list.length;
+
       }
     }
 </script>
@@ -58,9 +50,10 @@
       align-items: center;
       font-size: 32px;
       white-space: nowrap;
+      justify-content: space-around;
       li{
         padding: 10px 0;
-        width: 25%;
+        /*width: 25%;*/
         position: relative;
         span.m-navbar-text{
           padding: 10px 20px;
@@ -82,35 +75,6 @@
       }
     }
 
-    .ul-three{
-      display: flex;
-      flex-flow: row;
-      align-items: center;
-      color: @black;
-      font-size: 28px;
-      white-space: nowrap;
-      li{
-        padding: 20px 25px;
-        width: 25%;
-        position: relative;
-        span.m-navbar-text{
-          padding: 20px 20px;
-          font-weight: 600;
-        }
-        &.active{
-          span.m-navbar-text{
-            color: @mainColor;
-            border-bottom: 3px solid @mainColor;
-          }
-        }
-        .m-dot{
-          position: absolute;
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          background-color: @mainColor;
-        }
-      }
-    }
+
   }
 </style>

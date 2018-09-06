@@ -153,7 +153,15 @@
               hot_index:0,
               interval:null,
               activity_list:[],
-              nav_list:[],
+              nav_list:[
+                {
+                  sub: [],
+                  tnid: "c3281b16-ab6b-11e8-97e2-00163e0cc024",
+                  tnname: "特卖",
+                  tntype: 1,
+                  tsort: 57
+                }
+              ],
               icon_list:[
                 {
                   src:'icon-like',
@@ -251,7 +259,7 @@
           getTopnav(){
             axios.get(api.get_home_topnav).then(res => {
               if(res.data.status == 200){
-                this.nav_list = res.data.data;
+                this.nav_list = [].concat(res.data.data);
                 for(let i=0;i<this.nav_list.length;i++){
                   this.nav_list[i].click =false;
                 }
