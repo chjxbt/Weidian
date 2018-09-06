@@ -211,6 +211,11 @@
         margin: 0 20px;
         font-size: 28px;
         text-align: left;
+        white-space: nowrap;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 1;
+        overflow: hidden;
         &.active{
           color: @mainColor;
         }
