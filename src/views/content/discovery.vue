@@ -53,40 +53,8 @@
           </div>
         </div>
       </div>
-      <ul class="m-weidian-tabbox">
-        <li>
-          <span class="m-tab-name active">每日10荐</span>
-          <span class="m-tab-line">/</span>
-        </li>
-        <li>
-          <span class="m-tab-name ">素材圈</span>
-          <span class="m-tab-line">/</span>
-        </li>
-        <li>
-          <span class="m-tab-name ">公告</span>
-          <span class="m-tab-line">/</span>
-        </li>
-        <li>
-          <span class="m-tab-name">教程</span>
-        </li>
-      </ul>
-      <ul class="m-weidian-tabbox m-ft-12">
-        <li>
-          <span class="m-tab-name active">精选</span>
-          <span class="m-tab-line">/</span>
-        </li>
-        <li>
-          <span class="m-tab-name ">心灵鸡汤</span>
-          <span class="m-tab-line">/</span>
-        </li>
-        <li>
-          <span class="m-tab-name ">店主招募</span>
-          <span class="m-tab-line">/</span>
-        </li>
-        <li>
-          <span class="m-tab-name">新手必发</span>
-        </li>
-      </ul>
+      <w-tab :list="tab_list1"  @wTabClick="wTabClick1"></w-tab>
+      <w-tab :list="tab_list2" v-if="page == '素材圈'" class="m-ft-12"  @wTabClick="wTabClick2"></w-tab>
       <div class="m-form-item">
         <p class="m-form-label">商品名称</p>
         <div class="m-item-content">
@@ -185,6 +153,7 @@
 
 <script>
   import pageTitle from '../../components/common/title';
+  import wTab from '../../components/common/wTab';
   export default {
     data(){
       return{
@@ -206,13 +175,77 @@
           label: '北京烤鸭'
         }],
         value: '',
-        imageUrl:''
+        imageUrl:'',
+        page:'每日10荐',
+        tab_list1:[
+          {
+            name:'每日10荐',
+            url:'',
+            active:true
+          },
+          {
+            name:'素材圈',
+            url:'',
+            active:false
+          },
+          {
+            name:'公告',
+            url:'',
+            active:false
+          },
+          {
+            name:'教程',
+            url:'',
+            active:false
+          }
+        ],
+        tab_list2:[
+          {
+            name:'精选',
+            url:'',
+            active:true
+          },
+          {
+            name:'心灵鸡汤',
+            url:'',
+            active:false
+          },
+          {
+            name:'店主招募',
+            url:'',
+            active:false
+          },
+          {
+            name:'新手必发',
+            url:'',
+            active:false
+          }
+        ],
+
       }
     },
     components:{
-      pageTitle
+      pageTitle,
+      wTab
     },
     methods:{
+      wTabClick1(i){
+        let arr = [].concat(this.tab_list1);
+        for(let a =0;a<arr.length;a++){
+          arr[a].active = false;
+        }
+        arr[i].active = true;
+        this.page = arr[i].name;
+        this.tab_list1 = [].concat(arr);
+      },
+      wTabClick2(i){
+        let arr = [].concat(this.tab_list2);
+        for(let a =0;a<arr.length;a++){
+          arr[a].active = false;
+        }
+        arr[i].active = true;
+        this.tab_list2 = [].concat(arr);
+      },
       handleAvatarSuccess(){
 
       },

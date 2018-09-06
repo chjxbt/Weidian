@@ -2,25 +2,13 @@
   <div class="m-weidian">
     <page-title :title="name" ></page-title>
     <div class="m-weidian-content">
-      <ul class="m-weidian-tabbox m-no-margin">
-        <li>
-          <span class="m-tab-name active">首页</span>
-          <span class="m-tab-line">/</span>
-        </li>
-        <li>
-          <span class="m-tab-name ">发现</span>
-          <span class="m-tab-line">/</span>
-        </li>
-        <li>
-          <span class="m-tab-name ">我的</span>
-        </li>
-      </ul>
+      <w-tab :list="tab_list" @wTabClick="wTabClick"></w-tab>
       <!--首页-->
-     <div class="m-index">
+     <div class="m-index" v-if="page == '首页'">
+       <h3 class="m-title">浮窗管理</h3>
        <el-form :label-position="labelPosition" label-width="100px" :model="formIndex">
          <div class="m-form-item m-item-modal">
            <span class="m-item-add">+</span>
-           <p class="m-form-label">浮窗管理</p>
            <el-form-item label="任务标题">
              <el-input v-model="formIndex.value" class="m-input-m"></el-input>
            </el-form-item>
@@ -63,20 +51,79 @@
            <textarea v-model="formIndex.value" class="m-textarea" placeholder="请输入内容"></textarea>
          </el-form-item>
        </el-form>
-
      </div>
       <!--发现-->
-      <div class="m-discovery">
-
-
+      <div class="m-discovery" v-if="page == '发现'">
+        <h3 class="m-title">弹框图片</h3>
+        <div class="m-form-item">
+          <div class="m-item-content">
+            <div class=" m-item-row m-f">
+              <el-upload
+                class="avatar-uploader"
+                action="https://jsonplaceholder.typicode.com/posts/"
+                :show-file-list="false"
+                :on-success="handleAvatarSuccess"
+                :before-upload="beforeAvatarUpload">
+                <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+              </el-upload>
+            </div>
+          </div>
+        </div>
       </div>
       <!--我的-->
-      <div class="m-personal">
-
-
+      <div class="m-personal" v-if="page == '我的'">
+        <h3 class="m-title">弹框图片</h3>
+        <div class="m-form-item">
+          <p class="m-form-label">邀请专属粉丝海报</p>
+          <div class="m-item-content">
+            <div class=" m-item-row m-f">
+              <el-upload
+                class="avatar-uploader"
+                action="https://jsonplaceholder.typicode.com/posts/"
+                :show-file-list="false"
+                :on-success="handleAvatarSuccess"
+                :before-upload="beforeAvatarUpload">
+                <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+              </el-upload>
+            </div>
+          </div>
+        </div>
+        <div class="m-form-item">
+          <p class="m-form-label">邀请开店海报</p>
+          <div class="m-item-content">
+            <div class=" m-item-row m-f">
+              <el-upload
+                class="avatar-uploader"
+                action="https://jsonplaceholder.typicode.com/posts/"
+                :show-file-list="false"
+                :on-success="handleAvatarSuccess"
+                :before-upload="beforeAvatarUpload">
+                <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+              </el-upload>
+            </div>
+          </div>
+        </div>
+        <h3 class="m-title">规则弹框</h3>
+        <el-form :label-position="labelPosition" label-width="180px" :model="formIndex">
+          <el-form-item label="等级规则（未开店）">
+            <textarea v-model="formIndex.value" class="m-textarea" placeholder="请输入内容"></textarea>
+          </el-form-item>
+          <el-form-item label="等级规则（已开店）">
+            <textarea v-model="formIndex.value" class="m-textarea" placeholder="请输入内容"></textarea>
+          </el-form-item>
+          <el-form-item label="专属粉丝管理规则">
+            <textarea v-model="formIndex.value" class="m-textarea" placeholder="请输入内容"></textarea>
+          </el-form-item>
+          <el-form-item label="开店邀请海报规则">
+            <textarea v-model="formIndex.value" class="m-textarea" placeholder="请输入内容"></textarea>
+          </el-form-item>
+        </el-form>
       </div>
       <div class="m-form-confirm-btn ">
-        <span>暂停</span>
+        <span v-if="page == '首页'">暂停</span>
         <span>发布</span>
       </div>
     </div>
@@ -85,10 +132,29 @@
 
 <script>
   import pageTitle from '../../components/common/title';
+  import wTab from '../../components/common/wTab';
   export default {
     data(){
       return{
-        name:'首页管理',
+        page:'首页',
+        name:'弹框管理',
+        tab_list:[
+          {
+            name:'首页',
+            url:'',
+            active:true
+          },
+          {
+            name:'发现',
+            url:'',
+            active:false
+          },
+          {
+            name:'我的',
+            url:'',
+            active:false
+          }
+        ],
         options: [{
           value: '选项1',
           label: '黄金糕'
@@ -114,9 +180,19 @@
       }
     },
     components:{
-      pageTitle
+      pageTitle,
+      wTab
     },
     methods:{
+      wTabClick(i){
+        let arr = [].concat(this.tab_list);
+        for(let a =0;a<arr.length;a++){
+          arr[a].active = false;
+        }
+        arr[i].active = true;
+        this.page = arr[i].name
+        this.tab_list = [].concat(arr);
+      },
       handleAvatarSuccess(){
 
       },
@@ -127,6 +203,10 @@
   }
 </script>
 
-<style lang="less" rel="stylesheet/less" scoped>
+<style lang="less" rel="stylesheet/less" >
   @import "../../common/css/weidian";
+  .m-title{
+      font-size: 18px;
+    margin-bottom: 0.1rem;
+  }
 </style>

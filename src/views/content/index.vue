@@ -51,23 +51,7 @@
           </div>
         </div>
       </div>
-      <ul class="m-weidian-tabbox">
-        <li>
-          <span class="m-tab-name active">上新</span>
-          <span class="m-tab-line">/</span>
-        </li>
-        <li>
-          <span class="m-tab-name ">特卖</span>
-          <span class="m-tab-line">/</span>
-        </li>
-        <li>
-          <span class="m-tab-name ">爆款</span>
-          <span class="m-tab-line">/</span>
-        </li>
-        <li>
-          <span class="m-tab-name">预售</span>
-        </li>
-      </ul>
+      <w-tab :list="tab_list"  @wTabClick="wTabClick"></w-tab>
       <div class="m-form-item">
         <p class="m-form-label">商家名称</p>
         <div class="m-item-content">
@@ -157,6 +141,7 @@
 
 <script>
   import pageTitle from '../../components/common/title';
+  import wTab from '../../components/common/wTab';
   export default {
     data(){
       return{
@@ -178,13 +163,44 @@
           label: '北京烤鸭'
         }],
         value: '',
-        imageUrl:''
+        imageUrl:'',
+        tab_list:[
+          {
+            name:'上新',
+            url:'',
+            active:true
+          },
+          {
+            name:'特卖',
+            url:'',
+            active:false
+          },
+          {
+            name:'爆款',
+            url:'',
+            active:false
+          },
+          {
+            name:'预告',
+            url:'',
+            active:false
+          }
+        ],
       }
     },
     components:{
-      pageTitle
+      pageTitle,
+      wTab
     },
     methods:{
+      wTabClick(i){
+        let arr = [].concat(this.tab_list);
+        for(let a =0;a<arr.length;a++){
+          arr[a].active = false;
+        }
+        arr[i].active = true;
+        this.tab_list = [].concat(arr);
+      },
       handleAvatarSuccess(){
 
       },
