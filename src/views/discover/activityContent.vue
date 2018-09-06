@@ -1,6 +1,6 @@
 <template>
   <div>
-    <img class="activity-img" :src="activity.rbimage">
+    <img class="activity-img" :src="rbimage">
 
     <mt-loadmore :top-method="loadTop" ref="loadmore">
       <div class="m-index-section">
@@ -19,11 +19,15 @@
   import mFooter from '../../components/common/footer';
   import ctx from '../index/components/ctx';
   import share from '../../components/common/share';
+  import api from '../../api/api';
+  import axios from 'axios';
+  import { Toast } from 'mint-ui';
+
   export default {
     name: "activityContent",
     data() {
       return {
-        activity: {},
+        rbimage: "",
         activity_list: [],
         icon_list:[
           {
@@ -42,11 +46,36 @@
             url:'icon-share'
           }
         ],
-        show_fixed: false
+        show_fixed: false,
+        tnid: "5ed4e908-a6db-11e8-b2ff-0cd292f93404"
       }
     },
     components: { mFooter, ctx, share },
     methods: {
+      /*获取活动列表*/
+      getActivity(start, count, tnid){
+        let token = localStorage.getItem('token');
+        axios.get(api.get_all_activity + '?token=' + token, {
+          params: { start: 0, count: 5, tnid: this.tnid }}).then(res => {
+          if(res.data.status == 200){
+            this.activity_list = res.data.data;
+            // console.log(this.activity_list);
+
+            for(let i = 0; i < this.activity_list.length; i ++){
+              this.activity_list[i].icon = this.icon_list;
+              this.activity_list[i].icon[0].name = this.activity_list[i].likenum;
+              this.activity_list[i].icon[0].alreadylike = this.activity_list[i].alreadylike;
+              this.activity_list[i].actext.length > 92 && (this.activity_list[i].show_text = true);
+
+              /*if(this.activity_list[i].alreadylike) {
+                this.icon_list[0].src = "icon-like-active";
+              }*/
+            }
+          }else{
+            Toast({ message: res.data.message, className: 'm-toast-fail' });
+          }
+        })
+      },
       // 下拉刷新
       loadTop() {
         for(let i=0;i<this.nav_list.length;i++){
@@ -70,6 +99,10 @@
             break;
         }
       },
+      /*分享按钮点击*/
+      fixedClick(){
+        this.show_fixed = false;
+      },
       // 展开全文、收齐全文
       showMoreText(bool,v){
         let arr = [].concat(this.activity_list);
@@ -77,9 +110,11 @@
         this.activity_list = [].concat(arr);
       },
     },
-    created() {
-      this.activity = this.$route.query.activity;
-      console.log(this.activity);
+    mounted() {
+      this.rbimage = this.$route.query.activity.rbimage;
+      console.log(this.rbimage);
+
+      this.getActivity();
     }
   }
 </script>
@@ -90,5 +125,6 @@
   .activity-img {
     width: 750px;
     height: 280px;
+    margin-bottom: 40px;
   }
 </style>
