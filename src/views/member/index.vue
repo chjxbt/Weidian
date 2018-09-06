@@ -5,7 +5,7 @@
       <el-form :inline="true" :model="form" class="demo-form-inline">
         <div class="m-select-box">
             <el-form-item label="用户名">
-              <el-input v-model="form.name" class="m-input-s" placeholder=""></el-input>
+              <el-input v-model="form.name" class="m-input-s m-green-b" placeholder=""></el-input>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" class="m-select-btn" @click="storeSubmit">查询</el-button>
