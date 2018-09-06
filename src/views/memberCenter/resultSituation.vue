@@ -87,8 +87,16 @@
             <div class="order-line-four m-ft-20 m-grey tl">{{item.time}} 创建</div>
             <div class="order-line-five"></div>
           </div>
-          <div v-else>
-
+          <div class="extra-box" v-if="!isIncome">
+            <div class="m-scroll">
+              <div class="extra-box-list" v-for="item in extraList">
+                <div class="list-left m-grey">
+                  <div class="list-left-top m-ft-26">{{item.name}}</div>
+                  <div class="m-ft-20">{{item.time}}</div>
+                </div>
+                <div class="list-right m-ft-28 m-red">+{{item.money}}</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -124,6 +132,17 @@
             status: "交易完成", payNum: "29.36",  earning: "2.36", from: "省钱了XXX", time: "2018-08-08 16:49:07"},
           { src: "/static/images/product1.png", name: "商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称", orderNo: "123456789000",
             status: "交易完成", payNum: "29.36",  earning: "2.36", from: "省钱了XXX", time: "2018-08-08 16:49:07"}
+        ],
+        extraList: [
+          { name: "周周奖", time: "2018-08-08 16:49:56", money: "1.35" },
+          { name: "周周奖", time: "2018-08-08 16:49:56", money: "1.35" },
+          { name: "周周奖", time: "2018-08-08 16:49:56", money: "1.35" },
+          { name: "周周奖", time: "2018-08-08 16:49:56", money: "1.35" },
+          { name: "周周奖", time: "2018-08-08 16:49:56", money: "1.35" },
+          { name: "周周奖", time: "2018-08-08 16:49:56", money: "1.35" },
+          { name: "周周奖", time: "2018-08-08 16:49:56", money: "1.35" },
+          { name: "周周奖", time: "2018-08-08 16:49:56", money: "1.35" },
+          { name: "周周奖", time: "2018-08-08 16:49:56", money: "1.35" }
         ]
       }
     },
@@ -347,6 +366,29 @@
           }
           .order-line-four {
             margin: 40px 0 20px 50px;
+          }
+        }
+        .extra-box {
+          .m-scroll{
+            height: 610px;
+            overflow-y: auto;
+            margin-right: 30px;
+            .extra-box-list {
+              width: 100%;
+              display: flex;
+              margin-bottom: 40px;
+              .list-left {
+                width: 60%;
+                .list-left-top {
+                  margin-bottom: 5px;
+                  letter-spacing: 3px;
+                }
+              }
+              .list-right {
+                width: 40%;
+                line-height: 70px;
+              }
+            }
           }
         }
       }
