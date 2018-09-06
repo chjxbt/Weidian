@@ -653,6 +653,11 @@ class Complain(BaseModel):
     USid = Column(String(64))          # 发起人id
     COcreateTime = Column(String(14))  # 创建时间
 
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = ['COid', 'COcontent', 'COtype', "ORid", "USid"]
+
 
 # 交易相关
 """

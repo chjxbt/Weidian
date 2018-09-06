@@ -47,3 +47,4 @@ cancel_activity_like_success = '取消喜欢成功'
 add_activity_like_success = '添加喜欢成功'
 get_my_info_success = '获取我的信息成功'
 SUCCESS_GET_CONFIG = '获取微信数据成功'
+get_complain_success = "获取投诉信息成功"
