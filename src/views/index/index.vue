@@ -380,7 +380,6 @@
                 break;
               case 1:
                 this.download('121312312')
-
                 break;
               case 2:
                 this.show_fixed = true;
