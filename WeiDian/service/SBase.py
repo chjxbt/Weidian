@@ -5,6 +5,7 @@ import DBSession
 from WeiDian.common.weidian_error import dberror
 import WeiDian.models.model as models
 from WeiDian.models.base_model import BaseModel
+from WeiDian import logger
 sys.path.append(os.path.dirname(os.getcwd()))
 
 
@@ -20,6 +21,7 @@ def close_session(fn):
             return result
         except Exception as e:
             print("DBERROR" + e.message)
+            logger.exception("DBERROR")
             self.session.rollback()
             # raise e
             raise dberror(message=e.message)

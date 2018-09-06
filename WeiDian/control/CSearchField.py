@@ -104,20 +104,25 @@ class CSearchField():
         from WeiDian.service.SProduct import SProduct
         from WeiDian.service.SActivity import SActivity
         from WeiDian.control.CActivity import CActivity
-
-        prid_list = SProduct().get_products_by_prname(args.get("PRname"))
+        prname = args.get("PRname")
+        prname = prname.encode("utf8") if isinstance(prname, unicode) else prname
+        prid_list = SProduct().get_products_by_prname(prname)
         sactivity = SActivity()
-        activity_list = [sactivity.get_activity_by_prid(prid) for prid in prid_list]
+        activity_list = []
+        for prid in prid_list:
+            activity_list.extend(sactivity.get_activity_by_prid(prid.PRid))
+
         if count > 30:
             count = 30
         end = start + count
         len_aclist = len(activity_list)
         if end > len_aclist:
             end = len_aclist
-        activity_list = map(CActivity.fill_detail, activity_list)
+        cactivity = CActivity()
+        activity_list = map(cactivity.fill_detail, activity_list)
         for activity in activity_list:
             sactivity.update_view_num(activity.ACid)
-        cactivity = CActivity()
+
         activity_list = activity_list[start:end]
         map(cactivity.fill_comment_two, activity_list)
         map(cactivity.fill_like_num, activity_list)

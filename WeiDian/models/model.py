@@ -651,7 +651,7 @@ class Complain(BaseModel):
     COtype = Column(Integer)           # 投诉类型 {201："客服态度差", 202："商品质量问题", 203："售后方案不合理", 204："商品包装问题"}
     ORid = Column(String(64))          # 关联订单id
     USid = Column(String(64))          # 发起人id
-    COcreateTime = Column(String(14))  # 创建时间
+    COcreatetime = Column(String(14))  # 创建时间
 
     @orm.reconstructor
     @auto_createtime
