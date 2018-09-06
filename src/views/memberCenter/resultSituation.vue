@@ -2,7 +2,7 @@
   <div>
     <navbar :list="nav_list" @navClick="navClick"></navbar>
 
-    <div class="detail-table" v-if="nav_select == 0 || nav_select == 1">
+    <div class="detail-table" v-if="nav_select == 0">
       <different-days></different-days>
       <div class="detail-table-header">
         <div class="detail-th detail-th-text">微信名</div>
@@ -22,7 +22,7 @@
       </div>
     </div>
 
-    <div class="since-selling" v-if="nav_select == 2">
+    <div class="since-selling" v-if="nav_select == 1 || nav_select == 2">
       <div class="since-selling-top">
         <div class="since-selling-bac"></div>
         <div class="top-left">
