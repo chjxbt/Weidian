@@ -17,7 +17,7 @@
       name: "navbar",
       data(){
         return{
-          navNum: 4
+
         }
       },
       props:{
@@ -33,7 +33,7 @@
         }
       },
       mounted() {
-        this.navNum = this.list.length;
+
       }
     }
 </script>
