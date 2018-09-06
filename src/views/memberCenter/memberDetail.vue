@@ -159,8 +159,13 @@
       }
       .tr-name {
         width: 37.5px;
-        font-size: 28px;
         margin: 0 20px;
+        font-size: 28px;
+        white-space: nowrap;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 1;
+        overflow: hidden;
         &.active{
           color: @mainColor;
         }
