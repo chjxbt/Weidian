@@ -5,7 +5,7 @@
       </div>
       <mt-loadmore :top-method="loadTop"  :bottom-method="loadBottom" ref="loadmore">
           <div class="m-top">
-            <search></search>
+            <search @searchClick="searchClick"></search>
             <navbar :list="nav_list" @navClick="navClick"></navbar>
           </div>
 
@@ -345,6 +345,10 @@
                   }
               })
           },
+          /*搜索*/
+          searchClick(){
+            this.$router.push('/search');
+          },
           /*关闭模态框*/
           closeModal(v){
             this[v]  = false;
@@ -416,7 +420,7 @@
               }
             }
             // this.allLoaded = true;// 若数据已全部获取完毕
-            this.$refs.loadmore.onBottomLoaded();
+            // this.$refs.loadmore.onBottomLoaded();
           },
           courseClick(){
             if(this.course <6){
