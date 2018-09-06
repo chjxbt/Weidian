@@ -134,7 +134,11 @@ export const constantRouterMap = [
   { path: '/advancedClass', component: () => import('../views/memberCenter/advancedClass'), hidden: true },
   // 帮助中心
   { path: '/helpCenter', component: () => import('../views/memberCenter/helpCenter'), hidden: true },
-]
+
+  /*二跳页*/
+  // 活动内容
+  { path: '/activityContent', component: () => import('../views/discover/activityContent'), hidden: true },
+];
 
 export default new Router({
   // mode: 'history', // require service support

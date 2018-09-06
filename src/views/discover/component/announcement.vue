@@ -87,7 +87,7 @@
       /*获取活动列表*/
       getActivity(start, count, tnid){
         axios.get(api.get_all_activity + "?token=" + localStorage.getItem('token'), {
-          params: { start: 0, count: 15, tnid: this.tnid }}).then(res => {
+          params: { start: 0, count: 5, tnid: this.tnid }}).then(res => {
           if(res.data.status == 200){
             this.activity_list = res.data.data;
 
