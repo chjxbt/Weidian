@@ -3,13 +3,13 @@
       <img src="" class="m-login-logo" alt="">
       <div class="m-login-btn">
         <span @click="login">微信登录</span></div>
-      <div class="m-login-bottom">
-        <span class="m-login-check-box">
-          <span class="m-login-check" :class="check?'active':''" @click.stop="checkClick"></span>
-          <!--<input type="checkbox" class="m-login-check">-->
-          <span>我已阅读并同意《用户使用协议》</span>
-        </span>
-      </div>
+      <!--<div class="m-login-bottom">-->
+        <!--<span class="m-login-check-box">-->
+          <!--<span class="m-login-check" :class="check?'active':''" @click.stop="checkClick"></span>-->
+          <!--&lt;!&ndash;<input type="checkbox" class="m-login-check">&ndash;&gt;-->
+          <!--<span>我已阅读并同意《用户使用协议》</span>-->
+        <!--</span>-->
+      <!--</div>-->
     </div>
 
 
