@@ -84,7 +84,11 @@
           if(res.data.status == 200) {
             this.recommend = res.data.data[0];
             this.suuser = this.recommend.suuser;
-            // console.log(this.recommend);
+
+            this.recommend.products.push(this.recommend.products[0]);
+            this.recommend.products.push(this.recommend.products[0]);
+            this.recommend.products.push(this.recommend.products[0]);
+            this.recommend.products.push(this.recommend.products[0]);
 
             // 往ul中添加li
             for(let i = 0; i < this.recommend.products.length; i ++) {
@@ -93,6 +97,16 @@
               elem_li.innerHTML = "<img src=" + this.recommend.products[i].prmainpic + " class='m-img-list-img'><p><span class='m-price'>￥" + this.recommend.products[i].prprice +
                 "</span><span class='m-red'>赚" + this.recommend.products[i].prsavemonty + "</span></p>";
               document.getElementById('m-img-list').appendChild(elem_li);
+            }
+            // 给每个li添加点击事件
+            let that = this;
+            let oli = document.getElementsByTagName("li");
+            for(let i = 0; i < oli.length; i ++){
+              (function(j){
+                oli[j].onclick = function () {
+                  that.toProduct(j);
+                };
+              })(i)
             }
           }else{
             Toast({ message: res.data.message, className: 'm-toast-fail' });
@@ -135,9 +149,14 @@
           }
         })
       },
-      // 去产品详情页
-      toProduct(item) {
+      // 去活动内容页
+      toActivity(item) {
         console.log(item);
+      },
+      // 去产品详情页
+      toProduct(i) {
+        let product = this.recommend.products[i - 4];
+        this.$router.push({path: "/productDetail", query: { product }});
       },
       /*分享按钮点击*/
       fixedClick(){
