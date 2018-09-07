@@ -528,7 +528,8 @@ class User(BaseModel):
     UPPerd = Column(String(64), default=0)
 
     openid = Column(String(64))    # 微信唯一值
-    unionid = Column(String(64))   # 绑定公众号会出现
+    unionid = Column(String(255))   # 绑定公众号会出现
+    accesstoken = Column(String(255)) # 微信token
 
     @orm.reconstructor
     @auto_createtime
