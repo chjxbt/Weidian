@@ -112,6 +112,155 @@
         </div>
       </div>
     </div>
+    <div class="m-modal" v-if="show_details">
+      <div class="m-modal-state">
+        <div class="m-modal-head m-flex-end m-no-border">
+          <span class="m-close" @click="changeModal('show_details')">x</span>
+        </div>
+
+        <div class="m-modal-content ">
+          <p>订单详情</p>
+          <div class="m-detail-content">
+            <div class="m-one-detail">
+              <p class="m-order-no">订单编号：E256487897456161456</p>
+              <table class="m-detail-table">
+                <tr>
+                  <td width="170">商品名称</td>
+                  <td >产品名称</td>
+                </tr>
+                <tr>
+                  <td>买家会员名</td>
+                  <td>小西几</td>
+                </tr>
+                <tr>
+                  <td>新衣币抵扣金额</td>
+                  <td>￥5.0</td>
+                </tr>
+                <tr>
+                  <td>付款总金额</td>
+                  <td>￥5.0</td>
+                </tr>
+                <tr>
+                  <td>退款金额</td>
+                  <td>小西几</td>
+                </tr>
+                <tr>
+                  <td>级别总佣金</td>
+                  <td>小西几</td>
+                </tr>
+                <tr>
+                  <td>订单状态</td>
+                  <td>￥5.0</td>
+                </tr>
+                <tr>
+                  <td>买家备注</td>
+                  <td>￥5.0</td>
+                </tr>
+                <tr>
+                  <td>发货物流公司</td>
+                  <td>小西几</td>
+                </tr>
+                <tr>
+                  <td>发货物流单号</td>
+                  <td>小西几</td>
+                </tr>
+                <tr>
+                  <td>退换货类型</td>
+                  <td>￥5.0</td>
+                </tr>
+                <tr>
+                  <td>退回物流公司</td>
+                  <td>￥5.0</td>
+                </tr>
+                <tr>
+                  <td>退回物流单号</td>
+                  <td>小西几</td>
+                </tr>
+                <tr>
+                  <td>二次物流单号</td>
+                  <td>小西几</td>
+                </tr>
+                <tr>
+                  <td>供应商订单号</td>
+                  <td>￥5.0</td>
+                </tr>
+                <tr>
+                  <td>供应商编号</td>
+                  <td>￥5.0</td>
+                </tr>
+                <tr>
+                  <td>商家编码</td>
+                  <td>小西几</td>
+                </tr>
+
+                <tr>
+                  <td>收货人姓名</td>
+                  <td>￥5.0</td>
+                </tr>
+                <tr>
+                  <td>收货地址</td>
+                  <td>杭州市萧山区宁围镇包神实际中心</td>
+                </tr>
+                <tr>
+                  <td>联系电话</td>
+                  <td>小西几</td>
+                </tr>
+                <tr>
+                  <td>订单创建时间</td>
+                  <td>￥5.0</td>
+                </tr>
+                <tr>
+                  <td>订单付款时间</td>
+                  <td>￥5.0</td>
+                </tr>
+                <tr>
+                  <td>店主ID</td>
+                  <td>小西几</td>
+                </tr>
+              </table>
+              <div class="m-modal-btn">
+                <span>导出</span>
+              </div>
+            </div>
+            <div class="m-one-detail">
+              <p class="m-order-no">订单编号：E256487897456161456</p>
+              <table class="m-detail-table">
+                <tr>
+                  <td width="170">订单类型</td>
+                  <td >订单类型</td>
+                </tr>
+                <tr class="m-grey">
+                  <td>申请退款</td>
+                  <td>同意</td>
+                </tr>
+                <tr>
+                  <td>退款</td>
+                  <td>发起中</td>
+                </tr>
+                <tr class="m-grey">
+                  <td>退货状态</td>
+                  <td>顺丰（25478951112）</td>
+                </tr>
+                <tr>
+                  <td>换货状态</td>
+                  <td>顺丰（25478951112）
+                    顺丰（25478951112）</td>
+                </tr>
+                <tr>
+                  <td>备注</td>
+                  <td>颜色发错发黑色颜色发错发黑色颜色发错发黑色</td>
+                </tr>
+                <tr>
+                  <td>货物状态</td>
+                  <td>确认退货</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script type="text/ecmascript-6">
@@ -173,6 +322,7 @@
           tabList: ['全 部', '已取消','未支付','支付中', '已支付','已发货','已收货', '已完成','已评价','退款中'],
           index: 0,
           show_return:false,
+          show_details:true,
           options: [{
             value: '选项1',
             label: '黄金糕'
@@ -363,15 +513,58 @@
     }
     .m-modal{
       .m-modal-state{
+        width: 10rem;
+        height: 92%;
         .m-no-border{
           border: none;
         }
         .m-modal-content{
-          padding: 0.1rem 0.2rem;
+          padding: 0 0.2rem 0.1rem;
           .m-order-no{
             background-color: #80a6b5;
             color: #fff;
             padding: 0.08rem 0.4rem;
+          }
+          .m-detail-content{
+            display: flex;
+            flex-flow: row;
+            justify-content: space-between;
+            margin-top: 0.1rem;
+            .m-one-detail{
+              width: 45%;
+              .m-modal-btn{
+                text-align: center;
+                span{
+                  display: inline-block;
+                  width: 0.9rem;
+                  height: 0.36rem;
+                  line-height: 0.36rem;
+                  background-color: #9fd0bf;
+                  color: #fff;
+                  border-radius: 5px;
+                  cursor: pointer;
+                }
+              }
+            }
+            .m-detail-table{
+              width: 100%;
+              border-collapse: collapse;
+              margin-bottom: 0.2rem;
+              td{
+                background-color: #f1f1f1;
+                padding: 0.02rem 0;
+              }
+              tr{
+                td:first-child{
+                  background-color: #dbdcdc;
+                  text-align: center;
+                }
+                td:last-child{
+                  padding-left: 0.6rem;
+                  padding-right: 0.4rem;
+                }
+              }
+            }
           }
         }
 
