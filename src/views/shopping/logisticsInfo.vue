@@ -21,8 +21,41 @@
         <div class="info-name m-ft-28">百世快递</div>
         <div class="info-no m-ft-24">运单号：5121522461454145</div>
       </div>
-      <div class="info-status m-ft-26 m-red">换货</div>
+      <div class="info-status m-ft-26 m-red" @click="show_modal = true">换 货</div>
     </div>
+
+    <div class="m-modal" v-if="show_modal">
+      <div class="m-modal-state" v-if="!submit_done">
+        <div class="m-modal-head m-ft-34 m-black">请 选 择</div>
+        <div class="m-modal-cancel m-grey" @click="closeModal">X</div>
+        <div class="m-modal-content">
+          <div class="content-row">
+            <div class="row-left">退</div>
+            <div class="row-middle" @click="submit_done = true">
+              <div class="row-middle-top">退货退款</div>
+              <div class="row-middle-bottom">已收到货，需要退回已收到的货</div>
+            </div>
+            <div class="row-right">></div>
+          </div>
+          <div class="content-row">
+            <div class="row-left">换</div>
+            <div class="row-middle" @click="submit_done = true">
+              <div class="row-middle-top" @click="show_modal = true">换货</div>
+              <div class="row-middle-bottom">已收到货，需要更换已收到的货</div>
+            </div>
+            <div class="row-right">></div>
+          </div>
+        </div>
+      </div>
+      <div class="m-modal-state" v-if="submit_done">
+        <img class="one-img" src="/static/images/icon-result-personal.png">
+        <div class="m-modal-cancel-one m-grey" @click="closeModal">X</div>
+        <div class="m-ft-28 m-black m-ft-b">提交成功</div>
+        <div class="three-text m-ft-20 m-grey">我们将在3个工作日内完成审核，请及时关注退货状态</div>
+        <div class="four-text m-ft-28 m-bg-main-color m-ft-b" @click="closeModal">我知道了</div>
+      </div>
+    </div>
+
     <div class="logistics-detail">
       <div class="shipping-address">
         <img src="/static/images/send-ok.png" class="shipping-address-img">
@@ -49,61 +82,19 @@
           <img src="/static/images/icon-list-down.png" class="see-more-img">
         </div>
       </ul>
-      <ul v-if="moreVisible">
+      <ul v-if="moreVisible" v-for="item in list">
         <li class="detail-row">
           <div class="row-time tr">
-            <div class="m-ft-22 m-grey">08-26</div>
-            <div class="m-ft-22 m-grey">15:04</div>
+            <div class="m-ft-22 m-grey">{{item.date}}</div>
+            <div class="m-ft-22 m-grey">{{item.time}}</div>
           </div>
           <div class="row-line-img">
             <div class="line-two"></div>
             <img src="/static/images/send-ok.png" class="row-img">
           </div>
           <div class="row-text tl">
-            <div class="row-text-title m-ft-26 m-grey">已发货</div>
-            <div class="row-text-content m-ft-24 m-grey">包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收</div>
-          </div>
-        </li>
-        <li class="detail-row">
-          <div class="row-time tr">
-            <div class="m-ft-22 m-grey">08-26</div>
-            <div class="m-ft-22 m-grey">15:04</div>
-          </div>
-          <div class="row-line-img">
-            <div class="line-two"></div>
-            <img src="/static/images/send-ok.png" class="row-img">
-          </div>
-          <div class="row-text tl">
-            <div class="row-text-title m-ft-26 m-grey">已发货</div>
-            <div class="row-text-content m-ft-24 m-grey">包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收</div>
-          </div>
-        </li>
-        <li class="detail-row">
-          <div class="row-time tr">
-            <div class="m-ft-22 m-grey">08-26</div>
-            <div class="m-ft-22 m-grey">15:04</div>
-          </div>
-          <div class="row-line-img">
-            <div class="line-two"></div>
-            <img src="/static/images/send-ok.png" class="row-img">
-          </div>
-          <div class="row-text tl">
-            <div class="row-text-title m-ft-26 m-grey">已发货</div>
-            <div class="row-text-content m-ft-24 m-grey">包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收</div>
-          </div>
-        </li>
-        <li class="detail-row">
-          <div class="row-time tr">
-            <div class="m-ft-22 m-grey">08-26</div>
-            <div class="m-ft-22 m-grey">15:04</div>
-          </div>
-          <div class="row-line-img">
-            <div class="line-two"></div>
-            <img src="/static/images/send-ok.png" class="row-img">
-          </div>
-          <div class="row-text tl">
-            <div class="row-text-title m-ft-26 m-grey">已发货</div>
-            <div class="row-text-content m-ft-24 m-grey">包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收</div>
+            <div class="row-text-title m-ft-26 m-grey">{{item.status}}</div>
+            <div class="row-text-content m-ft-24 m-grey">{{item.address}}</div>
           </div>
         </li>
       </ul>
@@ -117,7 +108,16 @@
       return {
         name: "logisticsInfo",
         order: {},
-        moreVisible: false
+        moreVisible: false,
+        show_modal: false,
+        submit_done: false,
+        list: [
+          { date: "08-26", time: "15:04", status: "已发货", address: "包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收" },
+          { date: "08-26", time: "15:04", status: "已发货", address: "包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收" },
+          { date: "08-26", time: "15:04", status: "已发货", address: "包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收" },
+          { date: "08-26", time: "15:04", status: "已发货", address: "包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收" },
+          { date: "08-26", time: "15:04", status: "已发货", address: "包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收包裹正在等待揽收" },
+        ]
       }
     },
     components: {  },
@@ -125,6 +125,11 @@
       // 查看更多物流信息
       seeMore() {
         this.moreVisible = true;
+      },
+      // 关闭modal
+      closeModal() {
+        this.show_modal = false;
+        this.submit_done = false;
       }
     },
     created() {
@@ -136,6 +141,8 @@
 
 <style lang="less" rel="stylesheet/less" scoped>
   @import "../../common/css/index";
+  @import "../../common/css/modal";
+
   .logistics-info {
     padding-bottom: 50px;
     background-color: #F2F2F2;
@@ -263,6 +270,79 @@
           width: 20px;
           height: 20px;
           margin: 5px 0 40px 10px;
+        }
+      }
+    }
+    .m-modal{
+      .m-modal-state{
+        height: 460px;
+        .m-modal-head{
+          display: block;
+          padding: 35px 0 25px 0;
+        }
+        .m-modal-cancel {
+          font-size: 30px;
+          text-align: right;
+          margin: -100px 20px 90px 0;
+        }
+        .m-modal-content{
+          padding: 0;
+          .content-row {
+            width: 100%;
+            display: flex;
+            padding: 30px 0;
+            border-top: 2px @grey solid;
+            .row-left {
+              width: 45px;
+              height: 40px;
+              margin: 30px 30px 0 50px;
+              color: @mainColor;
+              font-size: 26px;
+              border-radius: 50%;
+              border: 2px @mainColor solid;
+            }
+            .row-middle {
+              flex: 1;
+              .row-middle-top {
+                color: @black;
+                font-size: 28px;
+                text-align: left;
+                font-weight: bold;
+                margin: 10px 0;
+              }
+              .row-middle-bottom {
+                color: @grey;
+                text-align: left;
+              }
+            }
+            .row-right {
+              margin: 30px 50px 0 0;
+              font-size: 30px;
+              color: @greyColor;
+            }
+          }
+        }
+        .one-img {
+          width: 89px;
+          height: 90px;
+          margin: 49px 0 25px 0;
+        }
+        .m-modal-cancel-one {
+          font-size: 30px;
+          text-align: right;
+          margin: -150px 20px 110px 0;
+        }
+        .three-text {
+          width: 60%;
+          margin: 30px 20%;
+          line-height: 40px;
+        }
+        .four-text {
+          width: 40%;
+          padding: 17px 0;
+          margin-left: 30%;
+          border-radius: 50px;
+          background-color: @mainColor;
         }
       }
     }
