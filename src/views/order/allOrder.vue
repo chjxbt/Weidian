@@ -3,10 +3,18 @@
     <page-title :title="name" @freshClick="freshClick"></page-title>
     <div class="all-order-content">
       <div class="all-order-search">
-        <div class="order-search-one">
+        <div class="order-search">
           <div class="search-text-input">
-            <div class="search-text" style="margin-left: 0.51rem">订单号：</div>
-            <el-input v-model="OMidSearch" size="mini" placeholder="请输入订单号" clearable></el-input>
+            <div class="search-text">订单类型：</div>
+            <el-input v-model="OMidSearch" size="mini" placeholder="请输入订单类型" clearable></el-input>
+          </div>
+          <div class="search-text-input" style="width: 48%">
+            <div class="search-text">下单时间：</div>
+            <div class="block">
+              <el-date-picker v-model="OMtime" type="daterange" unlink-panels range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"
+                              :picker-options="pickerOptions2" size="mini" value-format="yyyy-MM-dd">
+              </el-date-picker>
+            </div>
           </div>
           <div class="search-text-input">
             <div class="search-text">物流方式：</div>
@@ -17,23 +25,22 @@
             </el-select>
           </div>
         </div>
-        <div class="order-search-two">
+        <div class="order-search">
           <div class="search-text-input">
             <div class="search-text">商品名称：</div>
             <el-input v-model="PRnameSearch" size="mini" placeholder="请输入商品名称" clearable></el-input>
           </div>
-          <div class="search-text-input" style="width: 5rem">
-            <div class="search-text">下单时间：</div>
-            <div class="block">
-              <el-date-picker v-model="OMtime" type="daterange" unlink-panels range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"
-                              :picker-options="pickerOptions2" size="mini" value-format="yyyy-MM-dd">
-              </el-date-picker>
-            </div>
+          <div class="search-text-input" style="width: 48%">
+            <div class="search-text" >订单类型：</div>
+            <el-input v-model="OMidSearch" size="mini" placeholder="请输入订单类型" clearable></el-input>
+          </div>
+          <div class="search-text-input">
+            <div class="search-text" >订单类型：</div>
+            <el-input v-model="OMidSearch" size="mini" placeholder="请输入订单类型" clearable></el-input>
           </div>
         </div>
         <div class="search-buttons">
-          <el-button class="search-button" size="mini" @click="topSearch">查询</el-button>
-          <el-button class="search-button" size="mini">批量导出</el-button>
+          <el-button class="search-button" size="mini" @click="topSearch">搜索</el-button>
         </div>
       </div>
       <div class="all-order-tabs">
@@ -50,7 +57,7 @@
 </template>
 <script type="text/ecmascript-6">
   import pageTitle from '../../components/common/title';
-  import allOrderTable from '../../components/common/all-order-table';
+  import allOrderTable from '../../components/common/order-table';
   import api from '../../api/api';
   import {Message} from 'element-ui';
   import axios from 'axios';
@@ -232,15 +239,24 @@
     .all-order-content {
       background-color: @bgMainColor;
       .all-order-search {
-        height: 0.75rem;
-        padding: 0.2rem 0.3rem 0 0.3rem;
+        padding: 0.2rem 0;
         margin: 0.15rem 0.2rem 0 0.2rem;
         border-radius: 0.1rem;
         background-color: @borderColor;
+        .order-search{
+          display: flex;
+          flex-flow: row;
+          flex-wrap: wrap;
+          align-items: center;
+        }
         .search-buttons {
-          float: right;
           /*margin-top: -0.3rem;*/
-          margin-right: 1.15rem;
+          display: flex;
+          flex-flow: row;
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: flex-end;
+          margin-right: 0.4rem;
           .search-button {
             background-color: @btnActiveColor;
             color: @bgMainColor;
@@ -263,17 +279,15 @@
     }
   }
   .search-text-input {
-    float: left;
-    width: 3.2rem;
+    width: 26%;
     margin-bottom: 0.1rem;
     .search-text {
       float: left;
-      margin-left: 0.4rem;
+      margin-left: 0.2rem;
       line-height: 0.22rem;
       font-size: 14px;
     }
     .search-text-middle {
-      float: left;
       font-size: 14px;
       line-height: 0.22rem;
       margin: 0 0.1rem 0 0.1rem;
