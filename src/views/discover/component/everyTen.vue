@@ -27,8 +27,7 @@
     </div>
 
     <mt-loadmore :top-method="loadTop"
-                 :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" @bottom-status-change="handleBottomChange"
-                 ref="loadmore">
+                 :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="loadmore">
       <div class="m-index-section">
         <template v-for="(item,index) in activity_list">
           <ctx :icon="icon_list" :list="item" :index="index" @iconClick="iconClick" @showMoreText="showMoreText"></ctx>
@@ -74,7 +73,6 @@
         show_task: false,
         show_fixed: false,
         allLoaded: false,
-        bottomStatus: ""
       }
     },
     props:{
@@ -82,6 +80,18 @@
     },
     components: { ctx, share },
     methods: {
+      // 获取banner滚动图
+      getBanner() {
+        let token = localStorage.getItem('token');
+        axios.get(api.get_all_recommendbanner + '?token=' + token).then(res => {
+          if(res.data.status == 200) {
+            this.bannerList = res.data.data;
+            // console.log(res.data.data);
+          }else{
+            Toast({ message: res.data.message, className: 'm-toast-fail' });
+          }
+        })
+      },
       // 获取每日推荐内容
       getData(){
         let token = localStorage.getItem('token');
@@ -89,6 +99,7 @@
           if(res.data.status == 200) {
             this.recommend = res.data.data[0];
             this.suuser = this.recommend.suuser;
+            // this.recommend.products.push(this.recommend.products[0]);
 
             // 往ul中添加li
             for(let i = 0; i < this.recommend.products.length; i ++) {
@@ -114,24 +125,11 @@
           }
         })
       },
-      // 获取banner滚动图
-      getBanner() {
-        let token = localStorage.getItem('token');
-        axios.get(api.get_all_recommendbanner + '?token=' + token).then(res => {
-          if(res.data.status == 200) {
-            this.bannerList = res.data.data;
-            // console.log(res.data.data);
-          }else{
-            Toast({ message: res.data.message, className: 'm-toast-fail' });
-          }
-        })
-      },
       /*获取活动列表*/
       getActivity(start, count, tnid){
         Indicator.open({ text: '加载中...', spinnerType: 'fading-circle' });
-        let token = localStorage.getItem('token');
-        axios.get(api.get_all_activity + '?token=' + token, {
-          params: { start: start || 0, count: count || 5, tnid: this.tnid }}).then(res => {
+        axios.get(api.get_all_activity + '?token=' + localStorage.getItem('token'), {
+          params: { start: start || 0, count: count || 2, tnid: this.tnid }}).then(res => {
           if(res.data.status == 200){
             Indicator.close();
             this.activity_list = res.data.data;
@@ -245,22 +243,33 @@
       // 下拉刷新
       loadTop() {
         this.getActivity();
-        // console.log("下拉刷新");
         this.$refs.loadmore.onTopLoaded();
       },
       // 上拉加载更多
       loadBottom() {
-        /*for(let i = 0; i < this.nav_list.length; i ++){
-          if(this.nav_list[i].click){
-            this.getActivity(this.nav_list[i].tnid,this.activity_list.length);
+
+        let start = this.activity_list.length;
+
+        Indicator.open({ text: '加载中...', spinnerType: 'fading-circle' });
+        axios.get(api.get_all_activity + '?token=' + localStorage.getItem('token'), {
+          params: { start: start, count: 2, tnid: this.tnid }}).then(res => {
+          if(res.data.status == 200){
+            Indicator.close();
+            // this.activity_list = res.data.data;
+
+            for(let i = 0; i < res.data.data.length; i ++) {
+              // this.activity_list.push(res.data.data[i]);
+            }
+
+            console.log(this.activity_list);
+          }else{
+            Toast({ message: res.data.message, className: 'm-toast-fail' });
           }
-        }*/
-        // console.log("上拉加载更多");
-        this.allLoaded = true;// 若数据已全部获取完毕
+        })
+
+
+        // this.allLoaded = true;// 若数据已全部获取完毕
         this.$refs.loadmore.onBottomLoaded();
-      },
-      handleBottomChange(status) {
-        this.bottomStatus = status;
       },
     },
     mounted() {
@@ -275,8 +284,8 @@
   .img {
     border-radius: 20px;
   }
-  /*滚动条样式*/
+  /*!*滚动条样式*!
   ::-webkit-scrollbar {
-    height: 0;
-  }
+    margin-right: -40px;
+  }*/
 </style>

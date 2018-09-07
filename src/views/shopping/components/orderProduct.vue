@@ -2,7 +2,7 @@
   <div>
     <div class="order-no-box">
       <div class="order-no m-ft-26 m-black tl">订单号：RRK65S6R332SD654S613DF65SAD5</div>
-      <div class="copy-order-no m-ft-20 m-grey">复制</div>
+      <div class="copy-order-no m-ft-20 m-grey" @click="copyText">复制</div>
     </div>
     <div class="line-one"></div>
     <div class="order-address">
@@ -60,7 +60,7 @@
 </template>
 
 <script>
-
+  import { Toast } from 'mint-ui';
   export default {
     data() {
       return {
@@ -70,7 +70,13 @@
     },
     // components: {  },
     methods: {
-
+      // 复制
+      copyText() {
+        let link = "订单号";
+        this.$copyText(link).then(function (e) {
+          Toast({ message: "复制成功", className: 'm-toast-success' });
+        })
+      }
     },
     created() {
 
