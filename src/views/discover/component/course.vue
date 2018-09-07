@@ -207,17 +207,21 @@
       },
       // 添加评论
       commentDone(item, index) {
-        axios.post(api.add_comment + '?token=' + localStorage.getItem('token'), {
-          acid: item.acid, ACtext: this.comment
-        }).then(res => {
-          if(res.data.status == 200){
-            this.show_input = false;
-            this.activity_list[index].comment.splice(0, 0, {usname: "我", actext: this.comment});
-            Toast({ message: "评论成功", className: 'm-toast-success' });
-          }else{
-            Toast({ message: "评论失败", className: 'm-toast-fail' });
-          }
-        })
+        if(this.comment == "") {
+          Toast({ message: "请填写评论内容", className: 'm-toast-warning' });
+        }else if(!this.comment == "") {
+          axios.post(api.add_comment + '?token=' + localStorage.getItem('token'), {
+            acid: item.acid, ACtext: this.comment
+          }).then(res => {
+            if(res.data.status == 200){
+              this.show_input = false;
+              this.activity_list[index].comment.splice(0, 0, { user: { usname: "我" }, actext: this.comment });
+              Toast({ message: "评论成功", className: 'm-toast-success' });
+            }else{
+              Toast({ message: "评论失败", className: 'm-toast-fail' });
+            }
+          })
+        }
       }
     },
     mounted() {
