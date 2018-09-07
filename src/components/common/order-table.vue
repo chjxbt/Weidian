@@ -27,19 +27,27 @@
       </thead>
       <tbody>
       <tr>
+        <td class="m-table-flex">
+          <img src="" class="m-table-img" alt="">
+          <span>产品名称</span>
+        </td>
         <td>商品</td>
         <td>商品</td>
         <td>商品</td>
         <td>商品</td>
         <td>商品</td>
-        <td>商品</td>
-        <td>商品</td>
+        <td>
+          <span class="m-table-link">详情</span>
+          <span class="m-table-link" @click="returnClick">退款</span>
+        </td>
       </tr>
       </tbody>
     </table>
     <div class="page-button">
       <Pagination :total="total_page" @pageChange="pageChange"></Pagination>
     </div>
+
+
   </div>
 </template>
 
@@ -92,19 +100,8 @@
     },
     components: { Pagination },
     methods: {
-      arraySpanMethod({ row, column, rowIndex, columnIndex }) {
-        if (rowIndex === 1) {
-          if (columnIndex === 0) {
-            return [1, 2];
-          } else if (columnIndex === 1) {
-            return [0, 0];
-          }
-        }
-      },
-      // 去往订单详情 orderDetails
-      orderDetails(order) {
-        let OMid = order.OMid
-        this.$router.push({path: '/order/orderDetails', query: {OMid}});
+      returnClick(){
+        this.$emit('returnClick')
       },
       // 接收数据并赋值给 this.orderList
       getOrderList(data) {
@@ -130,17 +127,13 @@
 
 <style lang="less" rel="stylesheet/less" scoped>
   @import "../../common/css/_variate.less";
+
   .order-table {
     .out-table {
       font-size: 14px;
     }
     .page-button {
       margin-top: 0.3rem;
-    }
-    .order-details {
-      background-color: @btnActiveColor;
-      color: @bgMainColor;
-      font-size: 14px;
     }
     .m-table{
       width: 100%;
@@ -161,6 +154,36 @@
       th,td{
         padding: 5px 0;
         text-align: center;
+      }
+      td{
+        padding: 15px 0;
+      }
+      .m-table-flex{
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+        justify-content: center;
+        .m-table-img{
+          display: block;
+          width: 1.05rem;
+          height: 1.05rem;
+          border-radius: 5px;
+          background-color: #eeeeee;
+          margin-right: 0.3rem;
+        }
+      }
+      .m-table-link{
+        display: inline-block;
+        border-left: 1px solid @green;
+        color: @green;
+        padding: 0 0.12rem;
+        cursor: pointer;
+        &:first-child{
+          border-left: none;
+        }
+        &.active{
+          color: #b4b4b5;
+        }
       }
     }
   }

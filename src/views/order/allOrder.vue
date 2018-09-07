@@ -47,10 +47,69 @@
         <el-tabs v-model="activeName" @tab-click="handleClick">
           <div v-for="item in tabList">
             <el-tab-pane :label="item" :name="item.slice(0, 3)" :lazy="lazyStatus">
-              <all-order-table ref="child" :order="order" @toPage="getData"></all-order-table>
+              <all-order-table ref="child" :order="order" @toPage="getData" @returnClick="returnClick"></all-order-table>
             </el-tab-pane>
           </div>
         </el-tabs>
+      </div>
+    </div>
+    <div class="m-modal" v-if="show_return">
+      <div class="m-modal-state">
+        <div class="m-modal-head m-flex-end m-no-border">
+          <span class="m-close" @click="changeModal('show_return')">x</span>
+        </div>
+        <div class="m-modal-content">
+          <p class="m-order-no">订单编号：E256487897456161456</p>
+          <table class="m-table">
+            <thead>
+            <tr>
+              <th width="100">订单类型</th>
+              <th width="100">申请退款</th>
+              <th width="100">退款</th>
+              <th width="150" class="m-grey">退货状态</th>
+              <th width="150">换货状态</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>111</td>
+              <td class="m-table-select">
+                <el-select v-model="value" placeholder="请选择">
+                  <el-option
+                    v-for="item in options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+              </td>
+              <td>
+                <span class="m-table-btn">退款</span>
+              </td>
+              <td class="m-grey">111</td>
+              <td>111</td>
+            </tr>
+            </tbody>
+          </table>
+          <table class="m-table">
+            <thead>
+            <tr>
+              <th width="350">备注</th>
+              <th >货物状态</th>
+              <th>订单状态</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>颜色发错发黑色颜色发错发黑色颜色发错发黑色</td>
+              <td>
+                <span class="m-table-btn active ">退款</span>
+              </td>
+              <td >111</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -112,11 +171,35 @@
           OMstartTime: '',
           OMendTime: '',
           tabList: ['全 部', '已取消','未支付','支付中', '已支付','已发货','已收货', '已完成','已评价','退款中'],
-          index: 0
+          index: 0,
+          show_return:false,
+          options: [{
+            value: '选项1',
+            label: '黄金糕'
+          }, {
+            value: '选项2',
+            label: '双皮奶'
+          }, {
+            value: '选项3',
+            label: '蚵仔煎'
+          }, {
+            value: '选项4',
+            label: '龙须面'
+          }, {
+            value: '选项5',
+            label: '北京烤鸭'
+          }],
+          value: ''
         }
     },
     components: { pageTitle, allOrderTable },
     methods: {
+      returnClick(){
+        this.show_return = true;
+      },
+      changeModal(v){
+        this[v] = false;
+      },
       // 页面刷新
       freshClick(){
         console.log('fresh');
@@ -232,8 +315,9 @@
     }
   }
 </script>
-<style lang="less" rel="stylesheet/less" scoped>
+<style lang="less" rel="stylesheet/less">
   @import "../../common/css/_variate.less";
+  @import "../../common/css/modal";
   .all-order {
     background-color: @bgMainColor;
     .all-order-content {
@@ -277,10 +361,26 @@
         }
       }
     }
+    .m-modal{
+      .m-modal-state{
+        .m-no-border{
+          border: none;
+        }
+        .m-modal-content{
+          padding: 0.1rem 0.2rem;
+          .m-order-no{
+            background-color: #80a6b5;
+            color: #fff;
+            padding: 0.08rem 0.4rem;
+          }
+        }
+
+      }
+    }
   }
   .search-text-input {
     width: 26%;
-    margin-bottom: 0.1rem;
+    margin-bottom: 0.2rem;
     .search-text {
       float: left;
       margin-left: 0.2rem;
@@ -295,6 +395,75 @@
     .el-input {
       float: left;
       width: 1.6rem;
+    }
+
+  }
+  .m-table{
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.2rem 0;
+    tr{
+      border: 1px solid @borderColor;
+    }
+    &.m-row-table{
+      th{
+        background-color: #eeeeef;
+      }
+    }
+    th{
+      background-color: #dbdcdc;
+      font-weight: normal;
+    }
+    th,td{
+      padding: 0.05rem 0;
+      text-align: center;
+    }
+    td{
+      padding: 0.1rem 0;
+    }
+    .m-table-flex{
+      display: flex;
+      flex-flow: row;
+      align-items: center;
+      justify-content: center;
+      .m-table-img{
+        display: block;
+        width: 1.05rem;
+        height: 1.05rem;
+        border-radius: 5px;
+        background-color: #eeeeee;
+        margin-right: 0.3rem;
+      }
+    }
+    .m-table-link{
+      display: inline-block;
+      border-left: 1px solid @green;
+      color: @green;
+      padding: 0 0.12rem;
+      cursor: pointer;
+      &:first-child{
+        border-left: none;
+      }
+      &.active{
+        color: #b4b4b5;
+      }
+    }
+    .m-grey{
+      color: #ababab;
+    }
+    .m-table-btn{
+      display: inline-block;
+     padding: 0 0.2rem;
+      height: 0.27rem;
+      line-height: 0.27rem;
+      background-color: #80a6b5;
+      color: #fff;
+      border-radius: 10px;
+      font-size: 14px;
+      &.active{
+        background-color: #dbdcdc;
+        color: #b4b4b5;
+      }
     }
   }
 </style>

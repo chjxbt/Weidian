@@ -34,7 +34,12 @@ html, body {
   align-items: center;
   justify-content: center;
 }
-
+.m-flex-end{
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: flex-end;
+}
 .flex-col(@x){
   display: flex;
   flex-direction: column;
@@ -423,4 +428,18 @@ section{
     font-size: 0.28rem;
     border: 1px solid #bebebe;
   }
+}
+.m-table-select{
+  .el-select{
+    width: 0.84rem;
+    .el-input__inner{
+      height: 0.27rem;
+      line-height: 0.27rem;
+      border: 1px solid #80a6b5;
+      border-radius: 10px;
+    }
+  }
+}
+.el-select-dropdown__item{
+  padding-left: 0.15rem;
 }
