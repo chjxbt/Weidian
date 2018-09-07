@@ -166,7 +166,7 @@ class Product(BaseModel):
     PRstatus = Column(Integer, default=1)  # 商品状态: {0 删除, 1 正常, 2 禁用}
     PRprice = Column(Float, nullable=False)  # 显示价格
     PRisdelete = Column(Boolean, default=False)
-    # 以下
+    # 已下架
     PRviewnum = Column(Integer, default=0)  # 浏览量
     PRfakeviewnum = Column(Integer)  # 虚拟浏览数
     PRfakelikenum = Column(Integer, default=0)  # 虚拟收藏数量
@@ -174,6 +174,7 @@ class Product(BaseModel):
     PAid = Column(String(64))  # 类目id
     PRlogisticsfee = Column(Float)  # 物流费
     PRstock = Column(Integer)  # 商品详情页库存
+    PRsalestatus = Column(String(64))  #我的-收藏夹
 
     @orm.reconstructor
     @auto_createtime
@@ -515,7 +516,7 @@ class User(BaseModel):
     __tablename__ = 'user'
     USid = Column(String(64), primary_key=True)
     USname = Column(String(64), nullable=False)  # 用户名
-    USpassword = Column(String(255))  # 密码
+    # USpassword = Column(String(255))  # 密码
     USphone = Column(String(16))  # 手机号
     USheader = Column(String(255))  # 头像
     USgender = Column(String(64))  # 性别
@@ -652,6 +653,7 @@ class Complain(BaseModel):
     ORid = Column(String(64))          # 关联订单id
     USid = Column(String(64))          # 发起人id
     COcreatetime = Column(String(14))  # 创建时间
+    COtreatstatus = Column(Integer)    # 投诉处理状态 {}
 
     @orm.reconstructor
     @auto_createtime

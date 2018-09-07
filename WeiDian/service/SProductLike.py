@@ -15,7 +15,7 @@ class SProductLike(SBase):
     @close_session
     def get_productlike_list_by_usid(self, usid):
         """获取用户的收藏列表"""
-        return self.session.query(ProductLike).filter_by(USid=usid).all()
+        return self.session.query(ProductLike).filter_by(USid=usid).order_by(ProductLike.PLcreatetime.desc()).all()
 
     @close_session
     def get_productlike_by_usidprid(self, usid, prid):

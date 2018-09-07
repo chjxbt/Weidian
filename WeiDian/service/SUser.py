@@ -26,9 +26,9 @@ class SUser(SBase):
         return self.session.query(User).filter_by(USid=usid).first()
 
     @close_session
-    def verify_user(self, usname, uspassword):
+    def verify_user(self, usname):
         """通过用户名和密码验证"""
-        user = self.session.query(User).filter_by(USname=usname).first()
-        if user:
-            if check_password_hash(user.USpassword, uspassword):
-                return user
+        return self.session.query(User).filter_by(USname=usname).first()
+        # if user:
+        #     if check_password_hash(user.USpassword, uspassword):
+        #         return user

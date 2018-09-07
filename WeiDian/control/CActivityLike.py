@@ -9,6 +9,8 @@ from WeiDian.common.token_required import verify_token_decorator, is_tourist
 from WeiDian.config.response import AUTHORITY_ERROR
 from WeiDian.service.SActivity import SActivity
 from WeiDian.service.SActivityLike import SActivityLike
+from WeiDian.service.SProduct import SProduct
+from WeiDian.service.SProductLike import SProductLike
 from flask import request
 sys.path.append(os.path.dirname(os.getcwd()))
 
@@ -17,6 +19,8 @@ class CActivityLike():
     def __init__(self):
         self.sactivity = SActivity()
         self.salike = SActivityLike()
+        self.sproduct = SProduct()
+        self.sproductlike = SProductLike()
 
     @verify_token_decorator
     def like_or_cancel(self):
@@ -26,21 +30,43 @@ class CActivityLike():
         json_data = parameter_required('acid')
         acid = json_data.get('acid')
         already_like = self.salike.is_like(request.user.id, acid)
-        if not already_like:
+        activity = self.sactivity.get_activity_by_acid(acid)
+        if not already_like and activity.PRid:
             al_dict = dict(
                 alid=str(uuid.uuid4()),
                 usid=request.user.id,
                 acid=acid
             )
             dict_add_models('ActivityLike', al_dict)
-            alid = already_like.ALid if already_like else al_dict['alid']
+            self.salike.add_like_by_acid(acid)
+            pl_dict = dict(
+                plid=str(uuid.uuid4()),
+                usid=request.user.id,
+                prid=activity.PRid
+            )
+            dict_add_models('ProductLike', pl_dict)
+            self.sproduct.update_like_num(activity.PRid)
+            data = import_status('add_ac_pr_like_success', 'OK')
+        elif not already_like:
+            al_dict = dict(
+                alid=str(uuid.uuid4()),
+                usid=request.user.id,
+                acid=acid
+            )
+            dict_add_models('ActivityLike', al_dict)
             self.salike.add_like_by_acid(acid)
             data = import_status('add_activity_like_success', 'OK')
-            data['data'] = {'alid': alid}
-            return data
-        else:
+            # data = import_status('add_productlike_success', 'OK')
+        elif already_like and not activity.PRid:
             self.salike.del_like(request.user.id, acid)
             self.salike.cancel_like_by_acid(acid)
             data = import_status('cancel_activity_like_success', 'OK')
-            data['data'] = {'acid': acid}
-            return data
+        else:
+            self.salike.del_like(request.user.id, acid)
+            self.sproductlike.del_productlike_usidprid(request.user.id, activity.PRid)
+            self.salike.cancel_like_by_acid(acid)
+            self.sproduct.update_like_num(activity.PRid, -1)
+            data = import_status('cancel_activity_like_success', 'OK')
+        alid = already_like.ALid if already_like else al_dict['alid']
+        data['data'] = {'alid': alid}
+        return data

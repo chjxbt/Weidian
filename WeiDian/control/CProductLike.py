@@ -48,10 +48,13 @@ class CProductLike():
         }
         return data
 
-
     @verify_token_decorator
     def get_like_list(self):
         """获取用户的收藏列表"""
         if is_tourist():
-            return TOKEN_ERROR()
+            return TOKEN_ERROR(u'未登录')
+        print '已登录'
         productlike_list = self.sproductlike.get_productlike_list_by_usid(request.user.id)
+        data = import_status("get_product_like_success", "OK")
+        data["data"] = productlike_list
+        return data

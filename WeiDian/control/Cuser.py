@@ -22,12 +22,12 @@ class CUser():
         if not json_data:
             return PARAMS_MISS
         usname = json_data.get('usname')
-        uspassword = json_data.get('uspassword')
-        if not usname or not uspassword:
-            raise PARAMS_MISS('请输入用户名或密码')
-        user = self.suser.verify_user(usname, uspassword)
-        if not user:
-            raise SYSTEM_ERROR('用户名或者密码错误')
+        # uspassword = json_data.get('uspassword')
+        # if not usname or not uspassword:
+        #     raise PARAMS_MISS('请输入用户名或密码')
+        user = self.suser.verify_user(usname)
+        # if not user:
+        #     raise SYSTEM_ERROR('用户名或者密码错误')
         if user.USlevel == 0:
             level = 'ordinary'
         if user.USlevel > 0:
