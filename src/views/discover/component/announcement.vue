@@ -57,6 +57,7 @@
   import api from '../../../api/api';
   import axios from 'axios';
   import { Toast } from 'mint-ui';
+  import { Indicator } from 'mint-ui';
 
   export default {
     data() {
@@ -86,9 +87,11 @@
     methods: {
       /*获取活动列表*/
       getActivity(start, count, tnid){
+        Indicator.open({ text: '加载中...', spinnerType: 'fading-circle' });
         axios.get(api.get_all_activity + "?token=" + localStorage.getItem('token'), {
-          params: { start: 0, count: 5, tnid: this.tnid }}).then(res => {
+          params: { start: start || 0, count: count || 5, tnid: this.tnid }}).then(res => {
           if(res.data.status == 200){
+            Indicator.close();
             this.activity_list = res.data.data;
 
             // 判断今天、昨天和直接显示日期
