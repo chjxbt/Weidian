@@ -2,11 +2,14 @@
 import sys
 import os
 from flask import request
-import logging
-
+# import logging
+import uuid
+import datetime
+from WeiDian import logger
 from WeiDian.config.response import PARAMS_MISS, SYSTEM_ERROR, NETWORK_ERROR
 from WeiDian.common.token_required import verify_token_decorator, usid_to_token
 from WeiDian.common.import_status import import_status
+from WeiDian.common.timeformat import format_for_db
 from WeiDian.service.SUser import SUser
 from WeiDian.config.response import PARAMS_MISS, SYSTEM_ERROR
 sys.path.append(os.path.dirname(os.getcwd()))
@@ -42,15 +45,17 @@ class CUser():
 
     def get_accesstoken(self):
         args = request.args.to_dict()
-        logging.info("args", args)
+        logger.info("args", args)
         true_params = ["code"]
         for key in true_params:
             if key not in args:
                 return PARAMS_MISS
 
         from WeiDian.config.setting import APP_ID, APP_SECRET_KEY
-        request_url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid={0}&secret={1}&code={2}&grant_type=authorization_code" \
-            .format(APP_ID, APP_SECRET_KEY, args["code"], "authorization_code")
+        from WeiDian.config.urlconfig import get_access_toke, get_user_info
+        # 获取access_token openid
+
+        request_url = get_access_toke.format(APP_ID, APP_SECRET_KEY, args["code"])
         strResult = None
         try:
             import urllib2
@@ -58,7 +63,7 @@ class CUser():
             response = urllib2.urlopen(req)
             strResult = response.read()
             response.close()
-            logging.info(strResult)
+            logger.debug(strResult)
         except Exception as e:
             print(e)
             return NETWORK_ERROR
@@ -66,16 +71,67 @@ class CUser():
 
         jsonResult = json.loads(strResult)
         print("!!!get result = ", jsonResult)
-        if "access_token" not in strResult or "session_key" not in strResult:
+        if "access_token" not in strResult or "openid" not in strResult:
             return jsonResult
-        openid = jsonResult["access_token"]
+        access_token = jsonResult["access_token"]
+        openid = jsonResult['openid']
+        user = self.suser.get_user_by_openid(openid)
+        is_first = not bool(user)
+        try:
+            req = urllib2.Request(get_user_info.format(access_token, openid))
+            response = urllib2.urlopen(req)
+            user_info = response.read()
+            response.close()
+            logger.debug("get user info : %s", user_info)
+        except:
+            logger.exception("get user info error")
+            return NETWORK_ERROR
+
+        user_info = json.loads(user_info)
+        if "errcode" in user_info or "errmsg" in user_info:
+            response = import_status("get_user_info_error", "WD_ERROR", "error_get_user_info")
+            response['data'] = user_info
+            return response
+
+        if is_first:
+            usid = str(uuid.uuid1())
+            self.suser.add_model("User", **{
+                "USid": usid,
+                "openid": openid,
+                "USlastlogin": datetime.datetime.now().strftime(format_for_db),
+                "USheader": user_info.get("headimgurl"),
+                "USlevel": 0,
+                "USgender": user_info.get("sex"),
+                "USname": user_info.get("nickname"),
+                "UPPerd": args.get("UPPerd", ""),
+                "unionid": user_info.get("unionid")
+            })
+        else:
+            usid = user.USid
+            self.suser.update_user(usid, {
+                "USlastlogin": datetime.datetime.now().strftime(format_for_db),
+                "USheader": user_info.get("headimgurl"),
+                "USgender": user_info.get("sex"),
+                "USname": user_info.get("nickname"),
+                "UPPerd": args.get("UPPerd", ""),
+                "unionid": user_info.get("unionid")
+            })
+
+        self.suser.add_model("UserLoginTime", **{
+            "ULTid": str(uuid.uuid1()),
+            "USid": usid,
+            "USTip": request.remote_addr,
+            "USTcreatetime": datetime.datetime.now().strftime(format_for_db),
+        })
         response = import_status("SUCCESS_GET_OPENID", "OK")
         response["data"] = {}
-        response["data"]["access_token"] = openid
+        response["data"]["access_token"] = access_token
         return response
 
     def get_wx_config(self):
-        from WeiDian.config.setting import APP_ID, APP_SECRET_KEY
+        # ip = request.remote_addr
+        # print ip
+        from WeiDian.config.setting import APP_ID
         import random
         import string
         import time
@@ -91,8 +147,8 @@ class CUser():
             response_str = "&".join([str(k)+'='+str(v) for k, v in data.items()])
             signature = hashlib.sha1(response_str).hexdigest()
             data['signature'] = signature
-        except Exception, e:
-            logging.error(e)
+        except:
+            logger.exception("Get wx config error")
             return SYSTEM_ERROR
         response = import_status("SUCCESS_GET_CONFIG", "OK")
         response['data'] = data

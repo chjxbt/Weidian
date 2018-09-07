@@ -515,7 +515,7 @@ class User(BaseModel):
     __tablename__ = 'user'
     USid = Column(String(64), primary_key=True)
     USname = Column(String(64), nullable=False)  # 用户名
-    USpassword = Column(String(255))  # 密码
+    # USpassword = Column(String(255))  # 密码
     USphone = Column(String(16))  # 手机号
     USheader = Column(String(255))  # 头像
     USgender = Column(String(64))  # 性别
@@ -525,6 +525,9 @@ class User(BaseModel):
     USlevel = Column(Integer, default=0)
     # 上级
     UPPerd = Column(String(64), default=0)
+
+    openid = Column(String(64))    # 微信唯一值
+    unionid = Column(String(64))   # 绑定公众号会出现
 
     @orm.reconstructor
     @auto_createtime
@@ -538,7 +541,7 @@ class UserLoginTime(BaseModel):
     """
     __tablename__ = 'userlogintime'
     ULTid = Column(String(64), primary_key=True)
-    Usid = Column(String(64), nullable=False)  # 用户id
+    USid = Column(String(64), nullable=False)  # 用户id
     USTcreatetime = Column(String(14))  # 登录时间
     USTip = Column(String(64))  # 登录ip地址
 
