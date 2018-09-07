@@ -95,7 +95,8 @@
             }
             // 给每个li添加点击事件
             let that = this;
-            let oli = document.getElementsByTagName("li");
+            // let oli = document.getElementsByTagName("li");
+            let oli = document.getElementsByClassName("m-img-list-img");
             for(let i = 0; i < oli.length; i ++){
               (function(j){
                 oli[j].onclick = function () {
