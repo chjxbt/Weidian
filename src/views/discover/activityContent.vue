@@ -92,7 +92,7 @@
             this.changeLike(list);
             break;
           case 1:
-            // this.show_modal = true;
+            this.copyText(list);
             break;
           case 2:
             this.show_fixed = true;
@@ -124,6 +124,13 @@
       fixedClick(){
         this.show_fixed = false;
       },
+      // 复制链接
+      copyText(list) {
+        let link = "https://daaiti.cn/WeiDian/#/productDetail?prid=" + this.activity_list[list].prid;
+        this.$copyText(link).then(function (e) {
+          Toast({ message: "复制成功", className: 'm-toast-success' });
+        })
+      },
       // 展开全文、收齐全文
       showMoreText(bool,v){
         let arr = [].concat(this.activity_list);
@@ -133,7 +140,6 @@
     },
     mounted() {
       this.rbimage = this.$route.query.rbimage;
-      console.log(this.rbimage);
 
       this.getActivity();
     }
