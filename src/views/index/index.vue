@@ -5,7 +5,7 @@
       </div>
       <mt-loadmore :top-method="loadTop"  :bottom-method="loadBottom" ref="loadmore">
           <div class="m-top">
-            <search @searchClick="searchClick"></search>
+            <search :search="search" @searchClick="searchClick" @inputClick="inputClick"></search>
             <navbar :list="nav_list" @navClick="navClick"></navbar>
           </div>
 
@@ -135,6 +135,8 @@
         data() {
             return {
               course:1,
+              count:5,
+              search:true,
               show_course: true,
               show_modal: false,
               show_task:false,
@@ -203,6 +205,7 @@
         /*手指滑动显示隐藏*/
           touchStart(){
             this.show_task_btn = false;
+            this.search = true;
           },
           touchEnd(){
             this.show_task_btn = true;
@@ -266,7 +269,7 @@
                 this.nav_list[0].click =true;
                 this.getActivity(this.nav_list[0].tnid);
               }else{
-                Toast(res.data.message);
+                Toast({ message: res.data.message, className: 'm-toast-fail' });
               }
             })
           },
@@ -278,7 +281,7 @@
                if(res.data.status == 200){
                  this.swipe_items = res.data.data;
                }else{
-                 Toast(res.data.message);
+                 Toast({ message: res.data.message, className: 'm-toast-fail' });
                }
             })
           },
@@ -290,7 +293,7 @@
               if(res.data.status == 200){
                 this.hot_list = res.data.data;
               }else{
-                Toast(res.data.message);
+                Toast({ message: res.data.message, className: 'm-toast-fail' });
               }
             })
           },
@@ -311,7 +314,7 @@
                   this.activity_list[i].actext.length >92 && (this.activity_list[i].show_text = true) ;
                 }
               }else{
-                Toast(res.data.message);
+                Toast({ message: res.data.message, className: 'm-toast-fail' });
               }
             })
           },
@@ -346,8 +349,33 @@
               })
           },
           /*搜索*/
-          searchClick(){
-            this.$router.push('/search');
+          inputClick(){
+            this.search = false;
+          },
+          searchClick(v){
+            console.log(v)
+            axios.get(api.get_search,{params:{
+                token:localStorage.getItem('token'),
+                PRname:v,
+                page:1,
+                start:0,
+                count:this.count
+              }}).then(res => {
+                if(res.data.status == 200){
+                  if(res.data.data.length < 1 ){
+                    Toast({ message: '无匹配内容', className: 'm-toast-warning' });
+                  }
+                  this.activity_list = res.data.data;
+                  for(let i=0;i<this.activity_list.length;i++){
+                    this.activity_list[i].icon = this.icon_list;
+                    this.activity_list[i].icon[0].name = this.activity_list[i].likenum;
+                    this.activity_list[i].icon[0].alreadylike = this.activity_list[i].alreadylike;
+                    this.activity_list[i].actext.length >92 && (this.activity_list[i].show_text = true) ;
+                  }
+                }else{
+                  Toast({ message: res.data.message, className: 'm-toast-fail' });
+                }
+            })
           },
           /*关闭模态框*/
           closeModal(v){
