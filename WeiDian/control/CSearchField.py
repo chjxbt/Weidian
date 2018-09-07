@@ -88,7 +88,6 @@ class CSearchField():
         response_del_searchfield['data'] = {'sfid': sfid}
         return response_del_searchfield
 
-
     @verify_token_decorator
     def get_content_by_seach(self):
         if not hasattr(request, 'user'):

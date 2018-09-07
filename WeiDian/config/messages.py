@@ -44,11 +44,12 @@ update_searchfield_success = '修改搜索字段成功'
 add_order_success = '添加订单成功'
 get_order_list_success = '获取订单列表成功'
 cancel_activity_like_success = '取消喜欢成功'
-add_activity_like_success = '添加喜欢成功'
+add_activity_like_success = '添加活动喜欢成功'
+add_ac_pr_like_success = '添加活动商品喜欢成功'
+get_product_like_success = '获取商品收藏成功'
 get_my_info_success = '获取我的信息成功'
 SUCCESS_GET_CONFIG = '获取微信数据成功'
 get_complain_success = "获取投诉信息成功"
-
 complain_repeat_error = "该订单已被投诉"
 complain_success = "投诉成功"
 get_user_info_error = "登录失败，未能获取微信信息"

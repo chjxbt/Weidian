@@ -26,12 +26,12 @@ class SUser(SBase):
         return self.session.query(User).filter_by(USid=usid).first()
 
     @close_session
-    def verify_user(self, usname, uspassword):
+    def verify_user(self, usname):
         """通过用户名和密码验证"""
-        user = self.session.query(User).filter_by(USname=usname).first()
-        if user:
-            if check_password_hash(user.USpassword, uspassword):
-                return user
+        return self.session.query(User).filter_by(USname=usname).first()
+        # if user:
+        #     if check_password_hash(user.USpassword, uspassword):
+        #         return user
 
     @close_session
     def get_user_by_openid(self, openid):
@@ -40,3 +40,5 @@ class SUser(SBase):
     @close_session
     def update_user(self, userid, user):
         return self.session.query(User).filter(User.USid == userid).update(user)
+
+

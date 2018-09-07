@@ -1,4 +1,4 @@
-# *- coding:utf8 *-
+# -*- coding:utf8 -*-
 import sys
 import os
 from flask import jsonify
@@ -14,6 +14,15 @@ class AProductLike(Resource):
     def post(self, productlike):
         print productlike
         apis = {
-            'add_one': self.cproductlike.add_like
+            "add_one": "self.cproductlike.add_like()",
         }
-        return jsonify(apis[productlike]())
+        res = eval(apis[productlike])
+        return jsonify(res)
+
+    def get(self, productlike):
+        print productlike
+        apis = {
+            "get_prlike": "self.cproductlike.get_like_list()",
+        }
+        res = eval(apis[productlike])
+        return jsonify(res)
