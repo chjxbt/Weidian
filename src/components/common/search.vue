@@ -1,11 +1,11 @@
 <template>
   <div class="m-search" >
-    <div class="m-search-text" v-if="search" @click.stop="inputClick">
-      <span class="m-search-icon"></span>
-      <span >搜索商品、品牌</span>
+    <div class="m-search-text" v-if="search" @click="inputClick">
+      <span class="m-search-icon" @click="inputClick"></span>
+      <span @click="inputClick">搜索商品、品牌</span>
     </div>
     <div class="m-input" v-if="!search" >
-      <input type="text" v-model="value"  placeholder="" />
+      <input type="text" v-model="value" autofocus="!search" placeholder="" />
       <span @click.stop="searchClick">搜索</span>
     </div>
 
@@ -27,7 +27,8 @@
         }
       },
       methods:{
-        inputClick(){
+        inputClick(e){
+          e.preventDefault();
           this.$emit('inputClick')
         },
         searchClick(){
