@@ -18,7 +18,8 @@
 <script type="text/ecmascript-6">
   import axios from 'axios';
   import api from '../../api/api';
-  import common from '../../common/js/common'
+  import common from '../../common/js/common';
+  import {Toast} from 'mint-ui';
     export default {
         data() {
             return {
@@ -66,9 +67,17 @@
                 code: common.GetQueryString('code')
               }
             }).then(res => {
+              alert( JSON.stringify(res.data.data));
+              if(res.data.status == 200){
+                window.localStorage.setItem("access_token",res.data.data.access_token);
+                window.localStorage.setItem("token",res.data.data.token);
+                this.$router.push('/index/index');
+              }else{
+                Toast({ message: res.data.message, className: 'm-toast-fail' });
+              }
 
             });
-            this.$router.push('/index/index');
+
           }
         }
       },
