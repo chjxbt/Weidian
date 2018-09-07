@@ -102,8 +102,8 @@
         orderList: [
           { storeName: "衣衣旗舰店", productSend: "已免运费", reduceTitle: "满 300 减 30", reduceNumber: "还差 30 元", toReduce: "去凑单 >",
             productList: [
-              { choose: false, productImg: "/static/images/product1.png", productName: "18年版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版", size: "XL", color: "黄色", quantity: 2, productPrice: "106" },
-              { choose: false, productImg: "/static/images/product1.png", productName: "18年版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版",  size: "2XL", color: "蓝色", quantity: 1,productPrice: "99" }
+              { prid: "123", choose: false, productImg: "/static/images/product1.png", productName: "18年版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版", size: "XL", color: "黄色", quantity: 2, productPrice: "106" },
+              { prid: "1234", choose: false, productImg: "/static/images/product1.png", productName: "18年版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版",  size: "2XL", color: "蓝色", quantity: 1,productPrice: "99" }
             ],
             failureList: [
               { productImg: "/static/images/product1.png", productName: "18年版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版", size: "M", color: "红色", quantity: 3, productPrice: "106" }
@@ -185,8 +185,8 @@
       },
       // 跳转商品详情页
       toDetail(product) {
-        // console.log(product)
-        this.$router.push({path: "/productDetail", query: { product }});
+        let prid = product.prid;
+        this.$router.push({path: "/productDetail", query: { prid }});
       },
       // 去结算
       toOrder() {

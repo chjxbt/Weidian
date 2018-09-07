@@ -162,8 +162,8 @@
       }
     },
     created() {
-      let product = this.$route.query.product;
-      // console.log(product);
+      let prid = this.$route.query.prid;
+      console.log(prid);
     }
   }
 </script>

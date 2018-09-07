@@ -152,8 +152,8 @@
       },
       // 去产品详情页
       toProduct(i) {
-        let product = this.recommend.products[i - 4];
-        this.$router.push({path: "/productDetail", query: { product }});
+        let prid = this.recommend.products[i].prid;
+        this.$router.push({path: "/productDetail", query: { prid }});
       },
       /*分享按钮点击*/
       fixedClick(){
