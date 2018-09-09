@@ -2,7 +2,7 @@
   <div class="logistics-info">
     <div style="height: 10px"></div>
     <div class="product-info">
-      <img src="http://v1.51camel.com/Resources/uploadFile/L_Logo/largepic/20110509135116.jpg" class="product-img">
+      <img src="/static/images/product1.png" class="product-img">
       <div class="product-name m-ft-28 m-grey-color">2018早秋新款大码女装修身新款大码女装修身新款大码女装修身新款大码女装修身新款大码女装修身</div>
     </div>
     <div class="logistics-info-text m-bg-main-color tl">
@@ -103,6 +103,8 @@
 </template>
 
 <script>
+  import Vue from 'vue'
+  Event = new Vue();
   export default {
     data() {
       return {
@@ -134,7 +136,15 @@
       returnProduct(way) {
         let type = way;
         this.$router.push({path: "/returnProduct", query: { type }});
+      },
+      // returnProduct页面吃退款信息提交成功后调用
+      submitDone() {
+        this.show_modal = true;
+        this.submit_done = true;
       }
+    },
+    mounted() {
+
     },
     created() {
       this.order = this.$route.query.order;

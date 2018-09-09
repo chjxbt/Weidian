@@ -37,11 +37,39 @@
         <input class="money-input m-red" :class="value != ''?'active':''" type="text" v-model="value" placeholder="请输入退款金额" />
       </div>
     </div>
+    <div class="return-text-box">
+      <div class="m-ft-24 m-grey tl">最多￥21.90</div>
+      <div class="text-two">
+        <div class="m-ft-26 tl">如未收到货，请联系客服退款</div>
+        <div class="text-right m-ft-26 m-bg-main-color" @click="service">！</div>
+      </div>
+    </div>
+    <div class="return-memo">
+      <div class="m-ft-28 m-black tl">退款说明：</div>
+      <div class="input-box">
+        <input class="money-input" type="text" v-model="memo" placeholder="选填" />
+      </div>
+    </div>
+    <div class="return-memo">
+      <div class="m-ft-28 m-black tl">快递公司：</div>
+      <div class="input-box">
+        <input class="money-input" type="text" v-model="courierCompany" placeholder="请填写退货快递公司" />
+      </div>
+    </div>
+    <div class="return-memo margin-bottom">
+      <div class="m-ft-28 m-black tl">快递单号：</div>
+      <div class="input-box">
+        <input class="money-input" type="text" v-model="courierNo" placeholder="请填写退货快递单号" />
+      </div>
+    </div>
+    <div class="submit-text m-ft-36 m-bg-main-color" @click="submitReturn">提交</div>
   </div>
 </template>
 
 <script>
-  import { Picker } from 'mint-ui';
+  // import { Picker } from 'mint-ui';
+  import Vue from 'vue'
+  Event = new Vue();
 
   export default {
     name: "returnProduct",
@@ -52,7 +80,10 @@
         slots: [
           { values: ["七天无理由", "质量差", "衣服质量差", "上身效果差", "不值"] }
         ],
-        reason: ""
+        reason: "",
+        memo: "",
+        courierCompany: "",
+        courierNo: ""
       }
     },
     methods: {
@@ -64,11 +95,19 @@
       // 监听退货原因选择器
       onValuesChange(picker, values) {
         this.reason = values[0];
+      },
+      // 退款说明的感叹号
+      service() {
+        console.log();
+      },
+      // 提交
+      submitReturn() {
+        this.$router.back(-1);
       }
     },
     created() {
       let type = this.$route.query.type;
-      console.log("type", type);
+      // console.log("type", type);
     }
   }
 </script>
@@ -155,7 +194,7 @@
       height: 40px;
       margin-left: 10px;
       border-radius: 10px;
-      border: 2px @grey solid;
+      // border: 2px @grey solid;
       .money-input {
         width: 330px;
         padding: 0 10px;
@@ -166,5 +205,52 @@
         }
       }
     }
+  }
+  .return-text-box {
+    padding: 20px;
+    background-color: #f3f3f3;
+    .text-two {
+      width: 100%;
+      display: flex;
+      margin: 10px 0;
+      .text-right {
+        width: 26px;
+        height: 35px;
+        padding-left: 10px;
+        margin-left: 20px;
+        line-height: 35px;
+        border-radius: 50%;
+        background-color: @mainColor;
+      }
+    }
+  }
+  .return-memo {
+    width: 100%;
+    display: flex;
+    padding: 20px 30px 20px 30px;
+    /*border-bottom: 16px #f3f3f3 solid;*/
+    .input-box {
+      width: 350px;
+      height: 40px;
+      margin-left: 10px;
+      border-radius: 10px;
+      // border: 2px @grey solid;
+      .money-input {
+        width: 330px;
+        padding: 0 10px;
+        line-height: 40px;
+      }
+    }
+  }
+  .margin-bottom {
+    margin-bottom: 100px;
+  }
+  .submit-text {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding: 20px 0;
+    letter-spacing: 30px;
+    background-color: @mainColor;
   }
 </style>
