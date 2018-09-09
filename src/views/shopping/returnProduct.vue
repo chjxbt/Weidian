@@ -207,7 +207,7 @@
     }
   }
   .return-text-box {
-    padding: 20px;
+    padding: 20px 30px;
     background-color: #f3f3f3;
     .text-two {
       width: 100%;
