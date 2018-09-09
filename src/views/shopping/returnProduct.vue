@@ -15,11 +15,12 @@
       </div>
       <div class="address-text">地址：浙江省 杭州市 滨江区 浦沿街道新城路33号 只是控股 创客空间</div>
     </div>
-    <div class="return-reason">
+    <div class="return-reason" @click="choose_show = true">
       <div class="m-ft-28 m-black tl">退款原因</div>
       <div class="reason-choose-text m-ft-28 m-grey">请选择</div>
       <div class="return-reason-choose m-ft-32 m-grey">></div>
     </div>
+    <mt-actionsheet :actions="actions" v-model="choose_show"></mt-actionsheet>
     <div class="return-money">
       <div class="m-ft-28 m-black tl">退款金额：</div>
       <div class="m-ft-28 m-red">￥</div>
@@ -31,15 +32,23 @@
 </template>
 
 <script>
+  import { Actionsheet } from 'mint-ui';
   export default {
     name: "returnProduct",
     data() {
       return {
-        value: ""
+        value: "",
+        actions: [
+          { name: "质量差", method: "reason" }, { name: "七天无理由", method: "reason" }, { name: "衣服质量差", method: "reason" },
+          { name: "上身效果差", method: "reason" }, { name: "不值", method: "reason" }
+        ],
+        choose_show: false
       }
     },
     methods: {
-
+      reason(e) {
+        console.log(e);
+      }
     },
     created() {
       let type = this.$route.query.type;
