@@ -120,6 +120,8 @@ export const constantRouterMap = [
   { path: '/orderStatus', component: () => import('../views/shopping/orderStatus'), hidden: true },
   // 物流信息
   { path: '/logisticsInfo', component: () => import('../views/shopping/logisticsInfo'), hidden: true },
+  // 退换货
+  { path: '/returnProduct', component: () => import('../views/shopping/returnProduct'), hidden: true },
 
   /*二三级页面*/
   // 会员中心

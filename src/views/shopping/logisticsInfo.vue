@@ -31,7 +31,7 @@
         <div class="m-modal-content">
           <div class="content-row">
             <div class="row-left">退</div>
-            <div class="row-middle" @click="submit_done = true">
+            <div class="row-middle" @click="returnProduct('退')">
               <div class="row-middle-top">退货退款</div>
               <div class="row-middle-bottom">已收到货，需要退回已收到的货</div>
             </div>
@@ -39,7 +39,7 @@
           </div>
           <div class="content-row">
             <div class="row-left">换</div>
-            <div class="row-middle" @click="submit_done = true">
+            <div class="row-middle" @click="returnProduct('换')">
               <div class="row-middle-top" @click="show_modal = true">换货</div>
               <div class="row-middle-bottom">已收到货，需要更换已收到的货</div>
             </div>
@@ -130,6 +130,10 @@
       closeModal() {
         this.show_modal = false;
         this.submit_done = false;
+      },
+      returnProduct(way) {
+        let type = way;
+        this.$router.push({path: "/returnProduct", query: { type }});
       }
     },
     created() {
