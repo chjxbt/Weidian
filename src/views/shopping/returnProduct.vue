@@ -17,10 +17,19 @@
     </div>
     <div class="return-reason" @click="choose_show = true">
       <div class="m-ft-28 m-black tl">退款原因</div>
-      <div class="reason-choose-text m-ft-28 m-grey">请选择</div>
-      <div class="return-reason-choose m-ft-32 m-grey">></div>
+      <div class="reason-choose-text m-ft-28 m-grey">请选择&nbsp;&nbsp;&nbsp;></div>
     </div>
-    <mt-actionsheet :actions="actions" v-model="choose_show"></mt-actionsheet>
+
+    <div class="m-modal" v-if="choose_show">
+      <div class="m-modal-state">
+        <div class="modal-row-one">
+          <div class="row-one-text m-grey tl" @click="choose_show = false">取消</div>
+          <div class="row-one-text tr" @click="reasonDone">确定</div>
+        </div>
+        <mt-picker :slots="slots" @change="onValuesChange"></mt-picker>
+      </div>
+    </div>
+
     <div class="return-money">
       <div class="m-ft-28 m-black tl">退款金额：</div>
       <div class="m-ft-28 m-red">￥</div>
@@ -32,22 +41,29 @@
 </template>
 
 <script>
-  import { Actionsheet } from 'mint-ui';
+  import { Picker } from 'mint-ui';
+
   export default {
     name: "returnProduct",
     data() {
       return {
         value: "",
-        actions: [
-          { name: "质量差", method: "reason" }, { name: "七天无理由", method: "reason" }, { name: "衣服质量差", method: "reason" },
-          { name: "上身效果差", method: "reason" }, { name: "不值", method: "reason" }
+        choose_show: false,
+        slots: [
+          { values: ["七天无理由", "质量差", "衣服质量差", "上身效果差", "不值"] }
         ],
-        choose_show: false
+        reason: ""
       }
     },
     methods: {
-      reason(e) {
-        console.log(e);
+      // 退货原因选择器-确定
+      reasonDone() {
+        this.choose_show = false;
+        console.log(this.reason);
+      },
+      // 监听退货原因选择器
+      onValuesChange(picker, values) {
+        this.reason = values[0];
       }
     },
     created() {
@@ -59,6 +75,7 @@
 
 <style lang="less" rel="stylesheet/less" scoped>
   @import "../../common/css/index";
+  @import "../../common/css/modal";
 
   .product-info {
     width: 100%;
@@ -109,7 +126,24 @@
     display: flex;
     padding: 20px 30px;
     .reason-choose-text {
-      margin: 0 20px 0 60%;
+      margin: 0 0 0 60%;
+    }
+  }
+  .m-modal {
+    .m-modal-state {
+      width: 100%;
+      height: 500px;
+      position: absolute;
+      top: 75%;
+      .modal-row-one {
+        width: 100%;
+        display: flex;
+        .row-one-text {
+          flex: 1;
+          font-size: 30px;
+          margin: 15px 30px;
+        }
+      }
     }
   }
   .return-money {
