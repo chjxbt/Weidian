@@ -50,6 +50,17 @@
         <input class="money-input" type="text" v-model="memo" placeholder="选填" />
       </div>
     </div>
+
+    <div class="upload-picture">
+      <div class="m-ft-28 tl">上传凭证</div>
+      <input class="picture-file" type="file">
+      <div class="choose-picture">
+        <img class="picture-logo" src="/static/images/product1.png" alt="">
+        <div class="m-grey">上传凭证</div>
+        <div class="m-grey">(最多6张)</div>
+      </div>
+    </div>
+
     <div class="return-memo">
       <div class="m-ft-28 m-black tl">快递公司：</div>
       <div class="input-box">
@@ -238,6 +249,30 @@
         padding: 0 10px;
         line-height: 40px;
       }
+    }
+  }
+  .upload-picture {
+    padding: 30px;
+    border-top: 16px #f3f3f3 solid;
+    border-bottom: 16px #f3f3f3 solid;
+    .choose-picture {
+      width: 18%;
+      padding: 30px;
+      margin-top: 20px;
+      border:2px @grey dashed;
+      .picture-logo {
+        width: 60px;
+        height: 50px;
+      }
+    }
+    .picture-file {
+      position: absolute;
+      overflow: hidden;
+      left: 30px;
+      top: 918px;
+      width: 24%;
+      height: 170px;
+      opacity: 0;
     }
   }
   .margin-bottom {
