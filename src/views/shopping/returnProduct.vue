@@ -68,8 +68,6 @@
 
 <script>
   // import { Picker } from 'mint-ui';
-  import Vue from 'vue'
-  Event = new Vue();
 
   export default {
     name: "returnProduct",
@@ -102,7 +100,7 @@
       },
       // 提交
       submitReturn() {
-        this.$router.back(-1);
+        this.$router.go(-1);
       }
     },
     created() {

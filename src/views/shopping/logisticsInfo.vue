@@ -103,8 +103,6 @@
 </template>
 
 <script>
-  import Vue from 'vue'
-  Event = new Vue();
   export default {
     data() {
       return {
@@ -138,10 +136,11 @@
         this.$router.push({path: "/returnProduct", query: { type }});
       },
       // returnProduct页面吃退款信息提交成功后调用
-      submitDone() {
+      /*submitDone() {
+        console.log(666)
         this.show_modal = true;
         this.submit_done = true;
-      }
+      }*/
     },
     mounted() {
 
