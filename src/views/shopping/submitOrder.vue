@@ -88,7 +88,7 @@
     },
     created() {
       this.order = this.$route.query.order;
-      console.log("order", this.order);
+      // console.log("order", this.order);
     }
   }
 </script>
