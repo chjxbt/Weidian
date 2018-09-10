@@ -58,6 +58,7 @@
           ],
           filtrateActivity: 0,
           activity_list:[],
+          count: 5
         }
       },
       props: {
@@ -78,7 +79,7 @@
         getActivity(start, count, tnid){
           let token = localStorage.getItem('token');
           axios.get(api.get_all_activity + '?token=' + token, {
-            params: { lasting: false, start: start || 0, count: count || 5, tnid: tnid }}).then(res => {
+            params: { lasting: false, start: start || 0, count: count || this.count, tnid: tnid }}).then(res => {
             if(res.data.status == 200){
               this.activity_list = res.data.data;
 
@@ -151,7 +152,7 @@
         // 改变第二行导航
         changefiltrateActivity(item, index) {
           this.filtrateActivity = index;
-          this.getActivity(0, 15, item.tnid);
+          this.getActivity(0, this.count, item.tnid);
         },
         // 展开全文、显示全文
         showMore(status, index){
@@ -161,7 +162,7 @@
         }
       },
       mounted() {
-        this.getActivity(0, 15, this.sub[0].tnid);
+        this.getActivity(0, this.count, this.sub[0].tnid);
       }
     }
 </script>
