@@ -1,5 +1,6 @@
 <template>
-  <div class="m-discover-announcement">
+  <div class="m-discover-announcement" @touchmove="touchMove">
+    <mt-loadmore :top-method="loadTop" :bottom-all-loaded="!isScroll" ref="loadmore">
     <div class="m-section-one" v-for="(item, index) in activity_list">
       <div class="m-section-content">
         <div class="m-section-title">
@@ -47,6 +48,7 @@
         </div>
       </div>
     </div>
+    </mt-loadmore>
     <share v-if="show_fixed" :num="2" @fixedClick="fixedClick"></share>
   </div>
 </template>
@@ -57,6 +59,7 @@
   import api from '../../../api/api';
   import axios from 'axios';
   import { Toast } from 'mint-ui';
+  import common from '../../../common/js/common';
 
   export default {
     data() {
@@ -77,6 +80,9 @@
         show_input: false,
         activity_list: [],
         comment: "",
+        isScroll: true,
+        total_count: 0,
+        count: 1
       }
     },
     props:{
@@ -84,12 +90,50 @@
     },
     components: { iconList, share },
     methods: {
+      touchMove(){
+        let scrollTop = common.getScrollTop();
+        let scrollHeight = common.getScrollHeight();
+        let ClientHeight = common.getClientHeight()
+        if (scrollTop + ClientHeight >= scrollHeight) {
+          if(this.isScroll){
+            this.isScroll = false;
+            this.loadBottom();
+          }else  if(this.activity_list.length == this.total_count){
+            this.isScroll = false;
+            Toast({ message: '数据已经加载', className: 'm-toast-warning' });
+          }
+        }
+      },
+      // 下拉刷新
+      loadTop() {
+        this.getActivity();
+        this.$refs.loadmore.onTopLoaded();
+      },
+      // 上拉加载更多
+      loadBottom() {
+        this.getActivity(this.activity_list.length, this.count);
+        this.$refs.loadmore.onBottomLoaded();
+      },
       /*获取活动列表*/
-      getActivity(start, count, tnid){
+      getActivity(start, count, ){
         axios.get(api.get_all_activity + "?token=" + localStorage.getItem('token'), {
-          params: { start: start || 0, count: count || 5, tnid: this.tnid }}).then(res => {
+          params: { start: start || 0, count: count || this.count, tnid: this.tnid }}).then(res => {
           if(res.data.status == 200){
-            this.activity_list = res.data.data;
+
+            this.isScroll = true;
+            this.total_count = res.data.count;
+
+            if(start){
+              this.activity_list = this.activity_list.concat(res.data.data);
+              if(this.activity_list.length == this.total_count){
+                this.isScroll = false;
+              }
+            }else{
+              this.activity_list = res.data.data;
+            }
+
+            let arr = [].concat(this.activity_list);
+            this.activity_list = [].concat(arr);
 
             // 判断今天、昨天和直接显示日期
             let now = new Date();

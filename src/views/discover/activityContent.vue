@@ -68,7 +68,6 @@
             this.isScroll = false;
             Toast({ message: '数据已经加载', className: 'm-toast-warning' });
           }
-
         }
       },
       /*获取活动列表*/
@@ -160,7 +159,7 @@
               arr.alreadylike = true;
               Toast({ message: res.data.message, className: 'm-toast-success' });
             }
-            console.log(arr);
+            // console.log(arr);
           }else{
             Toast({ message: res.data.message, className: 'm-toast-fail' });
           }
