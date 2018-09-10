@@ -199,21 +199,22 @@
           let that =this;
         this.interval = window.setInterval(that.animation,3000);
 
-        this.$nextTick(function () {
+        // this.$nextTick(function () {
           wxapi.wxRegister(this.wxRegCallback)
-        })
+        // })
 
 
       },
         methods: {
           /*手指滑动显示隐藏*/
           touchStart(){
-            this.show_task_btn = false;
-            this.search = true;
+            // this.show_task_btn = false;
+            // this.search = true;
           },
           touchMove(){
             this.show_task_btn = false;
             this.search = true;
+            this.show_fixed = false;
             let scrollTop = common.getScrollTop();
             let scrollHeight = common.getScrollHeight();
             let ClientHeight = common.getClientHeight()

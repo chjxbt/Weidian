@@ -6,12 +6,12 @@
           <span>等级规则</span>
         </div>
         <div class="m-flex-start m-shop">
-          <img src="" class="m-shop-top-img" alt="">
+          <img  :src="person_info.user.usheader" class="m-shop-top-img" alt="">
           <div class="m-shop-content">
-            <h3>小居居</h3>
+            <h3>{{person_info.user.usname}}</h3>
             <div>
-              <p class="m-red">123123</p>
-              <p>1123</p>
+              <p class="m-red">￥{{person_info.myrewards}}</p>
+              <p>新衣币</p>
             </div>
           </div>
         </div>
@@ -19,24 +19,7 @@
       <div class="m-order-box">
         <div class="m-part-one">
          <cell :item="part_title" ></cell>
-          <ul class="m-part-list">
-            <li>
-              <img src="/static/images/icon-pay-personal.png" class="m-part-list-icon" />
-              <span>待支付</span>
-            </li>
-            <li>
-              <img src="/static/images/icon-wait-send-personal.png" class="m-part-list-icon" />
-              <span>待发货</span>
-            </li>
-            <li>
-              <img src="/static/images/icon-sent-personal.png" class="m-part-list-icon" />
-              <span>已发货</span>
-            </li>
-            <li>
-              <img src="/static/images/icon-cancel-personal.png" class="m-part-list-icon" />
-              <span>已取消</span>
-            </li>
-          </ul>
+          <order :list="order_list"></order>
         </div>
       </div>
 
@@ -58,10 +41,17 @@
 
 <script type="text/ecmascript-6">
   import cell from '../../../components/common/cell';
+  import axios from 'axios';
+  import api from '../../../api/api';
+  import {Toast} from 'mint-ui';
+  import order from './components/order';
     export default {
         data() {
             return {
                 name: '',
+              person_info:[
+
+              ],
               part_title:{
                 name:'我的订单',
                 value:'更多',
@@ -83,19 +73,90 @@
                     value:'',
                     url:''
                   }
-                ]
+                ],
+              order_list:[
+                {
+                  name:'待支付',
+                  src:'/static/images/icon-pay-personal.png',
+                  value:'',
+                  num:1
+                },{
+                  name:'待发货',
+                  src:'/static/images/icon-wait-send-personal.png',
+                  value:'',
+                  num:2
+                },
+                {
+                  name:'已发货',
+                  src:'/static/images/icon-sent-personal.png',
+                  value:'',
+                  num:0
+                },
+                {
+                  name:'已取消',
+                  src:'/static/images/icon-cancel-personal.png',
+                  value:'',
+                  num:3
+                }
+              ],
             }
         },
         components: {
-          cell
+          cell,
+          order
         },
         methods: {
+          getInfo(){
+            axios.get(api.get_info_mycenter,{
+              params:{
+                token:localStorage.getItem('token')
+              }
+            }).then(res => {
+              if(res.data.status == 200){
+                this.person_info = res.data.data
+              }else{
+                Toast({ message: res.data.message, className: 'm-toast-fail' });
+              }
+            },error => {
+              Toast({ message: error.data.message, className: 'm-toast-fail' });            })
+          },
+          getOrder(){
+            axios.get(api.get_order_count,{
+              params:{
+                token:localStorage.getItem('token')
+              }
+            }).then(res => {
+              if(res.data.status == 200){
+                // this.person_info = res.data.data
+                for(let i=0;i<res.data.data.length;i++){
+                  switch (res.data.data[i].status){
+                    case '待付款':
+                      this.order_list[0].value = res.data.data[i].count;
+                      break;
+                    case '待发货':
+                      this.order_list[1].value = res.data.data[i].count;
+                      break;
+                    case '已发货':
+                      this.order_list[2].value = res.data.data[i].count;
+                      break;
+                    case '已取消':
+                      this.order_list[3].value = res.data.data[i].count;
+                      break;
+                  }
+                }
+              }else{
+                Toast({ message: res.data.message, className: 'm-toast-fail' });
+              }
+            },error => {
+              Toast({ message: error.data.message, className: 'm-toast-fail' });            })
+          },
           cellClick(v){
 
           }
         },
         created() {
-
+          this.getInfo();
+          this.getOrder();
         }
     }
 </script>

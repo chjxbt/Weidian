@@ -34,16 +34,16 @@ const wxApi = {
     // let data = {params: {reqUrl: window.location.href}}
     axios.get(api.get_config,{
       params:{
-        url: window.location.href.split('#')[0]
+        url: window.location.href
       }
     } ).then((res) => {
       if(res.data.status == 200)
         wx.config({
           debug: true,
-          appId: res.data.data.appid,
-          timestamp: res.data.data.timestamp,
-          nonceStr: res.data.data.nonceStr,
-          signature: res.data.data.signature,
+          appId: res.data.data.appId,
+          timestamp: Number(res.data.data.timestamp),
+          nonceStr: res.data.data.noncestr,
+          signature: res.data.data.sign,
           jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage']
         });
     }).catch((error) => {
@@ -86,40 +86,47 @@ const wxApi = {
 
     })
   },
-  ShareTimeline (opstion) {
-    wx.onMenuShareTimeline({
-      title: opstion.title || '1111', // 分享标题
-      link: opstion.link || '', // 分享链接
-      imgUrl: opstion.imgUrl || '', // 分享图标
-      success () {
-        // 用户成功分享后执行的回调函数
-        opstion.success()
-      },
-      cancel () {
-        // 用户取消分享后执行的回调函数
-
-        opstion.error()
-      },error(){
-        console.log('1112')
-      }
+  ShareTimeline (opstion){
+    // console.log(opstion)
+    wx.ready(()=> {
+      wx.onMenuShareTimeline({});
+      // wx.onMenuShareTimeline({
+      //   title: opstion.title || '1111', // 分享标题
+      //   link: opstion.link || '', // 分享链接
+      //   imgUrl: opstion.imgUrl || '', // 分享图标
+      //   success () {
+      //     // 用户成功分享后执行的回调函数
+      //     opstion.success()
+      //   },
+      //   cancel () {
+      //     // 用户取消分享后执行的回调函数
+      //
+      //     opstion.error()
+      //   },error(){
+      //     console.log('1112')
+      //   }
+      // })
     })
+
   },
   ShareAppMessage (opstion) {
-    wx.onMenuShareAppMessage({
-      title: opstion.title || '1111', // 分享标题
-      link: opstion.link || '', // 分享链接
-      imgUrl: opstion.imgUrl || '', // 分享图标
-      success () {
-        // 用户成功分享后执行的回调函数
-        opstion.success()
-      },
-      cancel () {
-        // 用户取消分享后执行的回调函数
+    wx.ready((res) => {
+      wx.onMenuShareAppMessage({
+        title: opstion.title || '1111', // 分享标题
+        link: opstion.link || '', // 分享链接
+        imgUrl: opstion.imgUrl || '', // 分享图标
+        success () {
+          // 用户成功分享后执行的回调函数
+          opstion.success()
+        },
+        cancel () {
+          // 用户取消分享后执行的回调函数
 
-        opstion.error()
-      },error(){
-        console.log('1112')
-      }
+          opstion.error()
+        },error(){
+          console.log('1112')
+        }
+      })
     })
   },
   // 预览图片

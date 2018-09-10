@@ -38,6 +38,8 @@
 </template>
 
 <script type="text/ecmascript-6">
+  import axios from 'axios';
+  import api from '../../../api/api';
     export default {
         data() {
             return {
@@ -46,6 +48,17 @@
         },
         components: {},
         methods: {
+          getInfo(){
+            axios.get(api.get_info_mycenter,{
+              params:{
+                token:localStorage.getItem('token')
+              }
+            }).then(res => {
+              if(res.data.status == 200){
+
+              }
+            })
+          },
           addressClick(){
             this.$router.push('/receiverAddress');
           },

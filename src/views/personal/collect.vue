@@ -1,5 +1,17 @@
 <template>
     <div class="m-collect">
+      <template v-for="(item,index) in collect_list">
+        <div class="m-collect-one">
+          <img src="" class="m-collect-img" alt="">
+          <div class="m-collect-text">
+            <div>
+              <span class="m-check active"></span>
+              <span class="m-red">下架商品</span>
+            </div>
+            <span>已有122人发圈</span>
+          </div>
+        </div>
+      </template>
       <div class="m-collect-one">
         <img src="" class="m-collect-img" alt="">
         <div class="m-collect-text">
@@ -43,16 +55,35 @@
 </template>
 
 <script type="text/ecmascript-6">
+  import axios from 'axios';
+  import api from '../../api/api';
     export default {
         data() {
             return {
-                name: ''
+                name: '',
+              collect_list:[]
             }
         },
         components: {},
-        methods: {},
+        methods: {
+          getCollect(){
+            axios.get(api.get_prlike_productlike,{
+              params:{
+                token: localStorage.getItem('token')
+              }
+            }).then(res => {
+              console.log(res);
+              if(res.data.status == 200){
+                for(let i=0;i<res.data.data.length;i++){
+                  res.data.data[i].click = false;
+                }
+                this.collect_list = [].concat(res.data.data);
+              }
+            })
+          }
+        },
         created() {
-
+          this.getCollect()
         }
     }
 </script>

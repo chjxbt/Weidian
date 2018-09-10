@@ -73,7 +73,6 @@
             <span>{{item.name}}</span>
           </li>
         </template>
-
       </ul>
 
       <div class="m-short-bannar">

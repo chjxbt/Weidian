@@ -21,6 +21,14 @@ const api={
   add_comment: title +'/activitycomment/add_comment',//添加评论-教程/公告 - 发现页
 
   get_list: title +'/activitycomment/get_list',//获取活动下的评论(包括回复) - 首页/发现页
+
+
+  get_order_count: title + '/order/get_count',//获取订单数
+  get_more_order: title + '/order/get_more',//获取所有订单
+  get_list_order: title + '/order/get_list',//获取各状态订单
+  get_info_mycenter: title + '/mycenter/get_info',//获取基本信息
+  add_one_complain: title + '/complain/add_one',//投诉
+  get_prlike_productlike: title + '/productlike/get_prlike',//收藏
 };
 
 export default api

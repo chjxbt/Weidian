@@ -67,7 +67,6 @@
                 code: common.GetQueryString('code')
               }
             }).then(res => {
-              alert( JSON.stringify(res.data.data));
               if(res.data.status == 200){
                 window.localStorage.setItem("access_token",res.data.data.access_token);
                 window.localStorage.setItem("token",res.data.data.token);
