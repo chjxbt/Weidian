@@ -92,11 +92,7 @@
       },
       // 下拉刷新
       loadTop() {
-        for(let i=0;i<this.nav_list.length;i++){
-          if(this.nav_list[i].click){
-            this.getActivity(this.nav_list[i].tnid);
-          }
-        }
+        this.getActivity();
         this.$refs.loadmore.onTopLoaded();
       },
       /*每个活动icon点击*/
