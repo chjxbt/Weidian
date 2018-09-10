@@ -130,17 +130,31 @@
           params: { start: start || 0, count: count || 2, tnid: this.tnid }}).then(res => {
           if(res.data.status == 200){
             this.activity_list = res.data.data;
-            // console.log(this.activity_list);
 
-            for(let i = 0; i < this.activity_list.length; i ++){
-              this.activity_list[i].icon = this.icon_list;
-              this.activity_list[i].icon[0].name = this.activity_list[i].likenum;
-              this.activity_list[i].icon[0].alreadylike = this.activity_list[i].alreadylike;
-              this.activity_list[i].actext.length > 92 && (this.activity_list[i].show_text = true);
-
-              /*if(this.activity_list[i].alreadylike) {
-                this.icon_list[0].src = "icon-like-active";
-              }*/
+            let arr = [].concat(this.activity_list);
+            for(let i=0;i<arr.length;i++) {
+              let _arr = [
+                {
+                  src: 'icon-like',
+                  name: '123123',
+                  url: 'icon-like'
+                },
+                {
+                  src: 'icon-lian',
+                  name: '复制链接',
+                  url: 'icon-lian'
+                },
+                {
+                  src: 'icon-share',
+                  name: '转发',
+                  url: 'icon-share'
+                }
+              ];
+              _arr[0].name = arr[i].likenum;
+              _arr[0].alreadylike = arr[i].alreadylike;
+              arr[i].actext.length > 92 && (arr[i].show_text = true);
+              arr[i].icon = [].concat(_arr);
+              console.log(_arr[0].name, arr[i].likenum)
             }
           }else{
             Toast({ message: res.data.message, className: 'm-toast-fail' });
@@ -205,20 +219,22 @@
       },
       // 活动点赞
       changeLike(index) {
+        let arr = this.activity_list[index].icon[0];
+        // console.log(arr);
         axios.post(api.ac_like + '?token=' + localStorage.getItem('token'), {
           acid: this.activity_list[index].acid
         }).then(res => {
           if(res.data.status == 200){
-            if(this.activity_list[index].alreadylike) {
-              this.activity_list[index].likenum -= 1;
-              this.activity_list[index].alreadylike = false;
+            if(arr.alreadylike) {
+              arr.name -= 1;
+              arr.alreadylike = false;
               Toast({ message: res.data.message, className: 'm-toast-warning' });
-
-            }else if(!this.activity_list[index].alreadylike) {
-              this.activity_list[index].likenum += 1;
-              this.activity_list[index].alreadylike = true;
+            }else if(!arr.alreadylike) {
+              arr.name = Number(arr.name) + 1;
+              arr.alreadylike = true;
               Toast({ message: res.data.message, className: 'm-toast-success' });
             }
+            console.log(arr);
           }else{
             Toast({ message: res.data.message, className: 'm-toast-fail' });
           }
@@ -249,7 +265,7 @@
         let start = this.activity_list.length;
 
         axios.get(api.get_all_activity + '?token=' + localStorage.getItem('token'), {
-          params: { start: start, count: 2, tnid: this.tnid }}).then(res => {
+          params: { start: start, count: 5, tnid: this.tnid }}).then(res => {
           if(res.data.status == 200){
             // this.activity_list = res.data.data;
 
@@ -263,8 +279,6 @@
           }
         })
 
-
-        // this.allLoaded = true;// 若数据已全部获取完毕
         this.$refs.loadmore.onBottomLoaded();
       },
     },
