@@ -1,5 +1,5 @@
 <template>
-  <div class="m-discover-every" @touchmove="touchMove" @touchend="touchEnd" @touchstart="touchStart">
+  <div class="m-discover-every" @touchmove="touchMove">
     <div class="m-swipe-box">
       <mt-swipe :auto="2000">
         <mt-swipe-item v-for="item in bannerList" :key="item.id">
@@ -81,12 +81,7 @@
     },
     components: { ctx, share },
     methods: {
-      touchStart(){
-        // this.show_task_btn = false;
-        // this.search = true;
-      },
       touchMove(){
-        console.log(this.isScroll);
         let scrollTop = common.getScrollTop();
         let scrollHeight = common.getScrollHeight();
         let ClientHeight = common.getClientHeight()
@@ -100,9 +95,6 @@
           }
 
         }
-      },
-      touchEnd(){
-
       },
       // 获取banner滚动图
       getBanner() {
@@ -297,7 +289,6 @@
       },
       // 上拉加载更多
       loadBottom() {
-        console.log(this.tnid);
         this.getActivity(this.activity_list.length, this.count);
         this.$refs.loadmore.onBottomLoaded();
       },
