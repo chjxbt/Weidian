@@ -32,7 +32,11 @@ const wxApi = {
   wxRegister (callback) {
     // let data = {params: {reqUrl: window.location.href}}
 
-    axios.get('https://daaiti.cn/user/get_wx_config' ).then((res) => {
+    axios.get('http://l.wkt.ooo:7443/user/get_wechat_config/',{
+      params:{
+        url:window.location.href
+      }
+    } ).then((res) => {
       if(res.data.status == 200)
         wx.config({
           debug: false,
