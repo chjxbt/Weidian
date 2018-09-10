@@ -527,6 +527,10 @@ class User(BaseModel):
     # 上级
     UPPerd = Column(String(64), default=0)
 
+    openid = Column(String(64))    # 微信唯一值
+    unionid = Column(String(255))   # 绑定公众号会出现
+    accesstoken = Column(String(255)) # 微信token
+
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
@@ -539,7 +543,7 @@ class UserLoginTime(BaseModel):
     """
     __tablename__ = 'userlogintime'
     ULTid = Column(String(64), primary_key=True)
-    Usid = Column(String(64), nullable=False)  # 用户id
+    USid = Column(String(64), nullable=False)  # 用户id
     USTcreatetime = Column(String(14))  # 登录时间
     USTip = Column(String(64))  # 登录ip地址
 

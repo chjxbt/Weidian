@@ -32,3 +32,13 @@ class SUser(SBase):
         # if user:
         #     if check_password_hash(user.USpassword, uspassword):
         #         return user
+
+    @close_session
+    def get_user_by_openid(self, openid):
+        return self.session.query(User).filter(User.openid == openid).first()
+
+    @close_session
+    def update_user(self, userid, user):
+        return self.session.query(User).filter(User.USid == userid).update(user)
+
+

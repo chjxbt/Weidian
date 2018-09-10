@@ -39,3 +39,6 @@ error_make_ordermain_time = 405902
 error_vote_time_start = 405903
 error_vote_time_end = 405904
 error_complain_exit = 405905
+
+error_get_user_info = 405906
+error_get_jsapi = 405907

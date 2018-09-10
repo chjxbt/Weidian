@@ -123,7 +123,7 @@ class CSearchField():
             sactivity.update_view_num(activity.ACid)
 
         activity_list = activity_list[start:end]
-        map(cactivity.fill_comment_two, activity_list)
+        # map(cactivity.fill_comment_two, activity_list)
         map(cactivity.fill_like_num, activity_list)
 
         map(cactivity.fill_type, activity_list)

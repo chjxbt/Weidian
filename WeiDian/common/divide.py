@@ -41,6 +41,21 @@ class Partner(object):
         self.cf.set('divide', 'three_level', raw)
         self.cf.write(open(self.config_file_path, "w"))
 
+    @property
+    def access_token(self):
+        return [
+            self.cf.get("access_token", "access_token"),
+            self.cf.get("access_token", "jsapiticket"),
+            self.cf.get("access_token", "lasttime")]
+
+    @access_token.setter
+    def access_token(self, args):
+        token, jsapiticket, updatetime = args[0], args[1], args[2]
+        self.cf.set('access_token', 'access_token', token)
+        self.cf.set("access_token", "lasttime", updatetime)
+        self.cf.set("access_token", "jsapiticket", jsapiticket)
+        self.cf.write(open(self.config_file_path, "w"))
+
 
 if __name__ == '__main__':
     pass
