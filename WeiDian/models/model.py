@@ -362,7 +362,7 @@ class OrderInfo(BaseModel):
     OIsn = Column(String(64))  # 订单号
     USid = Column(String(64))  # 用户
     OItradenum = Column(String(125))  # 交易号, (如果有)
-    # 订单状态: {0: 待付款, 1: 支付成功, 2: 超时关闭, 3: 支付关闭, 4:待发货, 5:已发货 6:待收货, 7:已签收 8:交易完成 9:待评价, 10:退换货 }
+    # 订单状态: {0: 待支付, 1: 支付成功, 2: 超时关闭, 3: 支付关闭, 4:待发货, 5:已发货, 6:已取消, 7:已签收, 8:交易完成, 9:待评价, 10:退换货 }
     OIpaystatus = Column(Integer, default=0)
     OIpaytype = Column(Integer)  # 支付类型: {0: 银行卡支付, 1: 微信支付}
     OIleavetext = Column(String(255))  # 订单留言

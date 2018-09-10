@@ -117,7 +117,7 @@ class COrder():
         if sell:
             json_data = [
                 {
-                    'status': u'待付款',
+                    'status': u'待支付',
                     'count': self.sorder.get_sell_ordercount_by_status(request.user.id, 0)
                 },
                 {
@@ -125,22 +125,18 @@ class COrder():
                     'count': self.sorder.get_sell_ordercount_by_status(request.user.id, 4)
                 },
                 {
-                    'status': u'待收货',
+                    'status': u'已发货',
+                    'count': self.sorder.get_sell_ordercount_by_status(request.user.id, 5)
+                },
+                {
+                    'status': u'已取消',
                     'count': self.sorder.get_sell_ordercount_by_status(request.user.id, 6)
-                },
-                {
-                    'status': u'待评价',
-                    'count': self.sorder.get_sell_ordercount_by_status(request.user.id, 9)
-                },
-                {
-                    'status': u'退换货',
-                    'count': self.sorder.get_sell_ordercount_by_status(request.user.id, 10)
                 }
             ]
         else:
             json_data = [
                 {
-                    'status': u'待付款',
+                    'status': u'待支付',
                     'count': self.sorder.get_user_ordercount_by_status(request.user.id, 0)
                 },
                 {
@@ -148,19 +144,18 @@ class COrder():
                     'count': self.sorder.get_user_ordercount_by_status(request.user.id, 4)
                 },
                 {
-                    'status': u'待收货',
+                    'status': u'已发货',
+                    'count': self.sorder.get_user_ordercount_by_status(request.user.id, 5)
+                },
+                {
+                    'status': u'已取消',
                     'count': self.sorder.get_user_ordercount_by_status(request.user.id, 6)
-                },
-                {
-                    'status': u'待评价',
-                    'count': self.sorder.get_user_ordercount_by_status(request.user.id, 9)
-                },
-                {
-                    'status': u'退换货',
-                    'count': self.sorder.get_user_ordercount_by_status(request.user.id, 10)
                 }
             ]
-        return json_data
+
+        data = import_status('get_order_count_success', 'OK')
+        data['data'] = json_data
+        return data
 
     @verify_token_decorator
     def update_order(self):

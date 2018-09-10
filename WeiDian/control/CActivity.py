@@ -2,8 +2,11 @@
 import sys
 import os
 from datetime import datetime, timedelta
+
+from WeiDian.common.log import make_log, judge_keys
 from flask import request
 import math
+import json
 import uuid
 from sqlalchemy.orm import Session
 from WeiDian.common.token_required import verify_token_decorator, is_admin, is_tourist
@@ -46,6 +49,7 @@ class CActivity(BaseActivityControl):
             return AUTHORITY_ERROR(u"未登录")
         print '已登录'
         args = request.args.to_dict()
+        make_log("args", args)
         tnid = args.get('tnid')  # 导航id
         suid = args.get('suid')  # 管理员id
         lasting = args.get('lasting', 'true')  # 是否正在进行的活动
@@ -66,17 +70,11 @@ class CActivity(BaseActivityControl):
             activity_list = filter(
                 lambda act: act.ACstarttime < now_time < act.ACendtime and not act.ACisended,
                 activity_list)
-        # if count > 30:
-        #     count = 30
-        # end = start + count
-        # if end > len_aclist:
-        #     end = len_aclist
         activity_list = map(self.fill_detail, activity_list)
         for activity in activity_list:
             self.sactivity.update_view_num(activity.ACid)
         map(self.fill_comment_two, activity_list)
         map(self.fill_like_num, activity_list)
-        # activity_list = activity_list[start:end]
         map(self.fill_type, activity_list)
         map(self.fill_product, activity_list)
         data = import_status("get_activity_list_success", "OK")
@@ -225,61 +223,27 @@ class CActivity(BaseActivityControl):
         response_make_activity['data']['acid'] = acid
         return response_make_activity
 
-    # @verify_token_decorator
-    # def update_activity(self):
-    #     if not hasattr(request, 'user'):
-    #         return TOKEN_ERROR  # 未登录, 或token错误
-    #     if not is_admin():
-    #         return AUTHORITY_ERROR  # 权限不足
-    #     data = request.json
-    #     if 'acid' not in data.keys():
-    #         return PARAMS_MISS
-    #     acid = data.pop('acid')
-    #     res = self.sactivity.update_activity(acid, **data)
-    #     if not res:
-    #         return SYSTEM_ERROR("acid错误，要修改的活动不存在")
-    #     response_update_activity = import_status(
-    #         'update_activity_success', 'OK')
-    #     response_update_activity['data'] = {'acid': acid}
-    #     return response_update_activity
-
     @verify_token_decorator
     def update_activity(self):
         if not hasattr(request, 'user'):
             return TOKEN_ERROR  # 未登录, 或token错误
         if not is_admin():
             return AUTHORITY_ERROR  # 权限不足
-        data = request.json
-        if 'acid' not in data.keys():
-            return PARAMS_MISS
-        acid = data.get('acid')
-        act = {}
-        if 'prid' in data.keys():
-            act['PRid'] = data['prid']
-        if 'actype' in data.keys():
-            act['ACtype'] = data['actype']
-        if 'topnavid' in data.keys():
-            act['TopnavId'] = data['topnavid']
-        if 'actext' in data.keys():
-            act['ACtext'] = data['actext']
-        if 'aclikefakenum' in data.keys():
-            act['AClikeFakeNum'] = data['aclikefakenum']
-        if 'acforwardfakenum' in data.keys():
-            act['ACforwardFakenum'] = data['acforwardfakenum']
-        if 'acproductssoldfakenum' in data.keys():
-            act['ACProductsSoldFakeNum'] = data['acproductssoldfakenum']
-        if 'acstarttime' in data.keys():
-            act['ACstarttime'] = data['acstarttime']
-        if 'acendtime' in data.keys():
-            act['ACendtime'] = data['acendtime']
-        if 'acistop' in data.keys():
-            act['ACistop'] = data['acistop']
+        args = request.args.to_dict()
+        make_log("args", args)
+        data = json.loads(request.data)
+        make_log("data", data)
+        true_data = ["PRid", "ACtype", "TopnavId", "ACtext", "AClikeFakeNum", "ACforwardFakenum",\
+                     "ACProductsSoldFakeNum", "ACstarttime", "ACendtime", "ACistop"]
+        if judge_keys(true_data, data.keys()) != 200:
+            return judge_keys(true_data, data.keys())
         now_time = datetime.strftime(datetime.now(), format_for_db)
-        act['ACupdatetime'] = now_time
-        act_info = self.sactivity.update_activity_by_acid(acid, act)
+        data['ACupdatetime'] = now_time
+        act_info = self.sactivity.update_activity_by_acid(args["acid"], data)
+        make_log("update_activity", act_info)
         if not act_info:
-            return SYSTEM_ERROR("acid错误，要修改的活动不存在")
+            return SYSTEM_ERROR
         response_update_activity = import_status(
             'update_activity_success', 'OK')
-        response_update_activity['data'] = {'acid': acid}
+        response_update_activity['data'] = {'acid': args["acid"]}
         return response_update_activity
