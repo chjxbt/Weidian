@@ -1,5 +1,5 @@
 <template>
-  <div class="m-discover-every">
+  <div class="m-discover-every" @touchmove="touchMove" @touchend="touchEnd" @touchstart="touchStart">
     <div class="m-swipe-box">
       <mt-swipe :auto="2000">
         <mt-swipe-item v-for="item in bannerList" :key="item.id">
@@ -26,8 +26,7 @@
       <div class="line"></div>
     </div>
 
-    <mt-loadmore :top-method="loadTop"
-                 :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="loadmore">
+    <mt-loadmore :top-method="loadTop" :bottom-all-loaded="!isScroll" ref="loadmore">
       <div class="m-index-section">
         <template v-for="(item,index) in activity_list">
           <ctx :icon="icon_list" :list="item" :index="index" @iconClick="iconClick" @showMoreText="showMoreText"></ctx>
@@ -45,6 +44,7 @@
   import { Toast } from 'mint-ui';
   import ctx from '../../index/components/ctx';
   import share from '../../../components/common/share';
+  import common from '../../../common/js/common';
 
   export default {
     data() {
@@ -71,7 +71,9 @@
         ],
         show_task: false,
         show_fixed: false,
-        allLoaded: false,
+        isScroll: true,
+        total_count: 0,
+        count: 2
       }
     },
     props:{
@@ -79,6 +81,29 @@
     },
     components: { ctx, share },
     methods: {
+      touchStart(){
+        // this.show_task_btn = false;
+        // this.search = true;
+      },
+      touchMove(){
+        console.log(this.isScroll);
+        let scrollTop = common.getScrollTop();
+        let scrollHeight = common.getScrollHeight();
+        let ClientHeight = common.getClientHeight()
+        if (scrollTop + ClientHeight >= scrollHeight) {
+          if(this.isScroll){
+            this.isScroll = false;
+            this.loadBottom();
+          }else  if(this.activity_list.length == this.total_count){
+            this.isScroll = false;
+            Toast({ message: '数据已经加载', className: 'm-toast-warning' });
+          }
+
+        }
+      },
+      touchEnd(){
+
+      },
       // 获取banner滚动图
       getBanner() {
         let token = localStorage.getItem('token');
@@ -125,11 +150,21 @@
         })
       },
       /*获取活动列表*/
-      getActivity(start, count, tnid){
+      getActivity(start, count){
         axios.get(api.get_all_activity + '?token=' + localStorage.getItem('token'), {
-          params: { start: start || 0, count: count || 2, tnid: this.tnid }}).then(res => {
+          params: { start: start || 0, count: count || this.count, tnid: this.tnid }}).then(res => {
           if(res.data.status == 200){
-            this.activity_list = res.data.data;
+            this.isScroll = true;
+            this.total_count = res.data.count;
+
+            if(start){
+              this.activity_list = this.activity_list.concat(res.data.data);
+              if(this.activity_list.length == this.total_count){
+                this.isScroll = false;
+              }
+            }else{
+              this.activity_list = res.data.data;
+            }
 
             let arr = [].concat(this.activity_list);
             for(let i=0;i<arr.length;i++) {
@@ -154,8 +189,9 @@
               _arr[0].alreadylike = arr[i].alreadylike;
               arr[i].actext.length > 92 && (arr[i].show_text = true);
               arr[i].icon = [].concat(_arr);
-              console.log(_arr[0].name, arr[i].likenum)
+              // console.log(_arr[0].name, arr[i].likenum)
             }
+            this.activity_list = [].concat(arr);
           }else{
             Toast({ message: res.data.message, className: 'm-toast-fail' });
           }
@@ -261,24 +297,8 @@
       },
       // 上拉加载更多
       loadBottom() {
-
-        let start = this.activity_list.length;
-
-        axios.get(api.get_all_activity + '?token=' + localStorage.getItem('token'), {
-          params: { start: start, count: 5, tnid: this.tnid }}).then(res => {
-          if(res.data.status == 200){
-            // this.activity_list = res.data.data;
-
-            for(let i = 0; i < res.data.data.length; i ++) {
-              // this.activity_list.push(res.data.data[i]);
-            }
-
-            console.log(this.activity_list);
-          }else{
-            Toast({ message: res.data.message, className: 'm-toast-fail' });
-          }
-        })
-
+        console.log(this.tnid);
+        this.getActivity(this.activity_list.length, this.count);
         this.$refs.loadmore.onBottomLoaded();
       },
     },
