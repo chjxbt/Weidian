@@ -8,6 +8,12 @@ class PARAMS_MISS(BaseError):
     message = '参数缺失'
 
 
+class PARAMS_REDUNDANCE(BaseError):
+    status= 405
+    status_code= 405003
+    message= "参数冗余"
+
+
 class TOKEN_ERROR(BaseError):
     status = 405
     status_code = 405001

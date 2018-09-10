@@ -14,5 +14,5 @@ class SComplain(SBase):
         return self.session.query(Complain).filter(Complain.USid == usid).order_by(Complain.COcreatetime).all()
 
     @close_session
-    def get_complain_by_orid(self, orid):
-        return self.session.query(Complain).filter(Complain.ORid == orid).first()
+    def get_complain_by_oiid(self, oiid):
+        return self.session.query(Complain).filter(Complain.OIid == oiid).first()

@@ -8,7 +8,7 @@ from WeiDian.config.response import TOKEN_ERROR, PARAMS_MISS, SYSTEM_ERROR
 from WeiDian.common.import_status import import_status
 from WeiDian.common.params_require import parameter_required
 from WeiDian.common.token_required import verify_token_decorator
-# sys.path.append(os.path.dirname(os.getcwd()))
+sys.path.append(os.path.dirname(os.getcwd()))
 from WeiDian import logger
 
 
@@ -37,11 +37,11 @@ class CComplain():
     def add_complain(self):
         if not hasattr(request, 'user'):
             return TOKEN_ERROR  # 未登录, 或token错误
-        parameter_required("ORid", "COtype")
+        parameter_required("OIid", "COtype")
         data = request.json
         try:
-            complain = self.scomplain.get_complain_by_orid(data.get("ORid"))
-            logger.debug("get complain by orid", )
+            complain = self.scomplain.get_complain_by_oiid(data.get("OIid"))
+            logger.debug("get complain by oiid", )
             if complain:
                 return import_status("complain_repeat_error", "WD_ERROR", "error_complain_exit")
             coid = str(uuid.uuid1())
@@ -49,7 +49,7 @@ class CComplain():
                 "COid": coid,
                 "COcontent": data.get("COcontent"),
                 "COtype": data.get("COtype"),
-                "ORid": data.get("ORid"),
+                "OIid": data.get("OIid"),
                 "USid": request.user.id,
             })
             response = import_status("complain_success", "OK")

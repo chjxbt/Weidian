@@ -4,6 +4,8 @@ import os
 import uuid
 import random
 from datetime import datetime
+
+from WeiDian.common.log import make_log, judge_keys
 from flask import request
 from WeiDian.common.TransformToList import dict_add_models, list_add_models
 from WeiDian.common.timeformat import format_for_db
@@ -13,6 +15,7 @@ from WeiDian.service.SOrder import SOrder
 from WeiDian.service.SProductImage import SProductImage
 from WeiDian.service.SProductSkuKey import SProductSkuKey
 from WeiDian.service.SProduct import SProduct
+from WeiDian.service.SComplain import SComplain
 from WeiDian.service.SUser import SUser
 from WeiDian.config.response import PARAMS_MISS, SYSTEM_ERROR, AUTHORITY_ERROR, TOKEN_ERROR
 from WeiDian.common.token_required import is_tourist
@@ -26,6 +29,7 @@ class COrder():
         self.sproduct = SProduct()
         self.sproductimage = SProductImage()
         self.suser = SUser()
+        self.scomplain = SComplain()
 
     @verify_token_decorator
     def add_one(self):
@@ -60,26 +64,20 @@ class COrder():
 
     @verify_token_decorator
     def get_order_list(self):
-        """查看更多订单"""
+        """获取所有订单"""
         if is_tourist():
             return AUTHORITY_ERROR(u"未登录")
         print '已登录'
         args = request.args.to_dict()
-        sell = args.get('sell')
-        page = int(args.get('page', 1))  # 页码
-        start = int(args.get('start', 0))  # 起始位置
-        count = int(args.get('count', 15))  # 取出条数
-        if not start:
-            start = (page - 1) * count
-        order_list = self.sorder.get_order_by_usid(sell, request.user.id)
-        len_order_list = len(order_list)
-        if count > 30:
-            count = 30
-        end = start + count
-        if end > len_order_list:
-            end = len_order_list
-        order_list = order_list[start: end]
+        make_log("args", args)
+        true_args = ["sell", "page_size", "page_num"]
+        if judge_keys(true_args, args.keys()) != 200:
+            return judge_keys(true_args, args.keys())
+        order_list = self.sorder.get_order_by_usid(args["sell"], request.user.id, int(args["page_num"]), int(args["page_size"]))
+        for order in order_list:
+            order.fields = ['OIsn', 'OIpaystatus', 'OIcreatetime']
         map(self.fill_productinfo, order_list)
+        map(self.fill_complainstatus, order_list)
         data = import_status('get_order_list_success', 'OK')
         data['data'] = order_list
         return data
@@ -91,25 +89,19 @@ class COrder():
             return AUTHORITY_ERROR(u"未登录")
         print '已登录'
         args = request.args.to_dict()
-        status = args.get('paystatus')
+        make_log("args", args)
         sell = args.get('sell')
-        page = int(args.get('page', 1))  # 页码
-        start = int(args.get('start', 0))  # 起始位置
-        count = int(args.get('count', 15))  # 取出条数
+        true_args = ["paystatus", "sell", "page_size", "page_num"]
+        if judge_keys(true_args, args.keys()) != 200:
+            return judge_keys(true_args, args.keys())
         if sell:
-            order_list = self.sorder.get_sell_order_by_status(request.user.id, status)
+            order_list = self.sorder.get_sell_order_by_status(request.user.id, args["paystatus"], int(args["page_num"]), int(args["page_size"]))
         else:
-            order_list = self.sorder.get_user_order_by_status(request.user.id, status)
-        len_order_list = len(order_list)
-        if not start:
-            start = (page - 1) * count
-        if count > 30:
-            count = 30
-        end = start + count
-        if end > len_order_list:
-            end = len_order_list
-        order_list = order_list[start: end]
+            order_list = self.sorder.get_user_order_by_status(request.user.id, args["paystatus"], int(args["page_num"]), int(args["page_size"]))
+        for order in order_list:
+            order.fields = ['OIid', 'OIsn', 'OIpaystatus', 'OIcreatetime']
         map(self.fill_productinfo, order_list)
+        map(self.fill_complainstatus, order_list)
         data = import_status('get_order_list_success', 'OK')
         data['data'] = order_list
         return data
@@ -134,15 +126,15 @@ class COrder():
                 },
                 {
                     'status': u'待收货',
-                    'count': self.sorder.get_sell_ordercount_by_status(request.user.id, 5)
-                },
-                {
-                    'status': u'待评价',
                     'count': self.sorder.get_sell_ordercount_by_status(request.user.id, 6)
                 },
                 {
+                    'status': u'待评价',
+                    'count': self.sorder.get_sell_ordercount_by_status(request.user.id, 9)
+                },
+                {
                     'status': u'退换货',
-                    'count': self.sorder.get_sell_ordercount_by_status(request.user.id, 7)
+                    'count': self.sorder.get_sell_ordercount_by_status(request.user.id, 10)
                 }
             ]
         else:
@@ -157,15 +149,15 @@ class COrder():
                 },
                 {
                     'status': u'待收货',
-                    'count': self.sorder.get_user_ordercount_by_status(request.user.id, 5)
-                },
-                {
-                    'status': u'待评价',
                     'count': self.sorder.get_user_ordercount_by_status(request.user.id, 6)
                 },
                 {
+                    'status': u'待评价',
+                    'count': self.sorder.get_user_ordercount_by_status(request.user.id, 9)
+                },
+                {
                     'status': u'退换货',
-                    'count': self.sorder.get_user_ordercount_by_status(request.user.id, 7)
+                    'count': self.sorder.get_user_ordercount_by_status(request.user.id, 10)
                 }
             ]
         return json_data
@@ -212,5 +204,13 @@ class COrder():
     def fill_productinfo(self, order):
         oiid = order.OIid
         order.productinfo = self.sorder.get_orderproductinfo_by_oiid(oiid)
+        order.productinfo.fields = ['OPIproductname', 'OPIproductimages']
         order.add('productinfo')
+        return order
+
+    def fill_complainstatus(self, order):
+        oiid = order.OIid
+        order.complainstatus = self.scomplain.get_complain_by_oiid(oiid)
+        order.complainstatus.fields = ['COtreatstatus']
+        order.add('complainstatus')
         return order

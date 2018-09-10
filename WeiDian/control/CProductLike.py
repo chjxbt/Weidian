@@ -58,3 +58,10 @@ class CProductLike():
         data = import_status("get_product_like_success", "OK")
         data["data"] = productlike_list
         return data
+
+    def fill_productinfo(self, prlike_list):
+        prid = prlike_list.PRid
+        prlike_list.productinfo = self.sorder.get_orderproductinfo_by_oiid(oiid)
+        prlike_list.productinfo.fields = ['PRmainpic']
+        prlike_list.add('productinfo')
+        return prlike_list

@@ -16,6 +16,7 @@ class BaseActivityControl():
     def fill_detail(self, act):
         """填充一些关联活动的信息"""
         acid = act.ACid
+        # tnid = act.TopnavId
         act.suuser = self.ssuperuser.get_one_super_by_suid(act.SUid)  # 超级用户
         act.media = self.smedia.get_media_by_acid(acid)  # 图片或视频
         act.tags = self.stags.get_show_tags_by_acid(acid)  # 右上角tag
@@ -35,6 +36,7 @@ class BaseActivityControl():
         else:
             remainminutes = remain.total_seconds() / 60
             act.remaintime = [0, remainminutes, 0]
+        # act.count = self.sactivity.get_activity_count(tnid)
         act.add(
             'suuser',
             'media',
@@ -358,8 +360,16 @@ class BaseActivityCommentControl():
 class BaseMyCenterControl():
 
     def fill_user_info(self, myinfo):
+        if not myinfo:
+            return {}
         usid = myinfo.USid
-        myinfo.user = self.suser.get_user_by_user_id(usid)
+        user = self.suser.get_user_by_user_id(usid)
+        if user.USlevel == 0:
+            user.level = 'ordinary'
+        if user.USlevel > 0:
+            user.level = 'partner'
+        user.add('level')
+        myinfo.user = user
         myinfo.add('user')
         return myinfo
 

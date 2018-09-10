@@ -3,6 +3,7 @@ import sys
 import os
 from datetime import datetime, timedelta
 from flask import request
+import math
 import uuid
 from sqlalchemy.orm import Session
 from WeiDian.common.token_required import verify_token_decorator, is_admin, is_tourist
@@ -48,37 +49,38 @@ class CActivity(BaseActivityControl):
         tnid = args.get('tnid')  # 导航id
         suid = args.get('suid')  # 管理员id
         lasting = args.get('lasting', 'true')  # 是否正在进行的活动
-        page = int(args.get('page', 1))  # 页码
+        page = args.get('page')  # 页码
         start = int(args.get('start', 0))  # 起始位置
         count = int(args.get('count', 15))  # 取出条数
-        if not start:
-            start = (page -1) * count
+        if not page:
+            page = math.floor(start / count) + 1
         if not (tnid or suid):
             return PARAMS_MISS
         if tnid:
-            activity_list = self.sactivity.get_activity_by_topnavid(tnid)
+            activity_list = self.sactivity.get_activity_by_topnavid(tnid, page, count)
+            len_aclist = self.sactivity.get_activity_count(tnid)
         if suid:
-            activity_list = self.sactivity.get_activity_by_suid(suid)
+            activity_list = self.sactivity.get_activity_by_suid(suid, page, count)
         if lasting == 'true':
             now_time = datetime.strftime(datetime.now(), format_for_db)
             activity_list = filter(
                 lambda act: act.ACstarttime < now_time < act.ACendtime and not act.ACisended,
                 activity_list)
-        len_aclist = len(activity_list)
-        if count > 30:
-            count = 30
-        end = start + count
-        if end > len_aclist:
-            end = len_aclist
+        # if count > 30:
+        #     count = 30
+        # end = start + count
+        # if end > len_aclist:
+        #     end = len_aclist
         activity_list = map(self.fill_detail, activity_list)
         for activity in activity_list:
             self.sactivity.update_view_num(activity.ACid)
         map(self.fill_comment_two, activity_list)
         map(self.fill_like_num, activity_list)
-        activity_list = activity_list[start:end]
+        # activity_list = activity_list[start:end]
         map(self.fill_type, activity_list)
         map(self.fill_product, activity_list)
         data = import_status("get_activity_list_success", "OK")
+        data["count"] = len_aclist
         data["data"] = activity_list
         return data
 
