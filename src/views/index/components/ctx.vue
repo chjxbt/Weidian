@@ -13,7 +13,7 @@
         <ul class="m-img-list">
           <template v-for="(item,index) in list.media">
             <li>
-              <img v-if="item.amimage" :src="item.amimage" class="m-section-text-imgs" alt="">
+              <img v-if="item.amimage" :src="item.amimage" class="m-section-text-imgs" alt="" @click="bigImg(item)">
               <video v-if="item.amvideo" :src="item.amvideo"></video>
             </li>
           </template>
@@ -47,7 +47,9 @@
 <script>
   import mLabel from '../../../components/common/mLabel';
   import iconList from '../../../components/common/iconList';
+  import wxapi from '../../../common/js/mixins';
     export default {
+      mixins: [wxapi],
       data(){
         return{
 
@@ -98,6 +100,11 @@
 
             this.list.remaintime = [].concat(arr);
           }
+        },
+        bigImg(item) {
+          console.log(item);
+          let urls = [item.amimage, item.amimage, item.amimage, item.amimage];
+          wxapi.previewImage("", urls);
         }
       }
     }

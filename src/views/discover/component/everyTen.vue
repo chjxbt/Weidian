@@ -43,7 +43,6 @@
   import api from '../../../api/api';
   import axios from 'axios';
   import { Toast } from 'mint-ui';
-  import { Indicator } from 'mint-ui';
   import ctx from '../../index/components/ctx';
   import share from '../../../components/common/share';
 
@@ -127,11 +126,9 @@
       },
       /*获取活动列表*/
       getActivity(start, count, tnid){
-        Indicator.open({ text: '加载中...', spinnerType: 'fading-circle' });
         axios.get(api.get_all_activity + '?token=' + localStorage.getItem('token'), {
           params: { start: start || 0, count: count || 2, tnid: this.tnid }}).then(res => {
           if(res.data.status == 200){
-            Indicator.close();
             this.activity_list = res.data.data;
             // console.log(this.activity_list);
 
@@ -235,8 +232,9 @@
       },
       // 复制链接
       copyText(list) {
-        let link = "https://daaiti.cn/WeiDian/#/productDetail?prid=" + this.activity_list[list].prid;
+        let link = window.location.href + this.activity_list[list].prid;
         this.$copyText(link).then(function (e) {
+          console.log(link)
           Toast({ message: "复制成功", className: 'm-toast-success' });
         })
       },
@@ -250,11 +248,9 @@
 
         let start = this.activity_list.length;
 
-        Indicator.open({ text: '加载中...', spinnerType: 'fading-circle' });
         axios.get(api.get_all_activity + '?token=' + localStorage.getItem('token'), {
           params: { start: start, count: 2, tnid: this.tnid }}).then(res => {
           if(res.data.status == 200){
-            Indicator.close();
             // this.activity_list = res.data.data;
 
             for(let i = 0; i < res.data.data.length; i ++) {
