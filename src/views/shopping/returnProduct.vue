@@ -33,7 +33,7 @@
     <div class="return-money">
       <div class="m-ft-28 m-black tl">退款金额：</div>
       <div class="m-ft-28 m-red">￥</div>
-      <div class="input-box">
+      <div class="input-box m-ft-28">
         <input class="money-input m-red" :class="value != ''?'active':''" type="text" v-model="value" placeholder="请输入退款金额" />
       </div>
     </div>
@@ -46,7 +46,7 @@
     </div>
     <div class="return-memo">
       <div class="m-ft-28 m-black tl">退款说明：</div>
-      <div class="input-box">
+      <div class="input-box m-ft-28">
         <input class="money-input" type="text" v-model="memo" placeholder="选填" />
       </div>
     </div>
@@ -63,13 +63,13 @@
 
     <div class="return-memo">
       <div class="m-ft-28 m-black tl">快递公司：</div>
-      <div class="input-box">
+      <div class="input-box m-ft-28">
         <input class="money-input" type="text" v-model="courierCompany" placeholder="请填写退货快递公司" />
       </div>
     </div>
     <div class="return-memo margin-bottom">
       <div class="m-ft-28 m-black tl">快递单号：</div>
-      <div class="input-box">
+      <div class="input-box m-ft-28">
         <input class="money-input" type="text" v-model="courierNo" placeholder="请填写退货快递单号" />
       </div>
     </div>
@@ -124,6 +124,11 @@
 <style lang="less" rel="stylesheet/less" scoped>
   @import "../../common/css/index";
   @import "../../common/css/modal";
+
+  input::-webkit-input-placeholder {
+    font-size: 24px;
+    line-height: 28px;
+  }
 
   .product-info {
     width: 100%;
@@ -198,20 +203,20 @@
     width: 100%;
     display: flex;
     padding: 10px 30px 20px 30px;
-    .input-box {
-      width: 350px;
-      height: 40px;
-      margin-left: 10px;
-      border-radius: 10px;
-      // border: 2px @grey solid;
-      .money-input {
-        width: 330px;
-        padding: 0 10px;
-        line-height: 40px;
-        &.active{
-          font-size: 28px;
-          color: @mainColor;
-        }
+  }
+  .input-box {
+    width: 350px;
+    height: 40px;
+    margin-left: 10px;
+    border-radius: 10px;
+    // border: 2px @grey solid;
+    .money-input {
+      width: 330px;
+      padding: 0 10px;
+      line-height: 40px;
+      &.active{
+        font-size: 28px;
+        color: @mainColor;
       }
     }
   }
@@ -223,12 +228,11 @@
       display: flex;
       margin: 10px 0;
       .text-right {
-        width: 26px;
+        width: 25px;
         height: 35px;
+        border-radius: 50%;
         padding-left: 10px;
         margin-left: 20px;
-        line-height: 35px;
-        border-radius: 50%;
         background-color: @mainColor;
       }
     }
@@ -237,19 +241,6 @@
     width: 100%;
     display: flex;
     padding: 20px 30px 20px 30px;
-    /*border-bottom: 16px #f3f3f3 solid;*/
-    .input-box {
-      width: 350px;
-      height: 40px;
-      margin-left: 10px;
-      border-radius: 10px;
-      // border: 2px @grey solid;
-      .money-input {
-        width: 330px;
-        padding: 0 10px;
-        line-height: 40px;
-      }
-    }
   }
   .upload-picture {
     padding: 30px;
@@ -270,8 +261,8 @@
       overflow: hidden;
       left: 30px;
       top: 918px;
-      width: 24%;
-      height: 170px;
+      width: 25%;
+      height: 180px;
       opacity: 0;
     }
   }
