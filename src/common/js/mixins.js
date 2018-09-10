@@ -1,5 +1,6 @@
 import wx from 'weixin-js-sdk';
 import axios from 'axios';
+import api from '../../api/api';
 const wxApi = {
   /**
    * [isweixin 判断是否微信浏览器]
@@ -32,7 +33,7 @@ const wxApi = {
   wxRegister (callback) {
     // let data = {params: {reqUrl: window.location.href}}
 
-    axios.get('http://l.wkt.ooo:7443/user/get_wechat_config/',{
+    axios.get(api.get_config,{
       params:{
         url:window.location.href
       }

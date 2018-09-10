@@ -6,6 +6,7 @@ const title = 'https://daaiti.cn';
 const api={
   login: title + '/user/login',//用户登录
   get_accesstoken : title + '/user/get_accesstoken',
+  get_config: title + '/user/get_config',//
   get_all_banner: title + '/banner/get_all',//获取首页轮播图
   get_all_hotmessage: title + '/hotmessage/get_all',//获取首页热文
   get_all_activity: title + '/activity/get_all',//获取首页/发现页活动

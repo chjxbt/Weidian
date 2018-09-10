@@ -29,35 +29,40 @@ localStorage.setItem('token', token);
 Vue.prototype.$http = axios;
 //拦截器、
 // import { Loading, Message, MessageBox  } from 'element-ui'
+import { Indicator } from 'mint-ui';
 // 超时时间
 axios.defaults.timeout = 60000
-// http请求拦截器
-// var loadinginstace
-// axios.interceptors.request.use(config => {
-//   // element ui Loading方法
-//   // loadinginstace = Loading.service({ fullscreen: true });
-//   // console.log(loadinginstace)
-//   return config
-// }, error => {
-//   // Message({
-//   //   message:'加载超时',
-//   //   type:'warning'
-//   // });
-//   // loadinginstace.close()
-//   return Promise.reject(error)
-// })
-// // http响应拦截器
-// axios.interceptors.response.use(data => {// 响应成功关闭loading
-//   // loadinginstace.close()
-//   return data
-// }, error => {
-//   // Message({
-//   //   message:'请求失败',
-//   //   type:'warning'
-//   // });
-//   // loadinginstace.close()
-//   return Promise.reject(error)
-// })
+//http请求拦截器
+var loadinginstace
+axios.interceptors.request.use(config => {
+  // element ui Loading方法
+  // loadinginstace = Loading.service({ fullscreen: true });
+  // console.log(loadinginstace)
+  Indicator.open({ text: '加载中...', spinnerType: 'fading-circle' });
+  return config
+}, error => {
+  // Message({
+  //   message:'加载超时',
+  //   type:'warning'
+  // });
+  // loadinginstace.close()
+  Indicator.close();
+  return Promise.reject(error)
+})
+// http响应拦截器
+axios.interceptors.response.use(data => {// 响应成功关闭loading
+  // loadinginstace.close()
+  Indicator.close();
+  return data
+}, error => {
+  // Message({
+  //   message:'请求失败',
+  //   type:'warning'
+  // });
+  // loadinginstace.close()
+  Indicator.close();
+  return Promise.reject(error)
+})
 
 //引入微信
 import 'weixin-js-sdk';
