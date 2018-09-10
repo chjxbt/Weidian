@@ -40,7 +40,7 @@ const wxApi = {
     } ).then((res) => {
       if(res.data.status == 200)
         wx.config({
-          debug: false,
+          debug: true,
           appId: res.data.data.appid,
           timestamp: res.data.data.timestamp,
           nonceStr: res.data.data.nonceStr,
@@ -54,8 +54,8 @@ const wxApi = {
       // 如果需要定制ready回调方法
       wx.onMenuShareTimeline({
         title: '1111', // 分享标题
-        link: 'http://www.jzdlink.com',      // 分享链接
-        imgUrl: 'http://www.jzdlink.com/wordpress/wp-content/themes/wordpress_thems/images/lib/logo.png',// 分享图标
+        link: window.location.href,      // 分享链接
+        // imgUrl: 'http://www.jzdlink.com/wordpress/wp-content/themes/wordpress_thems/images/lib/logo.png',// 分享图标
         success () {
           // 用户成功分享后执行的回调函数
 
@@ -70,8 +70,8 @@ const wxApi = {
       });
       wx.onMenuShareAppMessage({
         title: '1111', // 分享标题
-        link: 'http://www.jzdlink.com',      // 分享链接
-        imgUrl: 'http://www.jzdlink.com/wordpress/wp-content/themes/wordpress_thems/images/lib/logo.png',// 分享图标
+        link: window.location.href,       // 分享链接
+        // imgUrl: 'http://www.jzdlink.com/wordpress/wp-content/themes/wordpress_thems/images/lib/logo.png',// 分享图标
         success () {
           // 用户成功分享后执行的回调函数
 
