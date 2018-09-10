@@ -224,7 +224,7 @@
                 this.loadBottom();
               }else  if(this.activity_list.length == this.total_count){
                 this.isScroll = false
-                Toast({ message: '已经加载完全数据', className: 'm-toast-warning' });
+                Toast({ message: '数据已加载完', className: 'm-toast-warning' });
               }
 
             }

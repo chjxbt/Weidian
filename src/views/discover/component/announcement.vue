@@ -1,53 +1,53 @@
 <template>
   <div class="m-discover-announcement" @touchmove="touchMove">
     <mt-loadmore :top-method="loadTop" :bottom-all-loaded="!isScroll" ref="loadmore">
-    <div class="m-section-one" v-for="(item, index) in activity_list">
-      <div class="m-section-content">
-        <div class="m-section-title">
-          <img class="m-section-img" :src="item.suuser.suheader"/>
-          <div>
-            <span class="m-title">{{item.suuser.suname}}</span>
-            <p class="m-fodder-time">{{item.accreatetime}} 发布</p>
-          </div>
-        </div>
-        <div class="m-section-text">
-          <p class="m-ft-30"><span class="m-mark" v-if="item.acistop">置顶</span>{{item.actitle}}</p>
-
-          <p class="textP m-ft-28" :class="!item.show_text ? 'active':''">{{item.actext}}</p>
-          <span class="m-section-more" v-if="item.show_text" @click="showMore(false, index)">展开全文</span>
-          <span class="m-section-more" v-if="item.actext.length > 86 && !item.show_text" @click="showMore(true, index)">收起全文</span>
-
-          <div class="m-img-list">
-            <img class="m-section-text-img" :src="item.media[0].amimage">
-          </div>
-          <div class="m-section-bottom">
+      <div class="m-section-one" v-for="(item, index) in activity_list">
+        <div class="m-section-content">
+          <div class="m-section-title">
+            <img class="m-section-img" :src="item.suuser.suheader"/>
             <div>
-              <div class="m-lookinfo-box">
-                <span class="m-look-icon"></span>
-                <span>{{item.acbrowsenum}}</span>
-                <span class="m-good-icon" :class="item.alreadylike?'active':''" @click="likeThis(item, index)"></span>
-                <span>{{item.likenum}}</span>
+              <span class="m-title">{{item.suuser.suname}}</span>
+              <p class="m-fodder-time">{{item.accreatetime}} 发布</p>
+            </div>
+          </div>
+          <div class="m-section-text">
+            <p class="m-ft-30"><span class="m-mark" v-if="item.acistop">置顶</span>{{item.actitle}}</p>
+
+            <p class="textP m-ft-28" :class="!item.show_text ? 'active':''">{{item.actext}}</p>
+            <span class="m-section-more" v-if="item.show_text" @click="showMore(false, index)">展开全文</span>
+            <span class="m-section-more" v-if="item.actext.length > 86 && !item.show_text" @click="showMore(true, index)">收起全文</span>
+
+            <div class="m-img-list">
+              <img class="m-section-text-img" :src="item.media[0].amimage">
+            </div>
+            <div class="m-section-bottom">
+              <div>
+                <div class="m-lookinfo-box">
+                  <span class="m-look-icon"></span>
+                  <span>{{item.acbrowsenum}}</span>
+                  <span class="m-good-icon" :class="item.alreadylike?'active':''" @click="likeThis(item, index)"></span>
+                  <span>{{item.likenum}}</span>
+                </div>
+              </div>
+              <div>
+                <icon-list :list="icon_list" @iconClick="iconClick"></icon-list>
               </div>
             </div>
-            <div>
-              <icon-list :list="icon_list" @iconClick="iconClick"></icon-list>
-            </div>
-          </div>
-          <div class="m-comment-box">
-            <div class="m-comment-content">
-              <span class="m-comment-s"></span>
-              <p v-for="comment in item.comment">
-                <span class="m-comment-name">{{comment.user.usname}}</span>: {{comment.actext}}
-              </p>
-              <div v-if="show_input" class="new-comment-box">
-                <input type="text" class="new-comment-input" v-model="comment"/>
-                <div class="new-comment-done" :class="comment!=''?'active':''" @click="commentDone(item, index)">发送</div>
+            <div class="m-comment-box">
+              <div class="m-comment-content">
+                <span class="m-comment-s"></span>
+                <p v-for="comment in item.comment">
+                  <span class="m-comment-name">{{comment.user.usname}}</span>: {{comment.actext}}
+                </p>
+                <div v-if="show_input" class="new-comment-box">
+                  <input type="text" class="new-comment-input" v-model="comment"/>
+                  <div class="new-comment-done" :class="comment!=''?'active':''" @click="commentDone(item, index)">发送</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
     </mt-loadmore>
     <share v-if="show_fixed" :num="2" @fixedClick="fixedClick"></share>
   </div>
@@ -100,7 +100,7 @@
             this.loadBottom();
           }else  if(this.activity_list.length == this.total_count){
             this.isScroll = false;
-            Toast({ message: '数据已经加载', className: 'm-toast-warning' });
+            Toast({ message: '数据已加载完', className: 'm-toast-warning' });
           }
         }
       },
@@ -115,7 +115,7 @@
         this.$refs.loadmore.onBottomLoaded();
       },
       /*获取活动列表*/
-      getActivity(start, count, ){
+      getActivity(start, count){
         axios.get(api.get_all_activity + "?token=" + localStorage.getItem('token'), {
           params: { start: start || 0, count: count || this.count, tnid: this.tnid }}).then(res => {
           if(res.data.status == 200){
