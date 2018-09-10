@@ -47,7 +47,7 @@
           }
         ],
         show_fixed: false,
-        tnid: "5ed4e908-a6db-11e8-b2ff-0cd292f93404"
+        tnid: "5ed4e908-a6db-11e8-b2ff-0cd292f93404" // ertiao
       }
     },
     components: { mFooter, ctx, share },
@@ -59,17 +59,31 @@
           params: { start: 0, count: 5, tnid: this.tnid }}).then(res => {
           if(res.data.status == 200){
             this.activity_list = res.data.data;
-            // console.log(this.activity_list);
 
-            for(let i = 0; i < this.activity_list.length; i ++){
-              this.activity_list[i].icon = this.icon_list;
-              this.activity_list[i].icon[0].name = this.activity_list[i].likenum;
-              this.activity_list[i].icon[0].alreadylike = this.activity_list[i].alreadylike;
-              this.activity_list[i].actext.length > 92 && (this.activity_list[i].show_text = true);
-
-              /*if(this.activity_list[i].alreadylike) {
-                this.icon_list[0].src = "icon-like-active";
-              }*/
+            let arr = [].concat(this.activity_list);
+            for(let i=0;i<arr.length;i++) {
+              let _arr = [
+                {
+                  src: 'icon-like',
+                  name: '123123',
+                  url: 'icon-like'
+                },
+                {
+                  src: 'icon-lian',
+                  name: '复制链接',
+                  url: 'icon-lian'
+                },
+                {
+                  src: 'icon-share',
+                  name: '转发',
+                  url: 'icon-share'
+                }
+              ];
+              _arr[0].name = arr[i].likenum;
+              _arr[0].alreadylike = arr[i].alreadylike;
+              arr[i].actext.length > 92 && (arr[i].show_text = true);
+              arr[i].icon = [].concat(_arr);
+              console.log(_arr[0].name, arr[i].likenum)
             }
           }else{
             Toast({ message: res.data.message, className: 'm-toast-fail' });
@@ -78,11 +92,7 @@
       },
       // 下拉刷新
       loadTop() {
-        for(let i=0;i<this.nav_list.length;i++){
-          if(this.nav_list[i].click){
-            this.getActivity(this.nav_list[i].tnid);
-          }
-        }
+        this.getActivity();
         this.$refs.loadmore.onTopLoaded();
       },
       /*每个活动icon点击*/
@@ -101,20 +111,22 @@
       },
       // 活动点赞
       changeLike(index) {
+        let arr = this.activity_list[index].icon[0];
+        // console.log(arr);
         axios.post(api.ac_like + '?token=' + localStorage.getItem('token'), {
           acid: this.activity_list[index].acid
         }).then(res => {
           if(res.data.status == 200){
-            if(this.activity_list[index].alreadylike) {
-              this.activity_list[index].likenum -= 1;
-              this.activity_list[index].alreadylike = false;
+            if(arr.alreadylike) {
+              arr.name -= 1;
+              arr.alreadylike = false;
               Toast({ message: res.data.message, className: 'm-toast-warning' });
-
-            }else if(!this.activity_list[index].alreadylike) {
-              this.activity_list[index].likenum += 1;
-              this.activity_list[index].alreadylike = true;
+            }else if(!arr.alreadylike) {
+              arr.name = Number(arr.name) + 1;
+              arr.alreadylike = true;
               Toast({ message: res.data.message, className: 'm-toast-success' });
             }
+            console.log(arr);
           }else{
             Toast({ message: res.data.message, className: 'm-toast-fail' });
           }
@@ -126,7 +138,7 @@
       },
       // 复制链接
       copyText(list) {
-        let link = "https://daaiti.cn/WeiDian/#/productDetail?prid=" + this.activity_list[list].prid;
+        let link = window.location.href + this.activity_list[list].prid;
         this.$copyText(link).then(function (e) {
           Toast({ message: "复制成功", className: 'm-toast-success' });
         })
