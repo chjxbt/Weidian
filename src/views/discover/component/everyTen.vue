@@ -232,8 +232,9 @@
       },
       // 复制链接
       copyText(list) {
-        let link = "https://daaiti.cn/WeiDian/#/productDetail?prid=" + this.activity_list[list].prid;
+        let link = window.location.href + this.activity_list[list].prid;
         this.$copyText(link).then(function (e) {
+          console.log(link)
           Toast({ message: "复制成功", className: 'm-toast-success' });
         })
       },
