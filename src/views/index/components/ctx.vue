@@ -1,6 +1,6 @@
 <template>
   <div class="m-section-one">
-    <img :src="list.suuser.suheader" class="m-section-img"/>
+    <img v-if="list.suuser.suheader" :src="list.suuser.suheader" class="m-section-img"/>
     <div class="m-section-content">
       <div class="m-section-title">
         <span class="m-title">{{list.suuser.suname}}</span>
@@ -28,7 +28,14 @@
             <div class="m-red m-ft-22">距活动结束仅剩{{list.remaintime[0] || '0'}}天{{list.remaintime[1] || '0'}}小时<span v-if="list.remaintime[0] == 0">{{list.remaintime[2] || '0'}}分钟</span> </div>
           </div>
           <div>
-            <icon-list :list="list.icon" :index="index" @iconClick="iconClick"></icon-list>
+            <!--<icon-list :list="list.icon" :index="index" @iconClick="iconClick"></icon-list>-->
+            <ul class="m-icon-list">
+              <li v-for="(item,index) in list.icon" @click="iconClick(index)">
+                <img v-if="!item.alreadylike" :src="'/static/images/' + item.src +'.png'" class="m-icon" alt="">
+                <img v-else  :src="'/static/images/' + item.src +'-active.png'" class="m-icon" alt="">
+                {{item.name}}
+              </li>
+            </ul>
           </div>
         </div>
       </div>
@@ -72,7 +79,9 @@
           this.$emit('showMoreText',v,this.index)
         },
         getDJS(){
-
+          if(!this.list.acendtime){
+            return false;
+          }
           let EndTime= new Date(this.list.acendtime.slice(0,4),this.list.acendtime.slice(4,6)-1,this.list.acendtime.slice(6,8),this.list.acendtime.slice(8,10),this.list.acendtime.slice(10,12),this.list.acendtime.slice(12));//初始化结束日期2016年12月31日23点59分59秒
 
           let NowTime = new Date();
@@ -171,5 +180,18 @@
       }
     }
 
+  }
+  .m-icon-list{
+    .flex-row(flex-end);
+    li{
+      margin-left: 10px;
+      .flex-col(center);
+      font-size: 22px;
+      .m-icon{
+        display: block;
+        width: 30px;
+        height: 25px;
+      }
+    }
   }
 </style>
