@@ -32,10 +32,9 @@ const wxApi = {
   },
   wxRegister (callback) {
     // let data = {params: {reqUrl: window.location.href}}
-
     axios.get(api.get_config,{
       params:{
-        url:window.location.href
+        url: window.location.href.split('#')[0]
       }
     } ).then((res) => {
       if(res.data.status == 200)

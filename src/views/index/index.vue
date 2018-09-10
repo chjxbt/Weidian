@@ -1,9 +1,9 @@
 <template>
-    <div class="m-index" @touchmove="touchStart" @touchend="touchEnd">
+    <div class="m-index" @touchmove="touchMove" @touchend="touchEnd" @touchstart="touchStart">
       <div class="m-suspend-btn " id="m-suspend-btn" :class="show_task_btn ? '':'active'" @click.stop="showModal('show_task')" >
         <span>开始转发</span>
       </div>
-      <mt-loadmore :top-method="loadTop"  :bottom-method="loadBottom" ref="loadmore">
+      <mt-loadmore :top-method="loadTop"   :bottom-all-loaded="!isScroll" ref="loadmore">
           <div class="m-top">
             <search :search="search" @searchClick="searchClick" @inputClick="inputClick"></search>
             <navbar :list="nav_list" @navClick="navClick"></navbar>
@@ -130,12 +130,14 @@
   import axios from 'axios';
   import {Toast} from 'mint-ui';
   import wxapi from '../../common/js/mixins';
+  import common from '../../common/js/common';
     export default {
       mixins: [wxapi],
         data() {
             return {
               course:1,
-              count:5,
+              count:2,
+              total_count:0,
               search:true,
               show_course: false,
               show_modal: false,
@@ -180,7 +182,8 @@
                   name:'转发',
                   url:'icon-share'
                 }
-              ]
+              ],
+              isScroll: true
             }
         },
         components: {
@@ -200,12 +203,30 @@
           wxapi.wxRegister(this.wxRegCallback)
         })
 
+
       },
         methods: {
-        /*手指滑动显示隐藏*/
+          /*手指滑动显示隐藏*/
           touchStart(){
             this.show_task_btn = false;
             this.search = true;
+          },
+          touchMove(){
+            this.show_task_btn = false;
+            this.search = true;
+            let scrollTop = common.getScrollTop();
+            let scrollHeight = common.getScrollHeight();
+            let ClientHeight = common.getClientHeight()
+            if (scrollTop + ClientHeight >= scrollHeight) {
+              if(this.isScroll){
+                this.isScroll = false;
+                this.loadBottom();
+              }else  if(this.activity_list.length == this.total_count){
+                this.isScroll = false
+                Toast({ message: '已经加载完全数据', className: 'm-toast-warning' });
+              }
+
+            }
           },
           touchEnd(){
             this.show_task_btn = true;
@@ -302,11 +323,20 @@
             axios.get(api.get_all_activity +'?token=' +  localStorage.getItem('token'),{params:{
                 lasting:true,
                 start:start || 0,
-                count:count || 5,
+                count:count || this.count,
                 tnid:'shangxin'
               }}).then(res => {
               if(res.data.status == 200){
-                this.activity_list = res.data.data;
+                this.isScroll = true;
+                this.total_count = res.data.count;
+                if(start){
+                  this.activity_list = this.activity_list.concat(res.data.data);
+                  if(this.activity_list.length == this.total_count){
+                    this.isScroll = false;
+                  }
+                }else{
+                  this.activity_list = res.data.data;
+                }
                 let arr = [].concat(this.activity_list);
                 for(let i=0;i<arr.length;i++){
                   let _arr = [

@@ -31,7 +31,7 @@ Vue.prototype.$http = axios;
 // import { Loading, Message, MessageBox  } from 'element-ui'
 import { Indicator } from 'mint-ui';
 // 超时时间
-axios.defaults.timeout = 60000
+axios.defaults.timeout = 600000
 //http请求拦截器
 var loadinginstace
 axios.interceptors.request.use(config => {
