@@ -234,7 +234,7 @@
       copyText(list) {
         let link = window.location.href + this.activity_list[list].prid;
         this.$copyText(link).then(function (e) {
-          console.log(link)
+          // console.log(link);
           Toast({ message: "复制成功", className: 'm-toast-success' });
         })
       },
