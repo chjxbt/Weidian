@@ -11,14 +11,14 @@ from SBase import SBase, close_session
 class SOrder(SBase):
 
     @close_session
-    def get_order_by_usid(self, sell, usid):
+    def get_order_by_usid(self, sell, usid, page_num, page_size):
         """获取用户的订单"""
         if sell:
             return self.session.query(OrderInfo).filter_by(Sellerid=usid, OIisdelete=False).order_by(
-                OrderInfo.OIcreatetime).all()
+                OrderInfo.OIcreatetime).offset(page_size * (page_num - 1)).limit(page_size).all()
         else:
             return self.session.query(OrderInfo).filter_by(USid=usid, OIisdelete=False).order_by(
-                OrderInfo.OIcreatetime).all()
+                OrderInfo.OIcreatetime).offset(page_size * (page_num - 1)).limit(page_size).all()
 
     @close_session
     def get_order_by_oiid(self, oiid):
@@ -26,16 +26,16 @@ class SOrder(SBase):
         return self.session.query(OrderInfo).filter_by(OIid=oiid, OIisdelete=False).first()
 
     @close_session
-    def get_user_order_by_status(self, usid, status):
+    def get_user_order_by_status(self, usid, status, page_num, page_size):
         """根据支付状态获取自买订单"""
         return self.session.query(OrderInfo).filter_by(USid=usid, OIpaystatus=status).order_by(
-            OrderInfo.OIcreatetime).all()
+            OrderInfo.OIcreatetime).offset(page_size * (page_num - 1)).limit(page_size).all()
 
     @close_session
-    def get_sell_order_by_status(self, usid, status):
+    def get_sell_order_by_status(self, usid, status, page_num, page_size):
         """根据支付状态获取销售订单"""
         return self.session.query(OrderInfo).filter_by(Sellerid=usid, OIpaystatus=status).order_by(
-            OrderInfo.OIcreatetime).all()
+            OrderInfo.OIcreatetime).offset(page_size * (page_num - 1)).limit(page_size).all()
 
     @close_session
     def get_user_ordercount_by_status(self, usid, status):

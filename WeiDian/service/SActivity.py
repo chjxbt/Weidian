@@ -11,21 +11,24 @@ sys.path.append(os.path.dirname(os.getcwd()))
 class SActivity(SBase):
 
     @close_session
-    def get_activity_all(self):
+    def get_activity_all(self, page_num, page_size):
         """所有活动
         返回活动对象列表"""
-        activity_list = self.session.query(Activity).filter_by(ACisdelete=False).all()
+        activity_list = self.session.query(Activity).filter_by(ACisdelete=False).offset(page_size * (page_num - 1)).limit(page_size).all()
         return activity_list
 
     @close_session
-    def get_activity_by_topnavid(self, tnid):
-        """根据导航的id获取活动"""
-        acvitity_list = self.session.query(Activity).filter_by(ACisdelete=False, TopnavId=tnid).order_by(Activity.ACcreatetime.desc()).all()
-        return acvitity_list
+    def get_activity_count(self, tnid):
+        return self.session.query(Activity).filter_by(ACisdelete=False, TopnavId=tnid).count()
 
     @close_session
-    def get_activity_by_suid(self, suid):
-        acvitity_list = self.session.query(Activity).filter_by(ACisdelete=False, SUid=suid).order_by(Activity.ACcreatetime.desc()).all()
+    def get_activity_by_topnavid(self, tnid, page_num, page_size):
+        """根据导航的id获取活动"""
+        return self.session.query(Activity).filter_by(ACisdelete=False, TopnavId=tnid).order_by(Activity.ACcreatetime.desc()).offset(page_size * (page_num - 1)).limit(page_size).all()
+
+    @close_session
+    def get_activity_by_suid(self, suid, page_num, page_size):
+        acvitity_list = self.session.query(Activity).filter_by(ACisdelete=False, SUid=suid).order_by(Activity.ACcreatetime.desc()).offset(page_size * (page_num - 1)).limit(page_size).all()
         return acvitity_list
 
     @close_session
@@ -88,35 +91,6 @@ class SActivity(SBase):
             else:
                 print '无此商品, 销量查询无效'
                 return 0
-
-    # @close_session
-    # def update_activity(self, acid, **kwargs):
-    #     cur_activity = self.session.query(Activity).filter_by(ACid=acid).first()
-    #     if cur_activity:
-    #         if 'prid' in kwargs.keys():
-    #             cur_activity.PRid = kwargs['prid']
-    #         if 'actype' in kwargs.keys():
-    #             cur_activity.ACtype = kwargs['actype']
-    #         if 'topnavid' in kwargs.keys():
-    #             cur_activity.TopnavId = kwargs['topnavid']
-    #         if 'actext' in kwargs.keys():
-    #             cur_activity.ACtext = kwargs['actext']
-    #         if 'aclikefakenum' in kwargs.keys():
-    #             cur_activity.AClikeFakeNum = kwargs['aclikefakenum']
-    #         if 'acforwardfakenum' in kwargs.keys():
-    #             cur_activity.ACforwardFakenum = kwargs['acforwardfakenum']
-    #         if 'acproductssoldfakenum' in kwargs.keys():
-    #             cur_activity.ACProductsSoldFakeNum = kwargs['acproductssoldfakenum']
-    #         if 'acstarttime' in kwargs.keys():
-    #             cur_activity.ACstarttime = kwargs['acstarttime']
-    #         if 'acendtime' in kwargs.keys():
-    #             cur_activity.ACendtime = kwargs['acendtime']
-    #         if 'acistop' in kwargs.keys():
-    #             cur_activity.acistop = kwargs['acistop']
-    #         now_time = datetime.strftime(datetime.now(), format_for_db)
-    #         cur_activity.ACupdatetime = now_time
-    #         self.session.add(cur_activity)
-    #         return True
 
     @close_session
     def update_activity_by_acid(self, acid, activity):

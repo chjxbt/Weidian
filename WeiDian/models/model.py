@@ -362,7 +362,7 @@ class OrderInfo(BaseModel):
     OIsn = Column(String(64))  # 订单号
     USid = Column(String(64))  # 用户
     OItradenum = Column(String(125))  # 交易号, (如果有)
-    # 订单状态: {0: 待付款, 1: 支付成功, 2: 超时关闭, 3: 支付关闭, 4:待发货, 5:待收货, 6:待评价, 7:退换货 }
+    # 订单状态: {0: 待支付, 1: 支付成功, 2: 超时关闭, 3: 支付关闭, 4:待发货, 5:已发货, 6:已取消, 7:已签收, 8:交易完成, 9:待评价, 10:退换货 }
     OIpaystatus = Column(Integer, default=0)
     OIpaytype = Column(Integer)  # 支付类型: {0: 银行卡支付, 1: 微信支付}
     OIleavetext = Column(String(255))  # 订单留言
@@ -646,23 +646,21 @@ class MonthMonthReward(BaseModel):
     MMRmount = Column(Float)  # 需要的团队销售总额
 
 
-
-
 class Complain(BaseModel):
     """投诉"""
     __tablename__ = 'complain'
     COid = Column(String(64), primary_key=True)
     COcontent = Column(Text)           # 投诉内容
     COtype = Column(Integer)           # 投诉类型 {201："客服态度差", 202："商品质量问题", 203："售后方案不合理", 204："商品包装问题"}
-    ORid = Column(String(64))          # 关联订单id
+    OIid = Column(String(64))          # 关联订单id
     USid = Column(String(64))          # 发起人id
     COcreatetime = Column(String(14))  # 创建时间
-    COtreatstatus = Column(Integer)    # 投诉处理状态 {}
+    COtreatstatus = Column(Integer, default=0)    # 投诉处理状态 {0:未被投诉, 1:投诉处理中, 2:投诉已处理}
 
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['COid', 'COcontent', 'COtype', "ORid", "USid"]
+        self.fields = ['COid', 'COcontent', 'COtype', "OIid", "USid", 'COtreatstatus']
 
 class Task(BaseModel):
     __tablename__ = "task"

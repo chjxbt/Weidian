@@ -55,6 +55,14 @@ class CProductLike():
             return TOKEN_ERROR(u'未登录')
         print '已登录'
         productlike_list = self.sproductlike.get_productlike_list_by_usid(request.user.id)
+        map(self.fill_product, productlike_list)
         data = import_status("get_product_like_success", "OK")
         data["data"] = productlike_list
         return data
+
+    def fill_product(self, prlike):
+        prid = prlike.PRid
+        prlike.productinfo = self.sproduct.get_product_by_prid(prid)
+        prlike.productinfo.fields = ['PRmainpic']
+        prlike.add('productinfo')
+        return prlike
