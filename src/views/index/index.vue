@@ -137,7 +137,7 @@
               course:1,
               count:5,
               search:true,
-              show_course: true,
+              show_course: false,
               show_modal: false,
               show_task:false,
               show_fixed:false,

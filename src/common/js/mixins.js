@@ -1,5 +1,6 @@
 import wx from 'weixin-js-sdk';
 import axios from 'axios';
+import api from '../../api/api';
 const wxApi = {
   /**
    * [isweixin 判断是否微信浏览器]
@@ -32,7 +33,11 @@ const wxApi = {
   wxRegister (callback) {
     // let data = {params: {reqUrl: window.location.href}}
 
-    axios.get('https://daaiti.cn/user/get_wx_config' ).then((res) => {
+    axios.get(api.get_config,{
+      params:{
+        url:window.location.href
+      }
+    } ).then((res) => {
       if(res.data.status == 200)
         wx.config({
           debug: false,
