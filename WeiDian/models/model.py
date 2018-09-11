@@ -602,7 +602,7 @@ class MyCenter(BaseModel):
     MYid = Column(String(64), primary_key=True)
     USid = Column(String(64), nullable=False)
     MYranking = Column(String(64))  # 我的排名
-    Myrewards = Column(String(64))  # 额外奖励
+    MYrewards = Column(String(64))  # 额外奖励
 
     @orm.reconstructor
     def __init__(self):
@@ -680,29 +680,30 @@ class TaskItem(BaseModel):
     TIid = Column(String(64), primary_key=True)
     TAid = Column(String(64))
     # TAprogress = Column(Integer)
-    TIprice = Column(float)
+    TIprice = Column(Float)
     TIhead = Column(Text)
     TIcontent = Column(Text)
 
 
+class AdImage(BaseModel):
+    __tablename__ = "adimage"
+    AIid = Column(String(64), primary_key=True)
+    AIimage = Column(String(255))  # 图片地址
+    AItype = Column(Integer)  # 图片类型{ 1:弹窗背景图, 2:静态广告图}
+    ACid = Column(String(64))  # 图片对应的活动
+    AIcreatetime = Column(String(14))  # 创建时间
+    AIstarttime = Column(String(14))  # 上线时间
+    AIendtime = Column(String(14))  # 下线时间
+    AIisdelete = Column(Boolean, default=False)  # 删除
+    AIurl = Column(String(255))  # 外链url （可能会用）
+
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = ['AIid', 'AIimage', 'AItype', 'ACid', 'AIurl']
+
+
 # 交易相关
-"""
-class ShoppingCart(Base):
-    购物车
-    pass
-
-
-class OrderInfo(Base):
-    订单信息
-    pass
-
-
-class OrderInfo(Base):
-    订单内的商品详情
-
-    pass
-
-"""
 
 
 """

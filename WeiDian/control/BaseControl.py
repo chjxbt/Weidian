@@ -1,8 +1,6 @@
 # -*- coding:utf8 -*-
 import uuid
 from datetime import datetime
-
-from WeiDian import logger
 from WeiDian.config.response import SYSTEM_ERROR
 from flask import request
 from WeiDian.common.TransformToList import list_add_models, dict_add_models
@@ -363,21 +361,16 @@ class BaseActivityCommentControl():
 class BaseMyCenterControl():
 
     def fill_user_info(self, myinfo):
-
-        try:
-            usid = myinfo.USid
-            user = self.suser.get_user_by_user_id(usid)
-            if user.USlevel == 0:
-                user.level = 'ordinary'
-            if user.USlevel > 0:
-                user.level = 'partner'
-            user.add('level')
-            myinfo.user = user
-            myinfo.add('user')
-            return myinfo
-        except:
-            logger.exception("myinfo fill user error")
-            return SYSTEM_ERROR
+        usid = myinfo.USid
+        user = self.suser.get_user_by_user_id(usid)
+        if user.USlevel == 0:
+            user.level = 'ordinary'
+        if user.USlevel > 0:
+            user.level = 'partner'
+        user.add('level')
+        myinfo.user = user
+        myinfo.add('user')
+        return myinfo
 
 
 class BaseOrder():

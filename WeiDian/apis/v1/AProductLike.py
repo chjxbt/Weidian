@@ -15,6 +15,7 @@ class AProductLike(Resource):
         print productlike
         apis = {
             "add_one": "self.cproductlike.add_like()",
+            "batch_del": "self.cproductlike.batch_delete_prlike()"
         }
         res = eval(apis[productlike])
         return jsonify(res)

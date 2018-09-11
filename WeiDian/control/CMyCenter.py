@@ -24,14 +24,15 @@ class CMyCenter(BaseMyCenterControl):
     def get_info(self):
         if is_tourist():
             return AUTHORITY_ERROR(u"未登录")
-        print '已登录'
-
-        my_info = self.smycenter.get_my_info_by_usid(request.user.id)
-        my_info = self.fill_user_info(my_info)
-        data = import_status("get_my_info_success", "OK")
-        data["data"] = my_info
-        return data
-
+        try:
+            my_info = self.smycenter.get_my_info_by_usid(request.user.id)
+            my_info = self.fill_user_info(my_info)
+            data = import_status("get_my_info_success", "OK")
+            data["data"] = my_info
+            return data
+        except:
+            logger.exception("get myinfo error")
+            return SYSTEM_ERROR
 
 
 
