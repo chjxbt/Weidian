@@ -663,6 +663,27 @@ class Complain(BaseModel):
     def __init__(self):
         self.fields = ['COid', 'COcontent', 'COtype', "OIid", "USid", 'COtreatstatus']
 
+class Task(BaseModel):
+    __tablename__ = "task"
+    TAid = Column(String(64), primary_key=True)
+    TAname = Column(Text)
+    # TAtype = Column(Integer)   # 任务类型
+    TAisOpen = Column(Integer) # 是否开启
+    TAcreatetime = Column(String(14))
+    TAstatus = Column(Integer)
+    USid = Column(String(64))
+    TArole = Column(Text)
+
+
+class TaskItem(BaseModel):
+    __tablename__ = "tasklkitem"
+    TIid = Column(String(64), primary_key=True)
+    TAid = Column(String(64))
+    # TAprogress = Column(Integer)
+    TIprice = Column(float)
+    TIhead = Column(Text)
+    TIcontent = Column(Text)
+
 
 # 交易相关
 """
