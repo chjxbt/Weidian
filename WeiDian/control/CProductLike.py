@@ -1,13 +1,15 @@
 # -*- coding:utf8 -*-
 import sys
 import os
+
+from WeiDian import logger
 from flask import request
 import uuid
 from WeiDian.common.TransformToList import dict_add_models
 from WeiDian.common.import_status import import_status
 from WeiDian.common.params_require import parameter_required
 from WeiDian.common.token_required import verify_token_decorator, is_tourist
-from WeiDian.config.response import TOKEN_ERROR
+from WeiDian.config.response import TOKEN_ERROR, SYSTEM_ERROR
 from WeiDian.service.SProduct import SProduct
 from WeiDian.service.SProductLike import SProductLike
 sys.path.append(os.path.dirname(os.getcwd()))
@@ -54,15 +56,19 @@ class CProductLike():
         if is_tourist():
             return TOKEN_ERROR(u'未登录')
         print '已登录'
-        productlike_list = self.sproductlike.get_productlike_list_by_usid(request.user.id)
-        map(self.fill_product, productlike_list)
-        data = import_status("get_product_like_success", "OK")
-        data["data"] = productlike_list
-        return data
+        try:
+            productlike_list = self.sproductlike.get_productlike_list_by_usid(request.user.id)
+            map(self.fill_productinfo, productlike_list)
+            data = import_status("get_product_like_success", "OK")
+            data["data"] = productlike_list
+            return data
+        except:
+            logger.exception("get product like error")
+            return SYSTEM_ERROR
 
-    def fill_product(self, prlike):
+    def fill_productinfo(self, prlike):
         prid = prlike.PRid
         prlike.productinfo = self.sproduct.get_product_by_prid(prid)
-        prlike.productinfo.fields = ['PRmainpic']
+        prlike.productinfo.fields = ['PRmainpic', 'PRsalestatus']
         prlike.add('productinfo')
         return prlike

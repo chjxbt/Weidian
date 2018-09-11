@@ -191,7 +191,8 @@ class Product(BaseModel):
             'PRchannelname',
             'PRchannelid',
             'SUid',
-            'PRstock']
+            'PRstock',
+            'PRsalestatus']
 
 
 class ProductSkuKey(BaseModel):

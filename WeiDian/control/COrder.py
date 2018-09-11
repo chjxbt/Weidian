@@ -113,6 +113,7 @@ class COrder():
             return AUTHORITY_ERROR(u"未登录")
         print '已登录'
         args = request.args.to_dict()
+        make_log("args", args)
         sell = args.get('sell')
         if sell:
             json_data = [
