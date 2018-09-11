@@ -58,7 +58,7 @@
           ],
           filtrateActivity: 0,
           activity_list:[],
-          count: 5
+          count: 20
         }
       },
       props: {
@@ -67,6 +67,10 @@
       },
       components: { iconList, share },
       methods: {
+        // 下拉刷新
+        loadTop() {
+          this.getActivity();
+        },
         // 转发按钮list
         iconClick(){
             this.show_fixed = true;
@@ -77,8 +81,7 @@
         },
         /*获取活动列表*/
         getActivity(start, count, tnid){
-          let token = localStorage.getItem('token');
-          axios.get(api.get_all_activity + '?token=' + token, {
+          axios.get(api.get_all_activity + '?token=' + localStorage.getItem('token'), {
             params: { lasting: false, start: start || 0, count: count || this.count, tnid: tnid }}).then(res => {
             if(res.data.status == 200){
               this.activity_list = res.data.data;

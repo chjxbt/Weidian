@@ -1,6 +1,5 @@
 <template>
   <div class="m-discover-announcement" @touchmove="touchMove">
-    <mt-loadmore :top-method="loadTop" :bottom-all-loaded="!isScroll" ref="loadmore">
       <div class="m-section-one" v-for="(item, index) in activity_list">
         <div class="m-section-content">
           <div class="m-section-title">
@@ -48,7 +47,6 @@
           </div>
         </div>
       </div>
-    </mt-loadmore>
     <share v-if="show_fixed" :num="2" @fixedClick="fixedClick"></share>
   </div>
 </template>
@@ -107,12 +105,10 @@
       // 下拉刷新
       loadTop() {
         this.getActivity();
-        this.$refs.loadmore.onTopLoaded();
       },
       // 上拉加载更多
       loadBottom() {
         this.getActivity(this.activity_list.length, this.count);
-        this.$refs.loadmore.onBottomLoaded();
       },
       /*获取活动列表*/
       getActivity(start, count){
@@ -155,35 +151,36 @@
 
             for(let i = 0; i < this.activity_list.length; i ++) {
               let createTime = this.activity_list[i].accreatetime;
-              let createTime1 = createTime.slice(0,4);// 发布年份
-              let createTime2 = createTime.slice(4,8);// 发布日期
-              // 今年发布的
-              if(time1 == createTime1) {
-                // 今年发布且月份相同
-                if(time2.slice(0, 2) == createTime2.slice(0, 2)) {
-                  if(Number(time2.slice(2, 4)) == Number(createTime2.slice(2, 4))) {
-                    this.activity_list[i].accreatetime = "今天 " + createTime.slice(8, 10) + ":" + createTime.slice(10, 12);
-                  }else if(Number(time2.slice(2, 4)) == Number(createTime2.slice(2, 4)) + 1) {
-                    this.activity_list[i].accreatetime = "昨天 " + createTime.slice(8, 10) + ":" + createTime.slice(10, 12);
-                  }else if(Number(time2.slice(2, 4)) > Number(createTime2.slice(2, 4)) + 1) {
+              if(createTime.indexOf("-") == -1) {
+                let createTime1 = createTime.slice(0,4);// 发布年份
+                let createTime2 = createTime.slice(4,8);// 发布日期
+                // 今年发布的
+                if(time1 == createTime1) {
+                  // 今年发布且月份相同
+                  if(time2.slice(0, 2) == createTime2.slice(0, 2)) {
+                    if(Number(time2.slice(2, 4)) == Number(createTime2.slice(2, 4))) {
+                      this.activity_list[i].accreatetime = "今天 " + createTime.slice(8, 10) + ":" + createTime.slice(10, 12);
+                    }else if(Number(time2.slice(2, 4)) == Number(createTime2.slice(2, 4)) + 1) {
+                      this.activity_list[i].accreatetime = "昨天 " + createTime.slice(8, 10) + ":" + createTime.slice(10, 12);
+                    }else if(Number(time2.slice(2, 4)) > Number(createTime2.slice(2, 4)) + 1) {
+                      // 今年发布的不显示年份
+                      let createTime3 = createTime.slice(4, 6) + "-" + createTime.slice(6, 8) + " "
+                        + createTime.slice(8, 10) + ":" + createTime.slice(10, 12);
+                      this.activity_list[i].accreatetime = createTime3;
+                    }
+                  }else {
                     // 今年发布的不显示年份
                     let createTime3 = createTime.slice(4, 6) + "-" + createTime.slice(6, 8) + " "
                       + createTime.slice(8, 10) + ":" + createTime.slice(10, 12);
                     this.activity_list[i].accreatetime = createTime3;
                   }
                 }else {
-                  // 今年发布的不显示年份
-                  let createTime3 = createTime.slice(4, 6) + "-" + createTime.slice(6, 8) + " "
+                  // 今年以前发布的
+                  let createTime3 = createTime.slice(0, 4) + "-" + createTime.slice(4, 6) + "-" + createTime.slice(6, 8) + " "
                     + createTime.slice(8, 10) + ":" + createTime.slice(10, 12);
                   this.activity_list[i].accreatetime = createTime3;
                 }
-              }else {
-                // 今年以前发布的
-                let createTime3 = createTime.slice(0, 4) + "-" + createTime.slice(4, 6) + "-" + createTime.slice(6, 8) + " "
-                  + createTime.slice(8, 10) + ":" + createTime.slice(10, 12);
-                this.activity_list[i].accreatetime = createTime3;
               }
-
               // 展开全文、显示全文
               this.activity_list[i].actext.length > 90 && (this.activity_list[i].show_text = true);
             }

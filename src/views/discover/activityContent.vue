@@ -2,7 +2,7 @@
   <div @touchmove="touchMove">
     <img class="activity-img" :src="rbimage">
 
-    <mt-loadmore :top-method="loadTop" :bottom-all-loaded="!isScroll" ref="loadmore">
+    <mt-loadmore :top-method="loadTop" ref="loadmore">
       <div class="m-index-section">
         <template v-for="(item,index) in activity_list">
           <ctx :icon="icon_list" :list="item" :index="index" @iconClick="iconClick" @showMoreText="showMoreText"></ctx>
