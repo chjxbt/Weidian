@@ -44,7 +44,7 @@ const wxApi = {
           timestamp: Number(res.data.data.timestamp),
           nonceStr: res.data.data.noncestr,
           signature: res.data.data.sign,
-          jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage']
+          jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage','uploadImage','previewImage','chooseImage','downloadImage']
         });
     }).catch((error) => {
       console.log(error ,'1111')

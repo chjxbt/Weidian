@@ -23,7 +23,7 @@ FastClick.attach(document.body);
 import promise from 'es6-promise';//解决axios在ie9下不生效的方法
 promise.polyfill();
 
-let token = "eyJhbGciOiJIUzI1NiIsImV4cCI6MTUzNjYxNTQ4NiwiaWF0IjoxNTM2NTQzNDg2fQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0wOS0xMCAwOTozODowNiJ9.EdxFtsCzkUUfs0qO6SIZ6BNhurixIxW8HoknlLu7Zmk";
+let token = "eyJhbGciOiJIUzI1NiIsImV4cCI6MTUzNjcwNzg2MCwiaWF0IjoxNTM2NjM1ODYwfQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0wOS0xMSAxMToxNzo0MCJ9.VS5V16Ef9IqEdB3Wi2AgcQ8c3Spzl5IAc6E62glBWKM";
 localStorage.setItem('token', token);
 
 Vue.prototype.$http = axios;
