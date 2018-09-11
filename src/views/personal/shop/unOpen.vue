@@ -6,7 +6,7 @@
           <span>等级规则</span>
         </div>
         <div class="m-flex-start m-shop">
-          <img  :src="person_info.user.usheader" class="m-shop-top-img" alt="">
+          <img :src="person_info.user.usheader" class="m-shop-top-img" alt="">
           <div class="m-shop-content">
             <h3>{{person_info.user.usname}}</h3>
             <div>

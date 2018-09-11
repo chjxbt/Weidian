@@ -30,14 +30,18 @@
           }
       },
       props: {
-          num: { type: Number, default: 3 }
+          num: { type: Number, default: 3 },
+        item:{
+            type:Object,
+          default:{}
+        }
       },
       methods:{
         fixedClick(){
           this.$emit('fixedClick')
         },
         share(v){
-          this.$emit('share',v)
+          this.$emit('share',v,this.item)
         }
       },
       mounted() {

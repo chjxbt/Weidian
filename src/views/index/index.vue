@@ -115,8 +115,9 @@
 
         </div>
       </div>
-      <share v-if="show_fixed" @fixedClick="fixedClick" @share="share"></share>
+      <share v-if="show_fixed"  @fixedClick="fixedClick" @share="share"></share>
       <img :src="'/static/images/course/course-'+ course + '.png'" v-if="show_course" class="m-course-img" alt="" @click.stop="courseClick">
+      <img src="/static/images/fen.png" v-if="show_fen" class="m-course-img" alt="" @click.stop="fenClick">
     </div>
 
 </template>
@@ -145,6 +146,8 @@
               show_task:false,
               show_fixed:false,
               show_task_btn:true,
+              show_fen:false,
+              _fixed:null,
               swipe_items: [{
                 title: '你的名字',
                 href: 'http://google.com',   url: 'http://www.baidu.com/img/bd_logo1.png'
@@ -256,10 +259,10 @@
           wxRegCallback () {
             this.wxShare()
           },
-          wxShare (v) {
+          wxShare (v,item) {
             const url = window.location.href;
             let opstion = {
-              title: '微点', // 分享标题
+              title: '微点'+item.acid, // 分享标题
               link: url,      // 分享链接
               // imgUrl: 'http://www.jzdlink.com/wordpress/wp-content/themes/wordpress_thems/images/lib/logo.png',// 分享图标
               success: function () {
@@ -273,13 +276,18 @@
             switch (v){
               case 'appmessage':
                 wxapi.ShareTimeline(opstion);
+                this.show_fen = true
                 break;
               case 'line':
-                wxapi.ShareAppMessage(opstion)
+                wxapi.ShareAppMessage(opstion);
+                this.show_fen = true;
             }
           },
           share(v){
-            this.wxShare(v);
+            this.wxShare(v,this._fixed);
+          },
+          fenClick(){
+            this.show_fen = false
           },
           /*获取导航*/
           getTopnav(){
@@ -441,6 +449,7 @@
           /*分享按钮点击*/
           fixedClick(){
             this.show_fixed = false;
+
           },
           /*导航点击*/
           navClick(v){
@@ -463,17 +472,18 @@
                 break;
               case 2:
                 this.show_fixed = true;
+                this._fixed = this.activity_list[list];
                 break;
             }
           },
           /*复制链接*/
           download(url){
             let that =this;
-            // this.$copyText(url).then(function (e) {
-            //   that.show_modal = true;
-            // }, function (e) {
-            //
-            // })
+            this.$copyText(window.location.href).then(function (e) {
+              that.show_modal = true;
+            }, function (e) {
+
+            })
             // alert(url)
             // wx.chooseImage({
             //   // count: 1, // 默认9
@@ -490,14 +500,14 @@
             //     });
             //   }
             // });
-            wx.downloadImage({
-              serverId: localStorage.getItem('id'), // 需要下载的图片的服务器端ID，由uploadImage接口获得
-              isShowProgressTips: 1, // 默认为1，显示进度提示
-              success: function (res) {
-                var localId = res.localId; // 返回图片下载后的本地ID
-                alert(localId)
-              }
-            });
+            // wx.downloadImage({
+            //   serverId: localStorage.getItem('id'), // 需要下载的图片的服务器端ID，由uploadImage接口获得
+            //   isShowProgressTips: 1, // 默认为1，显示进度提示
+            //   success: function (res) {
+            //     var localId = res.localId; // 返回图片下载后的本地ID
+            //     alert(localId)
+            //   }
+            // });
           },
           /*展开全文*/
           showMoreText(bool,v){
@@ -615,7 +625,10 @@
       .m-modal-state{
         /*height: auto;*/
         width: 620px;
-        height: 250px;
+        height: 300px;
+        .m-modal-head{
+          margin-bottom: 40px;
+        }
       }
     }
     .m-modal-state{
