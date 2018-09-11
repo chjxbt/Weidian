@@ -119,18 +119,49 @@
 
 <script type="text/ecmascript-6">
   import oneOrder from './components/oneOrder';
+  import axios from 'axios';
+  import api from '../../../api/api'
     export default {
         data() {
             return {
-                name: ''
+                name: '',
+              order_list:[],
+              page_size:10,
+              page_num:1,
+              total_count:0,
+              isScroll:true
             }
         },
         components: {
           oneOrder
         },
-        methods: {},
-        created() {
+        methods: {
+          getOrder(page){
+            axios.get(api.get_more_order,{
+              params:{
+                token: localStorage.getItem('token'),
+                page_num: page || 1,
+                page_size:this.page_size || 10,
+                sell:'销售订单'
+              }
+            }).then(res => {
+              if(res.data.status == 200){
+                for(let i=0;i<res.data.data.length;i++){
+                  res.data.data[i].click = false;
+                }
+                this.total_count = res.data.count;
+                if(page){
+                  this.order_list = this.order_list.concat(res.data.data);
+                }else{
+                  this.order_list = [].concat(res.data.data);
+                }
 
+              }
+            })
+          },
+        },
+        created() {
+          this.getOrder();
         }
     }
 </script>
