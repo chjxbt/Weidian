@@ -1,15 +1,18 @@
 <template>
     <div class="m-discover">
-      <navbar :list="nav_list" @navClick="navClick"></navbar>
+      <mt-loadmore :top-method="loadTop" ref="loadmore">
+        <navbar :list="nav_list" @navClick="navClick"></navbar>
 
-      <!--每日10荐-->
-      <every v-if="nav_select == '0'" :tnid="nav_list[0].tnid"></every>
-      <!--素材圈-->
-      <fodder v-if="nav_select == '1'" :tnid="nav_list[1].tnid" :sub="sub"></fodder>
-      <!--公告-->
-      <announcement v-if="nav_select == '2'" :tnid="nav_list[2].tnid"></announcement>
-      <!--教程-->
-      <course v-if="nav_select == '3'" :tnid="nav_list[3].tnid"></course>
+        <!--每日10荐-->
+        <every v-if="nav_select == '0'" :tnid="nav_list[0].tnid" ref="every"></every>
+        <!--素材圈-->
+        <fodder v-if="nav_select == '1'" :tnid="nav_list[1].tnid" :sub="sub" ref="fodder"></fodder>
+        <!--公告-->
+        <announcement v-if="nav_select == '2'" :tnid="nav_list[2].tnid" ref="announcement"></announcement>
+        <!--教程-->
+        <course v-if="nav_select == '3'" :tnid="nav_list[3].tnid" ref="course"></course>
+
+      </mt-loadmore>
 
       <div class="m-modal" v-if="show_modal">
         <div class="m-modal-state">
@@ -58,6 +61,18 @@
       },
       components: { navbar, fodder, every, announcement, course, iconList },
       methods: {
+        loadTop() {
+          if(this.nav_select == 0) {
+            this.$refs.every.loadTop();
+          }else if(this.nav_select == 1) {
+            this.$refs.fodder.loadTop();
+          }else if(this.nav_select == 2) {
+            this.$refs.announcement.loadTop();
+          }else if(this.nav_select == 3) {
+            this.$refs.course.loadTop();
+          }
+          this.$refs.loadmore.onTopLoaded();
+        },
         // 点击导航栏
         navClick(v){
           let arr = this.nav_list;

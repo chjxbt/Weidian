@@ -1,6 +1,5 @@
 <template>
   <div class="m-discover-announcement" @touchmove="touchMove">
-    <mt-loadmore :top-method="loadTop" :bottom-all-loaded="!isScroll" ref="loadmore">
       <div class="m-section-one" v-for="(item, index) in activity_list">
         <div class="m-section-content">
           <div class="m-section-title">
@@ -48,7 +47,6 @@
           </div>
         </div>
       </div>
-    </mt-loadmore>
     <share v-if="show_fixed" :num="2" @fixedClick="fixedClick"></share>
   </div>
 </template>
@@ -107,12 +105,10 @@
       // 下拉刷新
       loadTop() {
         this.getActivity();
-        this.$refs.loadmore.onTopLoaded();
       },
       // 上拉加载更多
       loadBottom() {
         this.getActivity(this.activity_list.length, this.count);
-        this.$refs.loadmore.onBottomLoaded();
       },
       /*获取活动列表*/
       getActivity(start, count){

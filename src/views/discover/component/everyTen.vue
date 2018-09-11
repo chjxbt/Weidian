@@ -26,13 +26,11 @@
       <div class="line"></div>
     </div>
 
-    <mt-loadmore :top-method="loadTop" :bottom-all-loaded="!isScroll" ref="loadmore">
-      <div class="m-index-section">
-        <template v-for="(item,index) in activity_list">
-          <ctx :icon="icon_list" :list="item" :index="index" @iconClick="iconClick" @showMoreText="showMoreText"></ctx>
-        </template>
-      </div>
-    </mt-loadmore>
+    <div class="m-index-section">
+      <template v-for="(item,index) in activity_list">
+        <ctx :icon="icon_list" :list="item" :index="index" @iconClick="iconClick" @showMoreText="showMoreText"></ctx>
+      </template>
+    </div>
 
     <share v-if="show_fixed" @fixedClick="fixedClick"></share>
   </div>
@@ -284,12 +282,10 @@
       // 下拉刷新
       loadTop() {
         this.getActivity();
-        this.$refs.loadmore.onTopLoaded();
       },
       // 上拉加载更多
       loadBottom() {
         this.getActivity(this.activity_list.length, this.count);
-        this.$refs.loadmore.onBottomLoaded();
       },
     },
     mounted() {
