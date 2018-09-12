@@ -1,6 +1,7 @@
 # -*- coding:utf8 -*-
 import uuid
 from datetime import datetime
+from WeiDian.config.response import SYSTEM_ERROR
 from flask import request
 from WeiDian.common.TransformToList import list_add_models, dict_add_models
 from WeiDian.common.divide import Partner
@@ -360,8 +361,6 @@ class BaseActivityCommentControl():
 class BaseMyCenterControl():
 
     def fill_user_info(self, myinfo):
-        if not myinfo:
-            return {}
         usid = myinfo.USid
         user = self.suser.get_user_by_user_id(usid)
         if user.USlevel == 0:

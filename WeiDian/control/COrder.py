@@ -5,6 +5,7 @@ import uuid
 import random
 from datetime import datetime
 
+from WeiDian import logger
 from WeiDian.common.log import make_log, judge_keys
 from flask import request
 from WeiDian.common.TransformToList import dict_add_models, list_add_models
@@ -67,44 +68,50 @@ class COrder():
         """获取所有订单"""
         if is_tourist():
             return AUTHORITY_ERROR(u"未登录")
-        print '已登录'
         args = request.args.to_dict()
         make_log("args", args)
         true_args = ["sell", "page_size", "page_num"]
         if judge_keys(true_args, args.keys()) != 200:
             return judge_keys(true_args, args.keys())
-        order_list = self.sorder.get_order_by_usid(args["sell"], request.user.id, int(args["page_num"]), int(args["page_size"]))
-        for order in order_list:
-            order.fields = ['OIsn', 'OIpaystatus', 'OIcreatetime']
-        map(self.fill_productinfo, order_list)
-        map(self.fill_complainstatus, order_list)
-        data = import_status('get_order_list_success', 'OK')
-        data['data'] = order_list
-        return data
+        try:
+            order_list = self.sorder.get_order_by_usid(args["sell"], request.user.id, int(args["page_num"]), int(args["page_size"]))
+            for order in order_list:
+                order.fields = ['OIsn', 'OIpaystatus', 'OIcreatetime']
+            map(self.fill_productinfo, order_list)
+            map(self.fill_complainstatus, order_list)
+            data = import_status('get_order_list_success', 'OK')
+            data['data'] = order_list
+            return data
+        except:
+            logger.exception("get order list error")
+            return SYSTEM_ERROR
 
     @verify_token_decorator
     def get_order_list_by_status(self):
         """根据支付状态获取订单"""
         if is_tourist():
             return AUTHORITY_ERROR(u"未登录")
-        print '已登录'
         args = request.args.to_dict()
         make_log("args", args)
         sell = args.get('sell')
         true_args = ["paystatus", "sell", "page_size", "page_num"]
         if judge_keys(true_args, args.keys()) != 200:
             return judge_keys(true_args, args.keys())
-        if sell:
-            order_list = self.sorder.get_sell_order_by_status(request.user.id, args["paystatus"], int(args["page_num"]), int(args["page_size"]))
-        else:
-            order_list = self.sorder.get_user_order_by_status(request.user.id, args["paystatus"], int(args["page_num"]), int(args["page_size"]))
-        for order in order_list:
-            order.fields = ['OIid', 'OIsn', 'OIpaystatus', 'OIcreatetime']
-        map(self.fill_productinfo, order_list)
-        map(self.fill_complainstatus, order_list)
-        data = import_status('get_order_list_success', 'OK')
-        data['data'] = order_list
-        return data
+        try:
+            if sell:
+                order_list = self.sorder.get_sell_order_by_status(request.user.id, args["paystatus"], int(args["page_num"]), int(args["page_size"]))
+            else:
+                order_list = self.sorder.get_user_order_by_status(request.user.id, args["paystatus"], int(args["page_num"]), int(args["page_size"]))
+            for order in order_list:
+                order.fields = ['OIid', 'OIsn', 'OIpaystatus', 'OIcreatetime']
+            map(self.fill_productinfo, order_list)
+            map(self.fill_complainstatus, order_list)
+            data = import_status('get_order_list_success', 'OK')
+            data['data'] = order_list
+            return data
+        except:
+            logger.exception("get order list by status error")
+            return SYSTEM_ERROR
 
     @verify_token_decorator
     def get_order_count(self):
@@ -113,6 +120,7 @@ class COrder():
             return AUTHORITY_ERROR(u"未登录")
         print '已登录'
         args = request.args.to_dict()
+        make_log("args", args)
         sell = args.get('sell')
         if sell:
             json_data = [
@@ -205,7 +213,11 @@ class COrder():
 
     def fill_complainstatus(self, order):
         oiid = order.OIid
-        order.complainstatus = self.scomplain.get_complain_by_oiid(oiid)
-        order.complainstatus.fields = ['COtreatstatus']
+        complainstatus = self.scomplain.get_complain_by_oiid(oiid)
+        if complainstatus:
+            complainstatus.fields = ['COtreatstatus']
+            order.complainstatus = complainstatus
+        else:
+            order.complainstatus = {"cotreatstatus": 0}
         order.add('complainstatus')
         return order

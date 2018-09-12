@@ -191,7 +191,8 @@ class Product(BaseModel):
             'PRchannelname',
             'PRchannelid',
             'SUid',
-            'PRstock']
+            'PRstock',
+            'PRsalestatus']
 
 
 class ProductSkuKey(BaseModel):
@@ -602,7 +603,7 @@ class MyCenter(BaseModel):
     MYid = Column(String(64), primary_key=True)
     USid = Column(String(64), nullable=False)
     MYranking = Column(String(64))  # 我的排名
-    Myrewards = Column(String(64))  # 额外奖励
+    MYrewards = Column(String(64))  # 额外奖励
 
     @orm.reconstructor
     def __init__(self):
@@ -709,24 +710,27 @@ class raward(BaseModel):
 
 
 
+class AdImage(BaseModel):
+    __tablename__ = "adimage"
+    AIid = Column(String(64), primary_key=True)
+    AIimage = Column(String(255))  # 图片地址
+    AItype = Column(Integer)  # 图片类型{ 1:静态广告图, 2:弹窗背景图}
+    AIsize = Column(Integer)  # 图片尺寸{ 1:小图 高度120px, 2:大图 高度400px}
+    ACid = Column(String(64))  # 图片对应的活动
+    AIcreatetime = Column(String(14))  # 创建时间
+    AIstarttime = Column(String(14))  # 上线时间
+    AIendtime = Column(String(14))  # 下线时间
+    AIisdelete = Column(Boolean, default=False)  # 删除
+    AIurl = Column(String(255))  # 外链url （可能会用）
+
+
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = ['AIid', 'AIimage', 'AItype', 'AIsize', 'ACid', 'AIurl']
+
+
 # 交易相关
-"""
-class ShoppingCart(Base):
-    购物车
-    pass
-
-
-class OrderInfo(Base):
-    订单信息
-    pass
-
-
-class OrderInfo(Base):
-    订单内的商品详情
-
-    pass
-
-"""
 
 
 """
