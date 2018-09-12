@@ -192,8 +192,13 @@
   }
   .m-short-bannar{
     width: 100%;
-    height: 100px;
-    background-color: #a4a4a4;
+    height: 120px;
     margin: 16px 0;
+    background-color: #fff;
+    .m-short-img{
+      display: block;
+      width: 100%;
+      height: 120px;
+    }
   }
 </style>

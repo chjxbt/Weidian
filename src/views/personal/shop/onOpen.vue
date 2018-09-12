@@ -49,8 +49,8 @@
         </template>
       </ul>
 
-      <div class="m-short-bannar">
-
+      <div class="m-short-bannar" v-if="short">
+        <img :src="short.aiimage" class="m-short-img" alt="">
       </div>
     </div>
 
@@ -137,7 +137,8 @@
                   src:'/static/images/icon-complain-personal.png',
                   url:'/complain'
                 }
-              ]
+              ],
+              short:null
             }
         },
         components: {
@@ -174,7 +175,28 @@
                 Toast({ message: res.data.message, className: 'm-toast-fail' });
               }
             },error => {
-              Toast({ message: error.data.message, className: 'm-toast-fail' });            })
+              Toast({ message: error.data.message, className: 'm-toast-fail' });
+            })
+          },
+          /*获取底部图片*/
+          getImg(){
+            axios.get(api.get_myimg_adimage,{
+              params:{
+                lasting:true,
+                token:localStorage.getItem('token')
+              }
+            }).then(res => {
+              if(res.data.status == 200){
+                for(let i=0;i<res.data.data.length;i++){
+                  if(res.data.data[i].aisize == 1)
+                    this.short = res.data.data[i];
+                }
+              }else{
+                Toast({ message: res.data.message, className: 'm-toast-fail' });
+              }
+            },error => {
+              Toast({ message: error.data.message, className: 'm-toast-fail' });
+            })
           },
           /*订单类型切换*/
           cellNav(v){
@@ -211,7 +233,8 @@
           }
         },
         created() {
-          this.getOrder(true)
+          this.getOrder(true);
+          this.getImg();
         }
     }
 </script>
