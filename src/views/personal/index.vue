@@ -29,23 +29,7 @@
       <on-open v-if="isOpen"></on-open>
       <un-open v-else></un-open>
 
-      <div class="m-modal m-rule-modal" v-if="show_modal">
-        <div class="m-modal-state">
-          <div class="m-modal-head">
-            <span class="m-close" @click="showModal(false)"> x </span>
-          </div>
-          <div class="m-modal-content">
-            <h3>规则</h3>
-            <div class="m-rule-scroll">
-              <p>0000</p>
-
-            </div>
-          </div>
-          <!--<div class="m-modal-foot">-->
-          <!--<span class="m-modal-foot-btn">复制文案</span>-->
-          <!--</div>-->
-        </div>
-      </div>
+      <rule :show_modal="show_modal" :rule="rule" @showModal="showModal"></rule>
     </div>
 
 </template>
@@ -56,11 +40,13 @@
   import axios from 'axios';
   import api from '../../api/api';
   import {Toast} from 'mint-ui';
+  import rule from '../../components/common/rule'
     export default {
         data() {
             return {
                 isOpen: false,
               show_modal:false,
+              rule:'',
               person_info:[
 
               ],
@@ -68,7 +54,8 @@
         },
         components: {
           onOpen,
-          unOpen
+          unOpen,
+          rule
         },
         methods: {
           getInfo(){
@@ -105,7 +92,7 @@
 </script>
 <style lang="less" rel="stylesheet/less" >
   @import "../../common/css/index";
-  @import "../../common/css/modal";
+
   .m-shop-top{
     font-size: 26px;
     color: #a4a4a4;
