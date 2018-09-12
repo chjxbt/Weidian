@@ -689,7 +689,8 @@ class AdImage(BaseModel):
     __tablename__ = "adimage"
     AIid = Column(String(64), primary_key=True)
     AIimage = Column(String(255))  # 图片地址
-    AItype = Column(Integer)  # 图片类型{ 1:弹窗背景图, 2:静态广告图}
+    AItype = Column(Integer)  # 图片类型{ 1:静态广告图, 2:弹窗背景图}
+    AIsize = Column(Integer)  # 图片尺寸{ 1:小图 高度120px, 2:大图 高度400px}
     ACid = Column(String(64))  # 图片对应的活动
     AIcreatetime = Column(String(14))  # 创建时间
     AIstarttime = Column(String(14))  # 上线时间
@@ -700,7 +701,7 @@ class AdImage(BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['AIid', 'AIimage', 'AItype', 'ACid', 'AIurl']
+        self.fields = ['AIid', 'AIimage', 'AItype', 'AIsize', 'ACid', 'AIurl']
 
 
 # 交易相关

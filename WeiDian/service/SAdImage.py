@@ -8,6 +8,6 @@ sys.path.append(os.path.dirname(os.getcwd()))
 class SAdImage(SBase):
 
     @close_session
-    def get_image_by_aiid(self, aiid):
-        """获取图片"""
-        return self.session.query(AdImage).filter_by(AIid=aiid, AIisdelete=False).first()
+    def get_myimage(self):
+        """获取我的底部图片"""
+        return self.session.query(AdImage).filter_by(AItype=1, AIisdelete=False).order_by(AdImage.AIcreatetime.desc()).all()

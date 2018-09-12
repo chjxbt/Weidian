@@ -14,7 +14,7 @@ class AAdImage(Resource):
     def get(self, adimage):
         print adimage
         apis = {
-            "get_img": "self.cadimage.get_image_by_aiid()"
+            "get_myimg": "self.cadimage.get_image()"
         }
         res = eval(apis[adimage])
         return jsonify(res)
