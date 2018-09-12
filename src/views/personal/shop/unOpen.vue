@@ -1,24 +1,8 @@
 <template>
     <div class="m-unOpen">
-      <div class="m-shop-top">
-        <div class="m-flex-between">
-          <span>账号设置</span>
-          <span>等级规则</span>
-        </div>
-        <div class="m-flex-start m-shop">
-          <img v-if="person_info.user" :src="person_info.user.usheader" class="m-shop-top-img" alt="">
-          <div class="m-shop-content">
-            <h3 v-if="person_info.user">{{person_info.user.usname}}</h3>
-            <div>
-              <p class="m-red">￥{{person_info.myrewards}}</p>
-              <p>新衣币</p>
-            </div>
-          </div>
-        </div>
-      </div>
       <div class="m-order-box">
         <div class="m-part-one">
-         <cell :item="part_title" ></cell>
+         <cell :item="part_title"  ></cell>
           <order :list="order_list"></order>
         </div>
       </div>
@@ -49,9 +33,6 @@
         data() {
             return {
                 name: '',
-              person_info:[
-
-              ],
               part_title:{
                 name:'我的订单',
                 value:'更多',
@@ -106,20 +87,6 @@
           order
         },
         methods: {
-          getInfo(){
-            axios.get(api.get_info_mycenter,{
-              params:{
-                token:localStorage.getItem('token')
-              }
-            }).then(res => {
-              if(res.data.status == 200){
-                this.person_info = res.data.data
-              }else{
-                Toast({ message: res.data.message, className: 'm-toast-fail' });
-              }
-            },error => {
-              Toast({ message: error.data.message, className: 'm-toast-fail' });            })
-          },
           getOrder(){
             axios.get(api.get_order_count,{
               params:{
@@ -130,7 +97,7 @@
                 // this.person_info = res.data.data
                 for(let i=0;i<res.data.data.length;i++){
                   switch (res.data.data[i].status){
-                    case '待付款':
+                    case '待支付':
                       this.order_list[0].value = res.data.data[i].count;
                       break;
                     case '待发货':
@@ -155,7 +122,6 @@
           }
         },
         created() {
-          this.getInfo();
           this.getOrder();
         }
     }

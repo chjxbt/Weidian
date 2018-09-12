@@ -1,30 +1,5 @@
 <template>
     <div class="m-onOpen">
-      <div class="m-shop-top">
-        <div class="m-shop-top-box">
-          <div class="m-flex-between">
-            <router-link to="/setUp" tag="span">
-              <span>账号设置</span>
-            </router-link>
-            <span>等级规则</span>
-          </div>
-          <div class="m-flex-start m-shop" @click="toPage">
-            <img src="" class="m-shop-top-img" alt="">
-            <div class="m-shop-content">
-              <h3>小居居</h3>
-              <div>
-                <p>您已成功超过 <span class="m-ft-30">80%</span> 的VIP</p>
-                <p>离成功保级还差 <span class="m-ft-30">¥15000</span> 元</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="m-invite-box">
-          <span class="m-invite-fans" @click="invite('fans')">邀请专属粉丝</span>
-          <span class="m-invite-store" @click="invite('store')">邀请购买开店大礼包</span>
-        </div>
-      </div>
-
       <div>
         <div class="m-part-one">
          <cell :item="part_tilt_one" ></cell>
@@ -51,7 +26,7 @@
 
         <div class="m-part-one">
           <div class="m-name">订单</div>
-         <cell :item="part_tilt_two" @cellNav="cellNav" ></cell>
+         <cell :item="part_tilt_two"  @cellNav="cellNav" ></cell>
           <ul class="m-part-list">
             <template v-for="(item,index) in order_list">
               <li>
@@ -61,7 +36,6 @@
                 </span>
               </li>
             </template>
-
           </ul>
         </div>
       </div>

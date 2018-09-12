@@ -27,12 +27,21 @@
           item:{
             type:Object,
             default:null
+          },
+          params:{
+            type:String,
+            default:null
           }
         },
         methods: {
           cellClick(v){
             if (v.url){
-              this.$router.push('/'+v.url)
+              this.$router.push({
+                path: '/'+v.url,
+                params:{
+                  status:this.params
+                }
+              })
             }
           },
           cellNav(v){
