@@ -26,6 +26,11 @@ logger.info("that is info")
 logger.error("that is error")
 logger.warning("that is warning")
 
+from weixin.mp import WeixinMP
+from WeiDian.config.setting import APP_ID, APP_SECRET_KEY
+mp = WeixinMP(APP_ID, APP_SECRET_KEY)
+
+
 # from flask_cors import CORS
 from werkzeug.exceptions import HTTPException
 from WeiDian.apis.v1 import AActivity, AHotMessage, ABanner, ASearchField, ATopNav, \

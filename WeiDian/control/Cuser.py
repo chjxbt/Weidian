@@ -8,6 +8,7 @@ import datetime
 import json
 import urllib2
 from WeiDian import logger
+from WeiDian import mp
 from WeiDian.config.response import PARAMS_MISS, SYSTEM_ERROR, NETWORK_ERROR, TOKEN_ERROR
 from WeiDian.common.token_required import verify_token_decorator, usid_to_token
 from WeiDian.common.import_status import import_status
@@ -53,7 +54,7 @@ class CUser():
                 return PARAMS_MISS
 
         from WeiDian.config.setting import APP_ID, APP_SECRET_KEY
-        from WeiDian.config.urlconfig import get_access_toke, get_user_info
+        from WeiDian.config.urlconfig import get_access_toke, get_user_info, get_subscribe
         # 获取access_token openid
 
         request_url = get_access_toke.format(APP_ID, APP_SECRET_KEY, args["code"])
@@ -71,11 +72,19 @@ class CUser():
 
         jsonResult = self.get_wx_response(request_url, "get access_token")
         if "access_token" not in jsonResult or "openid" not in jsonResult:
+            logger.error("get access token and openid error %s", jsonResult)
             return jsonResult
         access_token = jsonResult["access_token"]
         openid = jsonResult['openid']
         user = self.suser.get_user_by_openid(openid)
         is_first = not bool(user)
+
+        wx_subscribe = self.get_wx_response(get_subscribe.format(mp.access_token, openid), "get subscribe")
+        if "subscribe" not in wx_subscribe:
+            logger.error("get subscribe error %s", wx_subscribe)
+            return wx_subscribe
+        subscribe = wx_subscribe.get("subscribe", 0)
+
 
         # try:
         #     req = urllib2.Request(get_user_info.format(access_token, openid))
@@ -105,7 +114,8 @@ class CUser():
                 "USname": user_info.get("nickname"),
                 "UPPerd": args.get("UPPerd", ""),
                 "unionid": user_info.get("unionid"),
-                "accesstoken": access_token
+                "accesstoken": access_token,
+                "subscribe": subscribe,
             })
         else:
             usid = user.USid
@@ -116,7 +126,8 @@ class CUser():
                 "USname": user_info.get("nickname"),
                 "UPPerd": args.get("UPPerd", ""),
                 "unionid": user_info.get("unionid"),
-                "accesstoken": access_token
+                "accesstoken": access_token,
+                "subscribe": subscribe,
             })
             if not update_result:
                 return SYSTEM_ERROR
@@ -205,9 +216,7 @@ class CUser():
     #     return response
 
     def get_wx_config(self):
-        from weixin.mp import WeixinMP
-        from WeiDian.config.setting import APP_ID, APP_SECRET_KEY
-        mp = WeixinMP(APP_ID, APP_SECRET_KEY)
+
         url = request.args.get("url", request.url)
         # url = request.json.get("url", request.url)
         logger.debug('get url %s', url)

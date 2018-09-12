@@ -516,20 +516,21 @@ class User(BaseModel):
     __tablename__ = 'user'
     USid = Column(String(64), primary_key=True)
     USname = Column(String(64), nullable=False)  # 用户名
-    # USpassword = Column(String(255))  # 密码
-    USphone = Column(String(16))  # 手机号
-    USheader = Column(String(255))  # 头像
-    USgender = Column(String(64))  # 性别
+    # USpassword = Column(String(255))           # 密码
+    USphone = Column(String(16))                 # 手机号
+    USheader = Column(String(255))               # 头像
+    USgender = Column(String(64))                # 性别
     USage = Column(Integer)  # 年龄
-    USlastlogin = Column(String(64))  # 用户上次登录时间
+    USlastlogin = Column(String(64))             # 用户上次登录时间
     # 用户级别: {0 普通用户, 1 普通合伙人, 2 中级合伙人, 3 高级合伙人}
     USlevel = Column(Integer, default=0)
-    # 上级
-    UPPerd = Column(String(64), default=0)
+    UPPerd = Column(String(64), default=0)       # 上级
 
-    openid = Column(String(64))    # 微信唯一值
-    unionid = Column(String(255))   # 绑定公众号会出现
-    accesstoken = Column(String(255)) # 微信token
+    openid = Column(String(64))                  # 微信唯一值
+    unionid = Column(String(255))                # 绑定公众号会出现
+    accesstoken = Column(String(255))            # 微信token
+    subscribe = Column(Integer)                  # 是否关注公众号
+
 
     @orm.reconstructor
     @auto_createtime
@@ -662,26 +663,50 @@ class Complain(BaseModel):
     def __init__(self):
         self.fields = ['COid', 'COcontent', 'COtype', "OIid", "USid", 'COtreatstatus']
 
+
 class Task(BaseModel):
     __tablename__ = "task"
     TAid = Column(String(64), primary_key=True)
-    TAname = Column(Text)
-    # TAtype = Column(Integer)   # 任务类型
-    TAisOpen = Column(Integer) # 是否开启
+    TAname = Column(Text)       #
+    TAtype = Column(Integer)    # 任务类型
+    TAisOpen = Column(Integer)  # 是否开启
+    TAhead = Column(Text)
     TAcreatetime = Column(String(14))
+    TAstartTime = Column(String(14))
+    TAendTime = Column(String(14))
+    TAduration = Column(String(14))
+    TAcontent = Column(Text)
     TAstatus = Column(Integer)
-    USid = Column(String(64))
+    # USid = Column(String(64))
     TArole = Column(Text)
 
 
 class TaskItem(BaseModel):
-    __tablename__ = "tasklkitem"
+    __tablename__ = "taskitem"
     TIid = Column(String(64), primary_key=True)
     TAid = Column(String(64))
     # TAprogress = Column(Integer)
-    TIprice = Column(float)
+    TIprice = Column(Float)
     TIhead = Column(Text)
     TIcontent = Column(Text)
+
+
+class TaskUser(BaseModel):
+    __tablename__ = "taskuser"
+    TUid = Column(String(64), primary_key=True)
+    USid = Column(String(64))
+    TAid = Column(String(64))
+    TUcreatetime = Column(String(14))
+    TUendtime = Column(String(14))
+    # TAprice = Column(Float)
+    RAid = Column(String(64))
+
+
+
+class raward(BaseModel):
+    __tablename__ = "raward"
+    RAid = Column(String(64), primary_key=True)
+
 
 
 # 交易相关
