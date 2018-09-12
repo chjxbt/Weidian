@@ -70,6 +70,8 @@
               if(res.data.status == 200){
                 window.localStorage.setItem("access_token",res.data.data.access_token);
                 window.localStorage.setItem("token",res.data.data.token);
+                window.localStorage.setItem("openid",res.data.data.openid);
+                window.localStorage.setItem("is_first",res.data.data.is_first);
                 this.$router.push('/index/index');
               }else{
                 Toast({ message: res.data.message, className: 'm-toast-fail' });

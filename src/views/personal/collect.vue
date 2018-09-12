@@ -8,7 +8,7 @@
               <span class="m-check" :class="item.click?'active':''" @click.stop="checkClick(index)"></span>
               <span class="m-red">{{item.productinfo.prsalestatus}}</span>
             </div>
-            <span>已有122人发圈</span>
+            <span>已有{{item.forwardnum}}人发圈</span>
           </div>
         </div>
       </template>
