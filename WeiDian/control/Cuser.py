@@ -101,6 +101,9 @@ class CUser():
             response = import_status("get_user_info_error", "WD_ERROR", "error_get_user_info")
             response['data'] = user_info
             return response
+        upperd = self.suser.get_user_by_openid(args.get("UPPerd", ""))
+
+        upperd_id = upperd.USid if upperd else None
 
         if is_first:
             usid = str(uuid.uuid1())
@@ -112,7 +115,7 @@ class CUser():
                 "USlevel": 0,
                 "USgender": user_info.get("sex"),
                 "USname": user_info.get("nickname"),
-                "UPPerd": args.get("UPPerd", ""),
+                "UPPerd": upperd_id,
                 "unionid": user_info.get("unionid"),
                 "accesstoken": access_token,
                 "subscribe": subscribe,
@@ -141,10 +144,12 @@ class CUser():
         response = import_status("SUCCESS_GET_OPENID", "OK")
         response["data"] = {
             "is_first": is_first,
+            "subscribe": subscribe,
+            "openid": openid,
             "access_token": access_token,
             "token": usid_to_token(usid)
         }
-
+        logger.debug("get loggin response %s", response)
         return response
 
     # @verify_token_decorator
