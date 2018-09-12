@@ -29,6 +29,7 @@ const api={
   get_info_mycenter: title + '/mycenter/get_info',//获取基本信息
   add_one_complain: title + '/complain/add_one',//投诉
   get_prlike_productlike: title + '/productlike/get_prlike',//收藏
+  batch_del_productlike:title + '/productlike/batch_del',//删除收藏
 };
 
 export default api

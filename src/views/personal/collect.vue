@@ -17,7 +17,7 @@
           <span class="m-check" :class="all_check?'active':''" @click="allClick"></span>
           <span>全选</span>
         </div>
-        <span class="m-right">删除</span>
+        <span class="m-right" @click="deleteClick">删除</span>
       </div>
     </div>
 
@@ -101,6 +101,24 @@
 
             }
           },
+          deleteClick(){
+            let arr=[];
+            for(let i=0;i<this.collect_list.length;i++){
+              if(this.collect_list[i].click){
+                arr.push(this.collect_list[i].plid);
+              }
+            }
+            axios.post(api.batch_del_productlike+'?token='+localStorage.getItem('token'),{
+              plid:arr.join(',')
+            }).then(res => {
+                if(res.data.status == 200){
+                  Toast({ message: res.data.message, className: 'm-toast-success' });
+                  this.getCollect();
+                }else{
+                  Toast({ message: res.data.message, className: 'm-toast-fail' });
+                }
+            })
+          }
         },
         created() {
           this.getCollect();

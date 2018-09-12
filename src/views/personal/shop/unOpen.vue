@@ -6,9 +6,9 @@
           <span>等级规则</span>
         </div>
         <div class="m-flex-start m-shop">
-          <img :src="person_info.user.usheader" class="m-shop-top-img" alt="">
+          <img v-if="person_info.user" :src="person_info.user.usheader" class="m-shop-top-img" alt="">
           <div class="m-shop-content">
-            <h3>{{person_info.user.usname}}</h3>
+            <h3 v-if="person_info.user">{{person_info.user.usname}}</h3>
             <div>
               <p class="m-red">￥{{person_info.myrewards}}</p>
               <p>新衣币</p>
