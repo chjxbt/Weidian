@@ -3,7 +3,7 @@
       <div class="m-complain-form">
         <div class="m-complain-type">
           <span class="m-complain-type-btn">服务投诉</span>
-          <span class="m-complain-type-btn">服务投诉</span>
+          <span class="m-complain-type-btn">质量投诉</span>
         </div>
         <ul class="m-complain-checkbox">
           <li>
@@ -31,20 +31,26 @@
           <span>提交</span>
         </div>
       </div>
-      <div class="m-complain-line">自买订单</div>
+
+      <div class="m-myOrder-nav" v-if="isOpen">
+        <span :class="isSell?'active':''" @click="sellClick(true)">销售订单</span>
+        <span :class="!isSell?'active':''" @click="sellClick(false)">自买订单</span>
+      </div>
+      <div class="m-myOrder-nav m-one" v-else>
+        <span class="active">自买订单</span>
+      </div>
       <div class="m-complain-order-list">
         <div class="m-no-complain-order" v-if="!have_order">
           尚无相关订单...
         </div>
         <div class="m-one-complain-order" v-else>
-          <div class="m-one">
-            <span class="m-check"></span>
-            <one-order></one-order>
-          </div>
-          <div class="m-one">
-            <span class="m-check active"></span>
-            <one-order></one-order>
-          </div>
+          <template v-for="(items,index) in order_list">
+            <div class="m-one">
+              <span class="m-check" :class="items.click?'active':''" @click="checkClick(index)"></span>
+              <one-order :item="items"></one-order>
+            </div>
+          </template>
+
 
         </div>
       </div>
@@ -53,19 +59,75 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import oneOrder from './components/oneOrder'
+  import oneOrder from './components/oneOrder';
+  import axios from 'axios';
+  import api from '../../../api/api';
+  import common from '../../../common/js/common';
+  import {Toast} from 'mint-ui';
     export default {
         data() {
             return {
-                have_order:true,
+              have_order:true,
+              page_size:3,
+              page_num:1,
+              total_count:0,
+              isScroll:true,
+              isOpen:true,
+              isSell:true,
+              order_list:[]
             }
         },
         components: {
           oneOrder
         },
-        methods: {},
-        created() {
+      mounted(){
+        this.isOpen = localStorage.getItem('level') == 'partner'? true:false;
+        this.isSell = localStorage.getItem('level') == 'partner'? true:false;
+      },
+        methods: {
+          /*获取订单*/
+          getOrder(page){
+            axios.get(api.get_more_order,{
+              params:{
+                token: localStorage.getItem('token'),
+                page_num: page || 1,
+                page_size:this.page_size || 10,
+                sell:this.isSell
+              }
+            }).then(res => {
+              if(res.data.status == 200){
+                for(let i=0;i<res.data.data.length;i++){
+                  res.data.data[i].click = false;
+                }
+                this.total_count = res.data.count;
 
+                if(page){
+                  this.order_list = this.order_list.concat(res.data.data);
+                }else{
+                  this.order_list = [].concat(res.data.data);
+                }
+                console.log(this.order_list)
+              }else{
+                Toast({ message: res.data.message, className: 'm-toast-fail' });
+              }
+            },error => {
+              Toast({ message: error.data.message, className: 'm-toast-fail' });            })
+          },
+          /*nav切换*/
+          sellClick(v){
+            if(this.sell == v){
+              return false;
+            }
+            this.isSell = v;
+            this.getOrder();
+          },
+          /*选择切换*/
+          checkClick(i){
+            this.order_list[i].click = ! this.order_list[i].click;
+          },
+        },
+        created() {
+          this.getOrder();
         }
     }
 </script>
@@ -155,6 +217,29 @@
     background-color: @mainColor;
     color: #fff;
     margin-bottom: 40px;
+  }
+  .m-myOrder-nav{
+    .flex-row(flex-start);
+    &.m-one{
+      span{
+        width: 100%;
+      }
+    }
+    span{
+      display: block;
+      width: 50%;
+      box-sizing: border-box;
+      height: 46px;
+      line-height: 46px;
+      border: 2px solid @mainColor;
+      color: #c1c1c1;
+      font-size: 24px;
+      text-align: center;
+      &.active{
+        background-color: @mainColor;
+        color: #fff;
+      }
+    }
   }
   .m-complain-order-list{
     .m-no-complain-order{
