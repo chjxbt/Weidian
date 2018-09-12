@@ -90,7 +90,8 @@
           getOrder(){
             axios.get(api.get_order_count,{
               params:{
-                token:localStorage.getItem('token')
+                token:localStorage.getItem('token'),
+                sell:false
               }
             }).then(res => {
               if(res.data.status == 200){

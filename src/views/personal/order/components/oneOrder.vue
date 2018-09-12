@@ -1,14 +1,13 @@
 <template>
   <div class="m-one-order">
     <div class="m-one-order-top">
-      <img src="" class="m-product-img" alt="">
+      <img :src="item.productinfo.opiproductimages" class="m-product-img" alt="">
       <div class="m-product-info">
-        <p class="m-product-name">商品名称商品名称商品名称商品名称
-          商品名称商品名称商品名称</p>
-        <p>投诉处理中..</p>
+        <p class="m-product-name">{{item.productinfo.opiproductname}}</p>
+        <p class="m-complain-p">投诉处理中..</p>
         <p class="m-order-code">
-          <span>订单号：123456789000</span>
-          <span class="m-order-btn">订单付款</span>
+          <span>订单号：{{item.oisn}}</span>
+          <span  :class="item.oipaystatus == 0?'m-order-btn' : (item.oipaystatus == 7?'m-order-btn active': ( item.oipaystatus == 2 || item.oipaystatus == 3 ||item.oipaystatus == 10) ?'':'m-red')">{{item.oipaystatus}}</span>
         </p>
       </div>
     </div>
@@ -18,15 +17,15 @@
         <span class="m-red m-ft-b">￥29.36</span>
       </li>
       <li>
-        <span>付款金额</span>
+        <span>成交预估收入</span>
         <span class="m-red m-ft-b">￥29.36</span>
       </li>
       <li>
-        <span>付款金额</span>
-        <span class="m-red m-ft-b">￥29.36</span>
+        <span>收入来源</span>
+        <span class="m-red m-ft-b">省钱了29.36</span>
       </li>
     </ul>
-    <p class="m-order-time">2018-08-08 16:49:07  创建</p>
+    <p class="m-order-time">{{item.oicreatetime.slice(0,4)}}-{{item.oicreatetime.slice(4,6)}}-{{item.oicreatetime.slice(6,8)}} {{item.oicreatetime.slice(8,10)}}:{{item.oicreatetime.slice(10,12)}}:{{item.oicreatetime.slice(12,14)}}  创建</p>
   </div>
 
 </template>
@@ -38,7 +37,12 @@
                 name: ''
             }
         },
-        components: {},
+        props: {
+          item:{
+            type:Object,
+            default:null
+          }
+        },
         methods: {},
         created() {
 
@@ -73,6 +77,10 @@
           height: 64px;
           text-align: left;
         }
+        .m-complain-p{
+          color: #333;
+          font-weight: bold;
+        }
         .m-order-code{
           position: absolute;
           left: 0;
@@ -104,6 +112,7 @@
     .m-one-order-money{
       .flex-row(space-around);
       li{
+        width: 30%;
         span{
           display: block;
           margin: 10px 0;

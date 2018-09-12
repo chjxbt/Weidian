@@ -17,97 +17,13 @@
         </ul>
       </div>
 
-      <div class="m-myOrder-content">
+      <div class="m-myOrder-content" @touchmove="touchMove" >
 
         <div class="m-myOrder-list">
-          <one-order></one-order>
-          <div class="m-one-order">
-            <div class="m-one-order-top">
-              <img src="" class="m-product-img" alt="">
-              <div class="m-product-info">
-                <p class="m-product-name">商品名称商品名称商品名称商品名称
-                  商品名称商品名称商品名称</p>
-                <p>投诉处理中..</p>
-                <p class="m-order-code">
-                  <span>订单号：123456789000</span>
-                  <span class="m-order-btn active">确认收货</span>
-                </p>
-              </div>
-            </div>
-            <ul class="m-one-order-money">
-              <li>
-                <span>付款金额</span>
-                <span class="m-red m-ft-b">￥29.36</span>
-              </li>
-              <li>
-                <span>付款金额</span>
-                <span class="m-red m-ft-b">￥29.36</span>
-              </li>
-              <li>
-                <span>付款金额</span>
-                <span class="m-red m-ft-b">￥29.36</span>
-              </li>
-            </ul>
-            <p class="m-order-time">2018-08-08 16:49:07  创建</p>
-          </div>
-          <div class="m-one-order">
-            <div class="m-one-order-top">
-              <img src="" class="m-product-img" alt="">
-              <div class="m-product-info">
-                <p class="m-product-name">商品名称商品名称商品名称商品名称
-                  商品名称商品名称商品名称</p>
-                <p>投诉处理中..</p>
-                <p class="m-order-code">
-                  <span>订单号：123456789000</span>
-                  <span class="m-red">确认收货</span>
-                </p>
-              </div>
-            </div>
-            <ul class="m-one-order-money">
-              <li>
-                <span>付款金额</span>
-                <span class="m-red m-ft-b">￥29.36</span>
-              </li>
-              <li>
-                <span>付款金额</span>
-                <span class="m-red m-ft-b">￥29.36</span>
-              </li>
-              <li>
-                <span>付款金额</span>
-                <span class="m-red m-ft-b">￥29.36</span>
-              </li>
-            </ul>
-            <p class="m-order-time">2018-08-08 16:49:07  创建</p>
-          </div>
-          <div class="m-one-order">
-            <div class="m-one-order-top">
-              <img src="" class="m-product-img" alt="">
-              <div class="m-product-info">
-                <p class="m-product-name">商品名称商品名称商品名称商品名称
-                  商品名称商品名称商品名称</p>
-                <p>投诉处理中..</p>
-                <p class="m-order-code">
-                  <span>订单号：123456789000</span>
-                  <span >确认收货</span>
-                </p>
-              </div>
-            </div>
-            <ul class="m-one-order-money">
-              <li>
-                <span>付款金额</span>
-                <span class="m-red m-ft-b">￥29.36</span>
-              </li>
-              <li>
-                <span>付款金额</span>
-                <span class="m-red m-ft-b">￥29.36</span>
-              </li>
-              <li>
-                <span>付款金额</span>
-                <span class="m-red m-ft-b">￥29.36</span>
-              </li>
-            </ul>
-            <p class="m-order-time">2018-08-08 16:49:07  创建</p>
-          </div>
+          <template v-for="(items,index) in order_list">
+            <one-order :item="items"></one-order>
+          </template>
+
         </div>
       </div>
     </div>
@@ -118,13 +34,14 @@
   import oneOrder from './components/oneOrder';
   import axios from 'axios';
   import api from '../../../api/api';
+  import common from '../../../common/js/common';
   import {Toast} from 'mint-ui';
     export default {
         data() {
             return {
                 name: '',
               order_list:[],
-              page_size:10,
+              page_size:3,
               page_num:1,
               total_count:0,
               isScroll:true,
@@ -143,7 +60,8 @@
           getOrderNum(){
             axios.get(api.get_order_count,{
               params:{
-                token:localStorage.getItem('token')
+                token:localStorage.getItem('token'),
+                sell:this.isSell
               }
             }).then(res => {
               if(res.data.status == 200){
@@ -192,7 +110,12 @@
               Toast({ message: error.data.message, className: 'm-toast-fail' });            })
           },
           sellClick(v){
+            if(this.sell == v){
+              return false;
+            }
             this.isSell = v;
+            this.getOrderNum();
+            this.getOrder();
           },
           statusClick(i){
             if(this.order_num[i].click)
@@ -203,8 +126,24 @@
             }
             arr[i].click = true;
             this.order_num = [].concat(arr);
-          }
-        },
+            this.getOrder();
+          },
+          touchMove(){
+            let scrollTop = common.getScrollTop();
+            let scrollHeight = common.getScrollHeight();
+            let ClientHeight = common.getClientHeight()
+            if (scrollTop + ClientHeight >= scrollHeight) {
+              if(this.isScroll){
+                this.isScroll = false;
+                this.page_num = this.page_num +1;
+                this.getOrder(this.page_num);
+              }else  if(this.collect_list.length == this.total_count){
+                this.isScroll = false;
+                Toast({ message: '数据已加载完', className: 'm-toast-warning' });
+              }
+
+            }
+          },        },
         created() {
           this.getOrder();
           this.getOrderNum();

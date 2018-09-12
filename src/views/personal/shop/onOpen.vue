@@ -58,6 +58,9 @@
 
 <script type="text/ecmascript-6">
   import cell from '../../../components/common/cell';
+  import axios from 'axios';
+  import api from '../../../api/api';
+  import {Toast} from 'mint-ui';
     export default {
         data() {
             return {
@@ -141,11 +144,50 @@
           cell
         },
         methods: {
+          getOrder(sell){
+            axios.get(api.get_order_count,{
+              params:{
+                token:localStorage.getItem('token'),
+                sell:sell
+              }
+            }).then(res => {
+              if(res.data.status == 200){
+                // this.person_info = res.data.data
+                for(let i=0;i<res.data.data.length;i++){
+                  switch (res.data.data[i].status){
+                    case '待支付':
+                      this.order_list[0].value = res.data.data[i].count;
+                      break;
+                    case '待发货':
+                      this.order_list[1].value = res.data.data[i].count;
+                      break;
+                    case '已发货':
+                      this.order_list[2].value = res.data.data[i].count;
+                      break;
+                    case '已取消':
+                      this.order_list[3].value = res.data.data[i].count;
+                      break;
+                  }
+                }
+              }else{
+                Toast({ message: res.data.message, className: 'm-toast-fail' });
+              }
+            },error => {
+              Toast({ message: error.data.message, className: 'm-toast-fail' });            })
+          },
           cellNav(v){
             for(let i=0;i<this.part_tilt_two.nav.length;i++){
               this.part_tilt_two.nav[i].click = false;
             }
             this.part_tilt_two.nav[v].click = true;
+            switch (v){
+              case 0:
+                this.getOrder(true);
+                break;
+              case 1:
+                this.getOrder(false);
+                break;
+            }
           },
           invite(v){
             if(v == 'fans'){
@@ -165,7 +207,7 @@
           }
         },
         created() {
-
+          this.getOrder(true)
         }
     }
 </script>
