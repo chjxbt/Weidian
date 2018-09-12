@@ -1,5 +1,5 @@
 <template>
-    <div class="m-complain">
+    <div class="m-complain" @touchmove="touchMove">
       <div class="m-complain-form">
         <div class="m-complain-type">
           <span class="m-complain-type-btn">服务投诉</span>
@@ -106,7 +106,6 @@
                 }else{
                   this.order_list = [].concat(res.data.data);
                 }
-                console.log(this.order_list)
               }else{
                 Toast({ message: res.data.message, className: 'm-toast-fail' });
               }
@@ -124,6 +123,22 @@
           /*选择切换*/
           checkClick(i){
             this.order_list[i].click = ! this.order_list[i].click;
+          },
+          /*加载更多*/
+          touchMove(){
+            let scrollTop = common.getScrollTop();
+            let scrollHeight = common.getScrollHeight();
+            let ClientHeight = common.getClientHeight();
+            if (scrollTop + ClientHeight >= scrollHeight) {
+              if(this.isScroll){
+                this.isScroll = false;
+                this.page_num = this.page_num +1;
+                this.getOrder(this.page_num);
+              }else  if(this.order_list.length == this.total_count){
+                this.isScroll = false;
+                Toast({ message: '数据已加载完', className: 'm-toast-warning' });
+              }
+            }
           },
         },
         created() {

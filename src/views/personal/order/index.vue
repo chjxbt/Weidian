@@ -128,6 +128,7 @@
             this.order_num = [].concat(arr);
             this.getOrder();
           },
+          /*加载更多*/
           touchMove(){
             let scrollTop = common.getScrollTop();
             let scrollHeight = common.getScrollHeight();
