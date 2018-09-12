@@ -3,8 +3,8 @@
       <div class="m-shop-top" :class="isOpen?'active':''">
         <div class="m-shop-top-box">
           <div class="m-flex-between">
-            <span>账号设置</span>
-            <span>等级规则</span>
+            <span @click="setClick">账号设置</span>
+            <span @click="showModal(true)">等级规则</span>
           </div>
           <div class="m-flex-start m-shop">
             <img v-if="person_info.user" :src="person_info.user.usheader" class="m-shop-top-img" alt="">
@@ -26,9 +26,26 @@
           <span class="m-invite-store" @click="invite('store')">邀请购买开店大礼包</span>
         </div>
       </div>
-
       <on-open v-if="isOpen"></on-open>
       <un-open v-else></un-open>
+
+      <div class="m-modal m-rule-modal" v-if="show_modal">
+        <div class="m-modal-state">
+          <div class="m-modal-head">
+            <span class="m-close" @click="showModal(false)"> x </span>
+          </div>
+          <div class="m-modal-content">
+            <h3>规则</h3>
+            <div class="m-rule-scroll">
+              <p>0000</p>
+
+            </div>
+          </div>
+          <!--<div class="m-modal-foot">-->
+          <!--<span class="m-modal-foot-btn">复制文案</span>-->
+          <!--</div>-->
+        </div>
+      </div>
     </div>
 
 </template>
@@ -43,6 +60,7 @@
         data() {
             return {
                 isOpen: false,
+              show_modal:false,
               person_info:[
 
               ],
@@ -73,6 +91,12 @@
             },error => {
               Toast({ message: error.data.message, className: 'm-toast-fail' });            })
           },
+          showModal(v){
+            this.show_modal = v;
+          },
+          setClick(){
+            this.$router.push('/setUp')
+          }
         },
         created() {
           this.getInfo();
@@ -81,6 +105,7 @@
 </script>
 <style lang="less" rel="stylesheet/less" >
   @import "../../common/css/index";
+  @import "../../common/css/modal";
   .m-shop-top{
     font-size: 26px;
     color: #a4a4a4;

@@ -92,12 +92,12 @@
                   name:'待支付',
                   src:'/static/images/icon-pay-personal.png',
                   value:'',
-                  num:1
+                  num:0
                 },{
                   name:'待发货',
                   src:'/static/images/icon-wait-send-personal.png',
                   value:'',
-                  num:2
+                  num:0
                 },
                 {
                   name:'已发货',
@@ -109,7 +109,7 @@
                   name:'已取消',
                   src:'/static/images/icon-cancel-personal.png',
                   value:'',
-                  num:3
+                  num:0
                 }
               ],
               nav_list:[
@@ -144,6 +144,7 @@
           cell
         },
         methods: {
+          /*获取订单预览数*/
           getOrder(sell){
             axios.get(api.get_order_count,{
               params:{
@@ -175,6 +176,7 @@
             },error => {
               Toast({ message: error.data.message, className: 'm-toast-fail' });            })
           },
+          /*订单类型切换*/
           cellNav(v){
             for(let i=0;i<this.part_tilt_two.nav.length;i++){
               this.part_tilt_two.nav[i].click = false;
@@ -189,6 +191,7 @@
                 break;
             }
           },
+          /*邀请粉丝/开店*/
           invite(v){
             if(v == 'fans'){
               this.$router.push('/inviteFans')
@@ -196,6 +199,7 @@
               this.$router.push('/inviteStore')
             }
           },
+          /*底部图标点击*/
           navClick(v){
            if(v.url){
              this.$router.push(v.url);
