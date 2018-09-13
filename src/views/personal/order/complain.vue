@@ -35,7 +35,7 @@
         </div>
         <div class="m-one-complain-order" v-else>
           <template v-for="(items,index) in order_list">
-            <div class="m-one">
+            <div class="m-one" v-if="items.complainstatus.cotreatstatus == 0">
               <span class="m-check" :class="items.click?'active':''" @click="checkClick(index)"></span>
               <one-order :item="items"></one-order>
             </div>
@@ -56,7 +56,7 @@
         data() {
             return {
               have_order:true,
-              page_size:3,
+              page_size:5,
               page_num:1,
               total_count:0,
               isScroll:true,
@@ -104,7 +104,7 @@
                 page_num: page || 1,
                 page_size:this.page_size || 10,
                 sell:this.isSell,
-                paystatus:0
+                paystatus:20
               }
             }).then(res => {
               if(res.data.status == 200){

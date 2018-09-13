@@ -102,9 +102,9 @@
           }
         },
         bigImg(item) {
-          console.log(item);
-          let urls = [item.amimage, item.amimage, item.amimage, item.amimage];
-          wxapi.previewImage("", urls);
+         let urls = [item.amimage,item.amimage];
+
+          wxapi.previewImage(item.amimage, urls);
         }
       }
     }

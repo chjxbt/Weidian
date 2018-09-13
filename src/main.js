@@ -26,6 +26,23 @@ promise.polyfill();
 let token = "eyJhbGciOiJIUzI1NiIsImV4cCI6MTUzNjg3NjcyNywiaWF0IjoxNTM2ODA0NzI3fQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0wOS0xMyAxMDoxMjowNyJ9._T3zTRKZgiDfpc82TEa3T0jAvFG7KjtWJat142ZuFco";
 localStorage.setItem('token', token);
 
+
+// 点击预览图片
+// document.getElementById('#app').on('click','img',function(){
+//   console.log(this)
+//   // var src = $(this).attr('src');
+//   // var imgs = $(this).parent().parent().find('img');
+//   // var list = new Array();
+//   // for (var i = 0; i < imgs.length; i++) {
+//   //   list.push($(imgs[i]).attr('src'));
+//   // }
+//   // wx.previewImage({
+//   //   current: src, // 当前显示图片的http链接
+//   //   urls: list // 需要预览的图片http链接列表
+//   // });
+// });
+
+
 Vue.prototype.$http = axios;
 //拦截器、
 // import { Loading, Message, MessageBox  } from 'element-ui'

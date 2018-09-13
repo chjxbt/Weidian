@@ -31,6 +31,7 @@ const api={
   get_prlike_productlike: title + '/productlike/get_prlike',//收藏
   batch_del_productlike:title + '/productlike/batch_del',//删除收藏
   get_myimg_adimage: title + '/adimage/get_myimg',//获取我的底部图片
+
 };
 
 export default api

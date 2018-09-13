@@ -1,7 +1,7 @@
 <template>
   <div class="m-one-order">
     <div class="m-one-order-top">
-      <img :src="item.productinfo.opiproductimages" class="m-product-img" alt="">
+      <img :src="item.productinfo.opiproductimages" class="m-product-img" alt="" >
       <div class="m-product-info">
         <p class="m-product-name">{{item.productinfo.opiproductname}}</p>
         <!--<p class="m-complain-p">投诉处理中..</p>-->
