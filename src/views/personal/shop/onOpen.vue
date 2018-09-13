@@ -29,7 +29,7 @@
          <cell :item="part_tilt_two"  @cellNav="cellNav" ></cell>
           <ul class="m-part-list">
             <template v-for="(item,index) in order_list">
-              <li>
+              <li @click="orderIcon">
                 <img :src="item.src" class="m-part-list-icon" />
                 <span>{{item.name}}
                   <span class="m-red">({{item.num}})</span>
@@ -223,6 +223,9 @@
           // 临时方法，去往二三级页面的会员中心
           toPage() {
             this.$router.push("/memberCenter");
+          },
+          orderIcon(){
+            this.$router.push("/order");
           }
         },
         created() {

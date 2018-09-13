@@ -98,8 +98,6 @@
                   res.data.data[i].click = false;
                 }
                 this.total_count = res.data.totalcount;
-                if(this.order_list.length == this.total_count)
-                  this.isScroll = false;
                 if(page){
                   this.order_list = this.order_list.concat(res.data.data);
                 }else{
@@ -137,15 +135,15 @@
             let scrollHeight = common.getScrollHeight();
             let ClientHeight = common.getClientHeight()
             if (scrollTop + ClientHeight >= scrollHeight) {
-              if(this.order_list.length == this.total_count){
+              if(this.isScroll){
                 this.isScroll = false;
-                Toast({ message: '数据已加载完', className: 'm-toast-warning' });
-              }else  if(this.isScroll){
-                this.isScroll = false;
-                this.page_num = this.page_num +1;
-                this.getOrder(this.page_num);
+                if(this.order_list.length == this.total_count){
+                  Toast({ message: '数据已加载完', className: 'm-toast-warning' });
+                }else{
+                  this.page_num = this.page_num +1;
+                  this.getOrder(this.page_num);
+                }
               }
-
             }
           },        },
         created() {
