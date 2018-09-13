@@ -69,7 +69,7 @@
       methods: {
         // 下拉刷新
         loadTop() {
-          this.getActivity();
+          this.getActivity(0, this.count, this.sub[this.filtrateActivity].tnid);
         },
         // 转发按钮list
         iconClick(){
