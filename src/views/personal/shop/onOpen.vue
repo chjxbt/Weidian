@@ -213,14 +213,7 @@
                 break;
             }
           },
-          /*邀请粉丝/开店*/
-          invite(v){
-            if(v == 'fans'){
-              this.$router.push('/inviteFans')
-            }else if(v == 'store'){
-              this.$router.push('/inviteStore')
-            }
-          },
+
           /*底部图标点击*/
           navClick(v){
            if(v.url){

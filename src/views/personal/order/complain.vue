@@ -18,7 +18,7 @@
           <textarea name="" id="" v-model="COcontent" class="m-complain-textarea" placeholder="我们会尽快与您联系！"></textarea>
         </div>
         <div class="m-complain-submit">
-          <span>提交</span>
+          <span @click="complainClick">提交</span>
         </div>
       </div>
 
@@ -40,8 +40,6 @@
               <one-order :item="items"></one-order>
             </div>
           </template>
-
-
         </div>
       </div>
     </div>
@@ -128,6 +126,43 @@
             },error => {
               Toast({ message: error.data.message, className: 'm-toast-fail' });            })
           },
+          complainClick(e){
+            e.preventDefault();
+            let id = '';
+            for(let a=0;a<this.order_list.length;a++){
+              if(this.order_list[a].click){
+                id = this.order_list[a].oiid;
+                break;
+              }
+            }
+            if(id == ''){
+              Toast({ message:'请先选择订单',className: 'm-toast-warning'  });
+              return false;
+            }
+
+            let arr =[];
+            for(let i=0;i<this.check_list.length;i++){
+              if(this.check_list[i].click )
+                arr.push(this.check_list[i].value)
+            }
+            if(arr.length == 0 && this.COcontent == ''){
+              Toast({ message:'请填写投诉理由',className: 'm-toast-warning'  });
+              return false;
+            }
+            axios.post(api.add_one_complain +'?token=' + localStorage.getItem('token'),{
+              OIid:id,
+              COcontent:this.COcontent,
+              COtype:arr
+            }).then(res => {
+              if(res.data.status ==200){
+                Toast({ message: res.data.message, className: 'm-toast-success' });
+              }else{
+                Toast({ message: res.data.message, className: 'm-toast-fail' });
+              }
+
+            },error => {
+              Toast({ message: error.data.message, className: 'm-toast-fail' });       })
+          },
           /*nav切换*/
           sellClick(v){
             if(this.sell == v){
@@ -138,7 +173,12 @@
           },
           /*选择切换*/
           checkClick(i){
-            this.order_list[i].click = ! this.order_list[i].click;
+            if(this.order_list[i].click)
+              return false;
+            for(let a=0;a<this.order_list.length;a++){
+              this.order_list[a].click = false;
+            }
+            this.order_list[i].click = true;
           },
           /*加载更多*/
           touchMove(){

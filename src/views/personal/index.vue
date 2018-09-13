@@ -81,9 +81,18 @@
           showModal(v){
             this.show_modal = v;
           },
+          /*账号设置*/
           setClick(){
             this.$router.push('/setUp')
-          }
+          },
+          /*邀请粉丝/开店*/
+          invite(v){
+            if(v == 'fans'){
+              this.$router.push('/inviteFans')
+            }else if(v == 'store'){
+              this.$router.push('/inviteStore')
+            }
+          },
         },
         created() {
           this.getInfo();

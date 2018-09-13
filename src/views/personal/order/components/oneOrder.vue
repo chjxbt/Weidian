@@ -4,7 +4,7 @@
       <img :src="item.productinfo.opiproductimages" class="m-product-img" alt="">
       <div class="m-product-info">
         <p class="m-product-name">{{item.productinfo.opiproductname}}</p>
-        <p class="m-complain-p">投诉处理中..</p>
+        <!--<p class="m-complain-p">投诉处理中..</p>-->
         <p class="m-order-code">
           <span>订单号：{{item.oisn}}</span>
           <span v-if="item.oipaystatus == 1" class="m-order-btn">订单付款</span>
@@ -74,7 +74,7 @@
         width: 175px;
         height: 175px;
         background-color: #f7f7f7;
-        margin-right: 27px;
+        margin-right: 10px;
       }
       .m-product-info{
         height: 175px;
