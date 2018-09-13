@@ -115,26 +115,7 @@
 
         </div>
       </div>
-      <!--<share v-if="show_fixed"  @fixedClick="fixedClick" @share="share"></share>-->
-
-      <div class="m-modal m-share" v-if="show_fixed">
-        <div class="m-modal-state">
-          <div class="m-modal-head">
-            <span class="m-close" @click="closeModal('show_modal')"> x </span>
-          </div>
-          <div class="m-modal-content">
-            <h3>还差一步就可以转发内容啦</h3>
-           <div>
-             <img src="" class="m-share-img" alt="">
-             <p>关注公众号获取</p>
-           </div>
-          </div>
-          <!--<div class="m-modal-foot">-->
-          <!--<span class="m-modal-foot-btn">复制文案</span>-->
-          <!--</div>-->
-        </div>
-      </div>
-
+      <attention v-if="show_fixed" @closeModal="closeModal('show_fixed')"></attention>
       <img :src="'/static/images/course/course-'+ course + '.png'" v-if="show_course" class="m-course-img" alt="" @click.stop="courseClick">
       <img src="/static/images/fen.png" v-if="show_fen" class="m-course-img" alt="" @click.stop="fenClick">
     </div>
@@ -151,6 +132,7 @@
   import {Toast} from 'mint-ui';
   import wxapi from '../../common/js/mixins';
   import common from '../../common/js/common';
+  import attention from '../../components/common/attention';
   import wx from 'weixin-js-sdk';
     export default {
       mixins: [wxapi],
@@ -213,7 +195,8 @@
           navbar,
           search,
           ctx,
-          share
+          share,
+          attention
         },
       mounted(){
           this.getSwipe();
@@ -353,7 +336,7 @@
                 lasting:true,
                 start:start || 0,
                 count:count || this.count,
-                tnid:'shangxin'
+                tnid:tnid
               }}).then(res => {
               if(res.data.status == 200){
                 this.isScroll = true;
@@ -450,6 +433,7 @@
           },
           /*关闭模态框*/
           closeModal(v){
+            console.log(v)
             this[v]  = false;
           },
           /*开启模态框*/
