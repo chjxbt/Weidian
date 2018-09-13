@@ -32,6 +32,12 @@
       </template>
     </div>
 
+    <div class="bottom-prompt" v-if="bottom_show">
+      <div class="bottom-line"></div>
+      <div class="m-grey-color">我是有底线的</div>
+      <div class="bottom-line"></div>
+    </div>
+
     <share v-if="show_fixed" @fixedClick="fixedClick"></share>
   </div>
 </template>
@@ -71,7 +77,8 @@
         show_fixed: false,
         isScroll: true,
         total_count: 0,
-        count: 2
+        count: 5,
+        bottom_show: false
       }
     },
     props:{
@@ -82,14 +89,17 @@
       touchMove(){
         let scrollTop = common.getScrollTop();
         let scrollHeight = common.getScrollHeight();
-        let ClientHeight = common.getClientHeight()
+        let ClientHeight = common.getClientHeight();
         if (scrollTop + ClientHeight >= scrollHeight) {
           if(this.isScroll){
             this.isScroll = false;
-            this.loadBottom();
-          }else  if(this.activity_list.length == this.total_count){
-            this.isScroll = false;
-            Toast({ message: '数据已加载完', className: 'm-toast-warning' });
+            console.log(this.activity_list.length, this.total_count);
+            if(this.activity_list.length == this.total_count){
+              this.bottom_show = true;
+              // Toast({ message: '数据已加载完', className: 'm-toast-warning' });
+            }else{
+              this.loadBottom();
+            }
           }
         }
       },
@@ -148,9 +158,10 @@
 
             if(start){
               this.activity_list = this.activity_list.concat(res.data.data);
-              if(this.activity_list.length == this.total_count){
+              /*if(this.activity_list.length == this.total_count){
                 this.isScroll = false;
-              }
+                console.log(1232)
+              }*/
             }else{
               this.activity_list = res.data.data;
             }
@@ -163,11 +174,11 @@
                   name: '123123',
                   url: 'icon-like'
                 },
-                {
+                /*{
                   src: 'icon-lian',
                   name: '复制链接',
                   url: 'icon-lian'
-                },
+                },*/
                 {
                   src: 'icon-share',
                   name: '转发',
@@ -207,7 +218,7 @@
             this.changeLike(list);
             break;
           case 1:
-            this.copyText(list);
+            // this.copyText(list);
             break;
           case 2:
             this.show_fixed = true;
@@ -300,8 +311,9 @@
   .img {
     border-radius: 20px;
   }
-  /*!*滚动条样式*!
+  /*滚动条样式*/
   ::-webkit-scrollbar {
-    margin-right: -40px;
-  }*/
+    /*margin-right: -40px;*/
+    /*height: 0;*/
+  }
 </style>
