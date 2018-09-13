@@ -67,7 +67,6 @@
           checkClick(i){
             this.collect_list[i].click = ! this.collect_list[i].click;
             this.all_check = this.checkAll();
-            console.log(this.all_check)
           },
           checkAll(){
             let all  = true;
@@ -88,17 +87,17 @@
           touchMove(){
             let scrollTop = common.getScrollTop();
             let scrollHeight = common.getScrollHeight();
-            let ClientHeight = common.getClientHeight()
+            let ClientHeight = common.getClientHeight();
             if (scrollTop + ClientHeight >= scrollHeight) {
               if(this.isScroll){
                 this.isScroll = false;
-                this.page_num = this.page_num +1;
-                this.getCollect(this.page_num);
-              }else  if(this.collect_list.length == this.total_count){
-                this.isScroll = false;
-                Toast({ message: '数据已加载完', className: 'm-toast-warning' });
+                if(this.collect_list.length == this.total_count){
+                  Toast({ message: '数据已加载完', className: 'm-toast-warning' });
+                }else{
+                  this.page_num = this.page_num +1;
+                  this.getCollect(this.page_num);
+                }
               }
-
             }
           },
           deleteClick(){

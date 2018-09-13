@@ -27,11 +27,11 @@
                     url:'icon-like'
                   },
                   {
-                    src:'icon-lian',
-                    name:'复制链接',
-                    url:'icon-lian'
-                  },
-                  {
+                  //   src:'icon-lian',
+                  //   name:'复制链接',
+                  //   url:'icon-lian'
+                  // // },
+                  // {
                     src:'icon-share',
                     name:'转发',
                     url:'icon-share'
