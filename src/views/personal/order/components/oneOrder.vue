@@ -7,7 +7,17 @@
         <p class="m-complain-p">投诉处理中..</p>
         <p class="m-order-code">
           <span>订单号：{{item.oisn}}</span>
-          <span  :class="item.oipaystatus == 0?'m-order-btn' : (item.oipaystatus == 7?'m-order-btn active': ( item.oipaystatus == 2 || item.oipaystatus == 3 ||item.oipaystatus == 10) ?'':'m-red')">{{item.oipaystatus}}</span>
+          <span v-if="item.oipaystatus == 1" class="m-order-btn">订单付款</span>
+          <span v-else-if="item.oipaystatus == 7" class="m-order-btn active">确认收货</span>
+          <span v-else-if="item.oipaystatus == 8" class="m-flex-center-col" >
+                <span>交易失败</span>
+                <span>（退货）</span>
+          </span>
+          <span v-else-if="item.oipaystatus == 3" class="m-flex-center-col" >
+                <span>支付超时</span>
+          </span>
+          <span v-else class="m-red">{{item.oipaystatusmsg}}</span>
+
         </p>
       </div>
     </div>

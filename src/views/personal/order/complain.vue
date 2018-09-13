@@ -6,26 +6,16 @@
           <span class="m-complain-type-btn">质量投诉</span>
         </div>
         <ul class="m-complain-checkbox">
-          <li>
-            <span class="m-checkbox active"></span>
-            <span>客服态度差</span>
-          </li>
-          <li>
-            <span class="m-checkbox active"></span>
-            <span>商品质量问题</span>
-          </li>
-          <li>
-            <span class="m-checkbox active"></span>
-            <span>售后方案不合理</span>
-          </li>
-          <li>
-            <span class="m-checkbox active"></span>
-            <span>商品包装问题</span>
-          </li>
+          <template v-for="(item,index) in check_list">
+            <li @click="checkClickForm(index)">
+              <span class="m-checkbox" :class="item.click?'active':''"></span>
+              <span>{{item.name}}</span>
+            </li>
+          </template>
         </ul>
         <div class="m-complain-textarea-box">
           <p><span>请详细描述您遇到的问题：</span><span class="m-complain">1/100</span></p>
-          <textarea name="" id="" class="m-complain-textarea" placeholder="我们会尽快与您联系！"></textarea>
+          <textarea name="" id="" v-model="COcontent" class="m-complain-textarea" placeholder="我们会尽快与您联系！"></textarea>
         </div>
         <div class="m-complain-submit">
           <span>提交</span>
@@ -74,7 +64,30 @@
               isScroll:true,
               isOpen:true,
               isSell:true,
-              order_list:[]
+              order_list:[],
+              COcontent:'',
+              check_list:[
+                {
+                  name:'客服态度差',
+                  value:'201',
+                  click:false
+                },
+                {
+                  name:'商品质量问题',
+                  value:'202',
+                  click:false
+                },
+                {
+                  name:'售后方案不合理',
+                  value:'203',
+                  click:false
+                },
+                {
+                  name:'商品包装问题',
+                  value:'204',
+                  click:false
+                }
+              ]
             }
         },
         components: {
@@ -87,19 +100,22 @@
         methods: {
           /*获取订单*/
           getOrder(page){
-            axios.get(api.get_more_order,{
+            axios.get(api.get_list_order,{
               params:{
                 token: localStorage.getItem('token'),
                 page_num: page || 1,
                 page_size:this.page_size || 10,
-                sell:this.isSell
+                sell:this.isSell,
+                paystatus:0
               }
             }).then(res => {
               if(res.data.status == 200){
                 for(let i=0;i<res.data.data.length;i++){
                   res.data.data[i].click = false;
                 }
-                this.total_count = res.data.count;
+                this.total_count = res.data.totalcount;
+                if(this.order_list.length == this.total_count)
+                  this.isScroll = false;
 
                 if(page){
                   this.order_list = this.order_list.concat(res.data.data);
@@ -140,6 +156,9 @@
               }
             }
           },
+          checkClickForm(i){
+            this.check_list[i].click = !this.check_list[i].click;
+          }
         },
         created() {
           this.getOrder();
@@ -187,6 +206,10 @@
           vertical-align: middle;
           margin-right: 30px;
           margin-left: 25px;
+          &.active{
+            background: url("/static/images/icon-check-personal-active.png") no-repeat center;
+            background-size: 100% 100%;
+          }
         }
       }
     }

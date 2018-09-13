@@ -70,6 +70,7 @@
                   this.order_num[i].click = false;
                 }
                 this.order_num[0].click = true;
+                this.getOrder();
               }else{
                 Toast({ message: res.data.message, className: 'm-toast-fail' });
               }
@@ -80,10 +81,10 @@
             let status ='';
             for(let a=0;a<this.order_num.length;a++){
               if(this.order_num[a].click){
-                status = this.order_num[a].status
+                status = this.order_num[a].statusnum
               }
             }
-            axios.get(api.get_more_order,{
+            axios.get(api.get_list_order,{
               params:{
                 token: localStorage.getItem('token'),
                 page_num: page || 1,
@@ -96,7 +97,9 @@
                 for(let i=0;i<res.data.data.length;i++){
                   res.data.data[i].click = false;
                 }
-                this.total_count = res.data.count;
+                this.total_count = res.data.totalcount;
+                if(this.order_list.length == this.total_count)
+                  this.isScroll = false;
                 if(page){
                   this.order_list = this.order_list.concat(res.data.data);
                 }else{
@@ -134,19 +137,19 @@
             let scrollHeight = common.getScrollHeight();
             let ClientHeight = common.getClientHeight()
             if (scrollTop + ClientHeight >= scrollHeight) {
-              if(this.isScroll){
+              if(this.order_list.length == this.total_count){
+                this.isScroll = false;
+                Toast({ message: '数据已加载完', className: 'm-toast-warning' });
+              }else  if(this.isScroll){
                 this.isScroll = false;
                 this.page_num = this.page_num +1;
                 this.getOrder(this.page_num);
-              }else  if(this.collect_list.length == this.total_count){
-                this.isScroll = false;
-                Toast({ message: '数据已加载完', className: 'm-toast-warning' });
               }
 
             }
           },        },
         created() {
-          this.getOrder();
+
           this.getOrderNum();
         }
     }
