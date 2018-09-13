@@ -363,7 +363,10 @@ class OrderInfo(BaseModel):
     OIsn = Column(String(64))  # 订单号
     USid = Column(String(64))  # 用户
     OItradenum = Column(String(125))  # 交易号, (如果有)
-    # 订单状态: {0: 待支付, 1: 支付成功, 2: 超时关闭, 3: 支付关闭, 4:待发货, 5:已发货, 6:已取消, 7:已签收, 8:交易完成, 9:待评价, 10:退换货 }
+    """
+    订单状态: {0:所有订单, 1: 待支付, 2: 支付成功, 3: 支付超时关闭（交易关闭）, 4:待发货, 5:已发货, 
+    6:已取消, 7:已签收, 8:交易失败（退货）, 9:交易完成, 10:待评价, 11:退换货 }
+    """
     OIpaystatus = Column(Integer, default=0)
     OIpaytype = Column(Integer)  # 支付类型: {0: 银行卡支付, 1: 微信支付}
     OIleavetext = Column(String(255))  # 订单留言
@@ -530,7 +533,7 @@ class User(BaseModel):
 
     openid = Column(String(64))    # 微信唯一值
     unionid = Column(String(255))   # 绑定公众号会出现
-    accesstoken = Column(String(255)) # 微信token
+    accesstoken = Column(String(255))  # 微信token
 
     @orm.reconstructor
     @auto_createtime
@@ -607,9 +610,6 @@ class MyCenter(BaseModel):
     @orm.reconstructor
     def __init__(self):
         self.fields = ['MYid', 'MYranking', 'MYrewards']
-
-
-
     # TODO 我的
 
 
@@ -703,6 +703,18 @@ class AdImage(BaseModel):
     def __init__(self):
         self.fields = ['AIid', 'AIimage', 'AItype', 'AIsize', 'ACid', 'AIurl']
 
+class LevelRules(BaseModel):
+    __tablename__ = "levelrules"
+    LRid = Column(String(64), primary_key=True)
+    LRtext = Column(Text)  # 规则内容
+    LRtype = Column(Integer)  # 规则类别 {1.未开店(我的), 2.已开店, 3.专属粉丝, 4.开店邀请}
+    LRcreatetime = Column(String(14))  # 创建时间
+    LRisdelete = Column(Boolean, default=False)  # 删除
+
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = ['LRtext', 'LRtype']
 
 # 交易相关
 

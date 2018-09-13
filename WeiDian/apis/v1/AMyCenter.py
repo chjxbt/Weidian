@@ -14,7 +14,8 @@ class AMyCenter(Resource):
     def get(self, myinfo):
         print myinfo
         apis = {
-            "get_info": "self.control_mycenter.get_info()"
+            "get_info": "self.control_mycenter.get_info()",
+            "get_rule": "self.control_mycenter.get_levelrules()"
         }
         res = eval(apis[myinfo])
         return jsonify(res)

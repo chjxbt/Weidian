@@ -6,7 +6,7 @@ from flask import request
 from WeiDian.common.TransformToList import list_add_models, dict_add_models
 from WeiDian.common.divide import Partner
 from WeiDian.common.token_required import is_partner
-from WeiDian.config.activitytype import activity_type
+from WeiDian.config.enums import activity_type
 
 
 class BaseActivityControl():
@@ -102,6 +102,7 @@ class BaseActivityControl():
         act.add('comment')
         map(self.fill_comment_apply_for, act.comment)
         return act
+
 
     def fill_comment_apply_for(self, comment):
         """"如果既是评论又是回复则添加一个'所回复用户'属性"""
@@ -371,6 +372,19 @@ class BaseMyCenterControl():
         myinfo.user = user
         myinfo.add('user')
         return myinfo
+
+    def fill_list_userlevel_without_usid(self, f_list):
+        """向列表中的每一项填充用户等级显示"""
+        user = self.suser.get_user_by_user_id(request.user.id)
+        if user.USlevel == 0:
+            user.level = 'ordinary'
+        if user.USlevel > 0:
+            user.level = 'partner'
+        for f in f_list:
+            user.add('level').hide('USid', 'USname', 'USheader')
+            f.user = user
+            f.add('user')
+        return f_list
 
 
 class BaseOrder():

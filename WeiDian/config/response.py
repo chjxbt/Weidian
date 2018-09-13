@@ -37,6 +37,10 @@ class SYSTEM_ERROR(BaseError):
     message = '系统错误'
     status = 404
 
+class NOT_FOUND(BaseError):
+    status_code = 200
+    message = '关联的对象不存在'
+    status = 404
 
 class APIS_WRONG(BaseError):
     status = 405
