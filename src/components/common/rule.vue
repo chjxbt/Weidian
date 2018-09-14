@@ -7,7 +7,7 @@
       <div class="m-modal-content">
         <h3>规则</h3>
         <div class="m-rule-scroll">
-          <p>0000</p>
+          <p>{{rule}}</p>
 
         </div>
       </div>

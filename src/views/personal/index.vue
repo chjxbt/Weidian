@@ -68,9 +68,30 @@
                 this.person_info = res.data.data;
                 localStorage.setItem('level',res.data.data.user.level)
                 if(res.data.data.user.level == 'partner'){
-                  this.isOpen = true;
+                  this.isOpen = false;
                 }else{
                   this.isOpen = false;
+                }
+                this.getRule(this.isOpen);
+              }else{
+                Toast({ message: res.data.message, className: 'm-toast-fail' });
+              }
+            },error => {
+              Toast({ message: error.data.message, className: 'm-toast-fail' });            })
+          },
+          getRule(open){
+            axios.get(api.get_rule_mycenter,{
+              params:{
+                token:localStorage.getItem('token')
+              }
+            }).then(res => {
+              if(res.data.status == 200){
+                for(let i =0;i<res.data.data.length;i++){
+                    if(res.data.data[i].lrtype == 1 && open){
+                      this.rule = res.data.data[i].lrtext;
+                    }else if(res.data.data[i].lrtype == 2 && !open){
+                      this.rule = res.data.data[i].lrtext;
+                    }
                 }
               }else{
                 Toast({ message: res.data.message, className: 'm-toast-fail' });
@@ -96,6 +117,7 @@
         },
         created() {
           this.getInfo();
+
         }
     }
 </script>
