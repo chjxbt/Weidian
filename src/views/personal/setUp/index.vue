@@ -1,30 +1,36 @@
 <template>
     <div class="m-setUp">
       <div class="m-setUp-logo">
-        <img src="" class="m-logo" alt="">
+        <img :src="form.usheader" class="m-logo" alt="">
       </div>
       <div class="m-setUp-form">
         <div class="m-row">
           <span class="m-form-label">昵称</span>
-          <input type="text" class="m-setUp-input" placeholder="小居居">
+          <!--<input type="text" v-model="form.usname" class="m-setUp-input" placeholder="小居居">-->
+          <span class="m-setUp-input">{{form.usname}}</span>
         </div>
         <div class="m-row">
           <span class="m-form-label">微信号</span>
-          <input type="text" class="m-setUp-input" placeholder="xiaojujuxiaokeai2018">
+          <!--<input type="text" class="m-setUp-input" placeholder="xiaojujuxiaokeai2018">-->
+          <span class="m-setUp-input">{{form.wxnum}}</span>
         </div>
         <div class="m-row">
           <span class="m-form-label">手机号</span>
-          <input type="text" class="m-setUp-input" placeholder="12345678912">
+          <!--<input type="text" class="m-setUp-input" placeholder="12345678912">-->
+          <span class="m-setUp-input">{{form.usphone}}</span>
         </div>
         <div class="m-row" @click="addressClick">
           <span class="m-form-label">地址</span>
-          <input type="text" class="m-setUp-input" placeholder="杭州市萧山区宁围镇XX号">
+          <!--<input type="text" class="m-setUp-input" placeholder="杭州市萧山区宁围镇XX号">-->
+          <span class="m-setUp-input">{{form.address}}</span>
         </div>
         <div class="m-row">
           <span class="m-form-label">银行卡</span>
-          <input type="text" class="m-setUp-input" placeholder="6222222222222222222">
+          <!--<input type="text" class="m-setUp-input" placeholder="6222222222222222222">-->
+          <span class="m-setUp-input">{{form.bankcard}}</span>
           <!--<router-link to="/bankCard" tag="span">-->
-            <span class="m-row-btn" @click="barkChange">更换</span>
+            <span class="m-row-btn" @click="barkChange" v-if="form.bankcard">更换</span>
+          <span class="m-row-btn" @click="barkChange" v-else>绑定</span>
           <!--</router-link>-->
         </div>
       </div>
@@ -43,19 +49,31 @@
     export default {
         data() {
             return {
-                name: ''
+                form:{
+                  usheader:'',
+                  usname:'',
+                  usphone:'',
+                  wxnum:'',
+                  bankcard:'',
+                  address:''
+                }
             }
         },
         components: {},
         methods: {
           getInfo(){
-            axios.get(api.get_info_mycenter,{
+            axios.get(api.get_account_info,{
               params:{
                 token:localStorage.getItem('token')
               }
             }).then(res => {
               if(res.data.status == 200){
-
+                this.form.usheader = res.data.data.user.usheader;
+                this.form.usname = res.data.data.user.usname;
+                this.form.usphone = res.data.data.user.usphone;
+                this.form.wxnum = res.data.data.user.wxnum;
+                this.form.address = res.data.data.address;
+                this.form.bankcard = res.data.data.bankcard;
               }
             })
           },
@@ -68,7 +86,7 @@
           }
         },
         created() {
-
+          this.getInfo();
         }
     }
 </script>
@@ -106,6 +124,7 @@
         border: none;
         font-size: 24px;
         width: 400px;
+        text-align: left;
         &:focus{
           border: none;
         }

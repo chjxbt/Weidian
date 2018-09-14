@@ -68,7 +68,7 @@
                 this.person_info = res.data.data;
                 localStorage.setItem('level',res.data.data.user.level)
                 if(res.data.data.user.level == 'partner'){
-                  this.isOpen = false;
+                  this.isOpen = true;
                 }else{
                   this.isOpen = false;
                 }

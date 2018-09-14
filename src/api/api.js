@@ -27,6 +27,7 @@ const api={
   get_more_order: title + '/order/get_more',//获取所有订单
   get_list_order: title + '/order/get_list',//获取各状态订单
   get_info_mycenter: title + '/mycenter/get_info',//获取基本信息
+  get_account_info: title + '/mycenter/get_account_info',//获取个人信息
   add_one_complain: title + '/complain/add_one',//投诉
   get_prlike_productlike: title + '/productlike/get_prlike',//收藏
   batch_del_productlike:title + '/productlike/batch_del',//删除收藏
