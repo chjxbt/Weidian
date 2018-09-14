@@ -222,8 +222,8 @@
             this.show_fixed = false;
             let scrollTop = common.getScrollTop();
             let scrollHeight = common.getScrollHeight();
-            let ClientHeight = common.getClientHeight()
-            if (scrollTop + ClientHeight >= scrollHeight) {
+            let ClientHeight = common.getClientHeight();
+            if (scrollTop + ClientHeight  >= scrollHeight -10) {
               if(this.isScroll){
                 this.isScroll = false;
                 if(this.activity_list.length == this.total_count){
@@ -237,25 +237,6 @@
           },
           touchEnd(){
             this.show_task_btn = true;
-          },
-          touchStartBtn(ev){
-            console.log(ev)
-            ev = ev || event;
-            ev.preventDefault();
-            if(ev.changedTouches.length == 1) {    //tounches类数组，等于1时表示此时有只有一只手指在触摸屏幕
-              // this.endX = ev.changedTouches[0].clientX; // 记录开始位置
-              let ele = document.getElementById('m-suspend-btn');
-              ele.style.top = ev.changedTouches[0].clientY;
-            }
-          },
-          touchEndBtn(ev){
-            ev = ev || event;
-            ev.preventDefault();
-            if(ev.changedTouches.length == 1) {    //tounches类数组，等于1时表示此时有只有一只手指在触摸屏幕
-              // this.endX = ev.changedTouches[0].clientX; // 记录开始位置
-              let ele = document.getElementById('m-suspend-btn');
-              ele.style.top = ev.changedTouches[0].clientY;
-            }
           },
         /*分享*/
           wxRegCallback () {
@@ -407,7 +388,6 @@
             this.search = false;
           },
           searchClick(v){
-            console.log(v)
             axios.get(api.get_search,{params:{
                 token:localStorage.getItem('token'),
                 PRname:v,
