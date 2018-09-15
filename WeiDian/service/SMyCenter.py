@@ -2,8 +2,7 @@
 import sys
 import os
 from SBase import SBase, close_session
-from WeiDian.models.model import MyCenter, User
-
+from WeiDian.models.model import MyCenter
 sys.path.append(os.path.dirname(os.getcwd()))
 
 

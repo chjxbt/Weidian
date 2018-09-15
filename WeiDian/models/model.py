@@ -538,7 +538,7 @@ class User(BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['USid', 'USname', 'USheader']
+        self.fields = ['USid', 'USname', 'USheader', 'USphone']
 
 
 class UserLoginTime(BaseModel):
@@ -570,15 +570,6 @@ class SuperUser(BaseModel):
     @auto_createtime
     def __init__(self):
         self.fields = self.all
-
-
-class UserAddress(BaseModel):
-    __tablename__ = 'useraddress'
-    UAid = Column(String(64), primary_key=True)
-    USid = Column(String(64), nullable=False)  # 用户
-    UAtext = Column(String(255), nullable=False)  # 具体地址
-    UAphone = Column(String(16), nullable=False)  # 电话
-    UAname = Column(String(16), nullable=False)  # 收货人姓名
 
 
 class SearchField(BaseModel):
@@ -686,6 +677,7 @@ class TaskItem(BaseModel):
 
 
 class AdImage(BaseModel):
+    """（我的）广告图片"""
     __tablename__ = "adimage"
     AIid = Column(String(64), primary_key=True)
     AIimage = Column(String(255))  # 图片地址
@@ -704,6 +696,7 @@ class AdImage(BaseModel):
         self.fields = ['AIid', 'AIimage', 'AItype', 'AIsize', 'ACid', 'AIurl']
 
 class LevelRules(BaseModel):
+    """等级规则"""
     __tablename__ = "levelrules"
     LRid = Column(String(64), primary_key=True)
     LRtext = Column(Text)  # 规则内容
@@ -715,6 +708,51 @@ class LevelRules(BaseModel):
     @auto_createtime
     def __init__(self):
         self.fields = ['LRtext', 'LRtype']
+
+class BankCard(BaseModel):
+    """银行卡"""
+    __tablename__ = "bankcard"
+    BCid = Column(String(64), primary_key=True)
+    USid = Column(String(64), nullable=False)           # 用户id
+    BCusername = Column(String(64), nullable=False)     # 姓名
+    BCnumber = Column(String(19), nullable=False)       # 银行卡号
+    BCtype = Column(Integer)                            # 银行卡类别
+    BCbankname = Column(String(64), nullable=False)    # 银行名称
+    BCaddress = Column(String(125), nullable=False)     # 开户行地址
+    BCisdelete = Column(Boolean, default=False)         # 删除
+    BCcreatetime = Column(String(14))                   # 创建时间
+
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = ['BCusername', 'BCnumber', 'BCbankname', 'BCaddress']
+
+class UserAddress(BaseModel):
+    """用户收货地址"""
+    __tablename__ = 'useraddress'
+    UAid = Column(String(64), primary_key=True)
+    USid = Column(String(64), nullable=False)           # 用户
+    UAname = Column(String(16), nullable=False)         # 收货人姓名
+    UAphone = Column(String(16), nullable=False)        # 收货人电话
+    UAtext = Column(String(255), nullable=False)        # 具体地址
+    UAdefault = Column(Boolean, default=False)          # 默认收获地址
+    UAisdelete = Column(Boolean, default=False)         # 删除
+    UAceratetime = Column(String(14))                   # 创建时间
+
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = ['UAname', 'UAphone', 'UAtext', 'UAdefault']
+
+#
+# class PersonalInfo(BaseModel):
+#     """账号设置个人信息"""
+#     __tablename__ = "personalinfo"
+#     PIid = Column(String(64), primary_key=True)
+#     USid = Column(String(64), nullable=False)           # 用户id
+#     UAid = Column(String(64), nullable=False)           # 用户地址id
+#     BCid = Column(String(64), nullable=False)           # 银行卡id
+
 
 # 交易相关
 
