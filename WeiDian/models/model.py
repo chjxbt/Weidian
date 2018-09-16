@@ -653,7 +653,7 @@ class Complain(BaseModel):
     __tablename__ = 'complain'
     COid = Column(String(64), primary_key=True)
     COcontent = Column(Text)           # 投诉内容
-    COtype = Column(Integer)           # 投诉类型 {201："客服态度差", 202："商品质量问题", 203："售后方案不合理", 204："商品包装问题"}
+    COtype = Column(String(16))        # 投诉类型 {201："客服态度差", 202："商品质量问题", 203："售后方案不合理", 204："商品包装问题"}
     OIid = Column(String(64))          # 关联订单id
     USid = Column(String(64))          # 发起人id
     COcreatetime = Column(String(14))  # 创建时间
@@ -668,28 +668,31 @@ class Complain(BaseModel):
 class Task(BaseModel):
     __tablename__ = "task"
     TAid = Column(String(64), primary_key=True)
-    TAname = Column(Text)       #
-    TAtype = Column(Integer)    # 任务类型
-    TAisOpen = Column(Integer)  # 是否开启
-    TAhead = Column(Text)
-    TAcreatetime = Column(String(14))
-    TAstartTime = Column(String(14))
-    TAendTime = Column(String(14))
-    TAduration = Column(String(14))
-    TAcontent = Column(Text)
-    TAstatus = Column(Integer)
+    TAname = Column(Text)              # 任务名
+    TAtype = Column(Integer)           # 任务类型
+    TAisOpen = Column(Integer)         # 是否开启
+    # TAhead = Column(Text)              # 任务前部头像图片
+    TAcreatetime = Column(String(14))  # 任务创建时间
+    TAstartTime = Column(String(14))   # 任务开启时间
+    TAendTime = Column(String(14))     # 任务结束时间
+    TAduration = Column(String(14))    # 任务持续时间
+    TAcontent = Column(Text)           # 任务描述
+    TAstatus = Column(Integer)         # 任务状态 {0: "进行中", 1: "已完成", 2: "已暂停", 3: "已过期1",}
     # USid = Column(String(64))
-    TArole = Column(Text)
+    TAlevel = Column(Integer)          # 任务等级 {0: "1级", 1: "2级", 2: "3级",}
+    TArole = Column(Text)              # 规则弹框图片
 
 
 class TaskItem(BaseModel):
     __tablename__ = "taskitem"
     TIid = Column(String(64), primary_key=True)
-    TAid = Column(String(64))
+    TAid = Column(String(64))      # 任务id
     # TAprogress = Column(Integer)
-    TIprice = Column(Float)
-    TIhead = Column(Text)
+    # TIprice = Column(Float)        # 完成奖励
+    TIhead = Column(Text)          #
     TIcontent = Column(Text)
+    TImessage = Column(Text)       # 备注
+    TIurl = Column(Text)
 
 
 class TaskUser(BaseModel):
@@ -703,10 +706,13 @@ class TaskUser(BaseModel):
     RAid = Column(String(64))
 
 
-
-class raward(BaseModel):
+class Raward(BaseModel):
     __tablename__ = "raward"
     RAid = Column(String(64), primary_key=True)
+    RAtype = Column(Integer)  # {0: "满减", 1: "佣金加成", 2: "无门槛"}
+    RAfilter = Column(Float)  # 条件
+    RAamount = Column(Float)  # 减少金额
+    RAratio = Column(Float)   # 上调比例
 
 
 

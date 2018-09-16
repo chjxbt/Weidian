@@ -6,7 +6,7 @@ from flask import request
 from WeiDian.common.TransformToList import list_add_models, dict_add_models
 from WeiDian.common.divide import Partner
 from WeiDian.common.token_required import is_partner
-from WeiDian.config.activitytype import activity_type
+from WeiDian.config.convert import activity_type
 
 
 class BaseActivityControl():
