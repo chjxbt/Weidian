@@ -14,7 +14,7 @@
       <div class="m-title">
         <div>
           <img :src="recommend.suuser.suheader" class="m-item-title-img">
-          <span>{{recommend.suuser.suname}}</span>
+          <span @click="test">{{recommend.suuser.suname}}</span>
         </div>
         <div class="m-lookinfo-box">
           <span class="m-look-icon"></span>
@@ -50,7 +50,11 @@
   import share from '../../../components/common/share';
   import common from '../../../common/js/common';
 
+  import wxapi from '../../../common/js/mixins';
+  import wx from 'weixin-js-sdk';
+
   export default {
+    mixins: [wxapi],
     data() {
       return {
         bannerList: [],
@@ -62,11 +66,11 @@
             name:'收藏',
             url:'icon-like'
           },
-          {
+          /*{
             src:'icon-lian',
             name:'复制链接',
             url:'icon-lian'
-          },
+          },*/
           {
             src:'icon-share',
             name:'转发',
@@ -86,6 +90,17 @@
     },
     components: { ctx, share },
     methods: {
+      test() {
+
+        let options = {
+          current: "http://img.zcool.cn/community/019c2958a2b760a801219c77a9d27f.jpg", // 当前显示图片的http链接
+          urls: ["http://img.sccnn.com/bimg/338/24556.jpg", "http://pic.58pic.com/58pic/14/62/50/62558PICxm8_1024.jpg", "http://img.zcool.cn/community/01ca8c573c04b832f8757cb97b2444.jpg@1280w_1l_2o_100sh.jpg"],
+        };
+        // console.log(options);
+        wxapi.previewImage(options);
+
+
+      },
       touchMove(){
         let scrollTop = common.getScrollTop();
         let scrollHeight = common.getScrollHeight();
@@ -158,10 +173,6 @@
 
             if(start){
               this.activity_list = this.activity_list.concat(res.data.data);
-              /*if(this.activity_list.length == this.total_count){
-                this.isScroll = false;
-                console.log(1232)
-              }*/
             }else{
               this.activity_list = res.data.data;
             }
@@ -189,7 +200,6 @@
               _arr[0].alreadylike = arr[i].alreadylike;
               arr[i].actext.length > 92 && (arr[i].show_text = true);
               arr[i].icon = [].concat(_arr);
-              // console.log(_arr[0].name, arr[i].likenum)
             }
             this.activity_list = [].concat(arr);
           }else{
@@ -219,9 +229,10 @@
             break;
           case 1:
             // this.copyText(list);
+            this.show_fixed = true;
             break;
           case 2:
-            this.show_fixed = true;
+            // this.show_fixed = true;
             break;
         }
       },
@@ -314,6 +325,7 @@
   /*滚动条样式*/
   ::-webkit-scrollbar {
     /*margin-right: -40px;*/
-    /*height: 0;*/
+    width: 0;
+    height: 0;
   }
 </style>

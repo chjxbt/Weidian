@@ -162,24 +162,37 @@ const wxApi = {
     })
   },
   // 预览图片
-  previewImage(current, urls) {
-    console.log(current, urls);
-    wx.ready(() => {
+  previewImage(options) {
+    // console.log(options);
+   /* wx.ready(() => {
       wx.previewImage({
-        current: current, // 当前显示图片的http链接
-        urls: [urls], // 需要预览的图片http链接列表
+        current: options.current, // 当前显示图片的http链接
+        urls: options.urls, // 需要预览的图片http链接列表
         success() {
-          console.log("success", current, urls);
+          console.log("success", options);
         },
         failed() {
-          console.log("failed", current, urls);
+          console.log("failed", options);
         },
         complete() {
-          console.log("complete", current, urls);
+          console.log("complete", options);
         }
       });
-    })
+    })*/
 
+    wx.previewImage({
+      current: options.current, // 当前显示图片的http链接
+      urls: options.urls, // 需要预览的图片http链接列表
+      success() {
+        console.log("success", options);
+      },
+      failed() {
+        console.log("failed", options);
+      },
+      complete() {
+        console.log("complete", options);
+      }
+    });
   }
 
 }
