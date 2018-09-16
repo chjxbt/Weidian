@@ -148,17 +148,12 @@ class CActivity(BaseActivityControl):
                 days=3),
             format_for_db)
         acendtime = data.get('acendtime', three_days_later)  # 活动结束时间, 默认7天以后
+        # istop =
+        topnavid = data.get('topnavid')  # 导航页面
         actext = data.get('actext')  # 文字内容
-        actype = data.get('actype')  # 类型
-        forwardnum = data.get('fowardnum', 0)  # 转发数量
-        likenum = data.get('likenum', 0)  # 喜欢数
-        acbrowenum = data.get('browsenum', 0)  # 浏览数
-        soldfakenum = data.get('soldnum', 0)   # 商品的销售量
-        istop = data.get('acistop')
         prid = data.get('prid')  # 商品id
         media = data.get('media')  # 多媒体
         tags = data.get('tags')  # 右上角tag标签
-        topnavid = data.get('topnavid')
         if not media or not actext or not prid or not topnavid:
             return PARAMS_MISS
         relation_product = self.sproduct.get_product_by_prid(prid)  # 关联的商品
@@ -170,16 +165,16 @@ class CActivity(BaseActivityControl):
             'ACid': acid,
             'PRid': relation_product.PRid,
             'SUid': request.user.id,
-            'ACtype': actype,
+            'ACtype': data.get('actype'),  # 类型
             'TopnavId': topnavid,
             'ACtext': actext,
-            'AClikeFakeNum': likenum,
-            'ACbrowsenum': acbrowenum,
-            'ACforwardFakenum': forwardnum,
-            'ACProductsSoldFakeNum': soldfakenum,
+            'AClikeFakeNum': data.get('likenum', 0),  # 喜欢数
+            'ACbrowsenum': data.get('browsenum', 0),  # 浏览数
+            'ACforwardFakenum': data.get('fowardnum', 0),  # 转发数量
+            'ACProductsSoldFakeNum': data.get('soldnum', 0),   # 商品的销售量
             'ACstarttime': acstarttime,
             'ACendtime': acendtime,
-            'ACistop': istop,
+            'ACistop': data.get('acistop'), # TODO 判断置顶待完善
         })
         # 创建media
         image_num = 0  # 标志用来限制图片或视频的数量

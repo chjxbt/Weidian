@@ -25,7 +25,7 @@ class CComplain():
             return TOKEN_ERROR  # 未登录, 或token错误
         try:
             complain_list = self.scomplain.get_complain_by_usid(request.user.id)
-            from WeiDian.config.convert import complain_type
+            from WeiDian.config.enums import complain_type
             data = import_status("get_complain_success", "OK")
             for complain in complain_list:
                 colist = str(complain.COtype).split(",")

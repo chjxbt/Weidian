@@ -7,6 +7,7 @@ from datetime import datetime
 
 from WeiDian import logger
 from WeiDian.common.log import make_log, judge_keys
+from WeiDian.config.enums import ORDER_STATUS
 from flask import request
 from WeiDian.common.TransformToList import dict_add_models, list_add_models
 from WeiDian.common.timeformat import format_for_db
@@ -63,50 +64,60 @@ class COrder():
         }
         return data
 
-    @verify_token_decorator
-    def get_order_list(self):
-        """获取所有订单"""
-        if is_tourist():
-            return AUTHORITY_ERROR(u"未登录")
-        args = request.args.to_dict()
-        make_log("args", args)
-        true_args = ["sell", "page_size", "page_num"]
-        if judge_keys(true_args, args.keys()) != 200:
-            return judge_keys(true_args, args.keys())
-        try:
-            order_list = self.sorder.get_order_by_usid(args["sell"], request.user.id, int(args["page_num"]), int(args["page_size"]))
-            for order in order_list:
-                order.fields = ['OIsn', 'OIpaystatus', 'OIcreatetime']
-            map(self.fill_productinfo, order_list)
-            map(self.fill_complainstatus, order_list)
-            data = import_status('get_order_list_success', 'OK')
-            data['data'] = order_list
-            return data
-        except:
-            logger.exception("get order list error")
-            return SYSTEM_ERROR
+    # @verify_token_decorator
+    # def get_order_list(self):
+    #     """获取所有订单"""
+    #     if is_tourist():
+    #         return AUTHORITY_ERROR(u"未登录")
+    #     args = request.args.to_dict()
+    #     make_log("args", args)
+    #     true_args = ["sell", "page_size", "page_num"]
+    #     if judge_keys(true_args, args.keys()) != 200:
+    #         return judge_keys(true_args, args.keys())
+    #     try:
+    #         order_list = self.sorder.get_order_by_usid(args["sell"], request.user.id, int(args["page_num"]), int(args["page_size"]))
+    #         for order in order_list:
+    #             order.fields = ['OIsn', 'OIpaystatus', 'OIcreatetime']
+    #         map(self.fill_productinfo, order_list)
+    #         map(self.fill_complainstatus, order_list)
+    #         data = import_status('get_order_list_success', 'OK')
+    #         data['data'] = order_list
+    #         return data
+    #     except:
+    #         logger.exception("get order list error")
+    #         return SYSTEM_ERROR
 
     @verify_token_decorator
     def get_order_list_by_status(self):
-        """根据支付状态获取订单"""
+        """根据订单状态获取"""
         if is_tourist():
             return AUTHORITY_ERROR(u"未登录")
         args = request.args.to_dict()
         make_log("args", args)
-        sell = args.get('sell')
-        true_args = ["paystatus", "sell", "page_size", "page_num"]
+        sell = args.get('sell', 'false')
+        true_args = ["paystatus", "page_size", "page_num"]
+
         if judge_keys(true_args, args.keys()) != 200:
             return judge_keys(true_args, args.keys())
+        status = args.get('paystatus')
+        status = [str(i) for i in range(1, 12)] if status == '0' else status
+        status = ['2', '4', '5', '7', '9', '10', '11'] if status == '20' else status
+        print status
         try:
-            if sell:
-                order_list = self.sorder.get_sell_order_by_status(request.user.id, args["paystatus"], int(args["page_num"]), int(args["page_size"]))
+            if sell == 'true':
+                order_list = self.sorder.get_sell_order_by_status(request.user.id, status, int(args["page_num"]), int(args["page_size"]))
+                order_list_count = self.sorder.get_sell_ordercount_by_status(request.user.id, status)
             else:
-                order_list = self.sorder.get_user_order_by_status(request.user.id, args["paystatus"], int(args["page_num"]), int(args["page_size"]))
+                order_list = self.sorder.get_user_order_by_status(request.user.id, status, int(args["page_num"]), int(args["page_size"]))
+                order_list_count = self.sorder.get_user_ordercount_by_status(request.user.id, status)
             for order in order_list:
                 order.fields = ['OIid', 'OIsn', 'OIpaystatus', 'OIcreatetime']
+            map(lambda x: x.fill(ORDER_STATUS.get(x.OIpaystatus), 'oipaystatusmsg'), order_list)
+            # map(self.fill_oistatusmessage, order_list)
             map(self.fill_productinfo, order_list)
             map(self.fill_complainstatus, order_list)
             data = import_status('get_order_list_success', 'OK')
+            data['totalcount'] = order_list_count
             data['data'] = order_list
             return data
         except:
@@ -122,42 +133,82 @@ class COrder():
         args = request.args.to_dict()
         make_log("args", args)
         sell = args.get('sell')
-        if sell:
+        print (request.user.id)
+        all_status = ['1', '5', '6', '10', '11']
+        if sell == 'true':
             json_data = [
                 {
+                    'status': u'所有订单',
+                    'statusnum': u'0',
+                    'count': self.sorder.get_sell_ordercount_by_status(request.user.id, all_status)
+                },
+                {
                     'status': u'待支付',
-                    'count': self.sorder.get_sell_ordercount_by_status(request.user.id, 0)
+                    'statusnum': u'1',
+                    'count': self.sorder.get_sell_ordercount_by_status(request.user.id, '1')
                 },
                 {
                     'status': u'待发货',
-                    'count': self.sorder.get_sell_ordercount_by_status(request.user.id, 4)
+                    'statusnum': u'5',
+                    'count': self.sorder.get_sell_ordercount_by_status(request.user.id, '5')
                 },
                 {
                     'status': u'已发货',
-                    'count': self.sorder.get_sell_ordercount_by_status(request.user.id, 5)
+                    'statusnum': u'6',
+                    'count': self.sorder.get_sell_ordercount_by_status(request.user.id, '6')
                 },
                 {
                     'status': u'已取消',
-                    'count': self.sorder.get_sell_ordercount_by_status(request.user.id, 6)
+                    'statusnum': u'7',
+                    'count': self.sorder.get_sell_ordercount_by_status(request.user.id, '7')
+                },
+                {
+                    'status': u'待评价',
+                    'statusnum': u'10',
+                    'count': self.sorder.get_sell_ordercount_by_status(request.user.id, '10')
+                },
+                {
+                    'status': u'退换货',
+                    'statusnum': u'11',
+                    'count': self.sorder.get_sell_ordercount_by_status(request.user.id, '11')
                 }
             ]
         else:
             json_data = [
                 {
+                    'status': u'所有订单',
+                    'statusnum': u'0',
+                    'count': self.sorder.get_user_ordercount_by_status(request.user.id, all_status)
+                },
+                {
                     'status': u'待支付',
-                    'count': self.sorder.get_user_ordercount_by_status(request.user.id, 0)
+                    'statusnum': u'1',
+                    'count': self.sorder.get_user_ordercount_by_status(request.user.id, '1')
                 },
                 {
                     'status': u'待发货',
-                    'count': self.sorder.get_user_ordercount_by_status(request.user.id, 4)
+                    'statusnum': u'5',
+                    'count': self.sorder.get_user_ordercount_by_status(request.user.id, '5')
                 },
                 {
                     'status': u'已发货',
-                    'count': self.sorder.get_user_ordercount_by_status(request.user.id, 5)
+                    'statusnum': u'6',
+                    'count': self.sorder.get_user_ordercount_by_status(request.user.id, '6')
                 },
                 {
                     'status': u'已取消',
-                    'count': self.sorder.get_user_ordercount_by_status(request.user.id, 6)
+                    'statusnum': u'7',
+                    'count': self.sorder.get_user_ordercount_by_status(request.user.id, '7')
+                },
+                {
+                    'status': u'待评价',
+                    'statusnum': u'10',
+                    'count': self.sorder.get_user_ordercount_by_status(request.user.id, '10')
+                },
+                {
+                    'status': u'退换货',
+                    'statusnum': u'11',
+                    'count': self.sorder.get_user_ordercount_by_status(request.user.id, '11')
                 }
             ]
 
@@ -168,7 +219,8 @@ class COrder():
     @verify_token_decorator
     def update_order(self):
         if is_tourist():
-            return TOKEN_ERROR 
+            return TOKEN_ERROR
+        pass
 
     def fix_orderproduct_info(self, sku_list, oiid):
         """
@@ -221,3 +273,22 @@ class COrder():
             order.complainstatus = {"cotreatstatus": 0}
         order.add('complainstatus')
         return order
+
+    # @staticmethod
+    # def fill_oistatusmessage(order):
+    #     oistatus = order.OIpaystatus
+    #     if oistatus == 1:
+    #         order.oipaystatusmsg = '待支付'
+    #     elif oistatus == 5:
+    #         order.oipaystatusmsg = '待发货'
+    #     elif oistatus == 6:
+    #         order.oipaystatusmsg = '已发货'
+    #     elif oistatus == 7:
+    #         order.oipaystatusmsg = '已取消'
+    #     else:
+    #         order.oipaystatusmsg = '暂无此类订单'
+    #     # oipaystatusmsg = ORDER_STATUS[1]
+    #     order.add('oipaystatusmsg')
+    #     return order
+    #
+

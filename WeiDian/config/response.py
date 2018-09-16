@@ -7,6 +7,10 @@ class PARAMS_MISS(BaseError):
     status_code = 405001
     message = '参数缺失'
 
+class PARAMS_ERROR(BaseError):
+    status = 405
+    status_code = 405001
+    message = '参数错误'
 
 class PARAMS_REDUNDANCE(BaseError):
     status= 405
@@ -37,6 +41,10 @@ class SYSTEM_ERROR(BaseError):
     message = '系统错误'
     status = 404
 
+class NOT_FOUND(BaseError):
+    status_code = 200
+    message = '关联的对象不存在'
+    status = 404
 
 class APIS_WRONG(BaseError):
     status = 405
