@@ -17,9 +17,9 @@
           <span class="m-section-more" v-if="item.actext.length > 86 && !item.show_text" @click="showMore(true, index)">收起全文</span>
 
           <div class="m-img-list">
-            <!--<img class="section-text-img" :src="item.media[0].amimage">-->
-            <div class="video-box" v-on:click="playVideo()">
-              <video :src="videoSrc" id="videoPlay" v-show="false">您的浏览器不支持 video 视频播放。</video>
+            <img class="section-text-img" v-if="item.media[0].image" :src="item.media[0].amimage">
+            <div class="video-box" v-if="!item.media[0].image" v-on:click="playVideo()">
+              <video :src="item.media[0].amvideo" id="videoPlay" v-show="false">您的浏览器不支持 video 视频播放。</video>
             </div>
           </div>
           <div class="m-section-bottom">
@@ -45,6 +45,15 @@
                 <input type="text" class="new-comment-input" v-model="comment"/>
                 <div class="new-comment-done" :class="comment!=''?'active':''" @click="commentDone(item, index)">发送</div>
               </div>
+            </div>
+          </div>
+
+          <div class="m-modal" v-if="show_fixed">
+            <div class="m-modal-state">
+              <div class="m-modal-head">
+                <span class="m-close" @click="show_fixed = false"> x </span>
+              </div>
+              <div class="modal-text">素材已保存到相册</div>
             </div>
           </div>
         </div>
@@ -89,7 +98,6 @@
         total_count: 0,
         count: 5,
         bottom_show: false,
-        videoSrc: 'http://ot1dcjouh.bkt.clouddn.com/snsdyvideodownload.MP4'
       }
     },
     props:{
@@ -97,10 +105,17 @@
     },
     components: { iconList },
     methods: {
+      // 播放视频
       playVideo(){
         let vdo = document.getElementById("videoPlay");
         vdo.play();
       },
+      /*关闭分享的模态框*/
+      closeModal(v){
+        // console.log(v);
+        this[v]  = false;
+      },
+      // 上拉加载
       touchMove(){
         let scrollTop = common.getScrollTop();
         let scrollHeight = common.getScrollHeight();
@@ -200,7 +215,14 @@
               // 展开全文、显示全文
               this.activity_list[i].actext.length > 90 && (this.activity_list[i].show_text = true);
 
-              console.log(this.activity_list[i].media[0].amimage);
+              if(this.activity_list[i].media[0].amvideo) {
+                this.activity_list[i].media[0].image = false;
+              }else if(this.activity_list[i].media[0].amimage) {
+                this.activity_list[i].media[0].image = true;
+              }
+
+              // console.log(this.activity_list[i].media[0]);
+
             }
           }else{
             Toast({ message: res.data.message, className: 'm-toast-fail' });
@@ -228,7 +250,7 @@
       iconClick(v){
         switch (v){
           case 0:
-            console.log("保存");
+            this.show_fixed = true;
             break;
           case 1:
             if(this.show_input) {
@@ -288,4 +310,6 @@
 </script>
 <style lang="less" rel="stylesheet/less" scoped>
   @import "../../../common/css/discover";
+  @import "../../../common/css/modal";
+
 </style>
