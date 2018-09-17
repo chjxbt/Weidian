@@ -37,7 +37,7 @@ const api={
   get_address : title +'/mycenter/get_address',//获取收获地址
   add_address: title +'/mycenter/add_address',//添加地址
   del_address: title +'/mycenter/del_address',//删除地址
-  update_address: title +'/update_address',//更新地址
+  update_address: title +'/mycenter/update_address',//更新地址
   get_bank_list: title +'/mycenter/get_bank_list',//获取银行卡
   add_bankcard: title +'/mycenter/add_bankcard',//添加银行卡
 };
