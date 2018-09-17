@@ -96,7 +96,7 @@
           if(this.isScroll){
             this.isScroll = false;
             // console.log(this.activity_list.length, this.total_count);
-            if(this.activity_list.length == this.total_count){
+            if(this.activity_list.length == this.total_count || this.activity_list.length > this.total_count){
               this.bottom_show = true;
               // Toast({ message: '数据已加载完', className: 'm-toast-warning' });
             }else{

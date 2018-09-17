@@ -13,8 +13,8 @@
         <ul class="m-img-list">
           <template v-for="(item,index) in list.media">
             <li>
-              <img v-if="item.amimage" :src="item.amimage" class="m-section-text-imgs" alt="">
-              <video v-if="item.amvideo" :src="item.amvideo"></video>
+              <img v-if="item.amimage" :src="item.amimage" class="m-section-text-imgs" @click="bigImg(index, list.media)">
+              <!--<video v-if="item.amvideo" :src="item.amvideo"></video>-->
             </li>
           </template>
         </ul>
@@ -74,6 +74,20 @@
         window.setInterval(that.getDJS,1000)
       },
       methods:{
+        // 预览图片
+        bigImg(index, media) {
+
+          let urls = [];
+          for(let i = 0; i < media.length; i ++) {
+            urls.push(media[i].amimage);
+          }
+
+          let options = {
+            current: urls[index], // 当前显示图片的http链接
+            urls: urls,
+          };
+          wxapi.previewImage(options);
+        },
         iconClick(v){
           this.$emit('iconClick',v,this.index)
         },
