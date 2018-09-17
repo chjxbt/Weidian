@@ -31,7 +31,7 @@
           <span class="m-setUp-input">{{form.bankcard}}</span>
           <!--<router-link to="/bankCard" tag="span">-->
             <span class="m-row-btn" @click="barkChange" v-if="form.bankcard">更换</span>
-          <span class="m-row-btn" @click="barkChange" v-else>绑定</span>
+          <span class="m-row-btn" @click="addChange" v-else>绑定</span>
           <!--</router-link>-->
         </div>
       </div>
@@ -80,6 +80,9 @@
           },
           addressClick(){
             this.$router.push('/receiverAddress');
+          },
+          addChange(){
+            this.$router.push('/bankCard');
           },
           barkChange(){
             // this.$router.push('/bankCard');
