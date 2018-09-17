@@ -50,11 +50,11 @@
               this.$router.push({
                 path:'/editAddress',
                 query:{
-                  uadefault: v.uadefault,
-                  uaname:v.uaname,
-                  uaphone:v.uaphone,
-                  uatext:v.uatext,
-                  uaid:v.uaid
+                  UAdefault: v.uadefault,
+                  UAname:v.uaname,
+                  UAphone:v.uaphone,
+                  UAtext:v.uatext,
+                  UAid:v.uaid
                 }
               })
             }else{
