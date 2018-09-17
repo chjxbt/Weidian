@@ -1,6 +1,7 @@
 <template>
   <div>
-    <img src="/static/images/icon-more.png" class="back-img" @click="backPage">
+    <!--/static/images/icon-more.png-->
+    <img src="" class="back-img" @click="backPage">
     <img src="http://s9.rr.itc.cn/r/wapChange/20167_8_22/a87n9v8965341955628.jpg" class="product-img">
     <div class="product-activity m-ft-26 m-bg-main-color">
       <span class="activity-text-one">限时特卖</span>

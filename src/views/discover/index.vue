@@ -119,7 +119,7 @@
     .m-modal-state{
       height: 530px;
       .m-modal-head{
-        padding: 0;
+        padding: 10px 20px;
         margin: -1px;
         .m-modal-img{
           display: block;

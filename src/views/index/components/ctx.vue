@@ -13,7 +13,7 @@
         <ul class="m-img-list">
           <template v-for="(item,index) in list.media">
             <li>
-              <img v-if="item.amimage" :src="item.amimage" class="m-section-text-imgs" alt="" @click="bigImg(item)">
+              <img v-if="item.amimage" :src="item.amimage" class="m-section-text-imgs" alt="">
               <video v-if="item.amvideo" :src="item.amvideo"></video>
             </li>
           </template>
@@ -100,11 +100,6 @@
 
             this.list.remaintime = [].concat(arr);
           }
-        },
-        bigImg(item) {
-         let urls = [item.amimage,item.amimage];
-
-          wxapi.previewImage(item.amimage, urls);
         }
       }
     }
