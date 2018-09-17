@@ -102,6 +102,7 @@ class ActivityMedia(BaseModel):
     ACid = Column(String(64), nullable=False)  # 商品图片对应的活动
     AMimage = Column(String(255))  # 图片对应的路径
     AMvideo = Column(String(255))  # 视频地址
+    AMvideothumbnail = Column(String(255))  # 视频缩略图
     AMsort = Column(Integer)  # 图片的顺序, 用于表明图片的位置
 
     @orm.reconstructor
@@ -716,8 +717,8 @@ class BankCard(BaseModel):
     USid = Column(String(64), nullable=False)           # 用户id
     BCusername = Column(String(64), nullable=False)     # 姓名
     BCnumber = Column(String(19), nullable=False)       # 银行卡号
-    BCtype = Column(Integer)                            # 银行卡类别
-    BCbankname = Column(String(64), nullable=False)    # 银行名称
+    BCtype = Column(Integer, default=1)                 # 银行卡类别{1:储蓄卡, 2:信用卡}
+    BCbankname = Column(String(64), nullable=False)     # 银行名称
     BCaddress = Column(String(125), nullable=False)     # 开户行地址
     BCisdelete = Column(Boolean, default=False)         # 删除
     BCcreatetime = Column(String(14))                   # 创建时间
@@ -725,7 +726,7 @@ class BankCard(BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['BCusername', 'BCnumber', 'BCbankname', 'BCaddress']
+        self.fields = ['BCid', 'BCusername', 'BCnumber', 'BCbankname', 'BCaddress']
 
 class UserAddress(BaseModel):
     """用户收货地址"""
@@ -742,7 +743,43 @@ class UserAddress(BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['UAname', 'UAphone', 'UAtext', 'UAdefault']
+        self.fields = ['UAid', 'UAname', 'UAphone', 'UAtext', 'UAdefault']
+
+
+class Province(BaseModel):
+    """省"""
+    __tablename__ = 'province'
+    _id = Column(Integer, primary_key=True)
+    name = Column(String(20), nullable=False)
+    province_id = Column(String(8), nullable=False)
+
+    @orm.reconstructor
+    def __init__(self):
+        self.fields = self.all
+
+class City(BaseModel):
+    """市"""
+    __tablename__ = 'city'
+    _id = Column(Integer, primary_key=True)
+    city_id = Column(String(8), nullable=False)
+    name = Column(String(20), nullable=False)
+    province_id = Column(String(8), nullable=False)
+
+    @orm.reconstructor
+    def __init__(self):
+        self.fields = self.all
+
+class Area(BaseModel):
+    """区县"""
+    __tablename__ = 'area'
+    _id = Column(Integer, primary_key=True)
+    name = Column(String(20), nullable=False)
+    area_id = Column(String(8), nullable=False)
+    city_id = Column(String(8), nullable=False)
+
+    @orm.reconstructor
+    def __init__(self):
+        self.fields = self.all
 
 #
 # class PersonalInfo(BaseModel):
