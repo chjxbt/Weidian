@@ -2,7 +2,47 @@
   <div class="m-weidian">
     <page-title :title="name" ></page-title>
     <div class="m-weidian-content">
-      <div class="m-form-item  m-item-m">
+
+      <div class="content-table">
+        <el-table :data="tableData" border style="width: 100%">
+          <el-table-column prop="title" label="专题名称" width="200"></el-table-column>
+          <el-table-column prop="content" label="内容">
+            <template slot-scope="scope">
+              <div>
+                <el-upload class="avatar-uploader" action="https://jsonplaceholder.typicode.com/posts/" :show-file-list="false"
+                  :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
+                  <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                  <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                </el-upload>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="product" label="商品选择">
+            <template slot-scope="scope">
+              <div class="product-template">
+                <img class="product-img" src="https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1950547716,1727844550&fm=26&gp=0.jpg" alt="">
+                <el-select class="product-choose" v-model="value" placeholder="请选择">
+                  <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                </el-select>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column fixed="right" label="管理" width="280">
+            <template slot-scope="scope">
+              <el-button @click="handleClick(scope.row)" type="text" size="small">编辑</el-button>
+              <el-button type="text" size="small">|</el-button>
+              <el-button type="text" size="small">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+
+        <p class="m-item-alert">轮播图尺寸大小750*280</p>
+        <div class="add-box">
+          <span class="m-item-add">+</span>
+        </div>
+      </div>
+
+      <!--<div class="m-form-item  m-item-m">
         <span class="m-item-add">+</span>
         <p class="m-form-label">轮播图管理</p>
         <div class="m-item-content">
@@ -27,7 +67,7 @@
           </div>
           <p class="m-item-alert">轮播图尺寸大小750*280</p>
         </div>
-      </div>
+      </div>-->
       <div class="m-form-item m-from-border">
         <span class="m-item-add">+</span>
         <p class="m-form-label">热文编辑</p>
@@ -146,6 +186,11 @@
     data(){
       return{
         name:'首页管理',
+        tableData: [
+          { title: '专题1', content: '任务1的内容', product: '两张99-10新衣币' },
+          { title: '专题2', content: '任务2的内容', product: '佣金上涨30%' },
+          { title: '专题3', content: '任务3的内容', product: '两张99-10新衣币' }
+        ],
         options: [{
           value: '选项1',
           label: '黄金糕'
@@ -193,6 +238,10 @@
       wTab
     },
     methods:{
+      // 任务列表的操作方法
+      handleClick(row) {
+        console.log(row);
+      },
       wTabClick(i){
         let arr = [].concat(this.tab_list);
         for(let a =0;a<arr.length;a++){

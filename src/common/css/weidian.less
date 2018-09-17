@@ -56,7 +56,37 @@
       width: 3.9rem;
     }
     .content-table {
-      padding-bottom: 0.4rem;
+      padding-bottom: 0.3rem;
+      .product-template {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        .product-img {
+          width: 0.5rem;
+          height: 0.5rem;
+          padding: 0 0.1rem;
+        }
+        .product-choose {
+          width: auto;
+          max-width: 2rem;
+        }
+      }
+      .avatar-uploader {
+        text-align: center;
+        .el-upload {
+          width: 1.6rem;
+          height: 0.6rem;
+          line-height: 0.6rem;
+        }
+      }
+      .m-item-alert{
+        color: @greyColor;
+        font-size: 0.14rem;
+      }
+      .add-box {
+        font-size: 0.25rem;
+        padding-top: 0.1rem;
+      }
     }
     .m-form-item{
       position: relative;

@@ -11,11 +11,11 @@
            <el-table-column prop="title" label="任务标题" width="280"></el-table-column>
            <el-table-column prop="content" label="内容"></el-table-column>
            <el-table-column prop="reward" label="奖励方式"></el-table-column>
-           <el-table-column fixed="right" label="操作" width="280">
+           <el-table-column fixed="right" label="管理" width="280">
              <template slot-scope="scope">
-               <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
+               <el-button @click="handleClick(scope.row)" type="text" size="small">编辑</el-button>
                <el-button type="text" size="small">|</el-button>
-               <el-button type="text" size="small">编辑</el-button>
+               <el-button type="text" size="small">删除</el-button>
              </template>
            </el-table-column>
          </el-table>
