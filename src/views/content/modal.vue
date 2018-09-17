@@ -5,6 +5,22 @@
       <w-tab :list="tab_list" @wTabClick="wTabClick"></w-tab>
       <!--首页-->
      <div class="m-index" v-if="page == '首页'">
+
+       <div class="content-table">
+         <el-table :data="tableData" border style="width: 100%">
+           <el-table-column prop="title" label="任务标题" width="280"></el-table-column>
+           <el-table-column prop="content" label="内容"></el-table-column>
+           <el-table-column prop="reward" label="奖励方式"></el-table-column>
+           <el-table-column fixed="right" label="操作" width="280">
+             <template slot-scope="scope">
+               <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
+               <el-button type="text" size="small">|</el-button>
+               <el-button type="text" size="small">编辑</el-button>
+             </template>
+           </el-table-column>
+         </el-table>
+       </div>
+
        <h3 class="m-title">浮窗管理</h3>
        <el-form :label-position="labelPosition" label-width="100px" :model="formIndex">
          <div class="m-form-item m-item-modal">
@@ -47,7 +63,15 @@
              </el-upload>
            </el-form-item>
          </div>
-         <el-form-item label="备注">
+
+         <el-form-item label="奖励方式">
+           <el-select v-model="value" placeholder="请选择">
+             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+           </el-select>
+         </el-form-item>
+
+
+         <el-form-item label="规则">
            <textarea v-model="formIndex.value" class="m-textarea" placeholder="请输入内容"></textarea>
          </el-form-item>
        </el-form>
@@ -155,6 +179,12 @@
             active:false
           }
         ],
+        tableData: [
+          { title: '任务1', content: '任务1的内容', reward: '两张99-10新衣币' },
+          { title: '任务2', content: '任务2的内容', reward: '佣金上涨30%' },
+          { title: '任务3', content: '任务3的内容', reward: '两张99-10新衣币' },
+          { title: '任务4', content: '任务4的内容', reward: '佣金上涨30%' },
+        ],
         options: [{
           value: '选项1',
           label: '黄金糕'
@@ -184,6 +214,10 @@
       wTab
     },
     methods:{
+      // 任务列表的操作方法
+      handleClick(row) {
+        console.log(row);
+      },
       wTabClick(i){
         let arr = [].concat(this.tab_list);
         for(let a =0;a<arr.length;a++){

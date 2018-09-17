@@ -110,7 +110,7 @@
         </div>
       </div>
       <div class="m-form-item">
-        <p class="m-form-label">商家价格</p>
+        <p class="m-form-label">商品价格</p>
         <div class="m-item-content">
           <div class=" m-item-row">
             <el-input v-model="value" class="m-input-s" placeholder="请输入内容"></el-input>
