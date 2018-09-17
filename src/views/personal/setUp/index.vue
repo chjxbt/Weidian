@@ -19,10 +19,11 @@
           <!--<input type="text" class="m-setUp-input" placeholder="12345678912">-->
           <span class="m-setUp-input">{{form.usphone}}</span>
         </div>
-        <div class="m-row" @click="addressClick">
+        <div class="m-row" >
           <span class="m-form-label">地址</span>
           <!--<input type="text" class="m-setUp-input" placeholder="杭州市萧山区宁围镇XX号">-->
           <span class="m-setUp-input">{{form.address}}</span>
+          <span class="m-row-btn" @click="addressClick">编辑</span>
         </div>
         <div class="m-row">
           <span class="m-form-label">银行卡</span>
