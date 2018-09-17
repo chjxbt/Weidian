@@ -8,7 +8,7 @@
               <input type="text" v-model="form.UAname" class="m-editAddress-input" placeholder="输入收货人姓名">
             </div>
              <div class="m-editAddress-input-box">
-               <input type="text" v-model="form.UAphone" class="m-editAddress-input" placeholder="输入收货人联系方式">
+               <input type="number" v-model="form.UAphone" class="m-editAddress-input" placeholder="输入收货人联系方式">
              </div>
           </div>
         </div>
@@ -33,10 +33,7 @@
       </div>
 
       <div class="m-address-btn" @click="saveClick">保存</div>
-      <div class="m-picker-box" v-if="show_picker">
-        <span class="m-picker-btn" @click="pickerSave(false)">确定</span>
-        <mt-picker :slots="slots"  @change="onValuesChange"></mt-picker>
-      </div>
+     <picker :slots="slots" :show_picker="show_picker" @pickerSave="pickerSave"></picker>
 
     </div>
 
@@ -48,6 +45,7 @@
   import axios from 'axios';
   import api from '../../../api/api';
   import {Toast,MessageBox} from 'mint-ui';
+  import picker from '../../../components/common/picker';
   Vue.component(Picker.name, Picker);
     export default {
         data() {
@@ -90,16 +88,18 @@
               ]
             }
         },
-        components: {},
+        components: {
+          picker
+        },
         methods: {
           radioChange(){
             this.form.UAdefault = !this.form.UAdefault;
           },
-          onValuesChange(picker, values) {
-              this.address = values;
-          },
-          pickerSave(v){
+          pickerSave(v,target){
             this.show_picker = v;
+            if(target){
+              this.address = target;
+            }
           },
           saveClick(){
             if(this.form.UAid){
@@ -228,18 +228,6 @@
     color: #fff;
     font-size: 34px;
   }
-  .m-picker-box{
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    height: 450px;
-    width: 100%;
-    background-color: #fff;
-    text-align: right;
-    .m-picker-btn{
-      display: inline-block;
-      padding: 10px 20px;
-    }
-  }
+
 }
 </style>

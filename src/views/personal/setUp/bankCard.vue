@@ -5,10 +5,12 @@
           <div class="m-bankCard-name">农业银行</div>
           <div class="m-bankCard-type">储蓄卡</div>
           <div class="m-bankCard-num">******* ***** ***** ***354</div>
-          <span class="m-bankCard-cancel">解除绑定</span>
+          <span class="m-bankCard-cancel">修改</span>
         </div>
       </div>
-
+      <div class="m-bank-btn">
+        <span>解除绑定</span>
+      </div>
     </div>
 
 </template>
@@ -62,9 +64,23 @@
         position: absolute;
         right: 26px;
         bottom: 20px;
+        border: 1px solid #fff;
+        padding: 5px 20px;
       }
     }
   }
-
+  .m-bank-btn{
+    margin-top: 30px;
+    span{
+      display: inline-block;
+      width: 640px;
+      background-color: #e68b8b;
+      color: #fff;
+      font-size: 28px;
+      border-radius: 6px;
+      height: 70px;
+      line-height: 70px;
+    }
+  }
 }
 </style>
