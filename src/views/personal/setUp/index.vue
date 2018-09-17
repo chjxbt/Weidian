@@ -83,10 +83,11 @@
           },
           addChange(){
             this.$router.push('/addBankCard');
+            // this.$router.push('/bankCard');
           },
           barkChange(){
-            // this.$router.push('/bankCard');
             this.$router.push('/bankCard');
+            // this.$router.push('/addBankCard');
           }
         },
         created() {

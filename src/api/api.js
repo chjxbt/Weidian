@@ -40,6 +40,7 @@ const api={
   update_address: title +'/mycenter/update_address',//更新地址
   get_bank_list: title +'/mycenter/get_bank_list',//获取银行卡
   add_bankcard: title +'/mycenter/add_bankcard',//添加银行卡
+  get_mybankcard: title +'/mycenter/get_mybankcard',//获取银行卡
 };
 
 export default api

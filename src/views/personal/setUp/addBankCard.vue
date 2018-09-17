@@ -79,6 +79,11 @@
         },
       mounted(){
           this.getInfo();
+
+          if(this.$route.query.bcid){
+            this.getBankInfo();
+          }
+
       },
         methods: {
           addBankcard(){
@@ -104,6 +109,20 @@
                    arr.push(res.data.data[x])
                  }
                this.slots[0].values = arr;
+              }
+            })
+          },
+          getBankInfo(){
+            axios.get(api.get_mybankcard,{
+              params:{
+                token:localStorage.getItem('token')
+              }
+            }).then(res => {
+              if(res.data.status == 200){
+                this.form.BCusername = res.data.data.bcusername;
+                this.form.BCnumber = res.data.data.bcnumber;
+                this.form.BCbankname = res.data.data.bcbankname;
+                this.form.BCaddress = res.data.data.bcaddress;
               }
             })
           },

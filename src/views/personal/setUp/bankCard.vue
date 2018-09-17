@@ -2,10 +2,10 @@
     <div class="m-bankCard">
       <div class="m-bankCard-box">
         <div class="m-one-card">
-          <div class="m-bankCard-name">农业银行</div>
+          <div class="m-bankCard-name">{{bank_info.bcbankname}}</div>
           <div class="m-bankCard-type">储蓄卡</div>
-          <div class="m-bankCard-num">******* ***** ***** ***354</div>
-          <span class="m-bankCard-cancel">修改</span>
+          <div class="m-bankCard-num">******* ***** ***** ***{{bank_info.bcnumber.substring(bank_info.bcnumber.length-3)}}</div>
+          <span class="m-bankCard-cancel" @click="changeBank">修改</span>
         </div>
       </div>
       <div class="m-bank-btn">
@@ -16,14 +16,40 @@
 </template>
 
 <script type="text/ecmascript-6">
+  import axios from 'axios';
+  import api from '../../../api/api';
     export default {
         data() {
             return {
-                name: ''
+                bank_info:{
+                  bcaddress: "",
+                  bcbankname: "",
+                  bcid: "",
+                  bcnumber: "",
+                  bcusername: ""
+                }
             }
         },
         components: {},
-        methods: {},
+      mounted(){
+        this.getInfo();
+      },
+        methods: {
+          getInfo(){
+            axios.get(api.get_mybankcard,{
+              params:{
+                token:localStorage.getItem('token')
+              }
+            }).then(res => {
+              if(res.data.status == 200){
+                  this.bank_info = res.data.data;
+              }
+            })
+          },
+          changeBank(){
+            this.$router.push({path:'/addBankCard',query:this.bank_info})
+          }
+        },
         created() {
 
         }
