@@ -38,7 +38,8 @@
       <div class="bottom-line"></div>
     </div>
 
-    <share v-if="show_fixed" @fixedClick="fixedClick"></share>
+    <!--<share v-if="show_fixed" @fixedClick="fixedClick"></share>-->
+    <attention v-if="show_fixed" @closeModal="closeModal('show_fixed')"></attention>
   </div>
 </template>
 
@@ -49,6 +50,7 @@
   import ctx from '../../index/components/ctx';
   import share from '../../../components/common/share';
   import common from '../../../common/js/common';
+  import attention from '../../../components/common/attention';
 
   import wxapi from '../../../common/js/mixins';
   import wx from 'weixin-js-sdk';
@@ -88,7 +90,7 @@
     props:{
       tnid:{ type: String, default: null }
     },
-    components: { ctx, share },
+    components: { ctx, share, attention },
     methods: {
       test() {
 
@@ -221,6 +223,11 @@
       fixedClick(){
         this.show_fixed = false;
       },
+      /*关闭分享的模态框*/
+      closeModal(v){
+        // console.log(v);
+        this[v]  = false;
+      },
       /*每个活动icon点击*/
       iconClick(v, list){
         switch (v){
@@ -319,6 +326,7 @@
 </script>
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/css/discover";
+  /*@import "../../../common/css/modal";*/
   .img {
     border-radius: 20px;
   }

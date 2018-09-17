@@ -34,13 +34,15 @@
         </div>
       </div>
     </div>
-    <share v-if="show_fixed" :num="2" @fixedClick="fixedClick"></share>
+    <!--<share v-if="show_fixed" :num="2" @fixedClick="fixedClick"></share>-->
+    <attention v-if="show_fixed" @closeModal="closeModal('show_fixed')"></attention>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import iconList from '../../../components/common/iconList';
   import share from '../../../components/common/share';
+  import attention from '../../../components/common/attention';
   import api from '../../../api/api';
   import axios from 'axios';
   import { Toast } from 'mint-ui';
@@ -65,7 +67,7 @@
         tnid: { type: String, default: null },
         sub: { type: Array }
       },
-      components: { iconList, share },
+      components: { iconList, share, attention },
       methods: {
         // 下拉刷新
         loadTop() {
@@ -78,6 +80,11 @@
         // 分享按钮
         fixedClick(){
           this.show_fixed = false;
+        },
+        /*关闭分享的模态框*/
+        closeModal(v){
+          // console.log(v);
+          this[v]  = false;
         },
         /*获取活动列表*/
         getActivity(start, count, tnid){
