@@ -5,10 +5,10 @@
           <span class="m-editAddress-row-name">收货人</span>
           <div>
             <div class="m-editAddress-input-box">
-              <input type="text" class="m-editAddress-input" placeholder="输入收货人姓名">
+              <input type="text" v-model="form.uaname" class="m-editAddress-input" placeholder="输入收货人姓名">
             </div>
              <div class="m-editAddress-input-box">
-               <input type="text" class="m-editAddress-input" placeholder="输入收货人姓名">
+               <input type="text" v-model="form.uaphone" class="m-editAddress-input" placeholder="输入收货人联系方式">
              </div>
           </div>
         </div>
@@ -19,14 +19,14 @@
               <input type="text" class="m-editAddress-input" placeholder="选择省、市、区（县）">
             </div>
             <div class="m-editAddress-input-box">
-              <input type="text" class="m-editAddress-input" placeholder="输入详情街道地址">
+              <input type="text" v-model="form.uaphone" class="m-editAddress-input" placeholder="输入详情街道地址">
             </div>
           </div>
         </div>
       </div>
       <div class="m-editAddress-switch">
         <span>设为默认</span>
-        <span class="m-radio" :class="radio_select ? 'active':''" @click="radioChange"></span>
+        <span class="m-radio" :class="form.uadefault ? 'active':''" @click="radioChange"></span>
       </div>
       <div class="m-editAddress-switch">
         <span class="m-red">删除收货地址</span>
@@ -42,15 +42,27 @@
     export default {
         data() {
             return {
-                radio_select:true
+                radio_select:true,
+               form:{
+                 uadefault: false,
+                 uaname:'',
+                 uaphone:'',
+                 uatext:'',
+                 uaid:''
+               }
             }
         },
         components: {},
         methods: {
           radioChange(){
-            this.radio_select = !this.radio_select;
+            this.form.uadefault = !this.form.uadefault;
           }
         },
+      mounted(){
+          if(this.$route.query){
+            this.form = this.$route.query;
+          }
+      },
         created() {
 
         }

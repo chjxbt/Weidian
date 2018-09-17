@@ -1,52 +1,24 @@
 <template>
     <div class="m-receiverAddress">
-      <div v-if="have_address">
-        <div class="m-one-address" @click="addressClick">
-          <span class="m-check-icon active"></span>
-          <div class="m-address-info">
-            <div class="m-address-row m-address-row1 ">
-              <span>小白</span>
-              <span>18210036741</span>
-            </div>
-            <div class="m-address-row">
-              <div class="tl m-address">
-                <span class="m-mo">[ 默认地址 ]</span>
-                <span>上京新航线304楼4单元702室上京新航线4楼4单元702室内</span>
+      <div v-if="address_list.length > 0">
+        <template v-for="(item,index) in address_list">
+          <div class="m-one-address" >
+            <span class="m-check-icon" :class="item.uadefault?'active':''"></span>
+            <div class="m-address-info">
+              <div class="m-address-row m-address-row1 ">
+                <span>{{item.uaname}}</span>
+                <span>{{item.uaphone}}</span>
               </div>
-              <span class="m-edit">编辑</span>
+              <div class="m-address-row">
+                <div class="tl m-address">
+                  <span class="m-mo" v-if="item.uadefault">[ 默认地址 ]</span>
+                  <span>{{item.uatext}}</span>
+                </div>
+                <span class="m-edit" @click="addressClick(item)">编辑</span>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="m-one-address">
-          <span class="m-check-icon"></span>
-          <div class="m-address-info">
-            <div class="m-address-row m-address-row1 ">
-              <span>小白</span>
-              <span>18210036741</span>
-            </div>
-            <div class="m-address-row">
-              <div class="tl m-address">
-                <span>上京新航线304楼4单元702室上京新航线4楼4单元702室内</span>
-              </div>
-              <span class="m-edit">编辑</span>
-            </div>
-          </div>
-        </div>
-        <div class="m-one-address">
-          <span class="m-check-icon"></span>
-          <div class="m-address-info">
-            <div class="m-address-row m-address-row1 ">
-              <span>小白</span>
-              <span>18210036741</span>
-            </div>
-            <div class="m-address-row">
-              <div class="tl m-address">
-                <span>上京新航线304楼4单元702室上京新航线4楼4单元702室内</span>
-              </div>
-              <span class="m-edit">编辑</span>
-            </div>
-          </div>
-        </div>
+        </template>
       </div>
       <div class="m-no-address" v-else>
         <img src="/static/images/icon-no-address.png" class="m-no-address-img" alt="">
@@ -59,16 +31,57 @@
 </template>
 
 <script type="text/ecmascript-6">
+  import axios from 'axios';
+  import api from '../../../api/api'
     export default {
         data() {
             return {
-              have_address:true
+              have_address:true,
+              address_list:[]
             }
         },
         components: {},
+      mounted(){
+          this.getInfo();
+      },
         methods: {
-          addressClick(){
-            this.$router.push('/editAddress')
+          addressClick(v){
+            if(v){
+              this.$router.push({
+                path:'/editAddress',
+                query:{
+                  uadefault: v.uadefault,
+                  uaname:v.uaname,
+                  uaphone:v.uaphone,
+                  uatext:v.uatext,
+                  uaid:v.uaid
+                }
+              })
+            }else{
+              this.$router.push('/editAddress')
+            }
+
+          },
+          getInfo(){
+            axios.get(api.get_address,{
+              params:{
+                token:localStorage.getItem('token')
+              }
+            }).then(res => {
+                if(res.data.status == 200){
+
+                  let arr = [];
+                  let _arr =[];
+                  for(let i=0;i<res.data.data.length;i++){
+                    if(res.data.data[i].uadefault){
+                      arr.push(res.data.data[i])
+                    }else{
+                      _arr.push(res.data.data[i])
+                    }
+                  }
+                  this.address_list = arr.concat(_arr);
+                }
+            })
           }
         },
         created() {
