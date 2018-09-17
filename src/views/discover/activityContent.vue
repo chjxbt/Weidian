@@ -9,7 +9,9 @@
         </template>
       </div>
     </mt-loadmore>
-    <share v-if="show_fixed" @fixedClick="fixedClick"></share>
+
+    <!--<share v-if="show_fixed" @fixedClick="fixedClick"></share>-->
+    <attention v-if="show_fixed" @closeModal="closeModal('show_fixed')"></attention>
 
     <!--<m-footer></m-footer>-->
   </div>
@@ -23,6 +25,7 @@
   import axios from 'axios';
   import { Toast } from 'mint-ui';
   import common from '../../common/js/common';
+  import attention from '../../components/common/attention';
 
   export default {
     name: "activityContent",
@@ -36,11 +39,11 @@
             name:'收藏',
             url:'icon-like'
           },
-          {
+          /*{
             src:'icon-lian',
             name:'复制链接',
             url:'icon-lian'
-          },
+          },*/
           {
             src:'icon-share',
             name:'转发',
@@ -51,11 +54,16 @@
         tnid: "5ed4e908-a6db-11e8-b2ff-0cd292f93404", // ertiao
         isScroll: true,
         total_count: 0,
-        count: 2
+        count: 5
       }
     },
-    components: { mFooter, ctx, share },
+    components: { mFooter, ctx, share, attention },
     methods: {
+      /*关闭分享的模态框*/
+      closeModal(v){
+        // console.log(v);
+        this[v]  = false;
+      },
       touchMove(){
         let scrollTop = common.getScrollTop();
         let scrollHeight = common.getScrollHeight();
@@ -95,11 +103,11 @@
                   name: '123123',
                   url: 'icon-like'
                 },
-                {
+                /*{
                   src: 'icon-lian',
                   name: '复制链接',
                   url: 'icon-lian'
-                },
+                },*/
                 {
                   src: 'icon-share',
                   name: '转发',
@@ -134,10 +142,10 @@
           case 0:
             this.changeLike(list);
             break;
-          case 1:
+          /*case 1:
             this.copyText(list);
-            break;
-          case 2:
+            break;*/
+          case 1:
             this.show_fixed = true;
             break;
         }

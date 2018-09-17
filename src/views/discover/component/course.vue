@@ -17,9 +17,10 @@
           <span class="m-section-more" v-if="item.actext.length > 86 && !item.show_text" @click="showMore(true, index)">收起全文</span>
 
           <div class="m-img-list">
-            <img class="section-text-img" v-if="item.media[0].image" :src="item.media[0].amimage">
+            <img class="section-text-img" id='downImg' v-if="item.media[0].image" :src="item.media[0].amimage" @click="bigImg(item.media[0].amimage)">
+
             <div class="video-box" v-if="!item.media[0].image" v-on:click="playVideo()">
-              <video :src="item.media[0].amvideo" id="videoPlay" v-show="false">您的浏览器不支持 video 视频播放。</video>
+              <video :src="item.media[0].amvideo" id="videoPlay" v-show="false">您的浏览器不支持 video 视频播放</video>
             </div>
           </div>
           <div class="m-section-bottom">
@@ -75,7 +76,10 @@
   import { Toast } from 'mint-ui';
   import common from '../../../common/js/common';
 
+  import wxapi from '../../../common/js/mixins';
+  import wx from 'weixin-js-sdk';
   export default {
+    mixins: [wxapi],
     data() {
       return {
         icon_list:[
@@ -105,6 +109,14 @@
     },
     components: { iconList },
     methods: {
+      // 预览图片
+      bigImg(picture) {
+        let options = {
+          current: picture, // 当前显示图片的http链接
+          urls: [picture],
+        };
+        wxapi.previewImage(options);
+      },
       // 播放视频
       playVideo(){
         let vdo = document.getElementById("videoPlay");

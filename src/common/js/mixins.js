@@ -163,22 +163,6 @@ const wxApi = {
   },
   // 预览图片
   previewImage(options) {
-    // console.log(options);
-   /* wx.ready(() => {
-      wx.previewImage({
-        current: options.current, // 当前显示图片的http链接
-        urls: options.urls, // 需要预览的图片http链接列表
-        success() {
-          console.log("success", options);
-        },
-        failed() {
-          console.log("failed", options);
-        },
-        complete() {
-          console.log("complete", options);
-        }
-      });
-    })*/
 
     wx.previewImage({
       current: options.current, // 当前显示图片的http链接
@@ -188,9 +172,6 @@ const wxApi = {
       },
       failed() {
         console.log("failed", options);
-      },
-      complete() {
-        console.log("complete", options);
       }
     });
   }
