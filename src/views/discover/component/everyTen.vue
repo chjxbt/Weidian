@@ -14,7 +14,7 @@
       <div class="m-title">
         <div>
           <img :src="recommend.suuser.suheader" class="m-item-title-img">
-          <span @click="test">{{recommend.suuser.suname}}</span>
+          <span>{{recommend.suuser.suname}}</span>
         </div>
         <div class="m-lookinfo-box">
           <span class="m-look-icon"></span>
@@ -52,11 +52,7 @@
   import common from '../../../common/js/common';
   import attention from '../../../components/common/attention';
 
-  import wxapi from '../../../common/js/mixins';
-  import wx from 'weixin-js-sdk';
-
   export default {
-    mixins: [wxapi],
     data() {
       return {
         bannerList: [],
@@ -92,17 +88,6 @@
     },
     components: { ctx, share, attention },
     methods: {
-      test() {
-
-        let options = {
-          current: "http://img.zcool.cn/community/019c2958a2b760a801219c77a9d27f.jpg", // 当前显示图片的http链接
-          urls: ["http://img.sccnn.com/bimg/338/24556.jpg", "http://pic.58pic.com/58pic/14/62/50/62558PICxm8_1024.jpg", "http://img.zcool.cn/community/01ca8c573c04b832f8757cb97b2444.jpg@1280w_1l_2o_100sh.jpg"],
-        };
-        // console.log(options);
-        wxapi.previewImage(options);
-
-
-      },
       touchMove(){
         let scrollTop = common.getScrollTop();
         let scrollHeight = common.getScrollHeight();

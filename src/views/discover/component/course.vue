@@ -17,7 +17,10 @@
           <span class="m-section-more" v-if="item.actext.length > 86 && !item.show_text" @click="showMore(true, index)">收起全文</span>
 
           <div class="m-img-list">
-            <img class="m-section-text-img" :src="item.media[0].amimage">
+            <!--<img class="section-text-img" :src="item.media[0].amimage">-->
+            <div class="video-box" v-on:click="playVideo()">
+              <video :src="videoSrc" id="videoPlay" v-show="false">您的浏览器不支持 video 视频播放。</video>
+            </div>
           </div>
           <div class="m-section-bottom">
             <div>
@@ -25,7 +28,7 @@
                 <span class="m-look-icon"></span>
                 <span>{{item.acbrowsenum}}</span>
                 <span class="m-good-icon" :class="item.alreadylike?'active':''" @click="likeThis(item, index)"></span>
-                <span>{{item.likenum}}</span>
+                <span>{{item.likenum}}人说好</span>
               </div>
             </div>
             <div>
@@ -85,7 +88,8 @@
         isScroll: true,
         total_count: 0,
         count: 5,
-        bottom_show: false
+        bottom_show: false,
+        videoSrc: 'http://ot1dcjouh.bkt.clouddn.com/snsdyvideodownload.MP4'
       }
     },
     props:{
@@ -93,6 +97,10 @@
     },
     components: { iconList },
     methods: {
+      playVideo(){
+        let vdo = document.getElementById("videoPlay");
+        vdo.play();
+      },
       touchMove(){
         let scrollTop = common.getScrollTop();
         let scrollHeight = common.getScrollHeight();
@@ -191,6 +199,8 @@
 
               // 展开全文、显示全文
               this.activity_list[i].actext.length > 90 && (this.activity_list[i].show_text = true);
+
+              console.log(this.activity_list[i].media[0].amimage);
             }
           }else{
             Toast({ message: res.data.message, className: 'm-toast-fail' });
