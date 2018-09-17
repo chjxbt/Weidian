@@ -17,7 +17,7 @@
           <span class="m-section-more" v-if="item.actext.length > 86 && !item.show_text" @click="showMore(true, index)">收起全文</span>
 
           <div class="m-img-list">
-            <img class="m-section-text-img" :src="item.media[0].amimage" @click="test(item.media[0].amimage)">
+            <img class="m-section-text-img" :src="item.media[0].amimage" @click="bigImg(item.media[0].amimage)">
           </div>
           <div class="m-section-bottom">
             <div>
@@ -101,18 +101,13 @@
     },
     components: { iconList, share, attention },
     methods: {
-      test(picture) {
-
-        console.log(picture);
-
+      // 预览图片
+      bigImg(picture) {
         let options = {
-          current: "http://img.zcool.cn/community/019c2958a2b760a801219c77a9d27f.jpg", // 当前显示图片的http链接
-          urls: ["http://img.sccnn.com/bimg/338/24556.jpg", "http://pic.58pic.com/58pic/14/62/50/62558PICxm8_1024.jpg", "http://img.zcool.cn/community/01ca8c573c04b832f8757cb97b2444.jpg@1280w_1l_2o_100sh.jpg"],
+          current: picture, // 当前显示图片的http链接
+          urls: [picture],
         };
-        // console.log(options);
-        // wxapi.previewImage(options);
-
-
+        wxapi.previewImage(options);
       },
       touchMove(){
         let scrollTop = common.getScrollTop();
