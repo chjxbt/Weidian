@@ -24,8 +24,7 @@ npm run build
 
 此项目已将 安装
    elementui
-   vuex
-   axios
+   vuex axios
    echarts
    es6-promise
    less
