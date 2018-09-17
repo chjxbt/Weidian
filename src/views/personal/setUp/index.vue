@@ -82,11 +82,11 @@
             this.$router.push('/receiverAddress');
           },
           addChange(){
-            this.$router.push('/bankCard');
+            this.$router.push('/addBankCard');
           },
           barkChange(){
             // this.$router.push('/bankCard');
-            this.$router.push('/addBankCard');
+            this.$router.push('/bankCard');
           }
         },
         created() {
