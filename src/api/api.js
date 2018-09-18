@@ -41,6 +41,9 @@ const api={
   get_bank_list: title +'/mycenter/get_bank_list',//获取银行卡
   add_bankcard: title +'/mycenter/add_bankcard',//添加银行卡
   get_mybankcard: title +'/mycenter/get_mybankcard',//获取银行卡
+  get_province: title +'/mycenter/get_province',//获取省
+  get_city: title +'/mycenter/get_city',//获取市
+  get_area: title +'/mycenter/get_area',//获取区
 };
 
 export default api

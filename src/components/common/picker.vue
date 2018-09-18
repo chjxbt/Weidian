@@ -22,9 +22,13 @@
             type:Array,
             default:null
           },
-        show_picker:{
-            type:Boolean,
-          default:false
+          show_picker:{
+              type:Boolean,
+            default:false
+          },
+        params:{
+            type:String,
+            default:''
         }
       },
       methods:{
@@ -32,7 +36,7 @@
           this.select= values;
         },
         pickerSave(v){
-          this.$emit('pickerSave',v,this.select);
+          this.$emit('pickerSave',v,this.select,this.params);
         },
         cancelSave(v){
           this.$emit('pickerSave',v);

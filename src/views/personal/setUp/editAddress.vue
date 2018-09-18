@@ -16,7 +16,11 @@
           <span class="m-editAddress-row-name">收货地址</span>
           <div>
             <div class="m-editAddress-input-box">
-              <input type="text" v-model="address" @click="pickerSave(true)" class="m-editAddress-input" placeholder="选择省、市、区（县）">
+              <input type="text" v-model="address.province" @click="pickerSave(true,'','province')" class="m-editAddress-input m-s" placeholder="选择省">
+              <span>-</span>
+              <input type="text" v-model="address.city" @click="pickerSave(true,'','city')" class="m-editAddress-input m-s" placeholder="选择市">
+              <span>-</span>
+              <input type="text" v-model="address.area" @click="pickerSave(true,'','area')" class="m-editAddress-input m-s" placeholder="选择区(县)">
             </div>
             <div class="m-editAddress-input-box">
               <input type="text" v-model="form.UAtext" class="m-editAddress-input" placeholder="输入详情街道地址">
@@ -33,7 +37,7 @@
       </div>
 
       <div class="m-address-btn" @click="saveClick">保存</div>
-     <picker :slots="slots" :show_picker="show_picker" @pickerSave="pickerSave"></picker>
+      <picker :slots="slots" :params="params" :show_picker="show_picker" @pickerSave="pickerSave"></picker>
 
     </div>
 
@@ -59,52 +63,101 @@
                  UAid:''
                },
               show_picker:false,
-              address:'',
+              address_id:{
+                province_id:'',
+                city_id:'',
+                area_id:''
+              },
+              address:{
+                province:'',
+                city:'',
+                area:''
+              },
+              address_list:{
+                  province:[],
+                city:[],
+                area:[]
+              },
               slots: [
                 {
                   flex: 1,
                   values: ['浙江', '上海', '重庆', '四川', '安徽'],
                   className: 'slot1',
-                  textAlign: 'right'
-                }, {
-                  divider: true,
-                  content: '-',
-                  className: 'slot2'
-                }, {
-                  flex: 1,
-                  values: ['杭州', '湖州', '绍兴', '宁波', '台州'],
-                  className: 'slot3',
                   textAlign: 'center'
-                }, {
-                  divider: true,
-                  content: '-',
-                  className: 'slot4'
-                }, {
-                  flex: 1,
-                  values: ['杭州', '湖州', '绍兴', '宁波', '台州'],
-                  className: 'slot5',
-                  textAlign: 'left'
                 }
-              ]
+              ],
+              params:'province'
             }
         },
         components: {
           picker
         },
         methods: {
+          getSlot(id){
+            switch (id){
+              case 'province':
+                axios.get(api.get_province).then(res => {
+                    if(res.data.status == 200){
+                      this.address_list[id] = res.data.data;
+                      this.slots[0].values = this.dealArr(res.data.data);
+                    }
+                });
+                break;
+              case 'city':
+                axios.get(api.get_city,{
+                  params:{
+                    province_id:this.address_id.province_id
+                  }
+                }).then(res => {
+                  if(res.data.status == 200){
+                    this.address_list[id] = res.data.data;
+                    this.slots[0].values = this.dealArr(res.data.data);
+                  }
+                });
+                break;
+              case 'area':
+                axios.get(api.get_area,{
+                  params:{
+                    city_id:this.address_id.city_id
+                  }
+                }).then(res => {
+                  if(res.data.status == 200){
+                    this.address_list[id] = res.data.data;
+                    this.slots[0].values = this.dealArr(res.data.data);
+                  }
+                });
+                break;
+            }
+
+          },
           radioChange(){
             this.form.UAdefault = !this.form.UAdefault;
           },
-          pickerSave(v,target){
+          pickerSave(v,target,id){
+
             this.show_picker = v;
             if(target){
-              this.address = target;
+              this.address[id] = target;
+              for(let i = 0;i<this.address_list[id].length;i++){
+                if(this.address_list[id][i].name == target){
+                  this.address_id[id + '_id'] = this.address_list[id][i][id +'_id'];
+                  console.log(this.address_list[id][i][id + '_id'])
+                }
+              }
+            }else if(target == '' && id){
+              this.params = id;
+              if(id != 'province')
+                   this.getSlot(id);
             }
           },
           saveClick(){
+            let _params = '';
+            for(let i in this.address){
+              _params = _params + this.address[i]
+            }
+            this.form.UAtext = _params  + this.form.UAtext;
+            this.form.UAdefault = Boolean(this.form.UAdefault);
             if(this.form.UAid){
-              this.form.UAtext = this.address + this.form.UAtext;
-              this.form.UAdefault = Boolean(this.form.UAdefault);
               axios.post(api.update_address +'?token='+localStorage.getItem('token') + '&uaid=' + this.form.UAid,this.form).then(res => {
                   if(res.data.status == 200 ){
                     Toast({ message: '修改成功', className: 'm-toast-success' });
@@ -114,8 +167,6 @@
                   }
               })
             }else{
-              this.form.UAtext = this.address + this.form.UAtext;
-              this.form.UAdefault = Boolean(this.form.UAdefault);
               axios.post(api.add_address +'?token='+localStorage.getItem('token'),this.form).then(res => {
                 if(res.data.status == 200 ){
                   Toast({ message: '添加成功', className: 'm-toast-success' });
@@ -143,12 +194,20 @@
             //   }
             // })
 
+          },
+          dealArr(list){
+            let arr = [];
+            for(let i=0;i<list.length;i++){
+              arr.push(list[i].name);
+            }
+            return arr;
           }
         },
       mounted(){
           if(this.$route.query){
             this.form = this.$route.query;
           }
+          this.getSlot('province');
       },
         created() {
 
@@ -188,6 +247,12 @@
           height: 85px;
           line-height: 85px;
           font-size: 30px;
+          &.m-s{
+            width: 28%;
+            &::-webkit-input-placeholder {
+              /*text-align: center;*/
+            }
+          }
         }
         &:last-child{
           border-bottom: none;
