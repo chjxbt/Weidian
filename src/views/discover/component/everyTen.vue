@@ -273,7 +273,7 @@
               arr.alreadylike = true;
               Toast({ message: res.data.message, className: 'm-toast-success' });
             }
-            console.log(arr);
+            // console.log(arr);
           }else{
             Toast({ message: res.data.message, className: 'm-toast-fail' });
           }

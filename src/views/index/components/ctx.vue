@@ -13,7 +13,7 @@
         <ul class="m-img-list">
           <template v-for="(item,index) in list.media">
             <li>
-              <img v-if="item.amimage" :src="item.amimage" class="m-section-text-imgs" @click="bigImg(index, list.media)">
+              <img v-if="item.amimage" :src="item.amimage" class="m-section-text-imgs" :class="list.media.length == 4?'active':''" @click="bigImg(index, list.media)">
               <!--<video v-if="item.amvideo" :src="item.amvideo"></video>-->
             </li>
           </template>
@@ -175,8 +175,14 @@
             display: block;
             width: 180px;
             height: 180px;
-            margin-right: 10px;
-            margin-top: 10px;
+            margin-right: 12px;
+            margin-top: 12px;
+            &.active {
+              width: 187px;
+              height: 187px;
+              margin-right: 12px;
+              margin-top: 12px;
+            }
             &:nth-child(3n){
               margin-right: 0;
             }
