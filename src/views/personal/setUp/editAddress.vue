@@ -64,9 +64,9 @@
                },
               show_picker:false,
               address_id:{
-                province_id:'',
-                city_id:'',
-                area_id:''
+                provinceid:'',
+                cityid:'',
+                areaid:''
               },
               address:{
                 province:'',
@@ -106,7 +106,7 @@
               case 'city':
                 axios.get(api.get_city,{
                   params:{
-                    province_id:this.address_id.province_id
+                    provinceid:this.address_id.provinceid
                   }
                 }).then(res => {
                   if(res.data.status == 200){
@@ -118,7 +118,7 @@
               case 'area':
                 axios.get(api.get_area,{
                   params:{
-                    city_id:this.address_id.city_id
+                    cityid:this.address_id.cityid
                   }
                 }).then(res => {
                   if(res.data.status == 200){
@@ -134,29 +134,23 @@
             this.form.UAdefault = !this.form.UAdefault;
           },
           pickerSave(v,target,id){
-
             this.show_picker = v;
             if(target){
               this.address[id] = target;
               for(let i = 0;i<this.address_list[id].length;i++){
                 if(this.address_list[id][i].name == target){
-                  this.address_id[id + '_id'] = this.address_list[id][i][id +'_id'];
-                  console.log(this.address_list[id][i][id + '_id'])
+                  this.address_id[id + 'id'] = this.address_list[id][i][id +'id'];
+                  console.log(this.address_list[id][i][id + 'id'])
                 }
               }
             }else if(target == '' && id){
               this.params = id;
-              if(id != 'province')
-                   this.getSlot(id);
+             this.getSlot(id);
             }
           },
           saveClick(){
-            let _params = '';
-            for(let i in this.address){
-              _params = _params + this.address[i]
-            }
-            this.form.UAtext = _params  + this.form.UAtext;
             this.form.UAdefault = Boolean(this.form.UAdefault);
+            this.form.areaid = this.address_id.areaid;
             if(this.form.UAid){
               axios.post(api.update_address +'?token='+localStorage.getItem('token') + '&uaid=' + this.form.UAid,this.form).then(res => {
                   if(res.data.status == 200 ){
@@ -205,7 +199,17 @@
         },
       mounted(){
           if(this.$route.query){
-            this.form = this.$route.query;
+            this.form.UAdefault = this.$route.query.UAdefault;
+            this.form.UAname = this.$route.query.UAname;
+            this.form.UAphone = this.$route.query.UAphone;
+            this.form.UAtext = this.$route.query.UAtext;
+            this.form.UAid = this.$route.query.UAid;
+            this.address.province = this.$route.query.province;
+            this.address.city = this.$route.query.city;
+            this.address.area = this.$route.query.area;
+            this.address_id.provinceid = this.$route.query.provinceid;
+            this.address_id.cityid = this.$route.query.cityid;
+            this.address_id.areaid = this.$route.query.areaid;
           }
           this.getSlot('province');
       },

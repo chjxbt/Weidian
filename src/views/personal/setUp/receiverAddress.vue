@@ -12,9 +12,9 @@
               <div class="m-address-row">
                 <div class="tl m-address">
                   <span class="m-mo" v-if="item.uadefault">[ 默认地址 ]</span>
-                  <span>{{item.uatext}}</span>
+                  <span>{{item.area.province}}{{item.area.city}}{{item.area.area}}{{item.uatext}}</span>
                 </div>
-                <span class="m-edit" @click="addressClick(item)">编辑</span>
+                <span class="m-edit" @click="addressClick($event,item)">编辑</span>
               </div>
             </div>
           </div>
@@ -37,7 +37,12 @@
         data() {
             return {
               have_address:true,
-              address_list:[]
+              address_list:[],
+              area:{
+                province:'',
+                city:'',
+                area:''
+              }
             }
         },
         components: {},
@@ -45,7 +50,7 @@
           this.getInfo();
       },
         methods: {
-          addressClick(v){
+          addressClick(e,v){
             if(v){
               this.$router.push({
                 path:'/editAddress',
@@ -54,7 +59,13 @@
                   UAname:v.uaname,
                   UAphone:v.uaphone,
                   UAtext:v.uatext,
-                  UAid:v.uaid
+                  UAid:v.uaid,
+                  province:v.area.province,
+                  city:v.area.city,
+                  area:v.area.area,
+                  provinceid:v.area.provinceid,
+                  cityid:v.area.cityid,
+                  areaid:v.area.areaid
                 }
               })
             }else{
@@ -73,13 +84,28 @@
                   let arr = [];
                   let _arr =[];
                   for(let i=0;i<res.data.data.length;i++){
+                    res.data.data[i].area = {
+                      province:'',
+                      city:'',
+                      area:''
+                    };
                     if(res.data.data[i].uadefault){
                       arr.push(res.data.data[i])
                     }else{
                       _arr.push(res.data.data[i])
                     }
+
                   }
-                  this.address_list = arr.concat(_arr);
+                  arr = arr.concat(_arr);
+                  for(let i=0;i<arr.length;i++){
+                      arr[i].area.province = arr[i].addressinfo[2].name;
+                      arr[i].area.area = arr[i].addressinfo[0].name;
+                      arr[i].area.city = arr[i].addressinfo[1].name;
+                      arr[i].area.provinceid = arr[i].addressinfo[2].provinceid;
+                      arr[i].area.areaid = arr[i].addressinfo[0].areaid;
+                      arr[i].area.cityid = arr[i].addressinfo[1].cityid;
+                  }
+                  this.address_list = [].concat(arr);
                 }
             })
           }
