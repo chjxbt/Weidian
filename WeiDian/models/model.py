@@ -658,7 +658,7 @@ class Task(BaseModel):
     __tablename__ = "task"
     TAid = Column(String(64), primary_key=True)
     TAname = Column(Text)              # 任务名
-    TAtype = Column(Integer)           # 任务类型
+    TAtype = Column(Integer)           # 任务类型 {0: "观看视频", 1: "", 2: "", 3: "", 4: "",}
     TAisOpen = Column(Integer)         # 是否开启
     # TAhead = Column(Text)              # 任务前部头像图片
     TAcreatetime = Column(String(14))  # 任务创建时间
@@ -666,22 +666,16 @@ class Task(BaseModel):
     TAendTime = Column(String(14))     # 任务结束时间
     TAduration = Column(String(14))    # 任务持续时间
     TAcontent = Column(Text)           # 任务描述
-    TAstatus = Column(Integer)         # 任务状态 {0: "进行中", 1: "已完成", 2: "已暂停", 3: "已过期1",}
+    TAstatus = Column(Integer)         # 任务状态 {0: "进行中", 1: "已完成", 2: "已暂停", 3: "已过期",}
     # USid = Column(String(64))
     TAlevel = Column(Integer)          # 任务等级 {0: "1级", 1: "2级", 2: "3级",}
     TArole = Column(Text)              # 规则弹框图片
+    TIhead = Column(Text)              # 任务头像
+    # TIcontent = Column(Text)           #
+    TImessage = Column(Text)           # 备注
+    TIurl = Column(Text)               # 跳转链接
 
 
-class TaskItem(BaseModel):
-    __tablename__ = "taskitem"
-    TIid = Column(String(64), primary_key=True)
-    TAid = Column(String(64))      # 任务id
-    # TAprogress = Column(Integer)
-    # TIprice = Column(Float)        # 完成奖励
-    TIhead = Column(Text)          #
-    TIcontent = Column(Text)
-    TImessage = Column(Text)       # 备注
-    TIurl = Column(Text)
 
 
 class TaskUser(BaseModel):
