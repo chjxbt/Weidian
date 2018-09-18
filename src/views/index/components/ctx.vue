@@ -175,8 +175,8 @@
             display: block;
             width: 180px;
             height: 180px;
-            margin-right: 10px;
-            margin-top: 10px;
+            margin-right: 12px;
+            margin-top: 12px;
             &.active {
               width: 187px;
               height: 187px;
