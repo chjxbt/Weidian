@@ -10,10 +10,11 @@ def parameter_required(*required):
     :param required:必须的参数列表
     :return:传入的参数
     """
-    data = request.json
+
+    data = request.json or request.args.to_dict()
     logger.debug('get request data %s', data)
     if not data:
-        raise PARAMS_MISS('未传入参数')
+        raise PARAMS_MISS(u'未传入参数')
     if required:
         missed = filter(lambda x: x not in data, required)
         if missed:

@@ -17,7 +17,12 @@ class AMyCenter(Resource):
             "get_info": "self.control_mycenter.get_info()",
             "get_rule": "self.control_mycenter.get_levelrules()",
             "get_account_info": "self.control_mycenter.get_accountinfo()",
-            "get_address": "self.control_mycenter.get_useraddress()"
+            "get_address": "self.control_mycenter.get_useraddress()",
+            "get_bank_list": "self.control_mycenter.get_bankname_list()",
+            "get_mybankcard": "self.control_mycenter.get_bankcard()",
+            "get_province": "self.control_mycenter.get_province()",
+            "get_city": "self.control_mycenter.get_city_by_provincenum()",
+            "get_area": "self.control_mycenter.get_area_by_citynum()"
         }
         res = eval(apis[myinfo])
         return jsonify(res)
@@ -27,7 +32,8 @@ class AMyCenter(Resource):
         apis = {
             "add_address": "self.control_mycenter.add_useraddress()",
             "update_address": "self.control_mycenter.update_address()",
-            "del_address": "self.control_mycenter.del_address()"
+            "del_address": "self.control_mycenter.del_address()",
+            "add_bankcard": "self.control_mycenter.add_bankcard()"
         }
         res = eval(apis[myinfo])
         return jsonify(res)
