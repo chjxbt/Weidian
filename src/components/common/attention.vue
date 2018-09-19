@@ -45,7 +45,6 @@
           for(let i = 0; i < this.shareParams.media.length; i ++) {
             productImgList.push(this.shareParams.media[i].amimage);
           }
-          console.log(productImgList);
           // let productImgList = ["/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product4.png"];
           // let productImgList = ["/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product4.png", "/static/images/share/product5.png", "/static/images/share/product.jpg"];
 
@@ -69,13 +68,18 @@
           context.font="30px PingFang-SC";
           let name = this.shareParams.product.prname;
           let col = 12;
-          for(let i = 0; i < col; i ++) {
-            context.fillText(name[i], (90 + 34 * i), 970);
+          if(name.length < 12 || name.length == 12) {
+            for(let i = 0; i < name.length; i ++) {
+              context.fillText(name[i], (90 + 34 * i), 970);
+              // console.log(name[i])
+            }
           }
-          for(let i = col; i < (2 * col - 1); i ++) {
-            context.fillText(name[i], (90 + 34 * (i - col)), 1015);
-            if(i == (2 * col - 2)) {
-              context.fillText("...", 90 + 34 * (i - col + 1), 1015);
+          if(name.length > 12) {
+            for(let i = col; i < (2 * col - 1); i ++) {
+              context.fillText(name[i], (90 + 34 * (i - col)), 1015);
+              if(i == (2 * col - 2)) {
+                context.fillText("...", 90 + 34 * (i - col + 1), 1015);
+              }
             }
           }
 
@@ -92,7 +96,7 @@
           // 添加原价文字
           context.fillStyle = "#a4a4a4";
           context.font="30px PingFang-SC";
-          context.fillText("原价：￥" + this.shareParams.product.prprice + 20, 90, 1200);
+          context.fillText("原价：￥" + this.shareParams.product.prprice, 90, 1200);
 
           // 创建要添加到canvas上的image对象
           let img0 = new Image();
@@ -192,7 +196,7 @@
         // console.log(this.show_fixed);
       },
       created() {
-        // this.shareImg();
+
       }
     }
 </script>
@@ -202,10 +206,11 @@
   .m-modal-state {
     width: 640px !important;
     .m-modal-head {
-
+      width: 92% !important;
     }
     .m-modal-content {
       width: 100%;
+      border-bottom: 0 !important;
       padding: 0 !important;
       .h3-text {
         margin-top: -20px;
