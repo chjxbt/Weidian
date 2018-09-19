@@ -13,7 +13,7 @@
       </div>
 
       <div class="m-modal-content" v-if="show_fixed">
-        <img id="avatar" class="canvas-img" style="width: 300px; height: 178px;">
+        <img id="avatar" class="canvas-img" style="width: 320px; height: 190px;">
 
         <p class="grey-text">长按图片分享您的专属二维码</p>
       </div>
@@ -166,8 +166,8 @@
                             let base64 = canvas.toDataURL("image/png");  //"image/png" 这里注意一下
                             let img = document.getElementById('avatar');
 
-                            img.style.width = "213px";
-                            img.style.height = "178px";
+                            img.style.width = "227px";
+                            img.style.height = "190px";
                             // document.getElementById('avatar').src = base64;
                             img.setAttribute('src' , base64);
                           }
@@ -193,29 +193,32 @@
 <style lang="less" rel="stylesheet/less" scoped>
   @import "../../common/css/modal";
 
-  .m-modal-head {
+  .m-modal-state {
+    width: 640px!important;
+    .m-modal-head {
 
-  }
-  .m-modal-content {
-    width: 100%;
-    padding: 0 !important;
-    .h3-text {
-      margin-top: -20px;
-      margin-bottom: 40px !important;
-      white-space: nowrap;
     }
-    .m-share-img {
-      margin-bottom: -20px;
-    }
-    .grey-text {
-      margin-top: 40px;
-      /*border-top: 1px #d3d3d3 solid;*/
-      line-height: 80px;
-      letter-spacing: 1.2px;
-    }
-    .canvas-img {
-      margin-top: 10px;
-      margin-bottom: -20px;
+    .m-modal-content {
+      width: 100%;
+      padding: 0 !important;
+      .h3-text {
+        margin-top: -20px;
+        margin-bottom: 40px !important;
+        white-space: nowrap;
+      }
+      .m-share-img {
+        margin-bottom: -20px;
+      }
+      .canvas-img {
+        margin-top: 10px;
+        margin-bottom: -20px;
+      }
+      .grey-text {
+        margin-top: 20px;
+        /*border-top: 1px #d3d3d3 solid;*/
+        line-height: 80px;
+        letter-spacing: 1.2px;
+      }
     }
   }
 </style>
