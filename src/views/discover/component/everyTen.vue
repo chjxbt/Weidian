@@ -39,7 +39,7 @@
     </div>
 
     <!--<share v-if="show_fixed" @fixedClick="fixedClick"></share>-->
-    <attention v-if="show_fixed" @closeModal="closeModal('show_fixed')"></attention>
+    <attention v-if="show_fixed" @closeModal="closeModal('show_fixed')" :show_fixed="show_fixed"></attention>
   </div>
 </template>
 

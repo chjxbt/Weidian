@@ -16,10 +16,9 @@
 
     <img id="avatar" src="" alt="" style="width: 344px; height: 204px">
 
-    <!--<canvas id="myCanvas" style="border: 1px #d3d3d3 solid;">-->
-    <canvas id="myCanvas">
+    <!--<canvas id="myCanvas">
       Your browser does not support the HTML5 canvas tag.
-    </canvas>
+    </canvas>-->
 
   </div>
 </template>
@@ -38,8 +37,8 @@
       // 合成图片
       shareImg() {
 
-        let productImgList = ["https://daaiti.cn/static/clothesdemo0919120348.png", "http://pic.58pic.com/58pic/15/63/07/42Q58PIC42U_1024.jpg", "/static/images/share/product2.png", "/static/images/share/product4.png"];
-        // let productImgList = ["/static/images/share/product1.png", "/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product4.png", "/static/images/share/product5.png", "/static/images/share/product.jpg"];
+        let productImgList = ["https://daaiti.cn/static/clothesdemo0919120348.png", "https://daaiti.cn/static/clothesdemo0919120348.png", "/static/images/share/product2.png", "/static/images/share/product4.png"];
+        // let productImgList = ["https://daaiti.cn/static/clothesdemo0919120348.png", "https://daaiti.cn/static/clothesdemo0919120348.png", "/static/images/share/product2.png", "/static/images/share/product4.png", "/static/images/share/product5.png", "/static/images/share/product.jpg"];
 
         let canvas = document.createElement("canvas");
         let context = canvas.getContext("2d");
@@ -134,6 +133,7 @@
                       img9.src = "/static/images/share/delete.png";
                       img9.onload = function(){
                         context.drawImage(img9 , 175 , 1180 , 150 , 20);
+                        console.log(img1, img2, img3, img4, img5, img6);
 
                         // 大集合图
                         if(productImgList.length == 6) {
