@@ -201,10 +201,12 @@
     width: 100%;
     padding: 0 !important;
     .h3-text {
+      margin-top: -20px;
+      margin-bottom: 40px !important;
       white-space: nowrap;
     }
     .grey-text {
-      margin-top: 30px;
+      margin-top: 40px;
       border-top: 1px #d3d3d3 solid;
       line-height: 80px;
     }
