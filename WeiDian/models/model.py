@@ -738,49 +738,62 @@ class UserAddress(BaseModel):
     UAtext = Column(String(255), nullable=False)        # 具体地址
     UAdefault = Column(Boolean, default=False)          # 默认收获地址
     UAisdelete = Column(Boolean, default=False)         # 删除
-    UAceratetime = Column(String(14))                   # 创建时间
+    UAcreatetime = Column(String(14))                   # 创建时间
+    areaid = Column(String(8), nullable=False)         # 关联的区域id
 
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['UAid', 'UAname', 'UAphone', 'UAtext', 'UAdefault']
+        self.fields = ['UAid', 'UAname', 'UAphone', 'UAtext', 'UAdefault', 'areaid']
 
 
 class Province(BaseModel):
     """省"""
     __tablename__ = 'province'
-    _id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
     name = Column(String(20), nullable=False)
-    province_id = Column(String(8), nullable=False)
+    provinceid = Column(String(8), nullable=False)
 
     @orm.reconstructor
     def __init__(self):
-        self.fields = self.all
+        self.fields = ['name', 'provinceid']
 
 class City(BaseModel):
     """市"""
     __tablename__ = 'city'
-    _id = Column(Integer, primary_key=True)
-    city_id = Column(String(8), nullable=False)
+    id = Column(Integer, primary_key=True)
+    cityid = Column(String(8), nullable=False)
     name = Column(String(20), nullable=False)
-    province_id = Column(String(8), nullable=False)
+    provinceid = Column(String(8), nullable=False)
 
     @orm.reconstructor
     def __init__(self):
-        self.fields = self.all
+        self.fields = ['cityid', 'name', 'provinceid']
 
 class Area(BaseModel):
     """区县"""
     __tablename__ = 'area'
-    _id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
     name = Column(String(20), nullable=False)
-    area_id = Column(String(8), nullable=False)
-    city_id = Column(String(8), nullable=False)
+    areaid = Column(String(8), nullable=False)
+    cityid = Column(String(8), nullable=False)
+
+    @orm.reconstructor
+    def __init__(self):
+        self.fields = ['name', 'areaid', 'cityid']
+
+
+class IdentifyingCode(BaseModel):
+    """验证码"""
+    __tablename__ = "identifyingcode"
+    ICid = Column(String(64), primary_key=True)
+    ICtelphone = Column(String(14), nullable=False)  # 获取验证码的手机号
+    ICcode = Column(String(8), nullable=False)    # 获取到的验证码
+    ICtime = Column(String(14), nullable=False)    # 获取的时间，格式为20180503100322
 
     @orm.reconstructor
     def __init__(self):
         self.fields = self.all
-
 #
 # class PersonalInfo(BaseModel):
 #     """账号设置个人信息"""

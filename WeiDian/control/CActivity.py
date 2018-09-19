@@ -3,10 +3,10 @@ import sys
 import os
 from datetime import datetime, timedelta
 
-from WeiDian.common.log import make_log, judge_keys
+from WeiDian import logger
+from WeiDian.common.params_require import parameter_required
 from flask import request
 import math
-import json
 import uuid
 from sqlalchemy.orm import Session
 from WeiDian.common.token_required import verify_token_decorator, is_admin, is_tourist
@@ -49,7 +49,7 @@ class CActivity(BaseActivityControl):
             return AUTHORITY_ERROR(u"未登录")
         print '已登录'
         args = request.args.to_dict()
-        make_log("args", args)
+        logger.info("this is get all activity args %s", args)
         tnid = args.get('tnid')  # 导航id
         suid = args.get('suid')  # 管理员id
         lasting = args.get('lasting', 'true')  # 是否正在进行的活动
@@ -223,20 +223,15 @@ class CActivity(BaseActivityControl):
         if not is_admin():
             return AUTHORITY_ERROR  # 权限不足
         args = request.args.to_dict()
-        make_log("args", args)
-        data = json.loads(request.data)
-        make_log("data", data)
-        true_data = ["PRid", "ACtype", "TopnavId", "ACtext", "AClikeFakeNum", "ACforwardFakenum",\
-                     "ACProductsSoldFakeNum", "ACstarttime", "ACendtime", "ACistop"]
-        if judge_keys(true_data, data.keys()) != 200:
-            return judge_keys(true_data, data.keys())
+        logger.info("this is update activity args %s", args)
+        data = request.json
+        logger.info("this is update activity data %s", data)
+        parameter_required("acid", "PRid", "ACtype", "TopnavId", "ACtext", "AClikeFakeNum", "ACforwardFakenum", "ACProductsSoldFakeNum", "ACstarttime", "ACendtime", "ACistop")
         now_time = datetime.strftime(datetime.now(), format_for_db)
         data['ACupdatetime'] = now_time
         act_info = self.sactivity.update_activity_by_acid(args["acid"], data)
-        make_log("update_activity", act_info)
         if not act_info:
             return SYSTEM_ERROR
-        response_update_activity = import_status(
-            'update_activity_success', 'OK')
-        response_update_activity['data'] = {'acid': args["acid"]}
-        return response_update_activity
+        response = import_status('update_activity_success', 'OK')
+        response['data'] = {'acid': args["acid"]}
+        return response

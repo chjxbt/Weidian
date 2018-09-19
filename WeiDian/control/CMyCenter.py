@@ -10,7 +10,7 @@ from WeiDian.common.import_status import import_status
 from WeiDian.common.params_require import parameter_required
 from WeiDian.common.token_required import verify_token_decorator, is_tourist
 from WeiDian.config.enums import BANK_MAP
-from WeiDian.config.response import AUTHORITY_ERROR, SYSTEM_ERROR, TOKEN_ERROR, PARAMS_ERROR
+from WeiDian.config.response import AUTHORITY_ERROR, SYSTEM_ERROR, TOKEN_ERROR, PARAMS_ERROR, TIME_ERROR, PARAMS_MISS
 from WeiDian.control.BaseControl import BaseMyCenterControl
 from flask import request
 
@@ -52,16 +52,6 @@ class CMyCenter(BaseMyCenterControl):
     def get_levelrules(self):
         if is_tourist():
             return AUTHORITY_ERROR(u"未登录")
-        # try:
-        #     with open('WeiDian/config/levelrules.cfg', 'r') as f:
-        #         lr = f.read()
-        #     lr = re.sub('\s', '', lr)
-        #     data = import_status("get_levelrules_success", "OK")
-        #     data["data"] = lr
-        #     return data
-        # except:
-        #     logger.exception("get level rules error")
-        #     return SYSTEM_ERROR
         try:
             lr_list = self.slevelrules.get_rule_list()
             logger.debug("get level rules")
@@ -91,13 +81,17 @@ class CMyCenter(BaseMyCenterControl):
             user.wxnum = '1234000暂取不到'
             # TODO 微信号暂时获取不到
             address = self.suesraddress.get_default_address_by_usid(usid)
+            location = self.suesraddress.get_addressinfo_by_areaid(address.areaid)
+            for area, city, provice in location:
+                locationname = provice.name + city.name + area.name
+            # print ''.join([x[1] for x in area])
             logger.debug("get address info by usid")
             bankcard = self.sbankcard.get_bankcard_by_usid(usid)
             logger.debug("get bankcard info by usid")
             response = import_status("get_accountinfo_success", "OK")
             response['data'] = {
                 "user": user.add('wxnum').hide('USid'),
-                "address": address.UAtext,
+                "address": '%s%s'%(locationname, address.UAtext),
                 "bankcard": bankcard.BCnumber,
             }
             return response
@@ -113,6 +107,7 @@ class CMyCenter(BaseMyCenterControl):
         try:
             adderss_list = self.suesraddress.get_address_list_by_usid(request.user.id)
             logger.debug("get address list")
+            self.fill_areainfo_by_areaid(adderss_list)
             data = import_status("get_useraddress_success", "OK")
             data['data'] = adderss_list
             return data
@@ -120,11 +115,22 @@ class CMyCenter(BaseMyCenterControl):
             logger.exception("get useraddress by usid error ")
             return SYSTEM_ERROR
 
+    def fill_areainfo_by_areaid(self, address_list):
+        for address in address_list:
+            adr = self.suesraddress.get_address_by_uaid(address.UAid)
+            addressinfoes = self.suesraddress.get_addressinfo_by_areaid(adr.areaid)
+            for addressinfo in addressinfoes:
+                address.addressinfo = addressinfo
+                address.add("addressinfo")
+        return address_list
+
+
+
     @verify_token_decorator
     def add_useraddress(self):
         if not hasattr(request, 'user'):
             return TOKEN_ERROR(u"未登录, 或token错误")
-        parameter_required("UAname", "UAphone", "UAtext")
+        parameter_required("areaid", "UAname", "UAphone", "UAtext")
         data = request.json
         logger.info("this is useraddress data %s", data)
         try:
@@ -142,6 +148,7 @@ class CMyCenter(BaseMyCenterControl):
                 "UAname": data.get("UAname"),
                 "UAphone": data.get("UAphone"),
                 "UAtext": data.get("UAtext"),
+                "areaid": data.get("areaid"),
                 "UAdefault": uadefault
             })
             response = import_status("add_address_success", "OK")
@@ -163,8 +170,8 @@ class CMyCenter(BaseMyCenterControl):
         logger.info("this is address data %s", data)
         try:
             exist_default = self.suesraddress.get_default_address_by_usid(request.user.id)
-            parameter_required("UAname", "UAphone", "UAtext", "UAdefault")
-            if data.get("UAdefault") == 1 and exist_default:
+            parameter_required("uaid", "areaid", "UAname", "UAphone", "UAtext", "UAdefault")
+            if data.get("UAdefault") is True and exist_default:
                 self.suesraddress.change_default_address_status(exist_default.UAid, {'UAdefault': False})
             update_address = self.suesraddress.update_address(args["uaid"], data)
             logger.debug("update address accress ")
@@ -199,9 +206,9 @@ class CMyCenter(BaseMyCenterControl):
     """省市区地址"""
     def get_province(self):
         try:
-            province_list = self.sbankcard.get_province()
+            province_list = self.suesraddress.get_province()
             logger.debug("get province")
-            map(lambda x: x.hide('_id'), province_list)
+            # map(lambda x: x.hide('_id'), province_list)
             res = import_status("get_province_list_success", "OK")
             res["data"] = province_list
             return res
@@ -212,12 +219,12 @@ class CMyCenter(BaseMyCenterControl):
     def get_city_by_provincenum(self):
         args = request.args.to_dict()
         logger.info("get city list args is %s", args)
-        parameter_required("province_id")
-        province_id = args["province_id"]
+        parameter_required("provinceid")
+        province_id = args["provinceid"]
         try:
             logger.debug("get citylist by province_id")
-            city_list = self.sbankcard.get_citylist_by_provinceid(province_id)
-            map(lambda x: x.hide('_id'), city_list)
+            city_list = self.suesraddress.get_citylist_by_provinceid(province_id)
+            # map(lambda x: x.hide('_id'), city_list)
             res = import_status("get_city_list_success", "OK")
             res["data"] = city_list
             return res
@@ -228,22 +235,18 @@ class CMyCenter(BaseMyCenterControl):
     def get_area_by_citynum(self):
         args = request.args.to_dict()
         logger.info("get area args is %s", args)
-        parameter_required('city_id')
-        city_id = args['city_id']
+        parameter_required('cityid')
+        city_id = args['cityid']
         try:
             logger.debug("get arealist by cityid")
-            area_list = self.sbankcard.get_arealist_by_cityid(city_id)
-            map(lambda x: x.hide('_id'), area_list)
+            area_list = self.suesraddress.get_arealist_by_cityid(city_id)
+            # map(lambda x: x.hide('_id'), area_list)
             res = import_status("get_area_list_success", "OK")
             res["data"] = area_list
             return res
         except:
             logger.exception("get area list error")
             return SYSTEM_ERROR
-
-
-
-
 
     """银行卡部分"""
     @verify_token_decorator
@@ -290,7 +293,45 @@ class CMyCenter(BaseMyCenterControl):
             logger.exception("get bankcard error")
             return SYSTEM_ERROR
 
+    @verify_token_decorator
+    def del_bankcard(self):
+        if not hasattr(request, 'user'):
+            return TOKEN_ERROR(u"未登录, 或token错误")
+        data = request.json
+        logger.info("this is del bankcard data %s", data)
+        parameter_required("BCid")
+        try:
+            logger.debug("del bankcard")
+            del_bankcard = self.sbankcard.del_bankcard(data.get("BCid"), request.user.id)
+            if not del_bankcard:
+                return SYSTEM_ERROR
+            response = import_status("delete_bankcard_success", "OK")
+            response['data'] = {"bcid": data.get("BCid")}
+            return response
+        except:
+            logger.exception("del address error")
+            return SYSTEM_ERROR
 
+    @verify_token_decorator
+    def update_bankcard(self):
+        if not hasattr(request, 'user'):
+            return TOKEN_ERROR(u"未登录, 或token错误")
+        args = request.args.to_dict()
+        logger.info("this is update bankcard args %s", args)
+        data = request.json
+        logger.info("this is update bankcard data %s", data)
+        try:
+            parameter_required("bcid", "BCusername", "BCnumber", "BCbankname", "BCaddress")
+            update_bankcard = self.sbankcard.update_bankcard(args["bcid"], data)
+            logger.debug("update bankcard accress")
+            if not update_bankcard:
+                return SYSTEM_ERROR
+            response = import_status("update_bankcard_success", "OK")
+            response["data"] = {"bcid": args["bcid"]}
+            return response
+        except:
+            logger.exception("update bankcard error")
+            return SYSTEM_ERROR
 
     @verify_token_decorator
     def get_bankname_list(self):
@@ -299,6 +340,95 @@ class CMyCenter(BaseMyCenterControl):
         data = import_status("get_useraddress_success", "OK")
         data['data'] = BANK_MAP
         return data
+
+    """发送/校验验证码"""
+    @verify_token_decorator
+    def get_inforcode(self):
+        # return TIME_ERROR
+        if not hasattr(request, 'user'):
+            return TOKEN_ERROR(u"未登录, 或token错误")
+        user = self.suser.get_user_by_user_id(request.user.id)
+        if not user:
+            return SYSTEM_ERROR
+        Utel = user.USphone
+        # 拼接验证码字符串（6位）
+        code = ""
+        while len(code) < 6:
+            import random
+            item = random.randint(1, 9)
+            code = code + str(item)
+
+        # 获取当前时间，与上一次获取的时间进行比较，小于60秒的获取直接报错
+        import datetime
+        from WeiDian.common.timeformat import format_for_db
+        time_time = datetime.datetime.now()
+        time_str = datetime.datetime.strftime(time_time, format_for_db)
+
+        # 根据电话号码获取时间
+        time_up = self.smycenter.get_uptime_by_utel(Utel)
+        logger.debug("this is time up %s", time_up)
+
+        if time_up:
+            time_up_time = datetime.datetime.strptime(time_up.ICtime, format_for_db)
+            delta = time_time - time_up_time
+            if delta.seconds < 60:
+                return import_status("ERROR_MESSAGE_GET_CODE_FAST", "WEIDIAN_ERROR", "ERROR_CODE_GET_CODE_FAST")
+
+        new_inforcode = self.smycenter.add_inforcode(Utel, code, time_str)
+
+        logger.debug("this is new inforcode %s ", new_inforcode)
+
+        if not new_inforcode:
+            return SYSTEM_ERROR
+        from WeiDian.config.Inforcode import SignName, TemplateCode
+        from WeiDian.common.Inforsend import send_sms
+        params = '{\"code\":\"' + code + '\",\"product\":\"etech\"}'
+
+        # params = u'{"name":"wqb","code":"12345678","address":"bz","phone":"13000000000"}'
+        __business_id = uuid.uuid1()
+        response_send_message = send_sms(__business_id, Utel, SignName, TemplateCode, params)
+
+        response_send_message = json.loads(response_send_message)
+        logger.debug("this is response %s", response_send_message)
+
+        if response_send_message["Code"] == "OK":
+            status = 200
+        else:
+            status = 405
+        # 手机号中四位替换为星号
+        # response_ok = {"usphone": Utel[:3] + '****' + Utel[-4: ]}
+        response_ok = {"usphone": Utel}
+        response_ok["status"] = status
+        response_ok["messages"] = response_send_message["Message"]
+
+        return response_ok
+
+    @verify_token_decorator
+    def verify_inforcode(self):
+        if not hasattr(request, 'user'):
+            return TOKEN_ERROR(u"未登录, 或token错误")
+        data = request.json
+        user = self.suser.get_user_by_user_id(request.user.id)
+        codeinfo = self.smycenter.get_inforcode_by_usphone(user.USphone)
+        if not codeinfo:
+            return SYSTEM_ERROR(u"用户验证信息错误")
+        iccode = data.get("ICcode")
+        verifystatus = True if iccode == codeinfo.ICcode else False
+        verifymessage = u"验证码正确" if verifystatus is True else u"验证码错误"
+        response = import_status("verify_inforcode_access", "OK")
+        response["data"] = {"verifystatus": verifystatus,
+                            "verifymessage": verifymessage
+                            }
+        return response
+
+
+
+
+
+
+
+
+
 
 
 

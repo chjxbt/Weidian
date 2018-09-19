@@ -10,11 +10,16 @@ def parameter_required(*required):
     :param required:必须的参数列表
     :return:传入的参数
     """
-    data = request.json or request.args.to_dict()
-    if not data:
+    body_data = request.json or {}
+    query_data = request.args.to_dict() or {}
+    total_date = dict(body_data, **query_data)
+    # data.update(query_data)
+
+    if not total_date:
         raise PARAMS_MISS(u'未传入参数')
     if required:
-        missed = filter(lambda x: x not in data, required)
+        missed = filter(lambda x: x not in total_date, required)
         if missed:
             raise PARAMS_MISS(u'必要参数缺失: ' + '/'.join(missed))
-    return data
+    return body_data
+    # TODO 校验参数待重新修改
