@@ -655,41 +655,39 @@ class Complain(BaseModel):
         self.fields = ['COid', 'COcontent', 'COtype', "OIid", "USid", 'COtreatstatus']
 
 
+# 任务
 class Task(BaseModel):
     __tablename__ = "task"
     TAid = Column(String(64), primary_key=True)
-    TAname = Column(Text)              # 任务名
-    TAtype = Column(Integer)           # 任务类型 {0: "观看视频", 1: "", 2: "", 3: "", 4: "",}
+    TAname = Column(Text)              # 任务标题
+    TAtype = Column(Integer)           # 任务类型 {0: "观看视频", 1: "转发商品", 2: "售出商品", 3: "售出大礼包", 4: "",}
     TAisOpen = Column(Integer)         # 是否开启
-    # TAhead = Column(Text)              # 任务前部头像图片
+    TAhead = Column(Text)              # 任务前部头像图片
     TAcreatetime = Column(String(14))  # 任务创建时间
     TAstartTime = Column(String(14))   # 任务开启时间
     TAendTime = Column(String(14))     # 任务结束时间
     TAduration = Column(String(14))    # 任务持续时间
-    TAcontent = Column(Text)           # 任务描述
-    TAstatus = Column(Integer)         # 任务状态 {0: "进行中", 1: "已完成", 2: "已暂停", 3: "已过期",}
-    # USid = Column(String(64))
-    TAlevel = Column(Integer)          # 任务等级 {0: "1级", 1: "2级", 2: "3级",}
+    TAstatus = Column(Integer)         # 任务状态 {0: "进行中", 1: "已结束", 2: "已暂停", 3: "已过期",}
+    TAlevel = Column(Integer)          # 任务等级 {0: "1级", 1: "2级", 2: "3级", 4:"额外"}
     TArole = Column(Text)              # 规则弹框图片
-    TIhead = Column(Text)              # 任务头像
-    # TIcontent = Column(Text)           #
-    TImessage = Column(Text)           # 备注
-    TIurl = Column(Text)               # 跳转链接
+    TAmessage = Column(Text)           # 备注
+    TAurl = Column(Text)               # 跳转链接 如果是观看视频，则存入对应视频url，如果不是。则为空
+    TAcomplateNotifications = Column(Text)  # 任务完成提示图片
 
 
-
-
+# 用户任务关联表
 class TaskUser(BaseModel):
     __tablename__ = "taskuser"
     TUid = Column(String(64), primary_key=True)
     USid = Column(String(64))
     TAid = Column(String(64))
     TUcreatetime = Column(String(14))
+    TUstatus = Column(Integer)  # 任务状态 {0: "进行中", 1: "已完成", 2: "已过期"}
     TUendtime = Column(String(14))
-    # TAprice = Column(Float)
     RAid = Column(String(64))
 
 
+# 优惠券
 class Raward(BaseModel):
     __tablename__ = "raward"
     RAid = Column(String(64), primary_key=True)
