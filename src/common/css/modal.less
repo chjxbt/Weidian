@@ -41,6 +41,9 @@
     border-radius: 10px;
     -webkit-transition: height 0.88s;
     transition: height 0.88s;
+    &.m-bank-modal-state{
+      height: 400px;
+    }
     .m-modal-head{
       padding: 10px 20px;
       .flex-row(flex-end);
@@ -48,9 +51,20 @@
         font-size: 45px;
         color: #a4a4a4;
       }
+      &.m-bank{
+        .flex-row(space-between);
+        p{
+          width: 100%;
+          text-align: center;
+          font-weight: 500;
+        }
+      }
     }
     .m-modal-content{
       padding: 0 100px;
+      &.m-bank-modal{
+        padding: 0 50px;
+      }
       h3{
         font-size: 34px;
         font-weight: 600;

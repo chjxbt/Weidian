@@ -88,13 +88,26 @@
         methods: {
           addBankcard(){
             // this.$router.push('/result');
-            axios.post(api.add_bankcard+'?token='+localStorage.getItem('token'),this.form).then(res => {
-              if(res.data.status == 200 ){
-                this.$router.push('/bankCard');
-              }else{
-                Toast({ message: res.data.message, className: 'm-toast-warning' });
-              }
-            })
+            if(this.$route.query.bcid){
+              axios.post(api.update_bankcard+'?token='+localStorage.getItem('token') +'&bcid=' +this.$route.query.bcid,this.form).then(res => {
+                if(res.data.status == 200 ){
+                  Toast({ message: res.data.message, className: 'm-toast-success' });
+                  this.$router.push('/bankCard');
+                }else{
+                  Toast({ message: res.data.message, className: 'm-toast-warning' });
+                }
+              })
+            }else{
+              axios.post(api.add_bankcard+'?token='+localStorage.getItem('token'),this.form).then(res => {
+                if(res.data.status == 200 ){
+                  Toast({ message: res.data.message, className: 'm-toast-success' });
+                  this.$router.push('/bankCard');
+                }else{
+                  Toast({ message: res.data.message, className: 'm-toast-warning' });
+                }
+              })
+            }
+
           },
           /*获取银行名*/
           getInfo(){

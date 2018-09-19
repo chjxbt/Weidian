@@ -44,6 +44,10 @@ const api={
   get_province: title +'/mycenter/get_province',//获取省
   get_city: title +'/mycenter/get_city',//获取市
   get_area: title +'/mycenter/get_area',//获取区
+  get_inforcode: title +'/mycenter/get_inforcode',//获取验证码
+  verify_inforcode: title +'/mycenter/verify_inforcode',//验证验证码
+  update_bankcard:title +'/mycenter/update_bankcard',//修改银行卡
+  del_bankcard: title +'/mycenter/del_bankcard',//解除
 };
 
 export default api

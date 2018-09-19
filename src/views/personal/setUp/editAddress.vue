@@ -140,7 +140,6 @@
               for(let i = 0;i<this.address_list[id].length;i++){
                 if(this.address_list[id][i].name == target){
                   this.address_id[id + 'id'] = this.address_list[id][i][id +'id'];
-                  console.log(this.address_list[id][i][id + 'id'])
                 }
               }
             }else if(target == '' && id){
