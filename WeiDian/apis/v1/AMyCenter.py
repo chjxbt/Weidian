@@ -33,7 +33,11 @@ class AMyCenter(Resource):
             "add_address": "self.control_mycenter.add_useraddress()",
             "update_address": "self.control_mycenter.update_address()",
             "del_address": "self.control_mycenter.del_address()",
-            "add_bankcard": "self.control_mycenter.add_bankcard()"
+            "add_bankcard": "self.control_mycenter.add_bankcard()",
+            "del_bankcard": "self.control_mycenter.del_bankcard()",
+            "update_bankcard": "self.control_mycenter.update_bankcard()",
+            "get_inforcode": "self.control_mycenter.get_inforcode()",
+            "verify_inforcode": "self.control_mycenter.verify_inforcode()"
         }
         res = eval(apis[myinfo])
         return jsonify(res)

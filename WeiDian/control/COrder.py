@@ -6,7 +6,7 @@ import random
 from datetime import datetime
 
 from WeiDian import logger
-from WeiDian.common.log import make_log, judge_keys
+from WeiDian.common.params_require import parameter_required
 from WeiDian.config.enums import ORDER_STATUS
 from flask import request
 from WeiDian.common.TransformToList import dict_add_models, list_add_models
@@ -93,12 +93,9 @@ class COrder():
         if is_tourist():
             return AUTHORITY_ERROR(u"未登录")
         args = request.args.to_dict()
-        make_log("args", args)
+        logger.info("get order list args is %s", args)
         sell = args.get('sell', 'false')
-        true_args = ["paystatus", "page_size", "page_num"]
-
-        if judge_keys(true_args, args.keys()) != 200:
-            return judge_keys(true_args, args.keys())
+        parameter_required("paystatus", "page_size", "page_num")
         status = args.get('paystatus')
         status = [str(i) for i in range(1, 12)] if status == '0' else status
         status = ['2', '4', '5', '7', '9', '10', '11'] if status == '20' else status
@@ -112,7 +109,7 @@ class COrder():
                 order_list_count = self.sorder.get_user_ordercount_by_status(request.user.id, status)
             for order in order_list:
                 order.fields = ['OIid', 'OIsn', 'OIpaystatus', 'OIcreatetime']
-            map(lambda x: x.fill(ORDER_STATUS.get(x.OIpaystatus), 'oipaystatusmsg'), order_list)
+            map(lambda x: x.fill(ORDER_STATUS.get(str(x.OIpaystatus)), 'oipaystatusmsg'), order_list)
             # map(self.fill_oistatusmessage, order_list)
             map(self.fill_productinfo, order_list)
             map(self.fill_complainstatus, order_list)
@@ -131,7 +128,7 @@ class COrder():
             return AUTHORITY_ERROR(u"未登录")
         print '已登录'
         args = request.args.to_dict()
-        make_log("args", args)
+        logger.info("get order count args is %s", args)
         sell = args.get('sell')
         print (request.user.id)
         all_status = ['1', '5', '6', '10', '11']
@@ -290,5 +287,5 @@ class COrder():
     #     # oipaystatusmsg = ORDER_STATUS[1]
     #     order.add('oipaystatusmsg')
     #     return order
-    #
+
 

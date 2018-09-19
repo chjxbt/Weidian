@@ -3,7 +3,6 @@ import sys
 import os
 
 from WeiDian import logger
-from WeiDian.common.log import make_log, judge_keys
 from flask import request
 import uuid
 from WeiDian.common.TransformToList import dict_add_models
@@ -57,15 +56,15 @@ class CProductLike():
         if is_tourist():
             return TOKEN_ERROR(u'未登录')
         args = request.args.to_dict()
-        make_log("args", args)
-        true_args = ["page_size", "page_num"]
-        if judge_keys(true_args, args.keys()) != 200:
-            return judge_keys(true_args, args.keys())
+        logger.info("get like list args is %s", args)
+        parameter_required("page_size", "page_num")
         try:
+            logger.debug("get product like")
             productlike_list = self.sproductlike.get_productlike_list_by_usid(request.user.id, int(args["page_num"]), int(args["page_size"]))
             map(self.fill_productinfo, productlike_list)
             # TODO 发圈数占位
             for prlike in productlike_list:
+                prlike.forwardnum = 99
                 prlike.add("forwardnum")
             prlikecount = self.sproductlike.get_prlike_count_by_usid(request.user.id)
             data = import_status("get_product_like_success", "OK")
@@ -82,7 +81,7 @@ class CProductLike():
             return TOKEN_ERROR(u'未登录')
         data = request.json
         plid_list = data.get("plid").split(',') if data and 'plid' in data else None
-        make_log("data", data)
+        logger.info("batch del prlike data is %s", data)
         print plid_list
         try:
             self.sproductlike.batch_delete_prlike(plid_list)
