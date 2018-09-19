@@ -10,11 +10,14 @@
     </div>-->
 
 
-
     <div class="m-btn">
       <div class="m-btn-text m-ft-28 m-grey-color"  @click="shareImg()">查看订单</div>
     </div>
-    <canvas id="myCanvas" style="border: 1px #d3d3d3 solid;">
+
+    <img id="avatar" src="" alt="" style="width: 344px; height: 204px">
+
+    <!--<canvas id="myCanvas" style="border: 1px #d3d3d3 solid;">-->
+    <canvas id="myCanvas">
       Your browser does not support the HTML5 canvas tag.
     </canvas>
 
@@ -35,10 +38,10 @@
       // 合成图片
       shareImg() {
 
-        // let productImgList = ["/static/images/share/product1.png", "/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product4.png"];
-        let productImgList = ["/static/images/share/product1.png", "/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product4.png", "/static/images/share/product5.png", "/static/images/share/product.jpg"];
+        let productImgList = ["https://daaiti.cn/static/clothesdemo0919120348.png", "http://pic.58pic.com/58pic/15/63/07/42Q58PIC42U_1024.jpg", "/static/images/share/product2.png", "/static/images/share/product4.png"];
+        // let productImgList = ["/static/images/share/product1.png", "/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product4.png", "/static/images/share/product5.png", "/static/images/share/product.jpg"];
 
-        let canvas = document.getElementById("myCanvas");
+        let canvas = document.createElement("canvas");
         let context = canvas.getContext("2d");
 
         // 小集合图、大集合图
@@ -49,7 +52,12 @@
           canvas.width = 2150;
         }
 
+        context.rect(0 , 0 , canvas.width , canvas.height);
+        context.fillStyle = "#fff";
+        context.fill();
+
         // 处理商品标题的字间距
+        context.fillStyle = "#000000";
         context.font="30px PingFang-SC";
         let name = "商品标题商品标题商品标题商品标题商品标题商品标题商品标题商品标题商品标题商";
         let col = 12;
@@ -62,6 +70,7 @@
             context.fillText("...", 90 + 34 * (i - col + 1), 1015);
           }
         }
+
         // 添加价格文字
         context.fillStyle = "#f43b51";
         context.font="bold 30px PingFang-SC";
@@ -140,8 +149,24 @@
                             img8.src = productImgList[4];
                             img8.onload = function(){
                               context.drawImage(img8 , 1500 , 650 , 600 , 600);
+
+                              let base64 = canvas.toDataURL("image/png");  //"image/png" 这里注意一下
+                              let img = document.getElementById('avatar');
+
+                              // document.getElementById('avatar').src = base64;
+                              img.setAttribute('src' , base64);
                             }
                           }
+                        }
+                        // 小集合图
+                        if(productImgList.length == 4) {
+                          let base64 = canvas.toDataURL("image/png");  //"image/png" 这里注意一下
+                          let img = document.getElementById('avatar');
+
+                          img.style.width = "244px";
+                          img.style.height = "204px";
+                          // document.getElementById('avatar').src = base64;
+                          img.setAttribute('src' , base64);
                         }
                       }
                     }
@@ -151,21 +176,10 @@
             }
           }
         };
-
-        let image = new Image();
-        image.src = canvas.toDataURL("image/png");  //"image/png" 这里注意一下
-        // let img64 = base64.replace(/^data:image\/(png|jpg);base64,/,"");
-
-        // console.log(Canvas2Image);
-        // Canvas2Image.saveAsPNG(canvas, 1275, 2150);
-
-
-
-        // let img = document.getElementById('myCanvas');
-        // img.setAttribute('src', base64);
-        // window.location.href = base64;   // 下载-无后缀名
-        // console.log(binaryImg);
       },
+
+
+
       // 查看订单
       orderDetail() {
         let order = this.order;
