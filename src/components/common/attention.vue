@@ -13,9 +13,9 @@
       </div>
 
       <div class="m-modal-content" v-if="show_fixed">
-        <img id="avatar" class="canvas-img" style="width: 344px; height: 204px;">
+        <img id="avatar" class="canvas-img" style="width: 300px; height: 178px;">
 
-        <p class="grey-text">长按分享您的专属二维码</p>
+        <p class="grey-text">长按图片分享您的专属二维码</p>
       </div>
     </div>
   </div>
@@ -26,7 +26,7 @@
     export default {
       data() {
           return {
-              name: ''
+            name: ''
           }
       },
       props: {
@@ -41,8 +41,8 @@
         // 合成图片
         shareImg() {
 
-          let productImgList = ["/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product4.png"];
-          // let productImgList = ["https://daaiti.cn/static/images/share/product1.png", "https://daaiti.cn/static/images/share/product1.png", "/static/images/share/product2.png", "/static/images/share/product4.png", "/static/images/share/product5.png", "/static/images/share/product.jpg"];
+          // let productImgList = ["/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product4.png"];
+          let productImgList = ["/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product4.png", "/static/images/share/product5.png", "/static/images/share/product.jpg"];
 
           let canvas = document.createElement("canvas");
           let context = canvas.getContext("2d");
@@ -55,7 +55,7 @@
             canvas.width = 2150;
           }
 
-          context.rect(0 , 0 , canvas.width , canvas.height);
+          context.rect(0, 0, canvas.width, canvas.height);
           context.fillStyle = "#fff";
           context.fill();
 
@@ -138,12 +138,6 @@
                         img9.onload = function(){
                           context.drawImage(img9 , 175 , 1180 , 150 , 20);
 
-
-
-                          console.log(img1, img2, img3, img4, img5, img6);
-
-
-
                           // 大集合图
                           if(productImgList.length == 6) {
 
@@ -172,8 +166,8 @@
                             let base64 = canvas.toDataURL("image/png");  //"image/png" 这里注意一下
                             let img = document.getElementById('avatar');
 
-                            img.style.width = "244px";
-                            img.style.height = "204px";
+                            img.style.width = "213px";
+                            img.style.height = "178px";
                             // document.getElementById('avatar').src = base64;
                             img.setAttribute('src' , base64);
                           }
@@ -217,10 +211,11 @@
       margin-top: 40px;
       /*border-top: 1px #d3d3d3 solid;*/
       line-height: 80px;
+      letter-spacing: 1.2px;
     }
     .canvas-img {
-      margin-top: -20px;
-      margin-bottom: -30px;
+      margin-top: 10px;
+      margin-bottom: -20px;
     }
   }
 </style>

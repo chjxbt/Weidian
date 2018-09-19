@@ -80,7 +80,8 @@
         isScroll: true,
         total_count: 0,
         count: 5,
-        bottom_show: false
+        bottom_show: false,
+        shareParams: {}
       }
     },
     props:{
@@ -222,11 +223,16 @@
           case 1:
             // this.copyText(list);
             this.show_fixed = true;
+            this.shareDone(list);
             break;
           case 2:
             // this.show_fixed = true;
             break;
         }
+      },
+      // 处理合成图片要的参数
+      shareDone(list) {
+        console.log(list, this.activity_list);
       },
       // 每日推荐的点赞
       likeThis(recommend) {
