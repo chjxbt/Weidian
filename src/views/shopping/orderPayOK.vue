@@ -22,6 +22,7 @@
 </template>
 
 <script>
+
   export default {
     data() {
       return {
@@ -149,7 +150,21 @@
               }
             }
           }
-        }
+        };
+
+        let image = new Image();
+        image.src = canvas.toDataURL("image/png");  //"image/png" 这里注意一下
+        // let img64 = base64.replace(/^data:image\/(png|jpg);base64,/,"");
+
+        // console.log(Canvas2Image);
+        // Canvas2Image.saveAsPNG(canvas, 1275, 2150);
+
+
+
+        // let img = document.getElementById('myCanvas');
+        // img.setAttribute('src', base64);
+        // window.location.href = base64;   // 下载-无后缀名
+        // console.log(binaryImg);
       },
       // 查看订单
       orderDetail() {
