@@ -39,7 +39,7 @@
     </div>
 
     <!--<share v-if="show_fixed" @fixedClick="fixedClick"></share>-->
-    <attention v-if="show_fixed" @closeModal="closeModal('show_fixed')" :show_fixed="show_fixed"></attention>
+    <attention v-if="show_fixed" @closeModal="closeModal('show_fixed')" :show_fixed="show_fixed" :shareParams="shareParams"></attention>
   </div>
 </template>
 
@@ -222,7 +222,6 @@
             break;
           case 1:
             // this.copyText(list);
-            this.show_fixed = true;
             this.shareDone(list);
             break;
           case 2:
@@ -232,7 +231,11 @@
       },
       // 处理合成图片要的参数
       shareDone(list) {
-        console.log(list, this.activity_list);
+        this.shareParams.product = this.activity_list[list].product;
+        this.shareParams.media = this.activity_list[list].media;
+
+        // console.log(this.shareParams);
+        this.show_fixed = true;
       },
       // 每日推荐的点赞
       likeThis(recommend) {

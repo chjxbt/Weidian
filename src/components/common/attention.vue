@@ -31,7 +31,8 @@
       },
       props: {
         src: { type: String, default: null },
-        show_fixed: { type: Boolean, default: false }
+        show_fixed: { type: Boolean, default: false },
+        shareParams: { type: Object, default: {} }
       },
       methods: {
         // 关闭modal
@@ -40,9 +41,13 @@
         },
         // 合成图片
         shareImg() {
-
+          let productImgList = [];
+          for(let i = 0; i < this.shareParams.media.length; i ++) {
+            productImgList.push(this.shareParams.media[i].amimage);
+          }
+          console.log(productImgList);
           // let productImgList = ["/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product4.png"];
-          let productImgList = ["/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product4.png", "/static/images/share/product5.png", "/static/images/share/product.jpg"];
+          // let productImgList = ["/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product4.png", "/static/images/share/product5.png", "/static/images/share/product.jpg"];
 
           let canvas = document.createElement("canvas");
           let context = canvas.getContext("2d");
@@ -62,7 +67,7 @@
           // 处理商品标题的字间距
           context.fillStyle = "#000000";
           context.font="30px PingFang-SC";
-          let name = "商品标题商品标题商品标题商品标题商品标题商品标题商品标题商品标题商品标题商";
+          let name = this.shareParams.product.prname;
           let col = 12;
           for(let i = 0; i < col; i ++) {
             context.fillText(name[i], (90 + 34 * i), 970);
@@ -75,18 +80,19 @@
           }
 
           // 添加价格文字
+          let price = this.shareParams.product.prprice.split(".");
           context.fillStyle = "#f43b51";
           context.font="bold 30px PingFang-SC";
           context.fillText("￥", 90, 1150);
           context.font="bold 58px PingFang-SC";
-          context.fillText("129", 120, 1150);
+          context.fillText(price[0], 120, 1150);
           context.font="bold 30px PingFang-SC";
-          context.fillText(". 50", 230, 1150);
+          context.fillText(". " + price[1], 230, 1150);
 
           // 添加原价文字
           context.fillStyle = "#a4a4a4";
           context.font="30px PingFang-SC";
-          context.fillText("原价：￥298.50", 90, 1200);
+          context.fillText("原价：￥" + this.shareParams.product.prprice + 20, 90, 1200);
 
           // 创建要添加到canvas上的image对象
           let img0 = new Image();
@@ -183,7 +189,7 @@
       },
       mounted() {
         this.shareImg();
-        console.log(this.show_fixed)
+        // console.log(this.show_fixed);
       },
       created() {
         // this.shareImg();
@@ -194,7 +200,7 @@
   @import "../../common/css/modal";
 
   .m-modal-state {
-    width: 640px!important;
+    width: 640px !important;
     .m-modal-head {
 
     }
