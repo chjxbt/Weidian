@@ -4,14 +4,18 @@
       <div class="m-modal-head">
         <span class="m-close" @click="closeModal('show_fixed')"> x </span>
       </div>
-      <div class="m-modal-content">
+      <div class="m-modal-content" v-if="!show_fixed">
         <h3 class="h3-text">还差一步就可以转发内容啦</h3>
         <div>
           <img :src="src" class="m-share-img" alt="">
           <p class="grey-text">关注公众号获取</p>
         </div>
+      </div>
 
-        <!--<img id="avatar" src="" alt="" style="width: 344px; height: 204px; border: 2px red solid;">-->
+      <div class="m-modal-content" v-if="show_fixed">
+        <img id="avatar" class="canvas-img" style="width: 344px; height: 204px;">
+
+        <p class="grey-text">长按分享您的专属二维码</p>
       </div>
     </div>
   </div>
@@ -26,8 +30,8 @@
           }
       },
       props: {
-        src:{ type: String, default: null },
-        show_fixed:{ type: Boolean, default: false }
+        src: { type: String, default: null },
+        show_fixed: { type: Boolean, default: false }
       },
       methods: {
         // 关闭modal
@@ -184,10 +188,11 @@
         },
       },
       mounted() {
-        // this.shareImg();
+        this.shareImg();
+        console.log(this.show_fixed)
       },
       created() {
-        this.shareImg();
+        // this.shareImg();
       }
     }
 </script>
@@ -205,10 +210,17 @@
       margin-bottom: 40px !important;
       white-space: nowrap;
     }
+    .m-share-img {
+      margin-bottom: -20px;
+    }
     .grey-text {
       margin-top: 40px;
-      border-top: 1px #d3d3d3 solid;
+      /*border-top: 1px #d3d3d3 solid;*/
       line-height: 80px;
+    }
+    .canvas-img {
+      margin-top: -20px;
+      margin-bottom: -30px;
     }
   }
 </style>
