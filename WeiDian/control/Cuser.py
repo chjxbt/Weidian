@@ -14,6 +14,7 @@ from WeiDian.common.token_required import verify_token_decorator, usid_to_token
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db
 from WeiDian.service.SUser import SUser
+from WeiDian.service.STask import STask
 sys.path.append(os.path.dirname(os.getcwd()))
 
 
@@ -21,6 +22,7 @@ class CUser():
 
     def __init__(self):
         self.suser = SUser()
+        self.stask = STask()
 
     def login(self):
         json_data = request.json
@@ -120,6 +122,14 @@ class CUser():
                 "accesstoken": access_token,
                 "subscribe": subscribe,
             })
+            task_list = self.stask.get_task_by_level(0)
+            for task in task_list:
+                self.suser.add_model("TaskUser", **{
+                    "TUid": str(uuid.uuid1()),
+                    "USid": usid,
+                    "TAid": task.TAid,
+                    "TUstatus": 0,
+                })
         else:
             usid = user.USid
             update_result = self.suser.update_user(usid, {

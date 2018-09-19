@@ -671,8 +671,15 @@ class Task(BaseModel):
     TAlevel = Column(Integer)          # 任务等级 {0: "1级", 1: "2级", 2: "3级", 4:"额外"}
     TArole = Column(Text)              # 规则弹框图片
     TAmessage = Column(Text)           # 备注
-    TAurl = Column(Text)               # 跳转链接 如果是观看视频，则存入对应视频url，如果不是。则为空
+    TAurl = Column(Text)               # 跳转链接 如果是观看视频，则存入对应视频url，如果不是。则为达标数目
+    RAid = Column(String(64))          # 任务奖励id
     TAcomplateNotifications = Column(Text)  # 任务完成提示图片
+
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = ['TAname', "TAtype", "TAhead", "TAlevel",
+                       "TArole", "TAcomplateNotifications", "RAid", "TAid"]
 
 
 # 用户任务关联表
@@ -684,7 +691,14 @@ class TaskUser(BaseModel):
     TUcreatetime = Column(String(14))
     TUstatus = Column(Integer)  # 任务状态 {0: "进行中", 1: "已完成", 2: "已过期"}
     TUendtime = Column(String(14))
-    RAid = Column(String(64))
+    TUnumber = Column(Integer)  # 完成量
+    # RAid = Column(String(64))
+
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = ['TUid', "USid", "TAid", "TUcreatetime",
+                       "TUstatus", "TUendtime", "RAid", "TAid"]
 
 
 # 优惠券
