@@ -34,8 +34,8 @@
       // 合成图片
       shareImg() {
 
-        let productImgList = ["/static/images/share/product1.png", "/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product4.png"];
-        // let productImgList = ["/static/images/share/product1.png", "/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product4.png", "/static/images/share/product5.png", "/static/images/share/product.jpg"];
+        // let productImgList = ["/static/images/share/product1.png", "/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product4.png"];
+        let productImgList = ["/static/images/share/product1.png", "/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product4.png", "/static/images/share/product5.png", "/static/images/share/product.jpg"];
 
         let canvas = document.getElementById("myCanvas");
         let context = canvas.getContext("2d");
@@ -64,11 +64,11 @@
         // 添加价格文字
         context.fillStyle = "#f43b51";
         context.font="bold 30px PingFang-SC";
-        context.fillText("￥", 90, 1140);
+        context.fillText("￥", 90, 1150);
         context.font="bold 58px PingFang-SC";
-        context.fillText("129", 120, 1140);
+        context.fillText("129", 120, 1150);
         context.font="bold 30px PingFang-SC";
-        context.fillText(". 50", 230, 1140);
+        context.fillText(". 50", 230, 1150);
 
         // 添加原价文字
         context.fillStyle = "#a4a4a4";
