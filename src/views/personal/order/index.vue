@@ -25,6 +25,11 @@
           </template>
 
         </div>
+        <div class="bottom-prompt" v-if="bottom_show">
+          <div class="bottom-line"></div>
+          <div class="m-grey-color">我是有底线的</div>
+          <div class="bottom-line"></div>
+        </div>
       </div>
     </div>
 
@@ -47,7 +52,8 @@
               isScroll:true,
               order_num:[],
               isOpen:false,
-              isSell:true
+              isSell:true,
+              bottom_show:false
             }
         },
         components: {
@@ -57,6 +63,7 @@
           this.isOpen = localStorage.getItem('level') == 'partner'? true:false;
       },
         methods: {
+          /*获取订单数量*/
           getOrderNum(){
             axios.get(api.get_order_count,{
               params:{
@@ -77,6 +84,7 @@
             },error => {
               Toast({ message: error.data.message, className: 'm-toast-fail' });            })
           },
+          /*获取订单*/
           getOrder(page){
             let status ='';
             for(let a=0;a<this.order_num.length;a++){
@@ -118,6 +126,7 @@
             this.getOrderNum();
             this.getOrder();
           },
+          /*状态切换*/
           statusClick(i){
             if(this.order_num[i].click)
               return false;
@@ -138,7 +147,8 @@
               if(this.isScroll){
                 this.isScroll = false;
                 if(this.order_list.length == this.total_count){
-                  Toast({ message: '数据已加载完', className: 'm-toast-warning' });
+                  this.bottom_show = true;
+                  // Toast({ message: '数据已加载完', className: 'm-toast-warning' });
                 }else{
                   this.page_num = this.page_num +1;
                   this.getOrder(this.page_num);
@@ -155,7 +165,7 @@
 <style lang="less" rel="stylesheet/less" >
   @import "../../../common/css/index";
   .m-myOrder{
-    padding-bottom: 40px;
+    /*padding-bottom: 40px;*/
     position: relative;
     .m-order-top{
       position: fixed;

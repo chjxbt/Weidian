@@ -118,6 +118,11 @@
       <attention v-if="show_fixed" @closeModal="closeModal('show_fixed')"></attention>
       <img :src="'/static/images/course/course-'+ course + '.png'" v-if="show_course" class="m-course-img" alt="" @click.stop="courseClick">
       <img src="/static/images/fen.png" v-if="show_fen" class="m-course-img" alt="" @click.stop="fenClick">
+      <div class="bottom-prompt" v-if="bottom_show">
+        <div class="bottom-line"></div>
+        <div class="m-grey-color">我是有底线的</div>
+        <div class="bottom-line"></div>
+      </div>
     </div>
 
 </template>
@@ -188,7 +193,9 @@
                   url:'icon-share'
                 }
               ],
-              isScroll: true
+              isScroll: true,
+              shareParams: {},
+              bottom_show:false
             }
         },
         components: {
@@ -227,7 +234,7 @@
               if(this.isScroll){
                 this.isScroll = false;
                 if(this.activity_list.length == this.total_count){
-                  Toast({ message: '数据已加载完', className: 'm-toast-warning' });
+                  this.bottom_show = true;
                 }else{
                   this.loadBottom();
                 }
@@ -511,6 +518,14 @@
             }else{
               this.show_course = false;
             }
+          },
+          // 处理合成图片要的参数
+          shareDone(list) {
+            this.shareParams.product = this.activity_list[list].product;
+            this.shareParams.media = this.activity_list[list].media;
+
+            // console.log(this.shareParams);
+            this.show_fixed = true;
           }
         }
     }

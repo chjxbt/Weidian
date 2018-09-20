@@ -42,6 +42,11 @@
           </template>
         </div>
       </div>
+      <div class="bottom-prompt" v-if="bottom_show">
+        <div class="bottom-line"></div>
+        <div class="m-grey-color">我是有底线的</div>
+        <div class="bottom-line"></div>
+      </div>
     </div>
 
 </template>
@@ -85,7 +90,8 @@
                   value:'204',
                   click:false
                 }
-              ]
+              ],
+              bottom_show:false
             }
         },
         components: {
@@ -125,6 +131,7 @@
             },error => {
               Toast({ message: error.data.message, className: 'm-toast-fail' });            })
           },
+          /*提交投诉*/
           complainClick(e){
             e.preventDefault();
             let id = '';
@@ -188,7 +195,8 @@
               if(this.isScroll){
                 this.isScroll = false;
                 if(this.order_list.length == this.total_count){
-                  Toast({ message: '数据已加载完', className: 'm-toast-warning' });
+                  this.bottom_show = true;
+                  // Toast({ message: '数据已加载完', className: 'm-toast-warning' });
                 }else{
                   this.page_num = this.page_num +1;
                   this.getOrder(this.page_num);
@@ -347,6 +355,9 @@
       }
 
     }
+  }
+  .bottom-prompt {
+    background-color: #fff;
   }
 }
   .m-complain-textarea::-webkit-input-placeholder{

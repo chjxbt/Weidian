@@ -1,23 +1,31 @@
 <template>
     <div class="m-collect" @touchmove="touchMove" >
-      <template v-for="(item,index) in collect_list">
-        <div class="m-collect-one">
-          <img :src="item.productinfo.prmainpic" class="m-collect-img" alt="">
-          <div class="m-collect-text">
-            <div>
-              <span class="m-check" :class="item.click?'active':''" @click.stop="checkClick(index)"></span>
-              <span class="m-red">{{item.productinfo.prsalestatus}}</span>
+      <!--<div class="m-collect-content">-->
+        <template v-for="(item,index) in collect_list">
+          <div class="m-collect-one">
+            <img :src="item.productinfo.prmainpic" class="m-collect-img" alt="">
+            <div class="m-collect-text">
+              <div>
+                <span class="m-check" :class="item.click?'active':''" @click.stop="checkClick(index)"></span>
+                <span class="m-red">{{item.productinfo.prsalestatus}}</span>
+              </div>
+              <span>已有{{item.forwardnum}}人发圈</span>
             </div>
-            <span>已有{{item.forwardnum}}人发圈</span>
           </div>
-        </div>
-      </template>
+        </template>
+      <!--</div>-->
+
       <div class="m-collect-fixed">
         <div class="m-left">
           <span class="m-check" :class="all_check?'active':''" @click="allClick"></span>
           <span>全选</span>
         </div>
         <span class="m-right" @click="deleteClick">删除</span>
+      </div>
+      <div class="bottom-prompt" v-if="bottom_show">
+        <div class="bottom-line"></div>
+        <div class="m-grey-color">我是有底线的</div>
+        <div class="bottom-line"></div>
       </div>
     </div>
 
@@ -37,7 +45,8 @@
               page_size:10,
               page_num:1,
               total_count:0,
-              isScroll:true
+              isScroll:true,
+              bottom_show:false
             }
         },
         components: {},
@@ -51,6 +60,7 @@
               }
             }).then(res => {
               if(res.data.status == 200){
+                this.isScroll = true;
                 for(let i=0;i<res.data.data.length;i++){
                   res.data.data[i].click = false;
                 }
@@ -92,7 +102,8 @@
               if(this.isScroll){
                 this.isScroll = false;
                 if(this.collect_list.length == this.total_count){
-                  Toast({ message: '数据已加载完', className: 'm-toast-warning' });
+                  this.bottom_show = true;
+                  // Toast({ message: '数据已加载完', className: 'm-toast-warning' });
                 }else{
                   this.page_num = this.page_num +1;
                   this.getCollect(this.page_num);
@@ -131,7 +142,7 @@
   align-items: center;
   justify-content: flex-start;
   flex-wrap: wrap;
-  padding: 30px 55px;
+  padding: 30px 55px 80px;
   .m-collect-one{
     margin-bottom: 20px;
     &:nth-child(odd){
@@ -187,6 +198,21 @@
     }
     .m-right{
       margin-right: 55px;
+    }
+  }
+  .bottom-prompt {
+    width: 100%;
+    display: flex;
+    padding: 20px 0;
+    background-color: #fff;
+    .bottom-line {
+      width: 100px;
+      height: 2px;
+      margin: 18px 30px;
+      background-color: #eee;
+      &:first-child {
+        margin-left: 125px;
+      }
     }
   }
 }

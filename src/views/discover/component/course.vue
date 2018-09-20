@@ -133,7 +133,7 @@
         let scrollTop = common.getScrollTop();
         let scrollHeight = common.getScrollHeight();
         let ClientHeight = common.getClientHeight()
-        if (scrollTop + ClientHeight >= scrollHeight) {
+        if (scrollTop + ClientHeight >= scrollHeight -10) {
           if(this.isScroll){
             this.isScroll = false;
             if(this.activity_list.length == this.total_count){
