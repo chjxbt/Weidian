@@ -13,7 +13,7 @@
       </div>
 
       <div class="m-modal-content" v-if="show_fixed">
-        <img id="avatar" class="canvas-img" style="width: 320px; height: 190px;">
+        <img id="avatar" class="canvas-img">
 
         <p class="grey-text">长按图片分享您的专属二维码</p>
       </div>
@@ -178,8 +178,6 @@
                           let base64 = canvas.toDataURL("image/png");  //"image/png" 这里注意一下
                           let img = document.getElementById('avatar');
 
-                          img.style.width = "227px";
-                          img.style.height = "190px";
                           // document.getElementById('avatar').src = base64;
                           img.setAttribute('src' , base64);
                         }
@@ -223,9 +221,11 @@
         white-space: nowrap;
       }
       .m-share-img {
-
+        border: 1px red solid;
       }
       .canvas-img {
+        /*width: 640px;*/
+        height: 380px;
         margin-top: 10px;
         margin-bottom: -20px;
       }
