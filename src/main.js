@@ -23,7 +23,7 @@ FastClick.attach(document.body);
 import promise from 'es6-promise';//解决axios在ie9下不生效的方法
 promise.polyfill();
 
-let token = "eyJhbGciOiJIUzI1NiIsImV4cCI6MTUzNzM5NjEzNiwiaWF0IjoxNTM3MzI0MTM2fQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0wOS0xOSAxMDoyODo1NiJ9.2dLjodhe0nEjdZLUzffS2aObv5KweDtw_MGpsETA4hM";
+let token = "eyJhbGciOiJIUzI1NiIsImV4cCI6MTUzNzQ3NTQzNiwiaWF0IjoxNTM3NDAzNDM2fQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0wOS0yMCAwODozMDozNiJ9.TdWL_tweZ4mFDMxzl-t-4n_sCKtdTUir-TKjRQ28XuA";
 localStorage.setItem('token', token);
 
 
