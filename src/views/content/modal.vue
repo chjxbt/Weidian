@@ -9,7 +9,7 @@
        <div class="content-table">
          <el-table :data="tableData" border style="width: 100%">
            <el-table-column prop="title" label="任务标题" width="280"></el-table-column>
-           <el-table-column prop="content" label="内容"></el-table-column>
+           <el-table-column prop="content" label="任务类型"></el-table-column>
            <el-table-column prop="reward" label="奖励方式"></el-table-column>
            <el-table-column fixed="right" label="管理" width="280">
              <template slot-scope="scope">
@@ -25,13 +25,15 @@
        <el-form :label-position="labelPosition" label-width="100px" :model="formIndex">
          <div class="m-form-item m-item-modal">
            <span class="m-item-add">+</span>
+           <el-form-item label="任务等级">
+             <el-select v-model="value" placeholder="请选择">
+               <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+             </el-select>
+           </el-form-item>
            <el-form-item label="任务标题">
              <el-input v-model="formIndex.value" class="m-input-m"></el-input>
            </el-form-item>
-           <el-form-item label="副标题">
-             <el-input v-model="formIndex.value" class="m-input-m"></el-input>
-           </el-form-item>
-           <el-form-item label="类型">
+           <el-form-item label="任务类型">
              <el-select v-model="value" placeholder="请选择">
                <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
              </el-select>
@@ -278,7 +280,7 @@
 <style lang="less" rel="stylesheet/less" >
   @import "../../common/css/weidian";
   .m-title{
-      font-size: 18px;
+    font-size: 18px;
     margin-bottom: 0.1rem;
   }
 </style>

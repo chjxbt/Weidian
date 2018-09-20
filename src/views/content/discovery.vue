@@ -55,7 +55,7 @@
       </div>
       <w-tab :list="tab_list1"  @wTabClick="wTabClick1"></w-tab>
       <w-tab :list="tab_list2" v-if="page == '素材圈'" class="m-ft-12"  @wTabClick="wTabClick2"></w-tab>
-      <div class="m-form-item">
+      <!--<div class="m-form-item">
         <p class="m-form-label">商品名称</p>
         <div class="m-item-content">
           <div class=" m-item-row">
@@ -85,9 +85,9 @@
             </el-upload>
           </div>
         </div>
-      </div>
+      </div>-->
       <div class="m-form-item">
-        <p class="m-form-label">商家描述</p>
+        <p class="m-form-label">商品描述</p>
         <div class="m-item-content">
           <div class=" m-item-row">
             <textarea v-model="value" class="m-textarea" placeholder="请输入内容"></textarea>
@@ -120,7 +120,7 @@
           <p class="m-item-alert">轮播图尺寸大小750*280</p>
         </div>
       </div>
-      <div class="m-form-item">
+      <div class="m-form-item" v-if="page == '教程'">
         <p class="m-form-label">教程视频</p>
         <div class="m-item-content">
           <div class=" m-item-row">
@@ -136,17 +136,33 @@
           </div>
         </div>
       </div>
-      <div class="m-form-item">
+      <div class="m-form-item" v-if="page == '公告' || page == '教程'">
         <p class="m-form-label">评论管理</p>
-        <div class="m-item-content">
+
+        <div class="content-table">
+          <el-table :data="tableData" border style="width: 100%">
+            <el-table-column prop="object" label="评论对象"></el-table-column>
+            <el-table-column prop="who" label="评论人"></el-table-column>
+            <el-table-column prop="time" label="评论时间"></el-table-column>
+            <el-table-column prop="content" label="评论内容"></el-table-column>
+            <el-table-column fixed="right" label="管理">
+              <template slot-scope="scope">
+                <el-button @click="handleClick(scope.row)" type="text" size="small">置顶</el-button>
+                <el-button type="text" size="small">|</el-button>
+                <el-button type="text" size="small">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+        <!--<div class="m-item-content">
           <div class=" m-item-row">
             <el-input v-model="value" placeholder="请输入内容"></el-input>
           </div>
-        </div>
+        </div>-->
       </div>
-      <div class="m-form-confirm-btn">
+      <!--<div class="m-form-confirm-btn">
         <span>确定</span>
-      </div>
+      </div>-->
     </div>
   </div>
 </template>
@@ -221,7 +237,12 @@
             active:false
           }
         ],
-
+        tableData: [
+          { object: '新鲜出炉的周周奖现已发放，还不快去查收！', who: '张三', time: '2018-09-15 18:56:21', content: '评论测试评论测试评论测试评论测试评论测试评论测试评论测试' },
+          { object: '新鲜出炉的周周奖现已发放，还不快去查收！', who: '张三', time: '2018-09-15 18:56:21', content: '评论测试评论测试评论测试评论测试评论测试评论测试评论测试' },
+          { object: '新鲜出炉的周周奖现已发放，还不快去查收！', who: '张三', time: '2018-09-15 18:56:21', content: '评论测试评论测试评论测试评论测试评论测试评论测试评论测试' },
+          { object: '新鲜出炉的周周奖现已发放，还不快去查收！', who: '张三', time: '2018-09-15 18:56:21', content: '评论测试评论测试评论测试评论测试评论测试评论测试评论测试' }
+        ],
       }
     },
     components:{
@@ -229,6 +250,10 @@
       wTab
     },
     methods:{
+      // 评论列表的操作方法
+      handleClick(row) {
+        console.log(row);
+      },
       wTabClick1(i){
         let arr = [].concat(this.tab_list1);
         for(let a =0;a<arr.length;a++){
@@ -258,4 +283,11 @@
 
 <style lang="less" rel="stylesheet/less" scoped>
   @import "../../common/css/weidian";
+
+  .content-table {
+    padding-top: 0.1rem;
+  }
+  .el-table .cell {
+    text-align: left;
+  }
 </style>
