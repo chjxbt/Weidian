@@ -32,7 +32,8 @@
 
 <script type="text/ecmascript-6">
   import axios from 'axios';
-  import api from '../../../api/api'
+  import api from '../../../api/api';
+  import common from '../../../common/js/common';
     export default {
         data() {
             return {
@@ -48,6 +49,7 @@
         components: {},
       mounted(){
           this.getInfo();
+        common.changeTitle('收货地址');
       },
         methods: {
           addressClick(e,v){

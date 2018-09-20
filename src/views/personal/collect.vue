@@ -50,6 +50,9 @@
             }
         },
         components: {},
+        mounted(){
+          common.changeTitle('我的收藏');
+        },
         methods: {
           getCollect(page){
             axios.get(api.get_prlike_productlike,{

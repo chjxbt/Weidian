@@ -50,6 +50,7 @@
   import api from '../../../api/api';
   import {Toast,MessageBox} from 'mint-ui';
   import picker from '../../../components/common/picker';
+  import common from '../../../common/js/common';
   Vue.component(Picker.name, Picker);
     export default {
         data() {
@@ -211,6 +212,7 @@
             this.address_id.areaid = this.$route.query.areaid;
           }
           this.getSlot('province');
+        common.changeTitle('编辑地址');
       },
         created() {
 

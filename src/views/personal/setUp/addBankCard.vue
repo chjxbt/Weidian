@@ -52,7 +52,8 @@
   import axios from 'axios';
   import api from '../../../api/api';
   import {Toast,MessageBox} from 'mint-ui';
-  import picker from '../../../components/common/picker'
+  import picker from '../../../components/common/picker';
+  import common from '../../../common/js/common';
     export default {
         data() {
             return {
@@ -78,8 +79,8 @@
           picker
         },
       mounted(){
+        common.changeTitle('添加银行卡');
           this.getInfo();
-
           if(this.$route.query.bcid){
             this.getBankInfo();
           }

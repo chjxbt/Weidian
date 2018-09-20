@@ -61,6 +61,7 @@
         },
       mounted(){
           this.isOpen = localStorage.getItem('level') == 'partner'? true:false;
+        common.changeTitle('我的订单');
       },
         methods: {
           /*获取订单数量*/

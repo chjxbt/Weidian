@@ -48,6 +48,7 @@
   import axios from 'axios';
   import api from '../../../api/api';
   import {Toast} from 'mint-ui';
+  import common from '../../../common/js/common';
     export default {
         data() {
             return {
@@ -70,6 +71,7 @@
         components: {},
       mounted(){
         this.getInfo();
+        common.changeTitle('银行卡');
       },
         methods: {
           getInfo(){

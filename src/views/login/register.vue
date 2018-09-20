@@ -16,9 +16,21 @@
 </template>
 
 <script>
+  import common from '../../common/js/common';
     export default {
         name: "register",
-      captcha:''
+      data(){
+          return{
+            captcha:''
+          }
+      },
+      mounted(){
+        common.changeTitle('注册');
+      },
+      methods:{
+
+      }
+
     }
 </script>
 

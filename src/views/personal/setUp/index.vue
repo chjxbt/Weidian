@@ -47,6 +47,7 @@
 <script type="text/ecmascript-6">
   import axios from 'axios';
   import api from '../../../api/api';
+  import common from '../../../common/js/common';
     export default {
         data() {
             return {
@@ -61,6 +62,9 @@
             }
         },
         components: {},
+      mounted(){
+        common.changeTitle('账号设置');
+      },
         methods: {
           getInfo(){
             axios.get(api.get_account_info,{

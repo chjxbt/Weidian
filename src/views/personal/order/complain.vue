@@ -100,6 +100,7 @@
       mounted(){
         this.isOpen = localStorage.getItem('level') == 'partner'? true:false;
         this.isSell = localStorage.getItem('level') == 'partner'? true:false;
+        common.changeTitle('快速投诉通道');
       },
         methods: {
           /*获取订单*/

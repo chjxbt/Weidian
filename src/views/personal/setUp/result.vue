@@ -8,6 +8,7 @@
 </template>
 
 <script type="text/ecmascript-6">
+  import common from '../../../common/js/common';
     export default {
         data() {
             return {
@@ -15,6 +16,9 @@
             }
         },
         components: {},
+      mounted(){
+        common.changeTitle('绑定银行卡');
+      },
         methods: {
           returnBack(){
             this.$router.push('/bankCard');
