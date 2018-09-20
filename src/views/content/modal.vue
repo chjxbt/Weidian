@@ -24,7 +24,6 @@
        <h3 class="m-title">浮窗管理</h3>
        <el-form :label-position="labelPosition" label-width="100px" :model="formIndex">
          <div class="m-form-item m-item-modal">
-           <span class="m-item-add">+</span>
            <el-form-item label="任务等级">
              <el-select v-model="value" placeholder="请选择">
                <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
@@ -55,10 +54,7 @@
            <el-form-item label="完成度">
              <el-input v-model="formIndex.value" class="m-input-m"></el-input>
            </el-form-item>
-           <el-form-item label="备注">
-             <el-input v-model="formIndex.value" class="m-input-m"></el-input>
-           </el-form-item>
-           <el-form-item label="图片" class="m-f">
+           <el-form-item label="完成提示" class="m-f">
              <el-upload
                class="avatar-uploader"
                action="https://jsonplaceholder.typicode.com/posts/"
@@ -70,19 +66,21 @@
              </el-upload>
            </el-form-item>
          </div>
-
          <el-form-item label="奖励方式">
            <el-select v-model="value" placeholder="请选择">
              <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
            </el-select>
+         </el-form-item>
+         <el-form-item label="备注">
+           <el-input v-model="formIndex.value" class="m-input-m"></el-input>
          </el-form-item>
          <el-form-item label="活动时间">
            <el-date-picker v-model="value7" type="daterange" align="right" unlink-panels
                            range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"
                            :picker-options="pickerOptions2">
            </el-date-picker>
+           <span class="m-item-add">+</span>
          </el-form-item>
-
          <el-form-item label="规则">
            <textarea v-model="formIndex.value" class="m-textarea" placeholder="请输入内容"></textarea>
          </el-form-item>
@@ -109,54 +107,144 @@
       </div>
       <!--我的-->
       <div class="m-personal" v-if="page == '我的'">
-        <h3 class="m-title">弹框图片</h3>
-        <div class="m-form-item">
-          <p class="m-form-label">邀请专属粉丝海报</p>
-          <div class="m-item-content">
-            <div class=" m-item-row m-f">
-              <el-upload
-                class="avatar-uploader"
-                action="https://jsonplaceholder.typicode.com/posts/"
-                :show-file-list="false"
-                :on-success="handleAvatarSuccess"
-                :before-upload="beforeAvatarUpload">
-                <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-              </el-upload>
+        <div class="m-personal-left-right">
+          <h3 class="m-title">规则弹框</h3>
+          <div class="m-form-item-box">
+            <div class="m-form-img-item">
+              <p class="m-form-label">等级规则（未开店）</p>
+              <div class="m-item-content">
+                <div class=" m-item-row m-f">
+                  <el-upload
+                    class="avatar-uploader"
+                    action="https://jsonplaceholder.typicode.com/posts/"
+                    :show-file-list="false"
+                    :on-success="handleAvatarSuccess"
+                    :before-upload="beforeAvatarUpload">
+                    <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                  </el-upload>
+                </div>
+              </div>
+            </div>
+            <div class="m-form-img-item">
+              <p class="m-form-label">等级规则（已开店）</p>
+              <div class="m-item-content">
+                <div class=" m-item-row m-f">
+                  <el-upload
+                    class="avatar-uploader"
+                    action="https://jsonplaceholder.typicode.com/posts/"
+                    :show-file-list="false"
+                    :on-success="handleAvatarSuccess"
+                    :before-upload="beforeAvatarUpload">
+                    <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                  </el-upload>
+                </div>
+              </div>
+            </div>
+            <div class="m-form-img-item">
+              <p class="m-form-label">专属粉丝管理规则</p>
+              <div class="m-item-content">
+                <div class=" m-item-row m-f">
+                  <el-upload
+                    class="avatar-uploader"
+                    action="https://jsonplaceholder.typicode.com/posts/"
+                    :show-file-list="false"
+                    :on-success="handleAvatarSuccess"
+                    :before-upload="beforeAvatarUpload">
+                    <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                  </el-upload>
+                </div>
+              </div>
+            </div>
+            <div class="m-form-img-item">
+              <p class="m-form-label">开店邀请海报规则</p>
+              <div class="m-item-content">
+                <div class=" m-item-row m-f">
+                  <el-upload
+                    class="avatar-uploader"
+                    action="https://jsonplaceholder.typicode.com/posts/"
+                    :show-file-list="false"
+                    :on-success="handleAvatarSuccess"
+                    :before-upload="beforeAvatarUpload">
+                    <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                  </el-upload>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <div class="m-form-item">
-          <p class="m-form-label">邀请开店海报</p>
-          <div class="m-item-content">
-            <div class=" m-item-row m-f">
-              <el-upload
-                class="avatar-uploader"
-                action="https://jsonplaceholder.typicode.com/posts/"
-                :show-file-list="false"
-                :on-success="handleAvatarSuccess"
-                :before-upload="beforeAvatarUpload">
-                <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-              </el-upload>
+        <div class="m-personal-left-right">
+          <h3 class="m-title">弹框图片</h3>
+          <div class="m-form-item-box">
+            <div class="m-form-img-item">
+              <p class="m-form-label">邀请专属粉丝海报</p>
+              <div class="m-item-content">
+                <div class=" m-item-row m-f">
+                  <el-upload
+                    class="avatar-uploader"
+                    action="https://jsonplaceholder.typicode.com/posts/"
+                    :show-file-list="false"
+                    :on-success="handleAvatarSuccess"
+                    :before-upload="beforeAvatarUpload">
+                    <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                  </el-upload>
+                </div>
+              </div>
+            </div>
+            <div class="m-form-img-item">
+              <p class="m-form-label"></p>
+              <div class="m-item-content">
+                <div class=" m-item-row m-f">
+                  <el-upload
+                    class="avatar-uploader"
+                    action="https://jsonplaceholder.typicode.com/posts/"
+                    :show-file-list="false"
+                    :on-success="handleAvatarSuccess"
+                    :before-upload="beforeAvatarUpload">
+                    <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                  </el-upload>
+                </div>
+              </div>
+            </div>
+            <div class="m-form-img-item">
+              <p class="m-form-label">邀请开店海报</p>
+              <div class="m-item-content">
+                <div class=" m-item-row m-f">
+                  <el-upload
+                    class="avatar-uploader"
+                    action="https://jsonplaceholder.typicode.com/posts/"
+                    :show-file-list="false"
+                    :on-success="handleAvatarSuccess"
+                    :before-upload="beforeAvatarUpload">
+                    <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                  </el-upload>
+                </div>
+              </div>
+            </div>
+            <div class="m-form-img-item">
+              <p class="m-form-label"></p>
+              <div class="m-item-content">
+                <div class=" m-item-row m-f">
+                  <el-upload
+                    class="avatar-uploader"
+                    action="https://jsonplaceholder.typicode.com/posts/"
+                    :show-file-list="false"
+                    :on-success="handleAvatarSuccess"
+                    :before-upload="beforeAvatarUpload">
+                    <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                  </el-upload>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <h3 class="m-title">规则弹框</h3>
-        <el-form :label-position="labelPosition" label-width="180px" :model="formIndex">
-          <el-form-item label="等级规则（未开店）">
-            <textarea v-model="formIndex.value" class="m-textarea" placeholder="请输入内容"></textarea>
-          </el-form-item>
-          <el-form-item label="等级规则（已开店）">
-            <textarea v-model="formIndex.value" class="m-textarea" placeholder="请输入内容"></textarea>
-          </el-form-item>
-          <el-form-item label="专属粉丝管理规则">
-            <textarea v-model="formIndex.value" class="m-textarea" placeholder="请输入内容"></textarea>
-          </el-form-item>
-          <el-form-item label="开店邀请海报规则">
-            <textarea v-model="formIndex.value" class="m-textarea" placeholder="请输入内容"></textarea>
-          </el-form-item>
-        </el-form>
       </div>
       <div class="m-form-confirm-btn ">
         <span v-if="page == '首页'">暂停</span>
