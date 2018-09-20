@@ -84,11 +84,11 @@
     data() {
       return {
         icon_list:[
-          {
+          /*{
             src:'icon-down',
             name:'保存',
             url:'icon-down'
-          },
+          },*/
           {
             src:'icon-message',
             name:'评论',
@@ -263,7 +263,13 @@
       iconClick(v){
         switch (v){
           case 0:
-            this.show_fixed = true;
+            if(this.show_input) {
+              this.show_input = false;
+            }else if(!this.show_input) {
+              this.comment = "";
+              this.show_input = true;
+            }
+            // this.show_fixed = true;
             break;
           case 1:
             if(this.show_input) {
