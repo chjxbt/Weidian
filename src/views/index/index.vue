@@ -112,12 +112,12 @@
               </p>
             </div>
           </div>
-
         </div>
       </div>
       <attention v-if="show_fixed" @closeModal="closeModal('show_fixed')"></attention>
-      <img :src="'/static/images/course/course-'+ course + '.png'" v-if="show_course" class="m-course-img" alt="" @click.stop="courseClick">
-      <img src="/static/images/fen.png" v-if="show_fen" class="m-course-img" alt="" @click.stop="fenClick">
+      <!--<img :src="'/static/images/course/course-'+ course + '.png'" v-if="show_course" class="m-course-img" alt="" @click.stop="courseClick">-->
+      <!--<img src="/static/images/fen.png" v-if="show_fen" class="m-course-img" alt="" @click.stop="fenClick">-->
+      <m-video v-if="show_video"></m-video>
       <div class="bottom-prompt" v-if="bottom_show">
         <div class="bottom-line"></div>
         <div class="m-grey-color">我是有底线的</div>
@@ -138,6 +138,7 @@
   import wxapi from '../../common/js/mixins';
   import common from '../../common/js/common';
   import attention from '../../components/common/attention';
+  import mVideo from '../../components/common/video';
   import wx from 'weixin-js-sdk';
     export default {
       mixins: [wxapi],
@@ -153,6 +154,7 @@
               show_fixed:false,
               show_task_btn:true,
               show_fen:false,
+              show_video:false,
               _fixed:null,
               swipe_items: [{
                 title: '你的名字',
@@ -195,7 +197,8 @@
               ],
               isScroll: true,
               shareParams: {},
-              bottom_show:false
+              bottom_show:false,
+              task_list:[]
             }
         },
         components: {
@@ -203,7 +206,8 @@
           search,
           ctx,
           share,
-          attention
+          attention,
+          mVideo
         },
       mounted(options){
         if(common.GetQueryString('UPPerd')){
@@ -284,6 +288,18 @@
           },
           fenClick(){
             this.show_fen = false
+          },
+          /*获取任务*/
+          getTask(){
+            axios.get(api.get_user_task,{
+              params:localStorage.getItem('token')
+            }).then(res => {
+              if(res.data.status == 200){
+               this.task_list = res.data.data;
+              }else{
+                Toast({ message: res.data.message, className: 'm-toast-fail' });
+              }
+            })
           },
           /*获取导航*/
           getTopnav(){

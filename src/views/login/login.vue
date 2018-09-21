@@ -74,13 +74,13 @@
                 window.localStorage.setItem("token",res.data.data.token);
                 window.localStorage.setItem("openid",res.data.data.openid);
                 window.localStorage.setItem("is_first",res.data.data.is_first);
+                window.localStorage.setItem("wximg",res.data.data.wximg);
+                window.localStorage.setItem("subscribe",res.data.data.subscribe);
                 this.$router.push('/index/index');
               }else{
                 Toast({ message: res.data.message, className: 'm-toast-fail' });
               }
-
             });
-
           }
         }
       },

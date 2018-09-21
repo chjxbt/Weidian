@@ -48,6 +48,7 @@ const api={
   verify_inforcode: title +'/mycenter/verify_inforcode',//验证验证码
   update_bankcard:title +'/mycenter/update_bankcard',//修改银行卡
   del_bankcard: title +'/mycenter/del_bankcard',//解除
+  get_user_task: title + '/task/get_user_task',//获取任务
 };
 
 export default api
