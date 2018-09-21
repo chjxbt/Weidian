@@ -205,7 +205,13 @@
           share,
           attention
         },
-      mounted(){
+      mounted(options){
+        if(common.GetQueryString('UPPerd')){
+          localStorage.setItem('UPPerd',common.GetQueryString('UPPerd'));
+          if(localStorage.getItem('token')){
+            this.$router.push('/login');
+          }
+        }
           this.getSwipe();
           this.getHot();
         this.getTopnav();

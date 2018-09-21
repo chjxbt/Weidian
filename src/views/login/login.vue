@@ -65,7 +65,8 @@
             window.localStorage.setItem("code",common.GetQueryString('code'));
             axios.get(api.get_accesstoken,{
               params:{
-                code: common.GetQueryString('code')
+                code: common.GetQueryString('code'),
+                UPPerd:localStorage.getItem('UPPerd') || ''
               }
             }).then(res => {
               if(res.data.status == 200){

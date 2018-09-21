@@ -1,6 +1,7 @@
 import wx from 'weixin-js-sdk';
 import axios from 'axios';
 import api from '../../api/api';
+import {Toast} from 'mint-ui';
 const wxApi = {
   /**
    * [isweixin 判断是否微信浏览器]
@@ -53,34 +54,34 @@ const wxApi = {
       // 如果需要定制ready回调方法
       wx.onMenuShareTimeline({
         title: '微点', // 分享标题
-        link: window.location.href,      // 分享链接
+        link: window.location.href + '?UPPerd=' + localStorage.getItem('openid'),      // 分享链接
         // imgUrl: 'http://www.jzdlink.com/wordpress/wp-content/themes/wordpress_thems/images/lib/logo.png',// 分享图标
         success () {
           // 用户成功分享后执行的回调函数
-
+          Toast({ message: '分享成功', className: 'm-toast-success' });
         },
         cancel () {
           // 用户取消分享后执行的回调函数
 
 
         },error(){
-          console.log('1112')
+          Toast({ message: '分享失败，请稍后再试', className: 'm-toast-fail' });
         }
       });
       wx.onMenuShareAppMessage({
         title: '微点', // 分享标题
-        link: window.location.href,       // 分享链接
+        link: window.location.href + '?UPPerd=' + localStorage.getItem('openid'),       // 分享链接
         // imgUrl: 'http://www.jzdlink.com/wordpress/wp-content/themes/wordpress_thems/images/lib/logo.png',// 分享图标
         success () {
           // 用户成功分享后执行的回调函数
-
+          Toast({ message: '分享成功', className: 'm-toast-success' });
         },
         cancel () {
           // 用户取消分享后执行的回调函数
 
 
         },error(){
-          console.log('1112')
+          Toast({ message: '分享失败，请稍后再试', className: 'm-toast-fail' });
         }
       })
 
