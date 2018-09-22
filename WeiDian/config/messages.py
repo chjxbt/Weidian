@@ -73,3 +73,5 @@ update_bankcard_success = "修改银行卡信息成功"
 verify_inforcode_access = "验证成功"
 ERROR_MESSAGE_GET_CODE_FAST = "获取验证码频繁"
 add_task_success = "添加任务成功"
+get_task_success = "获取任务成功"
+do_task_success = '做任务成功'

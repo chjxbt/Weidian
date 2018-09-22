@@ -35,7 +35,7 @@ mp = WeixinMP(APP_ID, APP_SECRET_KEY)
 from werkzeug.exceptions import HTTPException
 from WeiDian.apis.v1 import AActivity, AHotMessage, ABanner, ASearchField, ATopNav, \
     ASuperUser, AProduct, ARecommendBanner, AShoppingCart, AActivityComment, AUser, ARecommend, AOrder, AProductLike, \
-    ARecommendLike, AActivityLike, AMyCenter, AComplain, AAdImage
+    ARecommendLike, AActivityLike, AMyCenter, AComplain, AAdImage, ATask
 # from test.test_maketoken import create_test_url
 
 
@@ -99,6 +99,7 @@ def register_route(app):
     app.add_url_rule('/mycenter/<string:myinfo>', view_func=AMyCenter.as_view('mycenter'))
     app.add_url_rule('/complain/<string:complain>', view_func=AComplain.as_view('complain'))
     app.add_url_rule('/adimage/<string:adimage>', view_func=AAdImage.as_view('adimage'))
+    app.add_url_rule('/task/<string:task>', view_func=ATask.as_view('task'))
 
 
 def create_app():

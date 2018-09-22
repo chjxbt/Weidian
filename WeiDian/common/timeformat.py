@@ -23,6 +23,8 @@ def get_db_time_str(time_info=None):
 
 
 def get_web_time_str(time_str, formattype=format_for_web_second):
+    if not time_str:
+        return
     return datetime.datetime.strptime(time_str, format_for_db).strftime(formattype)
 
 

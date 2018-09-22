@@ -667,12 +667,12 @@ class Task(BaseModel):
     TAstartTime = Column(String(14))   # 任务开启时间
     TAendTime = Column(String(14))     # 任务结束时间
     TAduration = Column(String(14))    # 任务持续时间
-    TAstatus = Column(Integer)         # 任务状态 {0: "进行中", 1: "已结束", 2: "已暂停", 3: "已过期",}
+    TAstatus = Column(Integer)         # 任务状态 {0: "进行中", 1: "已结束", 2: "已暂停", 3: "已过期", 4: "已失效"}
     TAlevel = Column(Integer)          # 任务等级 {0: "1级", 1: "2级", 2: "3级", 4:"额外"}
     TArole = Column(Text)              # 规则弹框图片
     TAmessage = Column(Text)           # 备注
     TAurl = Column(Text)               # 跳转链接 如果是观看视频，则存入对应视频url，如果不是。则为达标数目
-    RAid = Column(String(64))          # 任务奖励id
+    RAid = Column(String(64))          # 任务奖励id  已废弃
     TAcomplateNotifications = Column(Text)  # 任务完成提示图片
 
     @orm.reconstructor
@@ -689,7 +689,7 @@ class TaskUser(BaseModel):
     USid = Column(String(64))
     TAid = Column(String(64))
     TUcreatetime = Column(String(14))
-    TUstatus = Column(Integer)  # 任务状态 {0: "进行中", 1: "已完成", 2: "已过期"}
+    TUstatus = Column(Integer)  # 任务状态 {0: "进行中", 1: "已结束", 2: "已暂停", 3: "已过期", 4: "已失效"}
     TUendtime = Column(String(14))
     TUnumber = Column(Integer)  # 完成量
     # RAid = Column(String(64))
@@ -710,6 +710,34 @@ class Raward(BaseModel):
     RAamount = Column(Float)  # 减少金额
     RAratio = Column(Float)   # 上调比例
 
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = ['RAid', "RAtype", "RAfilter", "RAamount", "RAratio"]
+
+# 奖励和任务的关联表
+class TaskRaward(BaseModel):
+    __tablename__ = "taskreward"
+    TRid = Column(String(64), primary_key=True)
+    TAid = Column(String(64))   # 任务id
+    RAid = Column(String(64))   # 奖励id
+    RAnumber = Column(Integer)  # 奖励数目
+    @orm.reconstructor
+    def __init__(self):
+        self.fields = ['TRid', "TAid", "RAid", "RAnumber"]
+
+class UserRaward(BaseModel):
+    __tablename__ = "taskreward"
+    URid = Column(String(64), primary_key=True)
+    RAid = Column(String(64))  # 奖励id
+    USid = Column(String(64))  # 用户id
+    RAnumber = Column(Integer)  # 奖励数目
+    URcreatetime = Column(String(14))  # 创建时间
+    URFrom = Column(String(64))  # 优惠券来源 如果为空则为平台
+
+    @orm.reconstructor
+    def __init__(self):
+        self.fields = ['TRid', "TAid", "RAid", "RAnumber"]
 
 
 class AdImage(BaseModel):
@@ -860,3 +888,6 @@ class ProductSelectorInfo(Base):
     PSItext = Column(String(64), nullable=False)  # 可供选择的选项的文本信息, 比如'xxl', 'M', '红色'
     PSIStock = Column(Integer)  # 该选项(尺码, 或者颜色)的库存
 """
+
+# from base_model import Base
+# Base.metadata.create_all(mysql_engine)

@@ -129,6 +129,7 @@ class CUser():
                     "USid": usid,
                     "TAid": task.TAid,
                     "TUstatus": 0,
+                    "TUnumber": 0
                 })
         else:
             usid = user.USid
