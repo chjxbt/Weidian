@@ -15,7 +15,7 @@
              <template slot-scope="scope">
                <el-button @click="handleClick(scope.row)" type="text" size="small">编辑</el-button>
                <el-button type="text" size="small">|</el-button>
-               <el-button type="text" size="small">删除</el-button>
+               <el-button @click="deleteDone" type="text" size="small">删除</el-button>
              </template>
            </el-table-column>
          </el-table>
@@ -77,12 +77,17 @@
          <el-form-item label="活动时间">
            <el-date-picker v-model="value7" type="daterange" align="right" unlink-panels
                            range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"
-                           :picker-options="pickerOptions2">
+                           :picker-options="pickerOptions2" style="width: 4rem">
            </el-date-picker>
+         </el-form-item>
+         <el-form-item label="持续时间">
+           <el-input v-model="formIndex.duration" class="m-input-m">
+             <template slot="append">天</template>
+           </el-input>
            <span class="m-item-add">+</span>
          </el-form-item>
          <el-form-item label="规则">
-           <textarea v-model="formIndex.rule" class="m-textarea" placeholder="请输入内容"></textarea>
+           <textarea v-model="formIndex.rule" class="m-textarea"></textarea>
          </el-form-item>
        </el-form>
      </div>
@@ -294,7 +299,7 @@
         taskTypeList: [],
         imageUrl:'',
         labelPosition:'left',
-        formIndex:{ value:'', title: '', content: '', ratio: '', memo: '', rule: '' },
+        formIndex:{ value:'', title: '', content: '', ratio: '', memo: '', rule: '', duration: '' },
         pickerOptions2: {
           shortcuts: [{
             text: '最近七天',
@@ -327,46 +332,56 @@
     },
     components:{ pageTitle, wTab },
     methods:{
-      // 任务列表的操作栏方法
-      handleClick(row) {
-        console.log(row);
-      },
       // 获取所有任务
       getAllTask(){
         axios.get(api.get_all_task + '?token=' + localStorage.getItem('token')).then(res => {
           if(res.data.status == 200){
             this.tableData = res.data.data;
 
-            // 显示奖励内容   0: "满减", 1: "佣金加成", 2: "无门槛"
             for(let i = 0; i < this.tableData.length; i ++) {
 
               // 判断任务类型   0: "满减", 1: "佣金加成", 2: "无门槛"
-              /*if(this.tableData[i].tatype == 0) {
-                this.tableData[i].tatype = "满减";
-              }else if(this.tableData[i].tatype == 1) {
-                this.tableData[i].tatype = "佣金加成";
-              }else if(this.tableData[i].tatype == 2) {
-                this.tableData[i].tatype = "无门槛";
-              }*/
-
+              switch (this.tableData[i].tatype){
+                case 0:
+                  this.tableData[i].tatype = this.taskTypeList[0];
+                  break;
+                case 1:
+                  this.tableData[i].tatype = this.taskTypeList[1];
+                  break;
+                case 2:
+                  this.tableData[i].tatype = this.taskTypeList[2];
+                  break;
+                case 3:
+                  this.tableData[i].tatype = this.taskTypeList[3];
+                  break;
+              }
+              // 显示奖励
               let raward = res.data.data[i].raward;
               this.tableData[i].reward = "";
               for(let j = 0; j < raward.length; j ++) {
                 if(raward[j].ratype == 0) {
+                  // 如果是多个奖励，则在每两个奖励之间加上 + 号
+                  if(this.tableData[i].reward) {
+                    this.tableData[i].reward = this.tableData[i].reward + " + ";
+                  }
                   this.tableData[i].reward = this.tableData[i].reward + raward[j].ranumber + "张满" + raward[j].rafilter + "-" + raward[j].raamount + "新衣币";
                 }else if(raward[j].ratype == 1) {
+                  if(this.tableData[i].reward) {
+                    this.tableData[i].reward = this.tableData[i].reward + " + ";
+                  }
                   if(raward[j].ranumber == 1) {
-                    this.tableData[i].reward = this.tableData[i].reward + " + 售出首单佣金上涨" + raward[j].raratio + "%";
+                    this.tableData[i].reward = this.tableData[i].reward + "售出首单佣金上涨" + raward[j].raratio + "%";
                   }else if(raward[j].ranumber > 1) {
-                    this.tableData[i].reward = this.tableData[i].reward + " + 佣金上涨" + raward[j].raratio + "%";
+                    this.tableData[i].reward = this.tableData[i].reward + "佣金上涨" + raward[j].raratio + "%";
                   }
                 }else if(raward[j].ratype == 2) {
-
+                  if(this.tableData[i].reward) {
+                    this.tableData[i].reward = this.tableData[i].reward + " + ";
+                  }
+                  this.tableData[i].reward = this.tableData[i].reward + raward[j].ranumber + "张" + raward[j].raamount + "元无门槛新衣币";
                 }
               }
-              // console.log(this.tableData[i]);
             }
-
           }else{
             this.$message.error(res.data.message);
           }
@@ -379,6 +394,7 @@
         axios.get(api.get_all_task_type).then(res => {
           if(res.data.status == 200){
             this.taskTypeList = res.data.data;
+            console.log(this.taskTypeList)
           }else{
             this.$message.error(res.data.message);
           }
@@ -390,9 +406,55 @@
       taskTypeChange(v) {
         console.log(v);
       },
+      // 任务列表的编辑
+      handleClick(row) {
+        console.log(row);
+      },
+      // 任务列表的删除
+      deleteDone() {
+        this.$confirm('此操作将删除该任务, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$message({ type: 'success', message: '删除成功!' });
+        }).catch(() => {
+          this.$message({ type: 'info', message: '已取消删除' });
+        });
+      },
       // 首页提交
       submit() {
         console.log(this.formIndex);
+
+        let token = localStorage.getItem('token');
+        let params = {
+          "TAname": this.formIndex.title,
+          "TAtype": "0",
+          "TAhead": "xxx",
+          "TAlevel": "0",
+          "TArole": "xxx",
+          "TAcomplateNotifications": "xxx",
+          "RAid": "1",
+          "TAendTime": "",
+          "TAstartTime": "",
+          "TAduration": "",
+          "RAnumber": 2,
+          "TAmessage": "",
+          "TAurl": "1"
+        };
+        axios.post(api.add_task + '?token=' + token, params).then(res=>{
+          if(res.data.status == 200){
+
+            this.$message({ message: res.data.message, type: 'success' });
+          }else{
+            this.$message.error(res.data.message);
+          }
+        }, res=>{
+          this.$message.error(res.data.message);
+        });
+
+
+
       },
       // 顶部首页、发现、我的点击切换
       wTabClick(i){
@@ -412,8 +474,8 @@
       }
     },
     mounted() {
-      this.getAllTask();
       this.getAllTaskType();
+      this.getAllTask();
     }
   }
 </script>
@@ -423,5 +485,24 @@
   .m-title{
     font-size: 18px;
     margin-bottom: 0.1rem;
+  }
+
+  /* 设置滚动条的样式 */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  /* 滚动槽 */
+  ::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    border-radius: 10px;
+  }
+  /* 滚动条滑块 */
+  ::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: #bbb;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+  }
+  ::-webkit-scrollbar-thumb:window-inactive {
+    background: #bbb;
   }
 </style>
