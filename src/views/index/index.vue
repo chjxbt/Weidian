@@ -85,7 +85,7 @@
             <div class="m-modal-award-rule">
               <h3>规则</h3>
               <p class="m-modal-award-rule-info">
-               <!--{{}}-->
+               <!--{{}}-->{{TArole}}
               </p>
             </div>
           </div>
@@ -181,7 +181,7 @@
               task_list:[],
               video_src:'',
               img_src:'',
-              rule:''
+              TArole:''
             }
         },
         components: {
@@ -284,7 +284,7 @@
             }).then(res => {
               if(res.data.status == 200){
                this.task_list = res.data.data;
-               this.rule = res.data.TArole;
+               this.TArole = res.data.TArole;
                if(res.data.is_complate){
                  this.img_src = res.data.TAcomplateNotifications;
                  this.show_img = true;
