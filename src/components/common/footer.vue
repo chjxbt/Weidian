@@ -28,6 +28,9 @@
             console.log(v)
           }
         },
+      mounted(){
+          console.log(this.$store.state.tabbar_select)
+      },
       watch: {
         selected: function (val, oldVal) {
           this.$store.state.tabbar_select = val;

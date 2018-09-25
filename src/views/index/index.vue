@@ -460,8 +460,9 @@
                 this.changeLike(this.activity_list[list].acid,list);
                 break;
               case 1:
-                this.show_fixed = true;
-                this._fixed = this.activity_list[list];
+                // this.show_fixed = true;
+                // this._fixed = this.activity_list[list];
+                this.shareDone(list);
                 break;
             }
           },
@@ -534,12 +535,12 @@
           shareDone(list) {
             this.shareParams.product = this.activity_list[list].product;
             this.shareParams.media = this.activity_list[list].media;
-
+            console.log(this.activity_list[list])
             // console.log(this.shareParams);
             this.show_fixed = true;
           },
+          /*做任务*/
           makeTask(i){
-
             if(this.task_list[i].tatype !=0){
               this.show_task = false;
               return false;
@@ -548,7 +549,7 @@
               this.show_video = true;
             }
             axios.post(api.do_task + '?token='+localStorage.getItem('token'),{
-              taid:this.task_list[i].taid
+              TUid:this.task_list[i].tuid
             }).then(res => {
 
             })

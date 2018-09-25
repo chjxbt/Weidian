@@ -40,7 +40,8 @@
   import axios from 'axios';
   import api from '../../api/api';
   import {Toast} from 'mint-ui';
-  import rule from '../../components/common/rule'
+  import rule from '../../components/common/rule';
+  import common from '../../common/js/common'
     export default {
         data() {
             return {
@@ -57,6 +58,9 @@
           unOpen,
           rule
         },
+      mounted(){
+        common.changeTitle('我的');
+      },
         methods: {
           getInfo(){
             axios.get(api.get_info_mycenter,{
