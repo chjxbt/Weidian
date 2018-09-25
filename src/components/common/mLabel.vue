@@ -28,8 +28,8 @@
       z-index: 100;
       position: absolute;
       transform: rotate(40deg);
-      top: 8px;
-      right: 4px;
+      top: 6px;
+      right: 0;
       color: #fff;
     }
     .m-triangle{

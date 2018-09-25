@@ -1,7 +1,7 @@
 <template>
     <div class="m-modal m-video-modal">
       <div class="m-video-box">
-        <video :src="src"></video>
+        <video :src="src" autoplay="true"></video>
         <span class="m-close" @click="videoClose">X</span>
       </div>
     </div>

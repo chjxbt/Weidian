@@ -35,21 +35,21 @@
             </template>
           </div>
       </mt-loadmore>
-      <div class="m-modal m-copy-text" v-if="show_modal">
-        <div class="m-modal-state">
-          <div class="m-modal-head">
-            <span class="m-close" @click="closeModal('show_modal')"> x </span>
-          </div>
-          <div class="m-modal-content">
-            <h3>链接已经复制成功</h3>
-            <p>您可以去分享给好友啦！
-            </p>
-          </div>
-          <!--<div class="m-modal-foot">-->
-            <!--<span class="m-modal-foot-btn">复制文案</span>-->
+      <!--<div class="m-modal m-copy-text" v-if="show_modal">-->
+        <!--<div class="m-modal-state">-->
+          <!--<div class="m-modal-head">-->
+            <!--<span class="m-close" @click="closeModal('show_modal')"> x </span>-->
           <!--</div>-->
-        </div>
-      </div>
+          <!--<div class="m-modal-content">-->
+            <!--<h3>链接已经复制成功</h3>-->
+            <!--<p>您可以去分享给好友啦！-->
+            <!--</p>-->
+          <!--</div>-->
+          <!--&lt;!&ndash;<div class="m-modal-foot">&ndash;&gt;-->
+            <!--&lt;!&ndash;<span class="m-modal-foot-btn">复制文案</span>&ndash;&gt;-->
+          <!--&lt;!&ndash;</div>&ndash;&gt;-->
+        <!--</div>-->
+      <!--</div>-->
       <div class="m-modal" v-if="show_task">
         <div class="m-modal-state">
           <div class="m-modal-head">
@@ -60,7 +60,7 @@
               <span>奖励任务</span>
               <span class="m-modal-award-info" v-if="task_list[0] && task_list[0].raward.ratype == 0">满{{task_list[0].raward.rafilter}}减{{task_list[0].raward.raamount}}</span>
               <span class="m-modal-award-info" v-else-if="task_list[0] && task_list[0].raward.ratype == 1">佣金上浮{{task_list[0].raward.raratio}}</span>
-              <span class="m-modal-award-info" v-else-if="task_list[0]">{{task_list[0].raward.rafilter}}元新衣币<span v-if="task_list[0].raward.ranumber">*{{task_list[0].raward.ranumber}}张</span></span>
+              <span class="m-modal-award-info" v-else-if="task_list[0]">{{task_list[0].raward.raamount}}元新衣币<span v-if="task_list[0].raward.ranumber">*{{task_list[0].raward.ranumber}}张</span></span>
             </h3>
             <div class="m-scroll">
               <ul class="m-modal-award-ul">
@@ -85,8 +85,7 @@
             <div class="m-modal-award-rule">
               <h3>规则</h3>
               <p class="m-modal-award-rule-info">
-                完成任务领取奖励balbalalabanal
-                bababa
+               <!--{{}}-->
               </p>
             </div>
           </div>
@@ -96,6 +95,7 @@
       <!--<img :src="'/static/images/course/course-'+ course + '.png'" v-if="show_course" class="m-course-img" alt="" @click.stop="courseClick">-->
       <!--<img src="/static/images/fen.png" v-if="show_fen" class="m-course-img" alt="" @click.stop="fenClick">-->
       <m-video v-if="show_video" :src="video_src" @videoClose="videoClose"></m-video>
+      <img-modal v-if="show_img" @closeModal="closeModal"></img-modal>
       <div class="bottom-prompt" v-if="bottom_show">
         <div class="bottom-line"></div>
         <div class="m-grey-color">我是有底线的</div>
@@ -117,6 +117,7 @@
   import common from '../../common/js/common';
   import attention from '../../components/common/attention';
   import mVideo from '../../components/common/video';
+  import imgModal from '../../components/common/imgModal';
   import wx from 'weixin-js-sdk';
     export default {
       mixins: [wxapi],
@@ -133,6 +134,7 @@
               show_task_btn:true,
               show_fen:false,
               show_video:false,
+              show_img:false,
               _fixed:null,
               swipe_items: [{
                 title: '你的名字',
@@ -186,7 +188,8 @@
           ctx,
           share,
           attention,
-          mVideo
+          mVideo,
+          imgModal
         },
       mounted(options){
         if(common.GetQueryString('UPPerd')){
@@ -273,7 +276,9 @@
           /*获取任务*/
           getTask(){
             axios.get(api.get_user_task,{
-              params:localStorage.getItem('token')
+              params:{
+                token:localStorage.getItem('token')
+              }
             }).then(res => {
               if(res.data.status == 200){
                this.task_list = res.data.data;
@@ -423,7 +428,6 @@
           },
           /*关闭模态框*/
           closeModal(v){
-            console.log(v)
             this[v]  = false;
           },
           /*关闭视频*/
@@ -535,13 +539,15 @@
             this.show_fixed = true;
           },
           makeTask(i){
+
             if(this.task_list[i].tatype !=0){
-              this.show_modal = false;
+              this.show_task = false;
               return false;
             }else{
-              this.show_modal = true;
+              this.video_src = this.task_list[i].taurl;
+              this.show_video = true;
             }
-            axios.post(api.do_task,{
+            axios.post(api.do_task + '?token='+localStorage.getItem('token'),{
               taid:this.task_list[i].taid
             }).then(res => {
 
@@ -672,6 +678,7 @@
         .m-scroll{
           height: 620px;
           overflow-y: auto;
+          overflow-x: hidden;
           .m-modal-award-ul{
             li{
               .flex-row(space-between);

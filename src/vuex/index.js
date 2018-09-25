@@ -12,22 +12,27 @@ let store= new Vuex.Store({
     tabbar:[{
       name:'首页',
       icon:'',
+      active_icon:'',
       url:'index'
     },{
       name:'客服',
       icon:'',
+      active_icon:'',
       url:'service'
     },{
       name:'发现',
       icon:'',
+      active_icon:'',
       url:'discover'
     },{
       name:'购物车',
       icon:'',
+      active_icon:'',
       url:'shopping'
     },{
       name:'我的',
       icon:'',
+      active_icon:'',
       url:'personal'
     }],
     tabbar_select:'首页'
