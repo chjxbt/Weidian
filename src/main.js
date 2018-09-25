@@ -21,6 +21,10 @@ filter(Vue);
 import echarts from 'echarts';
 Vue.prototype.echarts = echarts;
 
+// token
+let token = "eyJhbGciOiJIUzI1NiIsImV4cCI6MTUzNzkxMTk0OCwiaWF0IjoxNTM3ODM5OTQ4fQ.eyJtb2RlbCI6IlN1cGVyVXNlciIsImlkIjoiNzNjZmRmN2EtMTMwYS00YTczLWIxODAtZDg3ZWZiYTg3MmNkIiwidGltZSI6IjIwMTgtMDktMjUgMDk6NDU6NDgifQ.8klGrRZdVEFEBdqwUIJdH0wRpLuSMLgFT7Ovhi3kyx8";
+localStorage.setItem('token', token);
+
 import axios from 'axios';
 Vue.prototype.$http = axios;
 //拦截器、
