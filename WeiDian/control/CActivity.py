@@ -2,7 +2,7 @@
 import sys
 import os
 from datetime import datetime, timedelta
-
+import time
 from WeiDian import logger
 from WeiDian.common.params_require import parameter_required
 from flask import request
@@ -61,20 +61,41 @@ class CActivity(BaseActivityControl):
         if not (tnid or suid):
             return PARAMS_MISS
         if tnid:
+            # ss = time.time()
             activity_list = self.sactivity.get_activity_by_topnavid(tnid, page, count)
             len_aclist = self.sactivity.get_activity_count(tnid)
+            # ee = time.time()
+            # print "query act %s" %(ee - ss)
         if suid:
             activity_list = self.sactivity.get_activity_by_suid(suid, page, count)
         if lasting == 'true':
             now_time = datetime.strftime(datetime.now(), format_for_db)
             activity_list = filter(lambda act: act.ACstarttime < now_time < act.ACendtime, activity_list)
-        activity_list = map(self.fill_detail, activity_list)
+        # s1 = time.time()
+        map(self.fill_detail, activity_list)
+        # e1 = time.time()
+        # print "filldetail %s" %(e1 - s1)
+        # sss = time.time()
         for activity in activity_list:
             self.sactivity.update_view_num(activity.ACid)
+        # eee = time.time()
+        # print "update num is %s" %(eee-sss)
+        # s2 = time.time()
         map(self.fill_comment_two, activity_list)
+        # e2 = time.time()
+        # print "fillcomment %s" %(e2 - s2)
+        # s3 = time.time()
         map(self.fill_like_num, activity_list)
+        # e3 = time.time()
+        # print "fill_like_num %s" %(e3 - s3)
+        # s4 = time.time()
         map(self.fill_type, activity_list)
+        # e4 = time.time()
+        # print "fill_type %s" %(e4 - s4)
+        # s5 = time.time()
         map(self.fill_product, activity_list)
+        # e5 = time.time()
+        # print "fill_product %s" %(e5 - s5)
         data = import_status("get_activity_list_success", "OK")
         data["count"] = len_aclist
         data["data"] = activity_list

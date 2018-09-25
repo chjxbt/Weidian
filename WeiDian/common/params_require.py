@@ -20,6 +20,7 @@ def parameter_required(*required):
         raise PARAMS_MISS(u'未传入参数')
     if required:
         missed = filter(lambda x: x not in total_date, required)
+
         if missed:
             missed_params = '/'.join(missed)
             if isinstance(missed_params, unicode):

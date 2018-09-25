@@ -101,7 +101,7 @@ class BaseActivityControl():
             comment.add('user').hide('USid')
         act.comment = comments
         act.add('comment')
-        map(self.fill_comment_apply_for, act.comment)
+        # map(self.fill_comment_apply_for, act.comment)
         return act
 
 
