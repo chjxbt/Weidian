@@ -57,7 +57,7 @@ class CUser():
             if key not in args:
                 return PARAMS_MISS
 
-        from WeiDian.config.setting import APP_ID, APP_SECRET_KEY
+        from WeiDian.config.setting import APP_ID, APP_SECRET_KEY, wximg
         from WeiDian.config.urlconfig import get_access_toke, get_user_info, get_subscribe
         # 获取access_token openid
 
@@ -166,6 +166,7 @@ class CUser():
             "subscribe": subscribe,
             "openid": openid,
             "access_token": access_token,
+            "wximg": wximg,
             "token": usid_to_token(usid)
         }
         logger.debug("get loggin response %s", response)

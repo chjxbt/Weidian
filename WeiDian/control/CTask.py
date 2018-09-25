@@ -76,12 +76,23 @@ class CTask(BaseTask):
                 update_result = self.stask.update_task(data.get("TAid"), task)
                 if not update_result:
                     raise SYSTEM_ERROR("数据库异常")
+                task["TAid"] = data.get("TAid")
             else:
                 task['TAid'] = str(uuid.uuid1())
                 self.stask.add_model("Task", **task)
+            self.add_or_update_task_raward(task['TAid'], task['RAid'], task.get("RAnumber", 1))
         except:
             logger.exception("add task error")
         return import_status("add_task_success", "OK")
+
+    def add_or_update_task_raward(self, taid, raid, ranumber):
+        self.sraward.delte_task_raward_by_taid(taid)
+        self.sraward.add_model("TaskRaward", **{
+            "TRid": str(uuid.uuid1()),
+            "TAid": taid,
+            "RAid": raid,
+            "RAnumber": ranumber
+        })
 
     @verify_token_decorator
     def get_user_task(self):

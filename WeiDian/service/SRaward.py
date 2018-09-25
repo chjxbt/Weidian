@@ -15,5 +15,6 @@ class SRaward(SBase):
     def get_raward_by_taid(self, taid):
         return self.session.query(TaskRaward).filter(TaskRaward.TAid == taid).all()
 
-    # @close_session
-    # def get_raward_by_taid(self):
+    @close_session
+    def delte_task_raward_by_taid(self, taid):
+        return self.session.query(TaskRaward).filter(TaskRaward.TAid == taid).delete()
