@@ -46,7 +46,7 @@
         }
     }
 </script>
-<style lang="less" rel="stylesheet/less" >
+<style lang="less" rel="stylesheet/less" scoped>
 
   .m-invitation{
     padding: 30px 51px;

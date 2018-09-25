@@ -19,7 +19,7 @@
         }
     }
 </script>
-<style lang="less" rel="stylesheet/less">
+<style lang="less" rel="stylesheet/less" scoped>
 .m-content{
   /*padding: 10px 0;*/
   margin-bottom: 120px;

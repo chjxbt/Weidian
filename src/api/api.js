@@ -49,6 +49,7 @@ const api={
   update_bankcard:title +'/mycenter/update_bankcard',//修改银行卡
   del_bankcard: title +'/mycenter/del_bankcard',//解除
   get_user_task: title + '/task/get_user_task',//获取任务
+  do_task: title +'/task/do_task',//做任务
 };
 
 export default api

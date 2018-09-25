@@ -52,7 +52,7 @@
     }
 </script>
 
-<style lang="less" rel="stylesheet/less" >
+<style lang="less" rel="stylesheet/less" scoped>
   @import "../../common/css/index";
   .m-icon-list{
     .flex-row(flex-end);

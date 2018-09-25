@@ -35,7 +35,7 @@
         }
     }
 </script>
-<style lang="less" rel="stylesheet/less">
+<style lang="less" rel="stylesheet/less" scoped>
   .m-search-html{
     height: 100%;
     background-color: #F1F1F1;

@@ -30,7 +30,7 @@
 
 </template>
 
-<script type="text/ecmascript-6">
+<script type="text/ecmascript-6" >
   import axios from 'axios';
   import api from '../../../api/api';
   import common from '../../../common/js/common';
@@ -117,7 +117,7 @@
         }
     }
 </script>
-<style lang="less" rel="stylesheet/less" >
+<style lang="less" rel="stylesheet/less" scoped>
 @import "../../../common/css/index";
   .m-receiverAddress{
     font-size: 28px;

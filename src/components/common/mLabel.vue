@@ -16,7 +16,7 @@
   }
 </script>
 
-<style lang="less" rel="stylesheet/less" >
+<style lang="less" rel="stylesheet/less" scoped>
   .m-label{
     position: absolute;
     top:0;

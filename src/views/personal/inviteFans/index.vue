@@ -98,7 +98,7 @@
         }
     }
 </script>
-<style lang="less" rel="stylesheet/less" >
+<style lang="less" rel="stylesheet/less" scoped>
   @import "../../../common/css/index";
 .m-fans{
   min-height: 100%;

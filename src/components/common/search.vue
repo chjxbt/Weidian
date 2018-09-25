@@ -38,7 +38,7 @@
     }
 </script>
 
-<style lang="less" rel="stylesheet/less">
+<style lang="less" rel="stylesheet/less" scoped>
   .m-search{
     /*width: 100%;*/
     padding: 0 18px;

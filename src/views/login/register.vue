@@ -34,7 +34,7 @@
     }
 </script>
 
-<style lang="less" rel="stylesheet/less" >
+<style lang="less" rel="stylesheet/less" scoped>
 .m-register{
   padding: 50px 35px 50px 50px;
   text-align: left;

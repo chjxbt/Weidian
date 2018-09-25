@@ -138,7 +138,7 @@
         }
     }
 </script>
-<style lang="less" rel="stylesheet/less" >
+<style lang="less" rel="stylesheet/less" scoped>
 .m-collect{
   display: flex;
   flex-flow: row;

@@ -58,50 +58,28 @@
           <div class="m-modal-content">
             <h3 class="m-modal-award-title">
               <span>奖励任务</span>
-              <span class="m-modal-award-info">15元新衣币*2张</span>
+              <span class="m-modal-award-info" v-if="task_list[0] && task_list[0].raward.ratype == 0">满{{task_list[0].raward.rafilter}}减{{task_list[0].raward.raamount}}</span>
+              <span class="m-modal-award-info" v-else-if="task_list[0] && task_list[0].raward.ratype == 1">佣金上浮{{task_list[0].raward.raratio}}</span>
+              <span class="m-modal-award-info" v-else-if="task_list[0]">{{task_list[0].raward.rafilter}}元新衣币<span v-if="task_list[0].raward.ranumber">*{{task_list[0].raward.ranumber}}张</span></span>
             </h3>
             <div class="m-scroll">
               <ul class="m-modal-award-ul">
-                <li>
-                  <div class="m-modal-award-img-box">
-                    <img src="" class="m-modal-award-img" alt="">
-                    <div>
-                      <h3>观看视频1</h3>
-                      <p class="m-modal-award-complete"><span>完成 0/1</span> </p>
+                <template v-for="(item,index) in task_list">
+                  <li>
+                    <div class="m-modal-award-img-box">
+                      <img :src="item.tahead" class="m-modal-award-img" alt="">
+                      <div>
+                        <h3>{{item.taname}}</h3>
+                        <p class="m-modal-award-complete" >
+                          <span v-if="item.tatype == 0">完成 0/1</span>
+                          <span v-else>完成 0/{{item.taurl}}</span>
+                          <span class="m-red" v-if="item.tamessage">{{item.tamessage}}</span></p>
+                      </div>
                     </div>
-                  </div>
-                  <span class="m-modal-award-btn">做任务</span>
-                </li>
-                <li>
-                  <div class="m-modal-award-img-box">
-                    <img src="" class="m-modal-award-img" alt="">
-                    <div>
-                      <h3>观看视频1</h3>
-                      <p class="m-modal-award-complete"><span>完成 0/1</span> </p>
-                    </div>
-                  </div>
-                  <span class="m-modal-award-btn active">做任务</span>
-                </li>
-                <li>
-                  <div class="m-modal-award-img-box">
-                    <img src="" class="m-modal-award-img" alt="">
-                    <div>
-                      <h3>观看视频1</h3>
-                      <p class="m-modal-award-complete"><span>完成 0/1</span><span class="m-red">首单佣金翻倍</span> </p>
-                    </div>
-                  </div>
-                  <span class="m-modal-award-btn">做任务</span>
-                </li>
-                <li>
-                  <div class="m-modal-award-img-box">
-                    <img src="" class="m-modal-award-img" alt="">
-                    <div>
-                      <h3>观看视频1</h3>
-                      <p class="m-modal-award-complete"><span>完成 0/1</span> </p>
-                    </div>
-                  </div>
-                  <span class="m-modal-award-btn">做任务</span>
-                </li>
+                    <span class="m-modal-award-btn" :class="item.tastatus == 1 ?'aactive':''" v-if="item.talevel == 99">额外奖励</span>
+                    <span class="m-modal-award-btn" :class="item.tastatus == 1 ?'aactive':''" v-else @click="makeTask(index)">做任务</span>
+                  </li>
+                </template>
               </ul>
             </div>
             <div class="m-modal-award-rule">
@@ -117,7 +95,7 @@
       <attention v-if="show_fixed" @closeModal="closeModal('show_fixed')"></attention>
       <!--<img :src="'/static/images/course/course-'+ course + '.png'" v-if="show_course" class="m-course-img" alt="" @click.stop="courseClick">-->
       <!--<img src="/static/images/fen.png" v-if="show_fen" class="m-course-img" alt="" @click.stop="fenClick">-->
-      <m-video v-if="show_video"></m-video>
+      <m-video v-if="show_video" :src="video_src" @videoClose="videoClose"></m-video>
       <div class="bottom-prompt" v-if="bottom_show">
         <div class="bottom-line"></div>
         <div class="m-grey-color">我是有底线的</div>
@@ -145,7 +123,7 @@
         data() {
             return {
               course:1,
-              count:2,
+              count:5,
               total_count:0,
               search:true,
               show_course: false,
@@ -198,7 +176,8 @@
               isScroll: true,
               shareParams: {},
               bottom_show:false,
-              task_list:[]
+              task_list:[],
+              video_src:''
             }
         },
         components: {
@@ -212,6 +191,7 @@
       mounted(options){
         if(common.GetQueryString('UPPerd')){
           localStorage.setItem('UPPerd',common.GetQueryString('UPPerd'));
+          alert(common.GetQueryString('UPPerd'))
           if(localStorage.getItem('token')){
             this.$router.push('/login');
           }
@@ -219,6 +199,7 @@
           this.getSwipe();
           this.getHot();
         this.getTopnav();
+        this.getTask();
           let that =this;
         this.interval = window.setInterval(that.animation,3000);
 
@@ -445,6 +426,10 @@
             console.log(v)
             this[v]  = false;
           },
+          /*关闭视频*/
+          videoClose(){
+            this.show_video = false;
+          },
           /*开启模态框*/
           showModal(v){
             this[v] = true;
@@ -548,11 +533,24 @@
 
             // console.log(this.shareParams);
             this.show_fixed = true;
+          },
+          makeTask(i){
+            if(this.task_list[i].tatype !=0){
+              this.show_modal = false;
+              return false;
+            }else{
+              this.show_modal = true;
+            }
+            axios.post(api.do_task,{
+              taid:this.task_list[i].taid
+            }).then(res => {
+
+            })
           }
         }
     }
 </script>
-<style lang="less" rel="stylesheet/less">
+<style lang="less" rel="stylesheet/less" scoped>
   @import "../../common/css/index";
   @import "../../common/css/modal";
 .m-top{

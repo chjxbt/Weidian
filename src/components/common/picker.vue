@@ -45,7 +45,7 @@
     }
 </script>
 
-<style lang="less" rel="stylesheet/less" >
+<style lang="less" rel="stylesheet/less" scoped>
   .m-picker-status{
     position: fixed;
     top: 0;

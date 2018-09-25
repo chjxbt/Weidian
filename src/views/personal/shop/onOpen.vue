@@ -234,7 +234,7 @@
         }
     }
 </script>
-<style lang="less" rel="stylesheet/less">
+<style lang="less" rel="stylesheet/less" >
   @import "../../../common/css/index";
   .m-onOpen{
     color: #666;

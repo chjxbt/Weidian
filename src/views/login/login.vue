@@ -41,11 +41,23 @@
           },
           login() {
             if(this.check){
-              const id = 'wxe8e8f6b9351d3587'
-              const url = window.location.href;
-              // const  url = 'https://daaiti.cn/WeiDian/#/login';
-              window.location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid='
-                +  id + '&redirect_uri='+ encodeURIComponent(url) + '&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect'
+              axios.get(api.get_config,{
+                params:{
+                  url: window.location.href
+                }
+              } ).then((res) => {
+                if(res.data.status == 200){
+                  const id = res.data.data.appId
+                  const url = window.location.href;
+                  // const  url = 'https://daaiti.cn/WeiDian/#/login';
+                  window.location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid='
+                    +  id + '&redirect_uri='+ encodeURIComponent(url) + '&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect'
+                }
+
+              }).catch((error) => {
+                console.log(error ,'1111')
+              })
+
             }else{
 
             }
@@ -89,7 +101,7 @@
         }
     }
 </script>
-<style lang="less" rel="stylesheet/less" >
+<style lang="less" rel="stylesheet/less" scoped>
 .m-login{
   background-color: #9fd0bf;
   min-height: 100%;
@@ -111,7 +123,7 @@
       font-size: 32px;
       border-radius: 48.5px;
       background-color: #09bb07;
-      box-shadow: 0px 13px 22px 0 rgba(9, 187, 7, 0.35);
+      box-shadow: 0 13px 22px 0 rgba(9, 187, 7, 0.35);
     }
   }
   .m-login-bottom{
