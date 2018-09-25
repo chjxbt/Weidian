@@ -1,8 +1,12 @@
-// const title = 'http://10.0.0.197:7443/sharp/manager/';
-const title = 'http://120.79.182.43:7443/sharp/manager/';
-// const title ='http://192.168.0.100:7443/sharp/manager/';
+const title ='https://daaiti.cn/';
 
 const api={
+  get_all_task: title + 'task/get_all_task',  // 获取所有任务
+  get_all_task_type: title + 'task/get_all_task_type',  // 获取任务类型
+
+
+
+
   login: title + 'user/login',//用户登录
   changePwd: title + 'user/update_user',//修改密码
   get_inforcode:title + 'user/get_inforcode',//获取验证码
@@ -41,6 +45,6 @@ const api={
   get_situation:title + 'card/get_situation',//获取活动或优惠券概况
   update_active_status:title +'card/update_active_status',//更新优惠券状态
   get_acabo:title + 'card/get_acabo',//获取活动和优惠券详情
-}
+};
 
 export default api
