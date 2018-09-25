@@ -6,10 +6,11 @@ const api={
 
   add_task: title + 'task/add_task',  // 添加或更新任务
 
+  login: title + 'super/login',  // 管理员登录
 
 
 
-  login: title + 'user/login',//用户登录
+
   changePwd: title + 'user/update_user',//修改密码
   get_inforcode:title + 'user/get_inforcode',//获取验证码
   forget_password:title + 'user/forget_password',//忘记密码

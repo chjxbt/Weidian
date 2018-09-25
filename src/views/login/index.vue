@@ -5,13 +5,13 @@
       <div class="login-box">
         <el-form :model="ruleForm" :rules="rules" ref="ruleForm"  >
           <h3 class="login-head">用户登录</h3>
-          <el-form-item  prop="MAname">
+          <el-form-item  prop="suname">
             <i class="icon-person icon"></i>
-            <el-input v-model="ruleForm.MAname" placeholder="输入账号" class="m-input"></el-input>
+            <el-input v-model="ruleForm.suname" placeholder="输入账号" class="m-input"></el-input>
           </el-form-item>
-          <el-form-item  prop="MApassword">
+          <el-form-item  prop="supassword">
             <span class="icon-pwd icon"></span>
-            <el-input v-model="ruleForm.MApassword" placeholder="输入密码" type="password" class="m-input"></el-input>
+            <el-input v-model="ruleForm.supassword" placeholder="输入密码" type="password" class="m-input"></el-input>
             <!--<i class="icon-pwd icon-r"></i>-->
           </el-form-item>
 
@@ -45,15 +45,15 @@
     data() {
       return {
         ruleForm: {
-          MAname: '',
-          MApassword:'',
+          suname: '',
+          supassword:'',
           checked:true,
         },
         rules: {
-          MAname: [
+          suname: [
             { required: true, message: '请输入账号名称', trigger: 'blur' }
           ],
-          MApassword: [
+          supassword: [
             { required: true, message: '请输入密码', trigger: 'blur' }
           ],
         }
@@ -72,24 +72,19 @@
             //判断复选框是否被勾选 勾选则调用配置cookie方法
             if (that.ruleForm.checked == true) {
               //传入账号名，密码，和保存天数3个参数
-              that.setCookie(that.ruleForm.MAname, that.ruleForm.MApassword, 7);
+              that.setCookie(that.ruleForm.suname, that.ruleForm.supassword, 7);
             }else {
               console.log("清空Cookie");
               //清空Cookie
               that.clearCookie();
             }
-            axios.post(api.login,that.ruleForm).
-            then(res=>{
+            axios.post(api.login, that.ruleForm).then(res=>{
               if(res.data.status == 200){
-                this.$store.state.side = res.data.data.side;
-                this.$store.state.role = res.data.data.MAidentity;
-                this.$store.state.token = res.data.data.token;
+                // this.$store.state.side = res.data.data.side;
+                // this.$store.state.role = res.data.data.MAidentity;
+                // this.$store.state.token = res.data.data.token;
                 localStorage.setItem('token', res.data.data.token);
-                if(res.data.data.MAidentity.indexOf('管理员') != -1){
-                  this.$router.push({ path: '/index/adminIndex' });
-                }else{
-                  this.$router.push({ path: '/index/userIndex' });
-                }
+                this.$router.push({ path: '/content/index' });
               }else{
                 this.$message.error(res.data.message);
               }
@@ -118,9 +113,9 @@
             let arr2 = arr[i].split('='); //再次切割
             //判断查找相对应的值
             if (arr2[0] == 'userName') {
-              this.ruleForm.MAname = arr2[1]; //保存到保存数据的地方
+              this.ruleForm.suname = arr2[1]; //保存到保存数据的地方
             } else if (arr2[0] == 'userPwd') {
-              this.ruleForm.MApassword = arr2[1];
+              this.ruleForm.supassword = arr2[1];
             }
           }
         }
