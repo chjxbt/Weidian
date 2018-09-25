@@ -18,7 +18,7 @@
         data() {
             return {
                 name: '',
-              selected:this.$store.state.tabbar[0].name,
+              selected:this.$store.state.tabbar_select,
               tabbar:this.$store.state.tabbar
             }
         },
