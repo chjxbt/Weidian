@@ -2,7 +2,7 @@
     <div class="m-img-modal">
       <div class="m-modal-state">
         <span class="m-close" @click="closeModal">X</span>
-        <img src="" alt="">
+        <img :src="src" alt="">
       </div>
     </div>
 
@@ -15,7 +15,12 @@
                 name: ''
             }
         },
-        components: {},
+        props: {
+          src:{
+            type:String,
+            default:null
+          }
+        },
         methods: {
           closeModal(){
             this.$emit('closeModal','show_img')

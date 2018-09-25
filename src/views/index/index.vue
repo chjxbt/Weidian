@@ -95,7 +95,7 @@
       <!--<img :src="'/static/images/course/course-'+ course + '.png'" v-if="show_course" class="m-course-img" alt="" @click.stop="courseClick">-->
       <!--<img src="/static/images/fen.png" v-if="show_fen" class="m-course-img" alt="" @click.stop="fenClick">-->
       <m-video v-if="show_video" :src="video_src" @videoClose="videoClose"></m-video>
-      <img-modal v-if="show_img" @closeModal="closeModal"></img-modal>
+      <img-modal v-if="show_img" :src="img_src" @closeModal="closeModal"></img-modal>
       <div class="bottom-prompt" v-if="bottom_show">
         <div class="bottom-line"></div>
         <div class="m-grey-color">我是有底线的</div>
@@ -179,7 +179,9 @@
               shareParams: {},
               bottom_show:false,
               task_list:[],
-              video_src:''
+              video_src:'',
+              img_src:'',
+              rule:''
             }
         },
         components: {
@@ -282,6 +284,11 @@
             }).then(res => {
               if(res.data.status == 200){
                this.task_list = res.data.data;
+               this.rule = res.data.TArole;
+               if(res.data.is_complate){
+                 this.img_src = res.data.TAcomplateNotifications;
+                 this.show_img = true;
+               }
               }else{
                 Toast({ message: res.data.message, className: 'm-toast-fail' });
               }
@@ -551,7 +558,9 @@
             axios.post(api.do_task + '?token='+localStorage.getItem('token'),{
               TUid:this.task_list[i].tuid
             }).then(res => {
-
+                if(res.data.status == 200){
+                  this.getTask();
+                }
             })
           },
           // 去活动内容页
