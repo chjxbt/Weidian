@@ -6,6 +6,7 @@ from flask import request
 from WeiDian.common.TransformToList import list_add_models, dict_add_models
 from WeiDian.common.divide import Partner
 from WeiDian.common.token_required import is_partner
+from WeiDian.common.timeformat import get_web_time_str
 from WeiDian.config.enums import activity_type
 
 
@@ -389,3 +390,58 @@ class BaseMyCenterControl():
 
 class BaseOrder():
     pass
+
+
+class BaseTask():
+
+    def fill_task_detail(self, task):
+        if task.TUendtime:
+            now = datetime.now()
+            endtime = datetime.strptime(task.TUendtime, "%Y%m%d%H%M%S")
+            if now > endtime:
+                return
+        return self.fill_task_params(task)
+
+
+
+    def fill_reward(self, task):
+        task_raward_list = self.sraward.get_raward_by_taid(task.TAid)
+        if not task_raward_list:
+            return
+        rawards = []
+        for task_raward in task_raward_list:
+            raward = self.sraward.get_raward_by_id(task_raward.RAid)
+            raward.RAnumber = task_raward.RAnumber
+            raward.add("RAnumber")
+            rawards.append(raward)
+        if not rawards:
+            return
+
+        task.RAward = rawards
+        task.add("RAward")
+        return task
+
+    def fill_task_params(self, task):
+        task_detail = self.stask.get_task_by_taid(task.TAid)
+        if not task_detail or task_detail.TAstatus == 4:
+            return
+        task.TAname = task_detail.TAname
+        task.TAtype = task_detail.TAtype
+        task.TAhead = task_detail.TAhead
+        task.TAlevel = task_detail.TAlevel
+        task.TArole = task_detail.TArole
+        task.TAcomplateNotifications = task_detail.TAcomplateNotifications
+        task.RAid = task_detail.RAid
+        task.TAstatus = task_detail.TAstatus
+        task.TAmessage = task_detail.TAmessage
+        task.TAurl = task_detail.TAurl
+        task.TAstartTime = get_web_time_str(task_detail.TAstartTime)
+        task.TAduration = get_web_time_str(task_detail.TAduration)
+        task.TAendTime = get_web_time_str(task_detail.TAendTime)
+        task.add(
+            'TAname', "TAtype", "TAhead", "TAlevel",
+            "TArole", "TAcomplateNotifications",
+            "RAid", "TAstatus", "TAmessage", "TAurl",
+            "TAendTime", "TAstartTime", "TAduration"
+        )
+        return task

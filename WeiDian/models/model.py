@@ -521,20 +521,19 @@ class User(BaseModel):
     __tablename__ = 'user'
     USid = Column(String(64), primary_key=True)
     USname = Column(String(64), nullable=False)  # 用户名
-    # USpassword = Column(String(255))  # 密码
-    USphone = Column(String(16))  # 手机号
-    USheader = Column(String(255))  # 头像
-    USgender = Column(String(64))  # 性别
+    # USpassword = Column(String(255))           # 密码
+    USphone = Column(String(16))                 # 手机号
+    USheader = Column(String(255))               # 头像
+    USgender = Column(String(64))                # 性别
     USage = Column(Integer)  # 年龄
-    USlastlogin = Column(String(64))  # 用户上次登录时间
+    USlastlogin = Column(String(64))             # 用户上次登录时间
     # 用户级别: {0 普通用户, 1 普通合伙人, 2 中级合伙人, 3 高级合伙人}
     USlevel = Column(Integer, default=0)
-    # 上级
-    UPPerd = Column(String(64), default=0)
-
-    openid = Column(String(64))    # 微信唯一值
-    unionid = Column(String(255))   # 绑定公众号会出现
-    accesstoken = Column(String(255))  # 微信token
+    UPPerd = Column(String(64), default=0)       # 上级
+    openid = Column(String(64))                  # 微信唯一值
+    unionid = Column(String(255))                # 绑定公众号会出现
+    accesstoken = Column(String(255))            # 微信token
+    subscribe = Column(Integer)                  # 是否关注公众号
 
     @orm.reconstructor
     @auto_createtime
@@ -644,7 +643,7 @@ class Complain(BaseModel):
     __tablename__ = 'complain'
     COid = Column(String(64), primary_key=True)
     COcontent = Column(Text)           # 投诉内容
-    COtype = Column(Integer)           # 投诉类型 {201："客服态度差", 202："商品质量问题", 203："售后方案不合理", 204："商品包装问题"}
+    COtype = Column(String(16))        # 投诉类型 {201："客服态度差", 202："商品质量问题", 203："售后方案不合理", 204："商品包装问题"}
     OIid = Column(String(64))          # 关联订单id
     USid = Column(String(64))          # 发起人id
     COcreatetime = Column(String(14))  # 创建时间
@@ -655,26 +654,90 @@ class Complain(BaseModel):
     def __init__(self):
         self.fields = ['COid', 'COcontent', 'COtype', "OIid", "USid", 'COtreatstatus']
 
+
+# 任务
 class Task(BaseModel):
     __tablename__ = "task"
     TAid = Column(String(64), primary_key=True)
-    TAname = Column(Text)
-    # TAtype = Column(Integer)   # 任务类型
-    TAisOpen = Column(Integer) # 是否开启
-    TAcreatetime = Column(String(14))
-    TAstatus = Column(Integer)
+    TAname = Column(Text)              # 任务标题
+    TAtype = Column(Integer)           # 任务类型 {0: "观看视频", 1: "转发商品", 2: "售出商品", 3: "售出大礼包", 4: "",}
+    TAisOpen = Column(Integer)         # 是否开启
+    TAhead = Column(Text)              # 任务前部头像图片
+    TAcreatetime = Column(String(14))  # 任务创建时间
+    TAstartTime = Column(String(14))   # 任务开启时间
+    TAendTime = Column(String(14))     # 任务结束时间
+    TAduration = Column(String(14))    # 任务持续时间
+    TAstatus = Column(Integer)         # 任务状态 {0: "进行中", 1: "已结束", 2: "已暂停", 3: "已过期", 4: "已失效"}
+    TAlevel = Column(Integer)          # 任务等级 {0: "1级", 1: "2级", 2: "3级", 4:"额外"}
+    TArole = Column(Text)              # 规则弹框图片
+    TAmessage = Column(Text)           # 备注
+    TAurl = Column(Text)               # 跳转链接 如果是观看视频，则存入对应视频url，如果不是。则为达标数目
+    RAid = Column(String(64))          # 任务奖励id  已废弃
+    TAcomplateNotifications = Column(Text)  # 任务完成提示图片
+
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = ['TAname', "TAtype", "TAhead", "TAlevel",
+                       "TArole", "TAcomplateNotifications", "RAid", "TAid"]
+
+
+# 用户任务关联表
+class TaskUser(BaseModel):
+    __tablename__ = "taskuser"
+    TUid = Column(String(64), primary_key=True)
     USid = Column(String(64))
-    TArole = Column(Text)
-
-
-class TaskItem(BaseModel):
-    __tablename__ = "tasklkitem"
-    TIid = Column(String(64), primary_key=True)
     TAid = Column(String(64))
-    # TAprogress = Column(Integer)
-    TIprice = Column(Float)
-    TIhead = Column(Text)
-    TIcontent = Column(Text)
+    TUcreatetime = Column(String(14))
+    TUstatus = Column(Integer)  # 任务状态 {0: "进行中", 1: "已结束", 2: "已暂停", 3: "已过期", 4: "已失效"}
+    TUendtime = Column(String(14))
+    TUnumber = Column(Integer)  # 完成量
+    # RAid = Column(String(64))
+
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = ['TUid', "USid", "TAid", "TUcreatetime",
+                       "TUstatus", "TUendtime", "RAid", "TAid"]
+
+
+# 优惠券
+class Raward(BaseModel):
+    __tablename__ = "raward"
+    RAid = Column(String(64), primary_key=True)
+    RAtype = Column(Integer)  # {0: "满减", 1: "佣金加成", 2: "无门槛"}
+    RAfilter = Column(Float)  # 条件
+    RAamount = Column(Float)  # 减少金额
+    RAratio = Column(Float)   # 上调比例
+
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = ['RAid', "RAtype", "RAfilter", "RAamount", "RAratio"]
+
+# 奖励和任务的关联表
+class TaskRaward(BaseModel):
+    __tablename__ = "taskreward"
+    TRid = Column(String(64), primary_key=True)
+    TAid = Column(String(64))   # 任务id
+    RAid = Column(String(64))   # 奖励id
+    RAnumber = Column(Integer)  # 奖励数目
+    @orm.reconstructor
+    def __init__(self):
+        self.fields = ['TRid', "TAid", "RAid", "RAnumber"]
+
+class UserRaward(BaseModel):
+    __tablename__ = "taskreward"
+    URid = Column(String(64), primary_key=True)
+    RAid = Column(String(64))  # 奖励id
+    USid = Column(String(64))  # 用户id
+    RAnumber = Column(Integer)  # 奖励数目
+    URcreatetime = Column(String(14))  # 创建时间
+    URFrom = Column(String(64))  # 优惠券来源 如果为空则为平台
+
+    @orm.reconstructor
+    def __init__(self):
+        self.fields = ['TRid', "TAid", "RAid", "RAnumber"]
 
 
 class AdImage(BaseModel):
@@ -690,6 +753,7 @@ class AdImage(BaseModel):
     AIendtime = Column(String(14))  # 下线时间
     AIisdelete = Column(Boolean, default=False)  # 删除
     AIurl = Column(String(255))  # 外链url （可能会用）
+
 
     @orm.reconstructor
     @auto_createtime
@@ -824,3 +888,6 @@ class ProductSelectorInfo(Base):
     PSItext = Column(String(64), nullable=False)  # 可供选择的选项的文本信息, 比如'xxl', 'M', '红色'
     PSIStock = Column(Integer)  # 该选项(尺码, 或者颜色)的库存
 """
+
+# from base_model import Base
+# Base.metadata.create_all(mysql_engine)

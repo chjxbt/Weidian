@@ -2,7 +2,7 @@
 from flask import request
 
 from WeiDian.config.response import PARAMS_MISS
-
+from WeiDian import logger
 
 def parameter_required(*required):
     """
@@ -10,6 +10,7 @@ def parameter_required(*required):
     :param required:必须的参数列表
     :return:传入的参数
     """
+
     body_data = request.json or {}
     query_data = request.args.to_dict() or {}
     total_date = dict(body_data, **query_data)
@@ -21,6 +22,10 @@ def parameter_required(*required):
         missed = filter(lambda x: x not in total_date, required)
 
         if missed:
-            raise PARAMS_MISS(u'必要参数缺失: ' + '/'.join(missed))
+            missed_params = '/'.join(missed)
+            if isinstance(missed_params, unicode):
+                missed_params = missed_params.encode("utf8")
+            logger.debug('missed params is %s', missed_params)
+            raise PARAMS_MISS('必要参数缺失: ' + missed_params)
     return body_data
     # TODO 校验参数待重新修改

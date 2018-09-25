@@ -25,9 +25,17 @@ class CComplain():
             return TOKEN_ERROR  # 未登录, 或token错误
         try:
             complain_list = self.scomplain.get_complain_by_usid(request.user.id)
-
+            from WeiDian.config.enums import complain_type
             data = import_status("get_complain_success", "OK")
+            for complain in complain_list:
+                colist = str(complain.COtype).split(",")
+                logger.debug('get colist %s', colist)
+                complaintype = ",".join([complain_type.get(i) for i in colist])
+                logger.debug('convert complain type %s', complaintype)
+                complain.COtype = complaintype
+
             data['data'] = complain_list
+            logger.debug("get complain by usid %s", complain_list)
             return data
         except:
             logger.exception("get complain by usid error")
@@ -41,14 +49,16 @@ class CComplain():
         data = request.json
         try:
             complain = self.scomplain.get_complain_by_oiid(data.get("OIid"))
-            logger.debug("get complain by oiid", )
+            logger.debug("get complain by oiid %s", complain)
             if complain:
                 return import_status("complain_repeat_error", "WD_ERROR", "error_complain_exit")
             coid = str(uuid.uuid1())
+            cotype_list = [str(i) for i in data.get("COtype", [])]
+
             self.scomplain.add_model("Complain", **{
                 "COid": coid,
                 "COcontent": data.get("COcontent"),
-                "COtype": data.get("COtype"),
+                "COtype": ",".join(cotype_list),
                 "OIid": data.get("OIid"),
                 "USid": request.user.id,
             })

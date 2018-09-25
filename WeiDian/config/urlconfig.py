@@ -4,3 +4,4 @@ get_access_toke = "https://api.weixin.qq.com/sns/oauth2/access_token?appid={0}&s
 get_jsapi = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token={0}&type=jsapi"
 get_server_access_token = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wxe8e8f6b9351d3587&secret=b89e22f046d33b39c7a4afa485e661dc"
 signature_str = "jsapi_ticket={jsapi_ticket}&noncestr={noncestr}&timestamp={timestamp}&url={url}"
+get_subscribe = "https://api.weixin.qq.com/cgi-bin/user/info?access_token={0}&openid={1}&lang=zh_CN"

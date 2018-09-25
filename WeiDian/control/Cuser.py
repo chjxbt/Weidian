@@ -8,11 +8,13 @@ import datetime
 import json
 import urllib2
 from WeiDian import logger
+from WeiDian import mp
 from WeiDian.config.response import PARAMS_MISS, SYSTEM_ERROR, NETWORK_ERROR, TOKEN_ERROR
 from WeiDian.common.token_required import verify_token_decorator, usid_to_token
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db
 from WeiDian.service.SUser import SUser
+from WeiDian.service.STask import STask
 sys.path.append(os.path.dirname(os.getcwd()))
 
 
@@ -20,6 +22,7 @@ class CUser():
 
     def __init__(self):
         self.suser = SUser()
+        self.stask = STask()
 
     def login(self):
         json_data = request.json
@@ -53,7 +56,7 @@ class CUser():
                 return PARAMS_MISS
 
         from WeiDian.config.setting import APP_ID, APP_SECRET_KEY
-        from WeiDian.config.urlconfig import get_access_toke, get_user_info
+        from WeiDian.config.urlconfig import get_access_toke, get_user_info, get_subscribe
         # 获取access_token openid
 
         request_url = get_access_toke.format(APP_ID, APP_SECRET_KEY, args["code"])
@@ -71,11 +74,19 @@ class CUser():
 
         jsonResult = self.get_wx_response(request_url, "get access_token")
         if "access_token" not in jsonResult or "openid" not in jsonResult:
+            logger.error("get access token and openid error %s", jsonResult)
             return jsonResult
         access_token = jsonResult["access_token"]
         openid = jsonResult['openid']
         user = self.suser.get_user_by_openid(openid)
         is_first = not bool(user)
+
+        wx_subscribe = self.get_wx_response(get_subscribe.format(mp.access_token, openid), "get subscribe")
+        if "subscribe" not in wx_subscribe:
+            logger.error("get subscribe error %s", wx_subscribe)
+            return wx_subscribe
+        subscribe = wx_subscribe.get("subscribe", 0)
+
 
         # try:
         #     req = urllib2.Request(get_user_info.format(access_token, openid))
@@ -92,6 +103,9 @@ class CUser():
             response = import_status("get_user_info_error", "WD_ERROR", "error_get_user_info")
             response['data'] = user_info
             return response
+        upperd = self.suser.get_user_by_openid(args.get("UPPerd", ""))
+
+        upperd_id = upperd.USid if upperd else None
 
         if is_first:
             usid = str(uuid.uuid1())
@@ -103,10 +117,20 @@ class CUser():
                 "USlevel": 0,
                 "USgender": user_info.get("sex"),
                 "USname": user_info.get("nickname"),
-                "UPPerd": args.get("UPPerd", ""),
+                "UPPerd": upperd_id,
                 "unionid": user_info.get("unionid"),
-                "accesstoken": access_token
+                "accesstoken": access_token,
+                "subscribe": subscribe,
             })
+            task_list = self.stask.get_task_by_level(0)
+            for task in task_list:
+                self.suser.add_model("TaskUser", **{
+                    "TUid": str(uuid.uuid1()),
+                    "USid": usid,
+                    "TAid": task.TAid,
+                    "TUstatus": 0,
+                    "TUnumber": 0
+                })
         else:
             usid = user.USid
             update_result = self.suser.update_user(usid, {
@@ -116,7 +140,8 @@ class CUser():
                 "USname": user_info.get("nickname"),
                 "UPPerd": args.get("UPPerd", ""),
                 "unionid": user_info.get("unionid"),
-                "accesstoken": access_token
+                "accesstoken": access_token,
+                "subscribe": subscribe,
             })
             if not update_result:
                 return SYSTEM_ERROR
@@ -130,10 +155,12 @@ class CUser():
         response = import_status("SUCCESS_GET_OPENID", "OK")
         response["data"] = {
             "is_first": is_first,
+            "subscribe": subscribe,
+            "openid": openid,
             "access_token": access_token,
             "token": usid_to_token(usid)
         }
-
+        logger.debug("get loggin response %s", response)
         return response
 
     # @verify_token_decorator
@@ -205,9 +232,7 @@ class CUser():
     #     return response
 
     def get_wx_config(self):
-        from weixin.mp import WeixinMP
-        from WeiDian.config.setting import APP_ID, APP_SECRET_KEY
-        mp = WeixinMP(APP_ID, APP_SECRET_KEY)
+
         url = request.args.get("url", request.url)
         # url = request.json.get("url", request.url)
         logger.debug('get url %s', url)

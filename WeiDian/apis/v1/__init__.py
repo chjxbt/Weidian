@@ -18,3 +18,4 @@ from .AMyCenter import AMyCenter
 from .AComplain import AComplain
 from .AProductLike import AProductLike
 from .AAdImage import AAdImage
+from .ATask import ATask
