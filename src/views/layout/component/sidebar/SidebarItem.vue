@@ -87,6 +87,18 @@
         background: url("../../../../common/images/icon-activity.png");
         background-size: 100% 100%;
       }
+      &.icon-content{
+        background: url("../../../../common/images/icon-activity.png");
+        background-size: 100% 100%;
+      }
+      &.icon-commission{
+        background: url("../../../../common/images/icon-activity.png");
+        background-size: 100% 100%;
+      }
+      &.icon-member{
+        background: url("../../../../common/images/icon-activity.png");
+        background-size: 100% 100%;
+      }
     }
     .sidebar-one-content{
       padding: 0.2rem 0.2rem;
