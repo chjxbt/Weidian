@@ -560,7 +560,7 @@ class SuperUser(BaseModel):
     SUid = Column(String(64), primary_key=True)
     SUname = Column(String(64), nullable=False)  # 超级用户名
     SUpassword = Column(String(255), nullable=False)  # 密码
-    SUheader = Column(String(64))  # 用户头像, 可以设置一个默认值
+    SUheader = Column(String(255))  # 用户头像, 可以设置一个默认值
     SUlevel = Column(Integer, default=0)  # 用户类型{0: 客服, 1: 管理员, 2:超管}　
     SUcreatetime = Column(String(14))  # 创建时间
     SUidfreeze = Column(Boolean, default=False)  # 是否被冻结
@@ -698,7 +698,7 @@ class TaskUser(BaseModel):
     @auto_createtime
     def __init__(self):
         self.fields = ['TUid', "USid", "TAid", "TUcreatetime",
-                       "TUstatus", "TUendtime", "RAid", "TAid"]
+                       "TUstatus", "TUendtime", "RAid", "TAid", "TUnumber"]
 
 
 # 优惠券
