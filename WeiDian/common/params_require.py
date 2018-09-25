@@ -19,6 +19,7 @@ def parameter_required(*required):
         raise PARAMS_MISS(u'未传入参数')
     if required:
         missed = filter(lambda x: x not in total_date, required)
+
         if missed:
             raise PARAMS_MISS(u'必要参数缺失: ' + '/'.join(missed))
     return body_data

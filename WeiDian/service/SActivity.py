@@ -42,10 +42,11 @@ class SActivity(SBase):
 
     @close_session
     def update_view_num(self, acid):
-        cur_activity = self.session.query(Activity).filter_by(ACid=acid).first()
-        cur_activity.ACbrowsenum += 1
-        self.session.add(cur_activity)
-        self.session.commit()
+        # cur_activity = self.session.query(Activity).filter_by(ACid=acid).first()
+        # cur_activity.ACbrowsenum += 1
+        # self.session.add(cur_activity)
+        # self.session.commit()
+        return self.session.query(Activity).filter_by(ACid=acid).update({Activity.ACbrowsenum: Activity.ACbrowsenum+1})
 
     @close_session
     def add_activity(self, activity):
@@ -101,11 +102,11 @@ class SActivity(SBase):
         """转发活动"""
         self.session.add(forward)
 
-
-if __name__ == '__main__':
-    test = SActivity()
-    res = test.get_activity_by_acid(1)
-    import ipdb
-
-    ipdb.set_trace()
-    print(res)
+#
+# if __name__ == '__main__':
+#     test = SActivity()
+#     res = test.get_activity_by_acid(1)
+#     import ipdb
+#
+#     ipdb.set_trace()
+#     print(res)

@@ -83,7 +83,7 @@ class CMyCenter(BaseMyCenterControl):
             address = self.suesraddress.get_default_address_by_usid(usid)
             location = self.suesraddress.get_addressinfo_by_areaid(address.areaid)
             for area, city, provice in location:
-                locationname = provice.name + city.name + area.name
+                locationname = getattr(provice, "name", '') + getattr(city, "name", '') + getattr(area, "name", '')
             # print ''.join([x[1] for x in area])
             logger.debug("get address info by usid")
             bankcard = self.sbankcard.get_bankcard_by_usid(usid)
@@ -91,8 +91,9 @@ class CMyCenter(BaseMyCenterControl):
             response = import_status("get_accountinfo_success", "OK")
             response['data'] = {
                 "user": user.add('wxnum').hide('USid'),
-                "address": '%s%s'%(locationname, address.UAtext),
-                "bankcard": bankcard.BCnumber,
+                # "address": '%s%s' %(locationname, address.UAtext),
+                "address": '%s%s' % (locationname, getattr(address, "UAtext", '')),
+                "bankcard": getattr(bankcard, "BCnumber", '')
             }
             return response
         except:
