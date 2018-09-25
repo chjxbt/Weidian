@@ -8,10 +8,10 @@
 
        <div class="content-table">
          <el-table :data="tableData" border style="width: 100%">
-           <el-table-column prop="title" label="任务标题" width="280"></el-table-column>
-           <el-table-column prop="content" label="任务类型"></el-table-column>
+           <el-table-column prop="taname" label="任务标题" width="240"></el-table-column>
+           <el-table-column prop="tatype" label="任务类型" width="240"></el-table-column>
            <el-table-column prop="reward" label="奖励方式"></el-table-column>
-           <el-table-column fixed="right" label="管理" width="280">
+           <el-table-column fixed="right" label="管理" width="240">
              <template slot-scope="scope">
                <el-button @click="handleClick(scope.row)" type="text" size="small">编辑</el-button>
                <el-button type="text" size="small">|</el-button>
@@ -25,16 +25,16 @@
        <el-form :label-position="labelPosition" label-width="100px" :model="formIndex">
          <div class="m-form-item m-item-modal">
            <el-form-item label="任务等级">
-             <el-select v-model="value" placeholder="请选择">
-               <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+             <el-select v-model="taskLevel" placeholder="请选择">
+               <el-option v-for="item in taskLevelList" :key="item" :label="item" :value="item"></el-option>
              </el-select>
            </el-form-item>
            <el-form-item label="任务标题">
-             <el-input v-model="formIndex.value" class="m-input-m"></el-input>
+             <el-input v-model="formIndex.title" class="m-input-m"></el-input>
            </el-form-item>
            <el-form-item label="任务类型">
-             <el-select v-model="value" placeholder="请选择">
-               <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+             <el-select v-model="taskType" placeholder="请选择" @change="taskTypeChange">
+               <el-option v-for="item in taskTypeList" :key="item" :label="item" :value="item"></el-option>
              </el-select>
            </el-form-item>
            <el-form-item label="图标" class="m-s">
@@ -49,10 +49,10 @@
              </el-upload>
            </el-form-item>
            <el-form-item label="内容">
-             <el-input v-model="formIndex.value" class="m-input-m"></el-input>
+             <el-input v-model="formIndex.content" class="m-input-m"></el-input>
            </el-form-item>
            <el-form-item label="完成度">
-             <el-input v-model="formIndex.value" class="m-input-m"></el-input>
+             <el-input v-model="formIndex.ratio" class="m-input-m"></el-input>
            </el-form-item>
            <el-form-item label="完成提示" class="m-f">
              <el-upload
@@ -72,7 +72,7 @@
            </el-select>
          </el-form-item>
          <el-form-item label="备注">
-           <el-input v-model="formIndex.value" class="m-input-m"></el-input>
+           <el-input v-model="formIndex.memo" class="m-input-m"></el-input>
          </el-form-item>
          <el-form-item label="活动时间">
            <el-date-picker v-model="value7" type="daterange" align="right" unlink-panels
@@ -82,7 +82,7 @@
            <span class="m-item-add">+</span>
          </el-form-item>
          <el-form-item label="规则">
-           <textarea v-model="formIndex.value" class="m-textarea" placeholder="请输入内容"></textarea>
+           <textarea v-model="formIndex.rule" class="m-textarea" placeholder="请输入内容"></textarea>
          </el-form-item>
        </el-form>
      </div>
@@ -248,7 +248,7 @@
       </div>
       <div class="m-form-confirm-btn ">
         <span v-if="page == '首页'">暂停</span>
-        <span>发布</span>
+        <span @click="submit">发布</span>
       </div>
     </div>
   </div>
@@ -257,34 +257,20 @@
 <script>
   import pageTitle from '../../components/common/title';
   import wTab from '../../components/common/wTab';
+  import axios from 'axios';
+  import api from '../../api/api';
+
   export default {
     data(){
       return{
         page:'首页',
         name:'弹框管理',
         tab_list:[
-          {
-            name:'首页',
-            url:'',
-            active:true
-          },
-          {
-            name:'发现',
-            url:'',
-            active:false
-          },
-          {
-            name:'我的',
-            url:'',
-            active:false
-          }
+          { name:'首页', url:'', active:true },
+          { name:'发现', url:'', active:false },
+          { name:'我的', url:'', active:false }
         ],
-        tableData: [
-          { title: '任务1', content: '任务1的内容', reward: '两张99-10新衣币' },
-          { title: '任务2', content: '任务2的内容', reward: '佣金上涨30%' },
-          { title: '任务3', content: '任务3的内容', reward: '两张99-10新衣币' },
-          { title: '任务4', content: '任务4的内容', reward: '佣金上涨30%' },
-        ],
+        tableData: [],
         options: [{
           value: '选项1',
           label: '黄金糕'
@@ -302,11 +288,13 @@
           label: '北京烤鸭'
         }],
         value: '',
+        taskLevel: '',
+        taskLevelList: [1, 2, 3, 4],
+        taskType: '',
+        taskTypeList: [],
         imageUrl:'',
         labelPosition:'left',
-        formIndex:{
-          value:''
-        },
+        formIndex:{ value:'', title: '', content: '', ratio: '', memo: '', rule: '' },
         pickerOptions2: {
           shortcuts: [{
             text: '最近七天',
@@ -337,15 +325,76 @@
         value7: ''
       }
     },
-    components:{
-      pageTitle,
-      wTab
-    },
+    components:{ pageTitle, wTab },
     methods:{
-      // 任务列表的操作方法
+      // 任务列表的操作栏方法
       handleClick(row) {
         console.log(row);
       },
+      // 获取所有任务
+      getAllTask(){
+        axios.get(api.get_all_task + '?token=' + localStorage.getItem('token')).then(res => {
+          if(res.data.status == 200){
+            this.tableData = res.data.data;
+
+            // 显示奖励内容   0: "满减", 1: "佣金加成", 2: "无门槛"
+            for(let i = 0; i < this.tableData.length; i ++) {
+
+              // 判断任务类型   0: "满减", 1: "佣金加成", 2: "无门槛"
+              /*if(this.tableData[i].tatype == 0) {
+                this.tableData[i].tatype = "满减";
+              }else if(this.tableData[i].tatype == 1) {
+                this.tableData[i].tatype = "佣金加成";
+              }else if(this.tableData[i].tatype == 2) {
+                this.tableData[i].tatype = "无门槛";
+              }*/
+
+              let raward = res.data.data[i].raward;
+              this.tableData[i].reward = "";
+              for(let j = 0; j < raward.length; j ++) {
+                if(raward[j].ratype == 0) {
+                  this.tableData[i].reward = this.tableData[i].reward + raward[j].ranumber + "张满" + raward[j].rafilter + "-" + raward[j].raamount + "新衣币";
+                }else if(raward[j].ratype == 1) {
+                  if(raward[j].ranumber == 1) {
+                    this.tableData[i].reward = this.tableData[i].reward + " + 售出首单佣金上涨" + raward[j].raratio + "%";
+                  }else if(raward[j].ranumber > 1) {
+                    this.tableData[i].reward = this.tableData[i].reward + " + 佣金上涨" + raward[j].raratio + "%";
+                  }
+                }else if(raward[j].ratype == 2) {
+
+                }
+              }
+              // console.log(this.tableData[i]);
+            }
+
+          }else{
+            this.$message.error(res.data.message);
+          }
+        },error => {
+          this.$message.error(error.data.message);
+        })
+      },
+      // 获取任务类型
+      getAllTaskType() {
+        axios.get(api.get_all_task_type).then(res => {
+          if(res.data.status == 200){
+            this.taskTypeList = res.data.data;
+          }else{
+            this.$message.error(res.data.message);
+          }
+        },error => {
+          this.$message.error(error.data.message);
+        })
+      },
+      // 选择任务类型
+      taskTypeChange(v) {
+        console.log(v);
+      },
+      // 首页提交
+      submit() {
+        console.log(this.formIndex);
+      },
+      // 顶部首页、发现、我的点击切换
       wTabClick(i){
         let arr = [].concat(this.tab_list);
         for(let a =0;a<arr.length;a++){
@@ -361,6 +410,10 @@
       beforeAvatarUpload(){
 
       }
+    },
+    mounted() {
+      this.getAllTask();
+      this.getAllTaskType();
     }
   }
 </script>
