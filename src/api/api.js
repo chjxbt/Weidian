@@ -4,6 +4,8 @@ const api={
   get_all_task: title + 'task/get_all_task',  // 获取所有任务
   get_all_task_type: title + 'task/get_all_task_type',  // 获取任务类型
 
+  add_task: title + 'task/add_task',  // 添加或更新任务
+
 
 
 
