@@ -76,8 +76,9 @@
                           <span class="m-red" v-if="item.tamessage">{{item.tamessage}}</span></p>
                       </div>
                     </div>
-                    <span class="m-modal-award-btn" :class="item.tastatus == 1 ?'aactive':''" v-if="item.talevel == 99">额外奖励</span>
-                    <span class="m-modal-award-btn" :class="item.tastatus == 1 ?'aactive':''" v-else @click="makeTask(index)">做任务</span>
+                    <span class="m-modal-award-btn" :class="item.tastatus == 1 ?'active':''" v-if="item.tastatus == 1" >完 成</span>
+                    <span class="m-modal-award-btn" v-else-if="item.talevel == 99">额外奖励</span>
+                    <span class="m-modal-award-btn"  v-else @click="makeTask(index)">做任务</span>
                   </li>
                 </template>
               </ul>

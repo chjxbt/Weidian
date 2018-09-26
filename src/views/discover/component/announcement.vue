@@ -17,7 +17,7 @@
           <span class="m-section-more" v-if="item.actext.length > 86 && !item.show_text" @click="showMore(true, index)">收起全文</span>
 
           <div class="m-img-list">
-            <img class="m-section-text-img" :src="item.media[0].amimage" @click="bigImg(item.media[0].amimage)">
+            <img class="m-section-text-img" v-if="item.media.length >0" :src="item.media[0].amimage" @click="bigImg(item.media[0].amimage)">
           </div>
           <div class="m-section-bottom">
             <div>

@@ -17,9 +17,9 @@
           <span class="m-section-more" v-if="item.actext.length > 86 && !item.show_text" @click="showMore(true, index)">收起全文</span>
 
           <div class="m-img-list">
-            <img class="section-text-img" id='downImg' v-if="item.media[0].image" :src="item.media[0].amimage" @click="bigImg(item.media[0].amimage)">
+            <img class="section-text-img" id='downImg' v-if="item.media.length > 0 && item.media[0].image"  :src="item.media[0].amimage" @click="bigImg(item.media[0].amimage)">
 
-            <div class="video-box" v-if="!item.media[0].image" v-on:click="playVideo()">
+            <div class="video-box" v-if="item.media.length > 0 &&  !item.media[0].image" v-on:click="playVideo()">
               <img class="video-img" :src="item.media[0].amvideothumbnail" alt="">
               <video :src="item.media[0].amvideo" id="videoPlay" v-show="false">您的浏览器不支持 video 视频播放</video>
             </div>
