@@ -154,7 +154,7 @@
       /*获取活动列表*/
       getActivity(start, count){
         axios.get(api.get_all_activity + '?token=' + localStorage.getItem('token'), {
-          params: { start: start || 0, count: count || this.count, tnid: this.tnid }}).then(res => {
+          params: { lasting: true, start: start || 0, count: count || this.count, tnid: this.tnid }}).then(res => {
           if(res.data.status == 200){
             this.isScroll = true;
             this.total_count = res.data.count;
