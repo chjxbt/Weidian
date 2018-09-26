@@ -227,14 +227,14 @@
 
               // 展开全文、显示全文
               this.activity_list[i].actext.length > 90 && (this.activity_list[i].show_text = true);
-              if(this.activity_list[i].media.length > 0){
+
+              if(this.activity_list[i].media.length != 0) {
                 if(this.activity_list[i].media[0].amvideo) {
                   this.activity_list[i].media[0].image = false;
                 }else if(this.activity_list[i].media[0].amimage) {
                   this.activity_list[i].media[0].image = true;
                 }
               }
-
 
               // console.log(this.activity_list[i].media[0]);
 
