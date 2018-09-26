@@ -39,6 +39,8 @@ class Activity(BaseModel):
     ACisdelete = Column(Boolean, default=False)  # 是否删除
     ACistop = Column(Boolean, default=False)  # 是否置顶
     ACtitle = Column(Text, nullable=False)  # 活动标题（公告、教程页）
+    # ACtype =
+
 
     @orm.reconstructor
     @auto_createtime
@@ -654,6 +656,14 @@ class Complain(BaseModel):
     def __init__(self):
         self.fields = ['COid', 'COcontent', 'COtype', "OIid", "USid", 'COtreatstatus']
 
+# 任务等级
+class TaskLevel(BaseModel):
+    __tablename__ = 'tasklevel'
+    TLid = Column(String(64), primary_key=True)
+    TAlevel = Column(Integer)                 # 设置任务等级
+    TArole  = Column(Text)                    # 当前任务等级的规则弹框
+    TAcomplateNotifications = Column(Text)    # 当前等级下任务完成的提示图片
+    TRid = Column(String(64))                 # 当前等级下的奖励
 
 # 任务
 class Task(BaseModel):
@@ -661,43 +671,43 @@ class Task(BaseModel):
     TAid = Column(String(64), primary_key=True)
     TAname = Column(Text)              # 任务标题
     TAtype = Column(Integer)           # 任务类型 {0: "观看视频", 1: "转发商品", 2: "售出商品", 3: "售出大礼包", 4: "",}
-    TAisOpen = Column(Integer)         # 是否开启
+    # TAisOpen = Column(Integer)         # 是否开启
     TAhead = Column(Text)              # 任务前部头像图片
     TAcreatetime = Column(String(14))  # 任务创建时间
     TAstartTime = Column(String(14))   # 任务开启时间
     TAendTime = Column(String(14))     # 任务结束时间
     TAduration = Column(String(14))    # 任务持续时间
     TAstatus = Column(Integer)         # 任务状态 {0: "进行中", 1: "已结束", 2: "已暂停", 3: "已过期", 4: "已失效"}
-    TAlevel = Column(Integer)          # 任务等级 {0: "1级", 1: "2级", 2: "3级", 4:"额外"}
-    TArole = Column(Text)              # 规则弹框图片
+    # TAlevel = Column(Integer)          # 任务等级 {0: "1级", 1: "2级", 2: "3级", 4:"额外"}
+    # TArole = Column(Text)              # 规则弹框图片
     TAmessage = Column(Text)           # 备注
+    TLid = Column(String(64))          # 当前任务等级
     TAurl = Column(Text)               # 跳转链接 如果是观看视频，则存入对应视频url，如果不是。则为达标数目
-    RAid = Column(String(64))          # 任务奖励id  已废弃
-    TAcomplateNotifications = Column(Text)  # 任务完成提示图片
+    # RAid = Column(String(64))          # 任务奖励id  已废弃
+    # TAcomplateNotifications = Column(Text)  # 任务完成提示图片
 
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['TAname', "TAtype", "TAhead", "TAlevel",
-                       "TArole", "TAcomplateNotifications", "RAid", "TAid"]
+        self.fields = ['TAname', "TAtype", "TAhead", "TLid","TAid"]
 
 
 # 用户任务关联表
 class TaskUser(BaseModel):
     __tablename__ = "taskuser"
     TUid = Column(String(64), primary_key=True)
-    USid = Column(String(64))
-    TAid = Column(String(64))
-    TUcreatetime = Column(String(14))
-    TUstatus = Column(Integer)  # 任务状态 {0: "进行中", 1: "已结束", 2: "已暂停", 3: "已过期", 4: "已失效"}
-    TUendtime = Column(String(14))
-    TUnumber = Column(Integer)  # 完成量
+    USid = Column(String(64))          # 用户id
+    TAid = Column(String(64))          # 任务id
+    TUcreatetime = Column(String(14))  # 领取任务时间
+    TUstatus = Column(Integer)         # 任务状态 {0: "进行中", 1: "已结束", 2: "已暂停", 3: "已过期", 4: "已失效"}
+    TUendtime = Column(String(14))     # 任务失效时间
+    TUnumber = Column(Integer)         # 完成量
     # RAid = Column(String(64))
 
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['TUid', "USid", "TAid", "TUcreatetime",
+        self.fields = ['TUid', "TAid", "TUcreatetime",
                        "TUstatus", "TUendtime", "RAid", "TAid", "TUnumber"]
 
 
@@ -719,12 +729,12 @@ class Raward(BaseModel):
 class TaskRaward(BaseModel):
     __tablename__ = "taskreward"
     TRid = Column(String(64), primary_key=True)
-    TAid = Column(String(64))   # 任务id
+    TLid = Column(String(64))   # 任务等级id
     RAid = Column(String(64))   # 奖励id
     RAnumber = Column(Integer)  # 奖励数目
     @orm.reconstructor
     def __init__(self):
-        self.fields = ['TRid', "TAid", "RAid", "RAnumber"]
+        self.fields = ['TRid', "TLid", "RAid", "RAnumber"]
 
 class UserRaward(BaseModel):
     __tablename__ = "taskreward"
@@ -889,5 +899,5 @@ class ProductSelectorInfo(Base):
     PSIStock = Column(Integer)  # 该选项(尺码, 或者颜色)的库存
 """
 
-# from base_model import Base
-# Base.metadata.create_all(mysql_engine)
+from base_model import Base
+Base.metadata.create_all(mysql_engine)
