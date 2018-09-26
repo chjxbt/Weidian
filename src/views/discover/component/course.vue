@@ -16,10 +16,10 @@
           <span class="m-section-more" v-if="item.show_text" @click="showMore(false, index)">展开全文</span>
           <span class="m-section-more" v-if="item.actext.length > 86 && !item.show_text" @click="showMore(true, index)">收起全文</span>
 
-          <div class="m-img-list" v-if="item.media.length != 0">
-            <img class="section-text-img" id='downImg' v-if="item.media[0].image" :src="item.media[0].amimage" @click="bigImg(item.media[0].amimage)">
+          <div class="m-img-list">
+            <img class="section-text-img" id='downImg' v-if="item.media.length > 0 && item.media[0].image"  :src="item.media[0].amimage" @click="bigImg(item.media[0].amimage)">
 
-            <div class="video-box" v-if="!item.media[0].image" v-on:click="playVideo()">
+            <div class="video-box" v-if="item.media.length > 0 &&  !item.media[0].image" v-on:click="playVideo()">
               <img class="video-img" :src="item.media[0].amvideothumbnail" alt="">
               <video :src="item.media[0].amvideo" id="videoPlay" v-show="false">您的浏览器不支持 video 视频播放</video>
             </div>
@@ -156,7 +156,7 @@
       /*获取活动列表*/
       getActivity(start, count){
         axios.get(api.get_all_activity + '?token=' + localStorage.getItem('token'), {
-          params: { lasting: true, start: start || 0, count: count || this.count, tnid: this.tnid }}).then(res => {
+          params: { start: start || 0, count: count || this.count, tnid: this.tnid }}).then(res => {
           if(res.data.status == 200){
 
             this.isScroll = true;
@@ -228,12 +228,10 @@
               // 展开全文、显示全文
               this.activity_list[i].actext.length > 90 && (this.activity_list[i].show_text = true);
 
-              if(this.activity_list[i].media.length != 0) {
-                if(this.activity_list[i].media[0].amvideo) {
-                  this.activity_list[i].media[0].image = false;
-                }else if(this.activity_list[i].media[0].amimage) {
-                  this.activity_list[i].media[0].image = true;
-                }
+              if(this.activity_list[i].media[0].amvideo) {
+                this.activity_list[i].media[0].image = false;
+              }else if(this.activity_list[i].media[0].amimage) {
+                this.activity_list[i].media[0].image = true;
               }
 
               // console.log(this.activity_list[i].media[0]);

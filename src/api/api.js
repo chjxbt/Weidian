@@ -20,6 +20,7 @@ const api={
   re_like: title +'/recommendlike/re_like',//每日推荐的点赞 - 发现页
   add_comment: title +'/activitycomment/add_comment',//添加评论-教程/公告 - 发现页
   get_list: title +'/activitycomment/get_list',//获取活动下的评论(包括回复) - 首页/发现页
+  share_qrcode: title +'/activity/share_qrcode',//分享二维码
 
 
   get_order_count: title + '/order/get_count',//获取订单数

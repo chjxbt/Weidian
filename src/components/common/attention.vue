@@ -4,7 +4,7 @@
       <div class="m-modal-head">
         <span class="m-close" @click="closeModal('show_fixed')"> x </span>
       </div>
-      <div class="m-modal-content" v-if="!is_sub">
+      <div class="m-modal-content" v-if="is_sub">
         <h3 class="h3-text">还差一步就可以转发内容啦</h3>
         <div>
           <img :src="wximg" class="m-share-img" alt="">
@@ -12,7 +12,7 @@
         </div>
       </div>
 
-      <div class="m-modal-content" v-if="is_sub">
+      <div class="m-modal-content" v-if="!is_sub">
         <img id="avatar" class="canvas-img">
         <p class="grey-text">长按图片分享您的专属二维码</p>
       </div>
@@ -23,6 +23,8 @@
 
 <script type="text/ecmascript-6">
   import wxapi from '../../common/js/mixins';
+  import axios from 'axios';
+  import api from '../../api/api';
   export default {
     mixins: [wxapi],
     data() {
@@ -190,7 +192,14 @@
             }
           }
         };
-      }
+      },
+      // getEr(){
+      //   axios.post(api.share_qrcode +'?token=' +localStorage.getItem('token'),{
+      //     params:{
+      //       dataurl:''
+      //     }
+      //   })
+      // }
     },
     mounted() {
       // this.src = "/static/images/share/Qrcode.png";
