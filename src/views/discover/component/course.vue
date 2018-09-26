@@ -19,7 +19,7 @@
           <div class="m-img-list">
             <img class="section-text-img" id='downImg' v-if="item.media.length > 0 && item.media[0].image"  :src="item.media[0].amimage" @click="bigImg(item.media[0].amimage)">
 
-            <div class="video-box" v-if="item.media.length > 0 &&  !item.media[0].image" v-on:click="playVideo()">
+            <div class="video-box" v-if="item.media.length > 0 && !item.media[0].image" v-on:click="playVideo()">
               <img class="video-img" :src="item.media[0].amvideothumbnail" alt="">
               <video :src="item.media[0].amvideo" id="videoPlay" v-show="false">您的浏览器不支持 video 视频播放</video>
             </div>
@@ -34,11 +34,16 @@
               </div>
             </div>
             <div>
-              <icon-list :list="icon_list" @iconClick="iconClick"></icon-list>
+              <icon-list :list="icon_list" @iconClick="iconClick(0, index)"></icon-list>
             </div>
           </div>
+
+
+
+
+
           <div class="m-comment-box">
-            <div class="m-comment-content">
+            <div class="m-comment-content" v-if="item.comment.length != 0">
               <span class="m-comment-s"></span>
               <p v-for="comment in item.comment">
                 <span class="m-comment-name">{{comment.user.usname}}</span>: {{comment.actext}}
@@ -49,6 +54,10 @@
               </div>
             </div>
           </div>
+
+
+
+
 
           <div class="m-modal" v-if="show_fixed">
             <div class="m-modal-state">
@@ -110,6 +119,28 @@
     },
     components: { iconList },
     methods: {
+      /*每个活动icon点击*/
+      iconClick(v, index){
+        switch (v){
+          case 0:
+            if(this.show_input) {
+              this.show_input = false;
+            }else if(!this.show_input) {
+              this.comment = "";
+              this.show_input = true;
+            }
+            // this.show_fixed = true;
+            break;
+          case 1:
+            /*if(this.show_input) {
+              this.show_input = false;
+            }else if(!this.show_input) {
+              this.comment = "";
+              this.show_input = true;
+            }*/
+            break;
+        }
+      },
       // 预览图片
       bigImg(picture) {
         let options = {
@@ -260,28 +291,6 @@
             Toast({ message: res.data.message, className: 'm-toast-fail' });
           }
         })
-      },
-      /*每个活动icon点击*/
-      iconClick(v){
-        switch (v){
-          case 0:
-            if(this.show_input) {
-              this.show_input = false;
-            }else if(!this.show_input) {
-              this.comment = "";
-              this.show_input = true;
-            }
-            // this.show_fixed = true;
-            break;
-          case 1:
-            if(this.show_input) {
-              this.show_input = false;
-            }else if(!this.show_input) {
-              this.comment = "";
-              this.show_input = true;
-            }
-            break;
-        }
       },
       // 点赞
       likeThis(item, index) {
