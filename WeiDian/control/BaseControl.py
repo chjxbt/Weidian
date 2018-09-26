@@ -433,6 +433,7 @@ class BaseTask():
         task.TAcomplateNotifications = task_detail.TAcomplateNotifications
         task.RAid = task_detail.RAid
         task.TAstatus = task_detail.TAstatus
+
         task.TAmessage = task_detail.TAmessage
         task.TAurl = task_detail.TAurl
         task.TAstartTime = get_web_time_str(task_detail.TAstartTime)

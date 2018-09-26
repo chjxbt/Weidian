@@ -66,3 +66,30 @@ REWARD_TYPE = {
     '1': "佣金加成",
     '2': "无门槛"
 }
+
+icon = {
+           "name": '首页',
+           "icon": 'https://daaiti.cn/imgs/WeiDian/icon/home.png',
+           "active_icon": 'https://daaiti.cn/imgs/WeiDian/icon/home2.png',
+           "url": 'index'
+       }, {
+           "name": '客服',
+           "icon": 'https://daaiti.cn/imgs/WeiDian/icon/info.png',
+           "active_icon": 'https://daaiti.cn/imgs/WeiDian/icon/info2.png',
+           "url": 'service'
+       }, {
+           "name": '发现',
+           "icon": 'https://daaiti.cn/imgs/WeiDian/icon/search2.png',
+           "active_icon": 'https://daaiti.cn/imgs/WeiDian/icon/search.png',
+           "url": 'discover'
+       }, {
+           "name": '购物车',
+           "icon": 'https://daaiti.cn/imgs/WeiDian/icon/cart2.png',
+           "active_icon": 'https://daaiti.cn/imgs/WeiDian/icon/cart.png',
+           "url": 'shopping'
+       }, {
+           "name": '我的',
+           "icon": 'https://daaiti.cn/imgs/WeiDian/icon/me.png',
+           "active_icon": 'https://daaiti.cn/imgs/WeiDian/icon/me2.png',
+           "url": 'personal'
+       }

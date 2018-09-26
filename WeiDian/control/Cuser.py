@@ -89,17 +89,6 @@ class CUser():
             return wx_subscribe
         subscribe = wx_subscribe.get("subscribe", 0)
 
-
-        # try:
-        #     req = urllib2.Request(get_user_info.format(access_token, openid))
-        #     response = urllib2.urlopen(req)
-        #     user_info = response.read()
-        #     response.close()
-        #     logger.debug("get user info : %s", user_info)
-        # except:
-        #     logger.exception("get user info error")
-        #     return NETWORK_ERROR
-
         user_info = self.get_wx_response(get_user_info.format(access_token, openid), "get user info")
         if "errcode" in user_info or "errmsg" in user_info:
             response = import_status("get_user_info_error", "WD_ERROR", "error_get_user_info")
@@ -153,21 +142,29 @@ class CUser():
             })
             if not update_result:
                 return SYSTEM_ERROR
+        userlogintime = self.suser.get_user_login_time(usid)
+        now = datetime.datetime.now().strftime(format_for_db)
 
+        is_today_first = True
+        if userlogintime:
+            is_today_first = bool(userlogintime.USTcreatetime[:-6] < now[:-6])
         self.suser.add_model("UserLoginTime", **{
             "ULTid": str(uuid.uuid1()),
             "USid": usid,
             "USTip": request.remote_addr,
-            "USTcreatetime": datetime.datetime.now().strftime(format_for_db),
+            "USTcreatetime": now,
         })
         response = import_status("SUCCESS_GET_OPENID", "OK")
+        from WeiDian.config.enums import icon
         response["data"] = {
             "is_first": is_first,
             "subscribe": subscribe,
             "openid": openid,
             "access_token": access_token,
             "wximg": wximg,
-            "token": usid_to_token(usid)
+            "is_today_first": is_today_first,
+            "token": usid_to_token(usid),
+            "icon": icon
         }
         logger.debug("get loggin response %s", response)
         return response

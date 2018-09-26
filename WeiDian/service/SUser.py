@@ -3,7 +3,7 @@ import sys
 import os
 from werkzeug.security import check_password_hash
 from SBase import SBase, close_session
-from WeiDian.models.model import User, Activity
+from WeiDian.models.model import User, Activity, UserLoginTime
 sys.path.append(os.path.dirname(os.getcwd()))
 
 
@@ -41,4 +41,7 @@ class SUser(SBase):
     def update_user(self, userid, user):
         return self.session.query(User).filter(User.USid == userid).update(user)
 
-
+    @close_session
+    def get_user_login_time(self, usid):
+        return self.session.query(UserLoginTime).filter(UserLoginTime.USid == usid).order_by(
+            UserLoginTime.USTcreatetime.desc()).first()

@@ -98,24 +98,42 @@ class CTask(BaseTask):
     def get_user_task(self):
         if is_tourist():
             raise AUTHORITY_ERROR(u"未登录")
-
         task_list = self.stask.get_user_task_by_userid(request.user.id)
+        if not task_list:
+            return SYSTEM_ERROR(u'r当前没有任务')
+
         map(self.fill_task_detail, task_list)
+        task_level = str(task_list[0].TAlevel)
+        from WeiDian.common.divide import Partner
+        pa = Partner()
+        role = pa.cf.get(task_level, 'role')
+        cn = pa.cf.get(task_level, 'access')
+
         map(self.fill_reward, task_list)
+        is_complate = [task.TUstatus for task in task_list if task.TUstatus > 0]
+        logger.debug(len(is_complate))
+        logger.debug(request.user.id)
+        logger.debug(len(task_list))
         response = import_status("get_task_success", "OK")
+
         response['data'] = task_list
+        response['TArole'] = role
+        response['TAcomplateNotifications'] = cn
+        response['is_complate'] = bool(len(is_complate) == len(task_list))
+
         return response
 
     @verify_token_decorator
     def do_task(self):
         if is_tourist():
             raise AUTHORITY_ERROR(u"未登录")
-        parameter_required(self.do_task_params)
+        parameter_required(*self.do_task_params)
         data = request.json
+        logger.debug("get data %s", data)
         user_task = self.stask.get_user_task_by_id(data.get("TUid"))
         logger.info('get user task %s', user_task)
         if not user_task:
-            return SYSTEM_ERROR(u"服务器繁忙")
+            raise SYSTEM_ERROR(u"服务器繁忙")
         task = self.stask.get_task_by_taid(user_task.TAid)
         logger.info('get task : %s', task)
 
@@ -132,7 +150,7 @@ class CTask(BaseTask):
             if task.TAlevel < 3:
                 self.add_user_task(request.user.id, task.TAlevel)
 
-        return import_status("do_task_success", 'ok')
+        return import_status("do_task_success", 'OK')
 
     def add_user_task_raward(self, usid, taid):
         taskraward = self.sraward.get_raward_by_taid(taid)
@@ -168,4 +186,11 @@ class CTask(BaseTask):
         response = import_status("get_task_success", "OK")
         response['data'] = task_list
         return response
+
+    @verify_token_decorator
+    def get_all_raward(self):
+        if not is_admin():
+            raise AUTHORITY_ERROR(u"权限不足")
+
+        raward_list = self.sraward.get_raward_by_taid
 
