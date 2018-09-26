@@ -1,6 +1,10 @@
 <template>
     <div class="m-add-bankCard">
         <div class="m-add-bankCard-content">
+          <p class="m-bank-alert">
+            <span class="m-alert-icon"></span>
+            <span>为了不影响提现，请绑定储蓄卡</span>
+          </p>
           <ul class="m-add-bankCard-form">
             <li>
               <span class="m-bankCard-label">姓名</span>
@@ -160,7 +164,20 @@
     height: 100%;
     width: 100%;
     .m-add-bankCard-content{
-      padding-top: 20px;
+      /*padding-top: 20px;*/
+      .m-bank-alert{
+        height: 64px;
+        line-height: 64px;
+        text-align: left;
+        .m-alert-icon{
+          display: inline-block;
+          width: 30px;
+          height: 30px;
+          /*background: ;*/
+          margin-left: 50px;
+          vertical-align: text-bottom;
+        }
+      }
       .m-add-bankCard-form{
         padding-left: 36px;
         background-color: #fff;

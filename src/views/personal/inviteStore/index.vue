@@ -172,16 +172,27 @@
 
           <div class="m-inviteStore-modal-content">
             <h3 class="m-inviteStore-modal-content-h3">选择赠与的新衣币</h3>
-            <ul class="m-inviteStore-modal-content-ul">
-              <li>
-                <span class="m-check"></span>
-                <discount-coupon></discount-coupon>
-              </li>
-              <li>
-                <span class="m-check active"></span>
-                <discount-coupon></discount-coupon>
-              </li>
-            </ul>
+            <div class="m-scroll">
+              <ul class="m-inviteStore-modal-content-ul">
+                <li>
+                  <span class="m-check"></span>
+                  <discount-coupon></discount-coupon>
+                </li>
+                <li>
+                  <span class="m-check active"></span>
+                  <discount-coupon></discount-coupon>
+                </li>
+                <li>
+                  <span class="m-check"></span>
+                  <discount-coupon></discount-coupon>
+                </li>
+                <li>
+                  <span class="m-check active"></span>
+                  <discount-coupon></discount-coupon>
+                </li>
+              </ul>
+            </div>
+
           </div>
           <div class="m-inviteStore-modal-foot">
             <div class="m-flex-start">
@@ -220,7 +231,7 @@
             }
           ],
           show_modal:false,
-          show_rule: true
+          show_rule: false
         }
       },
       components: { discountCoupon },
@@ -280,6 +291,7 @@
           font-size: 26.5px;
           margin: 36px 0;
         }
+
         .m-modal-ul{
           li{
             padding-left: 60px;
@@ -313,6 +325,7 @@
     .m-inviteStore-state-box{
      background-color: #fff;
       border-radius: 10px;
+
       .m-inviteStore-type-ul{
         .flex-row(space-around);
         border-bottom: 1px solid @borderColor;
@@ -339,6 +352,7 @@
             color: #c1c1c1;
           }
         }
+
         .m-inviteStore-content-ul{
           &.m-inviteStore-content-prepaid{
             border-bottom: 1px solid @borderColor;
@@ -621,6 +635,11 @@
       .m-inviteStore-modal-content{
         padding: 34px;
         margin-top: 90px;
+        .m-scroll{
+          height: 480px;
+          overflow-y: auto;
+          overflow-x: hidden;
+        }
         .m-inviteStore-modal-content-h3{
           font-size: 28px;
           font-weight: bold;
