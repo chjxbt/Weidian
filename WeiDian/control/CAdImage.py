@@ -4,7 +4,6 @@ import os
 from datetime import datetime
 
 from WeiDian import logger
-from WeiDian.common.log import make_log
 from WeiDian.common.timeformat import format_for_db
 from flask import request
 from WeiDian.config.response import AUTHORITY_ERROR, SYSTEM_ERROR, PARAMS_MISS

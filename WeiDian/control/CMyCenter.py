@@ -81,9 +81,13 @@ class CMyCenter(BaseMyCenterControl):
             user.wxnum = '1234000暂取不到'
             # TODO 微信号暂时获取不到
             address = self.suesraddress.get_default_address_by_usid(usid)
-            location = self.suesraddress.get_addressinfo_by_areaid(address.areaid)
-            for area, city, provice in location:
-                locationname = getattr(provice, "name", '') + getattr(city, "name", '') + getattr(area, "name", '')
+            if address:
+                # return SYSTEM_ERROR(u"该用户无默认地址")
+                location = self.suesraddress.get_addressinfo_by_areaid(address.areaid)
+                for area, city, provice in location:
+                    locationname = getattr(provice, "name", '') + getattr(city, "name", '') + getattr(area, "name", '')
+            else:
+                locationname = ''
             # print ''.join([x[1] for x in area])
             logger.debug("get address info by usid")
             bankcard = self.sbankcard.get_bankcard_by_usid(usid)
