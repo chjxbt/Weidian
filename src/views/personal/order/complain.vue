@@ -14,8 +14,8 @@
           </template>
         </ul>
         <div class="m-complain-textarea-box">
-          <p><span>请详细描述您遇到的问题：</span><span class="m-complain">1/100</span></p>
-          <textarea name="" id="" v-model="COcontent" class="m-complain-textarea" placeholder="我们会尽快与您联系！"></textarea>
+          <p><span>请详细描述您遇到的问题：</span><span class="m-complain">{{COcontent.length}}/100</span></p>
+          <textarea name="" id="" v-model="COcontent" maxlength="100" class="m-complain-textarea" placeholder="我们会尽快与您联系！"></textarea>
         </div>
         <div class="m-complain-submit">
           <span @click="complainClick">提交</span>
