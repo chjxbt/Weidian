@@ -571,7 +571,7 @@ class SuperUser(BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = self.all
+        self.fields = ['SUname', 'SUheader']
 
 
 class SearchField(BaseModel):
@@ -656,6 +656,7 @@ class Complain(BaseModel):
     def __init__(self):
         self.fields = ['COid', 'COcontent', 'COtype', "OIid", "USid", 'COtreatstatus']
 
+
 # 任务等级
 class TaskLevel(BaseModel):
     __tablename__ = 'tasklevel'
@@ -663,7 +664,12 @@ class TaskLevel(BaseModel):
     TAlevel = Column(Integer)                 # 设置任务等级
     TArole  = Column(Text)                    # 当前任务等级的规则弹框
     TAcomplateNotifications = Column(Text)    # 当前等级下任务完成的提示图片
-    TRid = Column(String(64))                 # 当前等级下的奖励
+    # TRid = Column(String(64))                 # 当前等级下的奖励
+
+    @orm.reconstructor
+    def __init__(self):
+        self.fields = ['TAlevel', "TArole", "TAcomplateNotifications", "RAid","RAnumber"]
+
 
 # 任务
 class Task(BaseModel):
@@ -725,19 +731,22 @@ class Raward(BaseModel):
     def __init__(self):
         self.fields = ['RAid', "RAtype", "RAfilter", "RAamount", "RAratio"]
 
+
 # 奖励和任务的关联表
 class TaskRaward(BaseModel):
     __tablename__ = "taskreward"
     TRid = Column(String(64), primary_key=True)
     TLid = Column(String(64))   # 任务等级id
-    RAid = Column(String(64))   # 奖励id
-    RAnumber = Column(Integer)  # 奖励数目
+    RAid = Column(String(64))  # 奖励id
+    RAnumber = Column(Integer)                # 奖励数目
+
     @orm.reconstructor
     def __init__(self):
         self.fields = ['TRid', "TLid", "RAid", "RAnumber"]
 
+
 class UserRaward(BaseModel):
-    __tablename__ = "taskreward"
+    __tablename__ = "userreward"
     URid = Column(String(64), primary_key=True)
     RAid = Column(String(64))  # 奖励id
     USid = Column(String(64))  # 用户id
