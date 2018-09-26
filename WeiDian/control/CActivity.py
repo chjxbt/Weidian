@@ -1,10 +1,12 @@
 # -*- coding:utf8 -*-
+import platform
 import sys
 import os
 from datetime import datetime, timedelta
-import time
 from WeiDian import logger
+from WeiDian.common.make_qrcode import make_qrcode
 from WeiDian.common.params_require import parameter_required
+from WeiDian.config.setting import QRCODEHOSTNAME
 from flask import request
 import math
 import uuid
@@ -256,3 +258,28 @@ class CActivity(BaseActivityControl):
         response = import_status('update_activity_success', 'OK')
         response['data'] = {'acid': args["acid"]}
         return response
+
+
+    @verify_token_decorator
+    def share_activity(self):
+        if not hasattr(request, 'user'):
+            return TOKEN_ERROR  # 未登录, 或token错误
+        data = request.json
+        logger.info("share qrcode data is %s" %data)
+        data_url = data.get("dataurl")
+        now_time = datetime.strftime(datetime.now(), '%Y%m%d%H%M%S')
+        logger.debug("get user info")
+        try:
+            user = self.suser.get_user_by_user_id(request.user.id)
+            if not user:
+                return SYSTEM_ERROR(u'找不到该用户')
+            save_path = "/opt/WeiDian/imgs/qrcode/" + user.openid + now_time + '.png' if "Linux" == platform.system() else r"D:/qrcode/" + user.openid + now_time + '.png'
+            make_qrcode(user.USheader, data_url, save_path)
+            response = import_status("make_qrcode_success", "OK")
+            response["qrcodeurl"] = QRCODEHOSTNAME + '/imgs/qrcode/' + user.openid + now_time + '.png'
+            return response
+        except:
+            logger.debug("make qrcode error")
+            return SYSTEM_ERROR
+
+
