@@ -52,7 +52,7 @@
         for(let i = 0; i < that.shareParams.media.length; i ++) {
           productImgList.push(that.shareParams.media[i].amimage);
         }
-        // productImgList = ["/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product4.png"];
+        productImgList = ["/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product4.png"];
         // productImgList = ["/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product4.png", "/static/images/share/product5.png", "/static/images/share/product.jpg"];
 
         let canvas = document.createElement("canvas");
@@ -119,12 +119,14 @@
             context.drawImage(img1 , 560 , 1190 , 260 , 60);
             let img2 = new Image();
             img2.crossOrigin = 'Anonymous';
-            img2.src = that.src;    // 二维码
+            // img2.src = that.src;    // 二维码
+            img2.src = '/static/images/share/Qrcode.png'
             img2.onload = function(){
               context.drawImage(img2 , 560 , 920 , 260 , 260);
               let img3 = new Image();
               img3.crossOrigin = 'Anonymous';
-              img3.src = that.components_src;   // 三个背景为红色的承诺
+              // img3.src = that.components_src;   // 三个背景为红色的承诺
+              img3.src = '/static/images/share/commitment.png';
               img3.onload = function(){
                 context.drawImage(img3 , 50 , 825 , 800 , 55);
                 console.log(img3)
@@ -172,6 +174,7 @@
 
                               // document.getElementById('avatar').src = base64;
                               img.setAttribute('src' , base64);
+                              that.postImg(base64);
                             }
                           }
                         }
@@ -182,7 +185,7 @@
 
                           // document.getElementById('avatar').src = base64;
                           img.setAttribute('src' , base64);
-
+                          that.postImg(base64);
                         }
                       }
                     }
@@ -194,13 +197,31 @@
         };
 
       },
-      // getEr(){
-      //   axios.post(api.share_qrcode +'?token=' +localStorage.getItem('token'),{
-      //     params:{
-      //       dataurl:''
-      //     }
-      //   })
-      // }
+      postImg(base){
+
+        console.log(base)
+        var fd=new FormData();
+        let blob = this.dataURItoBlob(base);
+        fd.append("fileData", blob);//fileData为自定义
+        fd.append("fileName", "123jpg");     
+        axios.post(api.generate_poster +'?token=' +localStorage.getItem('token'),{
+          file:fd
+        }).then(res => {
+
+        })
+      },
+      dataURItoBlob(base64Data) {
+        var byteString;
+        if (base64Data.split(',')[0].indexOf('base64') >= 0)
+          byteString = atob(base64Data.split(',')[1]);
+        else
+          byteString = unescape(base64Data.split(',')[1]);
+        var mimeString = base64Data.split(',')[0].split(':')[1].split(';')[0];
+        var ia = new Uint8Array(byteString.length);
+        for (var i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+        }
+        return new Blob([ia], {type: mimeString});}
     },
     mounted() {
       // this.src = "/static/images/share/Qrcode.png";
