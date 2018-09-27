@@ -12,9 +12,9 @@ class SRaward(SBase):
         return self.session.query(Raward).filter(Raward.RAid == raid).first()
 
     @close_session
-    def get_raward_by_taid(self, taid):
-        return self.session.query(TaskRaward).filter(TaskRaward.TAid == taid).all()
+    def get_raward_by_taid(self, tlid):
+        return self.session.query(TaskRaward).filter(TaskRaward.TLid == tlid).all()
 
     @close_session
-    def delte_task_raward_by_taid(self, taid):
-        return self.session.query(TaskRaward).filter(TaskRaward.TAid == taid).delete()
+    def delte_task_raward_by_tlid(self, tlid):
+        return self.session.query(TaskRaward).filter(TaskRaward.TLid == tlid).delete()

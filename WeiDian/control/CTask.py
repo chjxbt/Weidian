@@ -36,10 +36,12 @@ class CTask(BaseTask):
         from WeiDian.service.SRaward import SRaward
         self.sraward = SRaward()
         self.add_task_params = [
-            'TAname', "TAtype", "TAhead", "TAlevel",
-            "TArole", "TAcomplateNotifications", "RAid"]
+            'TAname', "TAtype", "TAhead", "TLid"]
         self.do_task_params = [
             "TUid"
+        ]
+        self.add_task_level = [
+            "TLevel", "TArole", "TAcomplateNotifications", "raward"
         ]
 
     def get_all_task_type(self):
@@ -68,7 +70,6 @@ class CTask(BaseTask):
         task['TAstatus'] = data.get("TAstatus", 0)
         task['TAmessage'] = data.get("TAmessage")
         task['TAurl'] = data.get("TAurl", 1)
-
         task['TAtype'] = tatype
         logger.debug('add task : task is %s', task)
         try:
@@ -80,18 +81,66 @@ class CTask(BaseTask):
             else:
                 task['TAid'] = str(uuid.uuid1())
                 self.stask.add_model("Task", **task)
-            self.add_or_update_task_raward(task['TAid'], task['RAid'], task.get("RAnumber", 1))
+            # self.add_or_update_task_raward(task['TAid'], task['RAid'], task.get("RAnumber", 1))
         except:
             logger.exception("add task error")
+            return SYSTEM_ERROR(u'服务器繁忙')
         return import_status("add_task_success", "OK")
 
-    def add_or_update_task_raward(self, taid, raid, ranumber):
-        self.sraward.delte_task_raward_by_taid(taid)
+    @verify_token_decorator
+    def add_or_update_task_level(self):
+        if not is_admin():
+            raise AUTHORITY_ERROR(u"权限不足")
+        parameter_required(*self.add_task_level)
+        data = request.json
+        logger.debug('get request data : %s', data)
+        reward_list = data.get("reward")
+        try:
+            tasklevel = self.stask.get_tasklevel_by_level(int(data.get("TAlevel")))
+
+            if not tasklevel:
+                tlid = str(uuid.uuid1())
+                self.stask.add_model("TaskLevel", **{
+                    "TLid": tlid,
+                    "TAlevel": data.get("TAlevel"),
+                    "TArole": data.get("TArole"),
+                    "TAcomplateNotifications": data.get("TAcomplateNotifications"),
+                })
+                for reward in reward_list:
+                    self.add_task_raward(tlid, reward)
+
+            else:
+                update_result = self.stask.update_task_level(tasklevel.TLid, {
+                    "TAlevel": data.get("TAlevel", 0),
+                    "TArole": data.get("TArole"),
+                    "TAcomplateNotifications": data.get("TAcomplateNotifications")})
+                if not update_result:
+                    return import_status("update_data_error", "WEIDIAN_ERROR", "error_update_data")
+                self.sraward.delte_task_raward_by_tlid(tasklevel.TLid)
+                for reward in reward_list:
+                    self.add_task_raward(tasklevel.TLid, reward)
+            return import_status('add_task_success', 'OK')
+        except:
+            logger.exception('add or update task level error')
+            return SYSTEM_ERROR(u"服务器繁忙")
+
+    # def add_or_update_task_raward(self, taid, raid, ranumber):
+    #     self.sraward.delte_task_raward_by_taid(taid)
+    #     self.sraward.add_model("TaskRaward", **{
+    #         "TRid": str(uuid.uuid1()),
+    #         "TAid": taid,
+    #         "RAid": raid,
+    #         "RAnumber": ranumber
+    #     })
+
+    def add_task_raward(self, tlid, raward):
+        if not raward.get("RAid") or not raward.get("RAnumber"):
+            return
         self.sraward.add_model("TaskRaward", **{
             "TRid": str(uuid.uuid1()),
-            "TAid": taid,
-            "RAid": raid,
-            "RAnumber": ranumber
+            "TLid": tlid,
+            "RAid": raward.get("RAid"),
+            "RAnumber": raward.get("RAnumber")
         })
 
     @verify_token_decorator
@@ -103,22 +152,22 @@ class CTask(BaseTask):
             return SYSTEM_ERROR(u'r当前没有任务')
 
         map(self.fill_task_detail, task_list)
-        task_level = str(task_list[0].TAlevel)
-        from WeiDian.common.divide import Partner
-        pa = Partner()
-        role = pa.cf.get(task_level, 'role')
-        cn = pa.cf.get(task_level, 'access')
+        task_level = self.stask.get_task_level_by_tlid(task_list[0].TLid)
+        # from WeiDian.common.divide import Partner
+        # pa = Partner()
+        # role = pa.cf.get(task_level, 'role')
+        # cn = pa.cf.get(task_level, 'access')
 
         map(self.fill_reward, task_list)
         is_complate = [task.TUstatus for task in task_list if task.TUstatus > 0]
-        logger.debug(len(is_complate))
-        logger.debug(request.user.id)
-        logger.debug(len(task_list))
+        # logger.debug(len(is_complate))
+        # logger.debug(request.user.id)
+        # logger.debug(len(task_list))
         response = import_status("get_task_success", "OK")
 
         response['data'] = task_list
-        response['TArole'] = role
-        response['TAcomplateNotifications'] = cn
+        response['TArole'] = task_level.TArole
+        response['TAcomplateNotifications'] = task_level.TAcomplateNotifications
         response['is_complate'] = bool(len(is_complate) == len(task_list))
 
         return response

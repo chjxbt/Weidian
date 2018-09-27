@@ -695,7 +695,7 @@ class Task(BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['TAname', "TAtype", "TAhead", "TLid","TAid"]
+        self.fields = ['TAname', "TAtype", "TAhead", "TLid", "TAid"]
 
 
 # 用户任务关联表

@@ -402,10 +402,9 @@ class BaseTask():
                 return
         return self.fill_task_params(task)
 
-
-
     def fill_reward(self, task):
-        task_raward_list = self.sraward.get_raward_by_taid(task.TAid)
+        # todo task TAid -> TLid
+        task_raward_list = self.sraward.get_raward_by_taid(task.TLid)
         if not task_raward_list:
             return
         rawards = []
@@ -428,19 +427,18 @@ class BaseTask():
         task.TAname = task_detail.TAname
         task.TAtype = task_detail.TAtype
         task.TAhead = task_detail.TAhead
-        task.TAlevel = task_detail.TAlevel
-        task.TArole = task_detail.TArole
-        task.TAcomplateNotifications = task_detail.TAcomplateNotifications
-        task.RAid = task_detail.RAid
+        task.TLid = task_detail.TLid
+        # task.TArole = task_detail.TArole
+        # task.TAcomplateNotifications = task_detail.TAcomplateNotifications
+        # task.RAid = task_detail.RAid
         task.TAstatus = task_detail.TAstatus
-
         task.TAmessage = task_detail.TAmessage
         task.TAurl = task_detail.TAurl
         task.TAstartTime = get_web_time_str(task_detail.TAstartTime)
         task.TAduration = get_web_time_str(task_detail.TAduration)
         task.TAendTime = get_web_time_str(task_detail.TAendTime)
         task.add(
-            'TAname', "TAtype", "TAhead", "TAlevel",
+            'TAname', "TAtype", "TAhead", "TLid",
             "TArole", "TAcomplateNotifications",
             "RAid", "TAstatus", "TAmessage", "TAurl",
             "TAendTime", "TAstartTime", "TAduration"

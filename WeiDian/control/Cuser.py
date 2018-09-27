@@ -81,6 +81,7 @@ class CUser():
         access_token = jsonResult["access_token"]
         openid = jsonResult['openid']
         user = self.suser.get_user_by_openid(openid)
+
         is_first = not bool(user)
 
         wx_subscribe = self.get_wx_response(get_subscribe.format(mp.access_token, openid), "get subscribe")
@@ -113,20 +114,21 @@ class CUser():
                 "accesstoken": access_token,
                 "subscribe": subscribe,
             })
-            task_list = self.stask.get_task_by_level(0)
-            for task in task_list:
-                self.suser.add_model("TaskUser", **{
-                    "TUid": str(uuid.uuid1()),
-                    "USid": usid,
-                    "TAid": task.TAid,
-                    "TUstatus": 0,
-                    "TUnumber": 0
-                })
+            # # todo task modify
+            # task_list = self.stask.get_task_by_level(0)
+            # for task in task_list:
+            #     self.suser.add_model("TaskUser", **{
+            #         "TUid": str(uuid.uuid1()),
+            #         "USid": usid,
+            #         "TAid": task.TAid,
+            #         "TUstatus": 0,
+            #         "TUnumber": 0
+            #     })
             self.smycenter.add_model("MyCenter", **{
                 "MYid": str(uuid.uuid1()),
                 "USid": usid,
-                "MYranking": 0,
-                "MYrewards": 0
+                "MYranking": '0',
+                "MYrewards": '0'
             })
         else:
             usid = user.USid
