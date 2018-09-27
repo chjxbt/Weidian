@@ -20,7 +20,8 @@
             <img class="section-text-img" id='downImg' v-if="item.media.length > 0 && item.media[0].image"  :src="item.media[0].amimage" @click="bigImg(item.media[0].amimage)">
 
             <div class="video-box" v-if="item.media.length > 0 && !item.media[0].image" v-on:click="playVideo()">
-              <img class="video-img" :src="item.media[0].amvideothumbnail" alt="">
+              <img class="video-img" src="/static/images/amvideothumbnail.jpg" alt="">
+              <!--<img class="video-img" :src="item.media[0].amvideothumbnail" alt="">-->
               <video :src="item.media[0].amvideo" id="videoPlay" v-show="false">您的浏览器不支持 video 视频播放</video>
             </div>
           </div>
@@ -34,30 +35,22 @@
               </div>
             </div>
             <div>
-              <icon-list :list="icon_list" @iconClick="iconClick(0, index)"></icon-list>
+              <icon-list :list="icon_list" :index="index" @iconClick="iconClick"></icon-list>
             </div>
           </div>
 
-
-
-
-
           <div class="m-comment-box">
-            <div class="m-comment-content" v-if="item.comment.length != 0">
+            <div class="m-comment-content" v-if="item.show_comment">
               <span class="m-comment-s"></span>
               <p v-for="comment in item.comment">
                 <span class="m-comment-name">{{comment.user.usname}}</span>: {{comment.actext}}
               </p>
-              <div v-if="show_input" class="new-comment-box">
+              <div v-if="item.show_input" class="new-comment-box">
                 <input type="text" class="new-comment-input" v-model="comment"/>
                 <div class="new-comment-done" :class="comment!=''?'active':''" @click="commentDone(item, index)">发送</div>
               </div>
             </div>
           </div>
-
-
-
-
 
           <div class="m-modal" v-if="show_fixed">
             <div class="m-modal-state">
@@ -85,7 +78,7 @@
   import axios from 'axios';
   import { Toast } from 'mint-ui';
   import common from '../../../common/js/common';
-
+  import Vue from 'vue';
   import wxapi from '../../../common/js/mixins';
   import wx from 'weixin-js-sdk';
   export default {
@@ -106,7 +99,6 @@
         ],
         activity_list: [],
         show_fixed: false,
-        show_input: false,
         comment: "",
         isScroll: true,
         total_count: 0,
@@ -123,12 +115,27 @@
       iconClick(v, index){
         switch (v){
           case 0:
-            if(this.show_input) {
-              this.show_input = false;
-            }else if(!this.show_input) {
+            if(this.activity_list[index].show_comment) {
+              if(this.activity_list[index].show_input) {
+                this.activity_list[index].show_input = false;
+              }else if(!this.activity_list[index].show_input) {
+                this.activity_list[index].show_input = true;
+              }
+              if(this.activity_list[index].comment.length == 0) {
+                this.activity_list[index].show_comment = false;
+                this.activity_list[index].show_input = false;
+              }
+
+            }else if(!this.activity_list[index].show_comment) {
+              for(let i = 0; i < this.activity_list.length; i ++) {
+                this.activity_list[i].show_comment = false;
+              }
               this.comment = "";
-              this.show_input = true;
+              this.activity_list[index].show_comment = true;
+              this.activity_list[index].show_input = true;
             }
+            Vue.set(this.activity_list, index, this.activity_list[index]);
+
             // this.show_fixed = true;
             break;
           case 1:
@@ -267,8 +274,14 @@
                 }
               }
 
+              // 判断评论和输入框的显示
+              if(this.activity_list[i].comment.length == 0) {
+                this.activity_list[i].show_comment = false;
+              }else if(this.activity_list[i].comment.length != 0) {
+                this.activity_list[i].show_comment = true;
+              }
+              this.activity_list[i].show_input = false;
               // console.log(this.activity_list[i].media[0]);
-
             }
           }else{
             Toast({ message: res.data.message, className: 'm-toast-fail' });
@@ -322,8 +335,9 @@
             acid: item.acid, ACtext: this.comment
           }).then(res => {
             if(res.data.status == 200){
-              this.show_input = false;
+              this.activity_list[index].show_input = false;
               this.activity_list[index].comment.splice(0, 0, { user: { usname: "我" }, actext: this.comment });
+              this.comment = "";
               Toast({ message: "评论成功", className: 'm-toast-success' });
             }else{
               Toast({ message: "评论失败", className: 'm-toast-fail' });

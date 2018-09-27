@@ -29,16 +29,16 @@
               </div>
             </div>
             <div>
-              <icon-list :list="icon_list" @iconClick="iconClick"></icon-list>
+              <icon-list :list="icon_list" :index="index" @iconClick="iconClick"></icon-list>
             </div>
           </div>
           <div class="m-comment-box">
-            <div class="m-comment-content">
+            <div class="m-comment-content" v-if="item.show_comment">
               <span class="m-comment-s"></span>
               <p v-for="comment in item.comment">
                 <span class="m-comment-name">{{comment.user.usname}}</span>: {{comment.actext}}
               </p>
-              <div v-if="show_input" class="new-comment-box">
+              <div v-if="item.show_input" class="new-comment-box">
                 <input type="text" class="new-comment-input" v-model="comment"/>
                 <div class="new-comment-done" :class="comment!=''?'active':''" @click="commentDone(item, index)">发送</div>
               </div>
@@ -55,7 +55,7 @@
     </div>
 
     <!--<share v-if="show_fixed" :num="2" @fixedClick="fixedClick"></share>-->
-    <attention v-if="show_fixed" @closeModal="closeModal('show_fixed')"></attention>
+    <attention v-if="show_fixed" @closeModal="closeModal('show_fixed')" :shareParams="shareParams"></attention>
   </div>
 </template>
 
@@ -67,7 +67,7 @@
   import axios from 'axios';
   import { Toast } from 'mint-ui';
   import common from '../../../common/js/common';
-
+  import Vue from 'vue';
   import wxapi from '../../../common/js/mixins';
   import wx from 'weixin-js-sdk';
   export default {
@@ -87,13 +87,13 @@
           }
         ],
         show_fixed: false,
-        show_input: false,
         activity_list: [],
         comment: "",
         isScroll: true,
         total_count: 0,
         count: 5,
-        bottom_show: false
+        bottom_show: false,
+        shareParams: {}
       }
     },
     props:{
@@ -206,6 +206,14 @@
               }
               // 展开全文、显示全文
               this.activity_list[i].actext.length > 90 && (this.activity_list[i].show_text = true);
+
+              // 判断评论和输入框的显示
+              if(this.activity_list[i].comment.length == 0) {
+                this.activity_list[i].show_comment = false;
+              }else if(this.activity_list[i].comment.length != 0) {
+                this.activity_list[i].show_comment = true;
+              }
+              this.activity_list[i].show_input = false;
             }
           }else{
             Toast({ message: res.data.message, className: 'm-toast-fail' });
@@ -233,20 +241,43 @@
         })
       },
       /*每个活动icon点击*/
-      iconClick(v){
+      iconClick(v, index){
+        // console.log(v, index);
         switch (v){
           case 0:
-            this.show_fixed = true;
+            this.shareDone(index);
             break;
           case 1:
-            if(this.show_input) {
-              this.show_input = false;
-            }else if(!this.show_input) {
+            if(this.activity_list[index].show_comment) {
+              if(this.activity_list[index].show_input) {
+                this.activity_list[index].show_input = false;
+              }else if(!this.activity_list[index].show_input) {
+                this.activity_list[index].show_input = true;
+              }
+              if(this.activity_list[index].comment.length == 0) {
+                this.activity_list[index].show_comment = false;
+                this.activity_list[index].show_input = false;
+              }
+
+            }else if(!this.activity_list[index].show_comment) {
+              for(let i = 0; i < this.activity_list.length; i ++) {
+                this.activity_list[i].show_comment = false;
+              }
               this.comment = "";
-              this.show_input = true;
+              this.activity_list[index].show_comment = true;
+              this.activity_list[index].show_input = true;
             }
+            Vue.set(this.activity_list, index, this.activity_list[index]);
             break;
         }
+      },
+      // 处理合成图片要的参数
+      shareDone(list) {
+        this.shareParams.product = this.activity_list[list].product;
+        this.shareParams.media = this.activity_list[list].media;
+
+        // console.log(this.shareParams);
+        this.show_fixed = true;
       },
       /*分享按钮点击*/
       fixedClick(){
@@ -287,8 +318,9 @@
             acid: item.acid, ACtext: this.comment
           }).then(res => {
             if(res.data.status == 200){
-              this.show_input = false;
+              this.activity_list[index].show_input = false;
               this.activity_list[index].comment.splice(0, 0, { user: { usname: "我" }, actext: this.comment });
+              this.comment = "";
               Toast({ message: "评论成功", className: 'm-toast-success' });
             }else{
               Toast({ message: "评论失败", className: 'm-toast-fail' });
