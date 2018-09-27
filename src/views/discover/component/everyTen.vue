@@ -129,7 +129,7 @@
 
             // 往ul中添加li
             for(let i = 0; i < this.recommend.products.length; i ++) {
-              var elem_li = document.createElement('li'); // 生成一个 li元素
+              let elem_li = document.createElement('li'); // 生成一个 li元素
               // 设置元素的内容
               elem_li.innerHTML = "<img src=" + this.recommend.products[i].prmainpic + " class='m-img-list-img'><p><span class='m-price'>￥" + this.recommend.products[i].prprice +
                 "</span><span class='m-red'>赚" + this.recommend.products[i].prsavemonty + "</span></p>";
