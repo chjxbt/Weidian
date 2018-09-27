@@ -27,7 +27,7 @@
                 <div>{{item.foward}}</div>
               </div>
               <div>
-                <icon-list :list="icon_list" @iconClick="iconClick(0, index)"></icon-list>
+                <icon-list :list="icon_list" :index="index" @iconClick="iconClick"></icon-list>
               </div>
             </div>
           </div>

@@ -12,36 +12,37 @@
 
 <script>
     export default {
-        data(){
-          return{
+      data(){
+        return{
 
-          }
-        },
+        }
+      },
       props:{
-          list:{
-            type:Array,
-            default: [
-                  {
-                    src:'icon-like',
-                    name:'1',
-                    url:'icon-like'
-                  },
-                  {
-                  //   src:'icon-lian',
-                  //   name:'复制链接',
-                  //   url:'icon-lian'
-                  // // },
-                  // {
-                    src:'icon-share',
-                    name:'转发',
-                    url:'icon-share'
-                  }
-                ]
-          }
+        list:{
+          type:Array,
+          default: [
+            {
+              src:'icon-like',
+              name:'1',
+              url:'icon-like'
+            },
+            {
+              //   src:'icon-lian',
+              //   name:'复制链接',
+              //   url:'icon-lian'
+              // // },
+              // {
+              src:'icon-share',
+              name:'转发',
+              url:'icon-share'
+            }
+          ]
+        },
+        index:{ type: Number, default: 0 }
       },
       methods:{
-        iconClick(v, index){
-          this.$emit('iconClick',v, index);
+        iconClick(v){
+          this.$emit('iconClick', v, this.index);
           /*if(this.list[v].src == "icon-like") {
             this.list[v].src = "icon-like-active";
           }else if(this.list[v].src == "icon-like-active") {
