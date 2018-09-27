@@ -27,7 +27,7 @@
                 <div>{{item.foward}}</div>
               </div>
               <div>
-                <icon-list :list="icon_list" @iconClick="iconClick"></icon-list>
+                <icon-list :list="icon_list" @iconClick="iconClick(0, index)"></icon-list>
               </div>
             </div>
           </div>
@@ -35,7 +35,7 @@
       </div>
     </div>
     <!--<share v-if="show_fixed" :num="2" @fixedClick="fixedClick"></share>-->
-    <attention v-if="show_fixed" @closeModal="closeModal('show_fixed')"></attention>
+    <attention v-if="show_fixed" @closeModal="closeModal('show_fixed')" :shareParams="shareParams"></attention>
   </div>
 </template>
 
@@ -60,7 +60,8 @@
           ],
           filtrateActivity: 0,
           activity_list:[],
-          count: 20
+          count: 20,
+          shareParams: {}
         }
       },
       props: {
@@ -74,8 +75,13 @@
           this.getActivity(0, this.count, this.sub[this.filtrateActivity].tnid);
         },
         // 转发按钮list
-        iconClick(){
-            this.show_fixed = true;
+        iconClick(v, list){
+          // 处理合成图片要的参数
+          this.shareParams.product = this.activity_list[list].product;
+          this.shareParams.media = this.activity_list[list].media;
+
+          // console.log(this.shareParams);
+          this.show_fixed = true;
         },
         // 分享按钮
         fixedClick(){
