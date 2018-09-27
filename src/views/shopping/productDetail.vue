@@ -165,8 +165,6 @@
       },
       // 引入商品详情图片
       imgsDone() {
-
-        // let imgList = [];
         let that = this;
         let imgurl = "https://html.weidiango.com/FpwgKaxAfZdnsiIyDV2ZCbWLNmt8";
         this.$http.get(imgurl).then(function(response){
