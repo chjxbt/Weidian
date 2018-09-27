@@ -90,7 +90,7 @@
     <div class="product-detail-text m-ft-22 m-grey-color">—— 详情 ——</div>
     <ul style="margin-bottom: 15%">
       <li v-for="brand in brandList">
-        <img v-lazy="brand.img" class="detail-img">
+        <img v-lazy="brand" class="detail-img">
       </li>
     </ul>
     <div class="to-buy">
@@ -109,6 +109,7 @@
 
 <script>
   import productParams from "../shopping/components/productParams";
+
   export default {
     data() {
       return {
@@ -119,7 +120,8 @@
         evaluationTabs: ["衣服不错(50)", "面料好(30)", "穿着舒服(30)"],
         evaluationPictures: ["http://image2.suning.cn/content/catentries/00000000010295/000000000102956200/fullimage/000000000102956200_8f.jpg", "http://image4.suning.cn/content/catentries/00000000010292/000000000102925077/fullimage/000000000102925077_6f.jpg",
                              "http://img0.imgtn.bdimg.com/it/u=12035839,3404122673&fm=26&gp=0.jpg", "http://image3.suning.cn/content/catentries/00000000010295/000000000102955143/fullimage/000000000102955143_2f.jpg"],
-        brandList: [{img: "http://pic1.win4000.com/wallpaper/8/599d1d60036a2.jpg"}, {img: "http://bbsfiles.vivo.com.cn/vivobbs/attachment/forum/201804/25/145712qjc3gwcbtvgoct9w.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/57eb314a3c143.jpg"}, {img: "http://pic1.win4000.com/wallpaper/8/57eb322625b50.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc06f60ecf.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc080092c6.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc07478a17.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc08474821.jpg"}]
+        brandList: []
+        // brandList: [{img: "http://pic1.win4000.com/wallpaper/8/599d1d60036a2.jpg"}, {img: "http://bbsfiles.vivo.com.cn/vivobbs/attachment/forum/201804/25/145712qjc3gwcbtvgoct9w.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/57eb314a3c143.jpg"}, {img: "http://pic1.win4000.com/wallpaper/8/57eb322625b50.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc06f60ecf.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc080092c6.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc07478a17.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc08474821.jpg"}]
       }
     },
     components: { productParams },
@@ -160,11 +162,33 @@
       buyNow() {
         let order = "";
         this.$router.push({path: "/submitOrder", query: { order }});
+      },
+      // 引入商品详情图片
+      imgsDone() {
+
+        // let imgList = [];
+        let that = this;
+        let imgurl = "https://html.weidiango.com/FpwgKaxAfZdnsiIyDV2ZCbWLNmt8";
+        this.$http.get(imgurl).then(function(response){
+          // console.log('success', response.data);   // response.data中获取ResponseData实体
+
+          that.brandList = response.data.split("data-src=");
+          that.brandList.splice(0, 1);
+          for(let i = 0; i < that.brandList.length; i ++) {
+            that.brandList[i] = that.brandList[i].match(/"(\S*)" data-ext="jpeg"/)[1];
+            that.brandList[i] = "https://img.weidiango.com/" + that.brandList[i];
+          }
+        },function(response){
+          console.log('error', response);   // 发生错误
+        });
       }
+    },
+    mounted() {
+      this.imgsDone();
     },
     created() {
       let prid = this.$route.query.prid;
-      console.log(prid);
+      // console.log(prid);
     }
   }
 </script>
