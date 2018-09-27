@@ -53,8 +53,9 @@
       data() {
         return {
           show_modal: false,
-          nav_list: [{ tnid: "5ed4e908-a6db-11e8-b2ff-0cd292f93404" }, { tnid: "1" },
-            { tnid: "1" }, { tnid: "1" }],// 5ed4e908-a6db-11e8-b2ff-0cd292f93404
+          /*nav_list: [{ tnid: "1" }, { tnid: "1" },
+            { tnid: "1" }, { tnid: "1" }],// 5ed4e908-a6db-11e8-b2ff-0cd292f93404*/
+          nav_list: [{ tnid: "1" }],// 5ed4e908-a6db-11e8-b2ff-0cd292f93404
           nav_select: '0',
           sub: []
         }
@@ -105,7 +106,7 @@
           }
         }
       },
-      mounted() {
+      created() {
         this.getTopnav();
       }
     }
