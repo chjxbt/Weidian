@@ -92,7 +92,7 @@
           </div>
         </div>
       </div>
-      <attention v-if="show_fixed" @closeModal="closeModal('show_fixed')"></attention>
+      <attention v-if="show_fixed" :src="code_src" :components_src="components_src" :shareParams="shareParams" @closeModal="closeModal('show_fixed')"></attention>
       <!--<img :src="'/static/images/course/course-'+ course + '.png'" v-if="show_course" class="m-course-img" alt="" @click.stop="courseClick">-->
       <!--<img src="/static/images/fen.png" v-if="show_fen" class="m-course-img" alt="" @click.stop="fenClick">-->
       <m-video v-if="show_video" :src="video_src" @videoClose="videoClose"></m-video>
@@ -177,12 +177,17 @@
                 }
               ],
               isScroll: true,
-              shareParams: {},
+              shareParams: {
+                media:[],
+                product:{}
+              },
               bottom_show:false,
               task_list:[],
               video_src:'',
               img_src:'',
-              TArole:''
+              TArole:'',
+              code_src:'',
+              components_src:''
             }
         },
         components: {
@@ -275,6 +280,32 @@
           },
           fenClick(){
             this.show_fen = false
+          },
+          /*获取分享的二维码**/
+          getEr(id,list){
+            let _url = '';
+            switch (id){
+              case 0:
+                return false;
+                break;
+              case 1:
+                _url = 'https://weidian.daaiti.cn/#/activityContent?openid=' + localStorage.getItem('openid');
+                break;
+              case 2:
+                _url = 'https://weidian.daaiti.cn/#/productDetail?openid=' + localStorage.getItem('openid');
+                break;
+            }
+            axios.post(api.share_qrcode +'?token=' + localStorage.getItem('token'),{
+              dataurl:_url
+            }).then(res => {
+                if(res.data.status == 200){
+                  this.code_src = res.data.qrcodeurl;
+                  this.components_src = res.data.components;
+                  this.shareParams.product = this.activity_list[list].product;
+                  this.shareParams.media = this.activity_list[list].media;
+                  this.show_fixed = true;
+                }
+            })
           },
           /*获取任务*/
           getTask(){
@@ -541,11 +572,9 @@
           },
           // 处理合成图片要的参数
           shareDone(list) {
-            this.shareParams.product = this.activity_list[list].product;
-            this.shareParams.media = this.activity_list[list].media;
-            console.log(this.activity_list[list])
-            // console.log(this.shareParams);
-            this.show_fixed = true;
+            this.getEr(this.activity_list[list].acskiptype,list);
+
+
           },
           /*做任务*/
           makeTask(i){

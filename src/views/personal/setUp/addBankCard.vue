@@ -173,7 +173,8 @@
           display: inline-block;
           width: 30px;
           height: 30px;
-          /*background: ;*/
+          background: url("/static/images/bank_alert.png") no-repeat;
+          background-size: 100%;
           margin-left: 50px;
           vertical-align: text-bottom;
         }
