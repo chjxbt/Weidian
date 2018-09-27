@@ -51,3 +51,11 @@ class STask(SBase):
     @close_session
     def get_task_level_by_tlid(self, tlid):
         return self.session.query(TaskLevel).filter(TaskLevel.TLid == tlid).first()
+
+    @close_session
+    def get_task_by_tlid(self, tlid):
+        return self.session.query(Task).filter(Task.TLid == tlid).all()
+
+    @close_session
+    def get_task_level_all(self):
+        return self.session.query(TaskLevel).all()

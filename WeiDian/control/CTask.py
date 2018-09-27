@@ -13,7 +13,7 @@ from WeiDian.common.import_status import import_status
 from WeiDian.common.params_require import parameter_required
 from WeiDian.common.timeformat import get_db_time_str
 from WeiDian.common.token_required import verify_token_decorator, is_tourist, is_admin
-from WeiDian.config.enums import TASK_STATUS, TASK_TYPE
+from WeiDian.config.enums import TASK_TYPE
 from WeiDian.config.response import AUTHORITY_ERROR, SYSTEM_ERROR, TOKEN_ERROR, PARAMS_ERROR
 from WeiDian.control.BaseControl import BaseTask
 
@@ -41,12 +41,18 @@ class CTask(BaseTask):
             "TUid"
         ]
         self.add_task_level = [
-            "TLevel", "TArole", "TAcomplateNotifications", "raward"
+            "TAlevel", "TArole", "TAcomplateNotifications", "reward"
+        ]
+        self.get_reward_params = [
+            ""
         ]
 
     def get_all_task_type(self):
         response = import_status("get_task_success", "OK")
-        response['data'] = TASK_TYPE
+        task_type = []
+        for tatype in TASK_TYPE:
+            task_type.insert(int(tatype), TASK_TYPE.get(tatype))
+        response['data'] = task_type
         return response
 
     @verify_token_decorator
@@ -61,7 +67,7 @@ class CTask(BaseTask):
         logger.debug('get tatype is %s and type of tatype is %s', task.get("TAtype"), type(task.get("TAtype")))
         tatype = int(task.get("TAtype"))
         if tatype == 0 and "TAurl" not in data:
-            raise PARAMS_ERROR("参数TAurl缺失")
+            raise PARAMS_ERROR(u"参数TAurl缺失")
         task['TAstartTime'] = get_db_time_str(data.get("TAstartTime"))
         if data.get("TAendTime"):
             task['TAendTime'] = get_db_time_str(data.get("TAendTime"))
@@ -76,7 +82,7 @@ class CTask(BaseTask):
             if data.get("TAid"):
                 update_result = self.stask.update_task(data.get("TAid"), task)
                 if not update_result:
-                    raise SYSTEM_ERROR("数据库异常")
+                    raise SYSTEM_ERROR(u"数据库异常")
                 task["TAid"] = data.get("TAid")
             else:
                 task['TAid'] = str(uuid.uuid1())
@@ -159,16 +165,21 @@ class CTask(BaseTask):
         # cn = pa.cf.get(task_level, 'access')
 
         map(self.fill_reward, task_list)
-        is_complate = [task.TUstatus for task in task_list if task.TUstatus > 0]
+        is_complate = not  bool(len([task.TUstatus for task in task_list if task.TUstatus == 0]))
         # logger.debug(len(is_complate))
         # logger.debug(request.user.id)
         # logger.debug(len(task_list))
         response = import_status("get_task_success", "OK")
-
+        if is_complate:
+            # 更新任务状态为已失效，发放奖励。并且添加新的任务内容
+            self.stask.update_user_tasks(request.user.id, {"TUstatus": 4})
+            self.add_user_task_raward(request.user.id, task_level.TLid)
+            if task_level.TAlevel < 3:
+                self.add_user_task(request.user.id, task_level.TAlevel)
         response['data'] = task_list
         response['TArole'] = task_level.TArole
         response['TAcomplateNotifications'] = task_level.TAcomplateNotifications
-        response['is_complate'] = bool(len(is_complate) == len(task_list))
+        response['is_complate'] = is_complate
 
         return response
 
@@ -187,23 +198,33 @@ class CTask(BaseTask):
         logger.info('get task : %s', task)
 
         if task.TAtype == '0':
-            self.add_user_task_raward(request.user.id, task.TAid)
+            # self.add_user_task_raward(request.user.id, task.TLid)
             self.stask.update_user_task(user_task.TUid, {"TUstatus": 1})
         else:
             # todo 其他类型任务执行
             pass
-        todo_task = self.stask.get_todo_user_task_by_user_id(request.user.id)
-        if not todo_task:
-            # 更新任务状态为已失效。并且添加新的任务内容
-            self.stask.update_user_tasks(request.user.id, {"TUstatus": 4})
-            if task.TAlevel < 3:
-                self.add_user_task(request.user.id, task.TAlevel)
-
+        # todo_task = self.stask.get_todo_user_task_by_user_id(request.user.id)
+        # is_complate = False
+        # if not todo_task:
+        #     is_complate = True
+        #     # 更新任务状态为已失效，发放奖励。并且添加新的任务内容
+        #     self.stask.update_user_tasks(request.user.id, {"TUstatus": 4})
+        #     if task.TAlevel < 3:
+        #         self.add_user_task(request.user.id, task.TAlevel)
+        # response = import_status("do_task_success", 'OK')
+        # response['data'] = {
+        #     "is_complate": is_complate
+        # }
         return import_status("do_task_success", 'OK')
 
-    def add_user_task_raward(self, usid, taid):
-        taskraward = self.sraward.get_raward_by_taid(taid)
-        self.sraward.add_model("UserRaward",**{
+    # @verify_token_decorator
+    # def get_reward(self):
+    #     if is_tourist():
+    #         return AUTHORITY_ERROR(u'未登录')
+
+    def add_user_task_raward(self, usid, tlid):
+        taskraward = self.sraward.get_raward_by_tlid(tlid)
+        self.sraward.add_model("UserRaward", **{
             "URid": str(uuid.uuid1()),
             "RAid": taskraward.RAid,
             "USid": usid,
@@ -211,9 +232,11 @@ class CTask(BaseTask):
         })
 
     def add_user_task(self, usid, task_level):
-        task_list = self.stask.get_task_by_level(int(task_level) + 1)
+        task_level = self.stask.get_tasklevel_by_level(int(task_level) + 1)
+        task_list = self.stask.get_task_by_tlid(task_level.TLid)
         for task in task_list:
             # todo 结束时间计算
+            duration = task.TAduration
             # endtime = min(task.TAendTime, )
             self.stask.add_model("TaskUser", **{
                 "TUid": str(uuid.uuid1()),
@@ -241,5 +264,21 @@ class CTask(BaseTask):
         if not is_admin():
             raise AUTHORITY_ERROR(u"权限不足")
 
-        raward_list = self.sraward.get_raward_by_taid
+        raward_list = self.sraward.get_all_reward()
+        res = import_status('get_task_success', 'OK')
+        res['data'] = raward_list
+        return res
 
+    @verify_token_decorator
+    def get_all_task_level(self):
+        if not is_admin():
+            raise AUTHORITY_ERROR(u"未登录")
+        try:
+            task_level_list = self.stask.get_task_level_all()
+            map(self.fill_reward, task_level_list)
+            response = import_status('get_task_success', 'OK')
+            response['data'] = task_level_list
+        except:
+            logger.exception('get all task level error')
+            raise SYSTEM_ERROR(u"服务器繁忙")
+        return response

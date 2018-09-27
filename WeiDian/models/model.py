@@ -668,7 +668,7 @@ class TaskLevel(BaseModel):
 
     @orm.reconstructor
     def __init__(self):
-        self.fields = ['TAlevel', "TArole", "TAcomplateNotifications", "RAid","RAnumber"]
+        self.fields = ['TAlevel', "TArole", "TAcomplateNotifications", "TLid"]
 
 
 # 任务

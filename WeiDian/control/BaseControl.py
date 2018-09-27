@@ -7,7 +7,7 @@ from WeiDian.common.TransformToList import list_add_models, dict_add_models
 from WeiDian.common.divide import Partner
 from WeiDian.common.token_required import is_partner
 from WeiDian.common.timeformat import get_web_time_str
-from WeiDian.config.enums import activity_type
+from WeiDian.config.enums import activity_type, TASK_STATUS
 
 
 class BaseActivityControl():
@@ -404,7 +404,7 @@ class BaseTask():
 
     def fill_reward(self, task):
         # todo task TAid -> TLid
-        task_raward_list = self.sraward.get_raward_by_taid(task.TLid)
+        task_raward_list = self.sraward.get_raward_by_tlid(task.TLid)
         if not task_raward_list:
             return
         rawards = []
@@ -431,16 +431,15 @@ class BaseTask():
         # task.TArole = task_detail.TArole
         # task.TAcomplateNotifications = task_detail.TAcomplateNotifications
         # task.RAid = task_detail.RAid
-        task.TAstatus = task_detail.TAstatus
+        task.TAstatus = TASK_STATUS.get(task_detail.TAstatus)
         task.TAmessage = task_detail.TAmessage
         task.TAurl = task_detail.TAurl
         task.TAstartTime = get_web_time_str(task_detail.TAstartTime)
-        task.TAduration = get_web_time_str(task_detail.TAduration)
+        task.TAduration = task_detail.TAduration
         task.TAendTime = get_web_time_str(task_detail.TAendTime)
         task.add(
             'TAname', "TAtype", "TAhead", "TLid",
-            "TArole", "TAcomplateNotifications",
-            "RAid", "TAstatus", "TAmessage", "TAurl",
+            "TAstatus", "TAmessage", "TAurl",
             "TAendTime", "TAstartTime", "TAduration"
         )
         return task
