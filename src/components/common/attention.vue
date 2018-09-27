@@ -36,8 +36,9 @@
     },
     props: {
       src: { type: String, default: null },
+      components_src:{ type: String, default: null },
       show_fixed: { type: Boolean, default: false },
-      shareParams: { type: Object, default: {} }
+      shareParams: { type: Object, default: null }
     },
     methods: {
       // 关闭modal
@@ -46,9 +47,10 @@
       },
       // 合成图片
       shareImg() {
+        let that = this;
         let productImgList = [];
-        for(let i = 0; i < this.shareParams.media.length; i ++) {
-          productImgList.push(this.shareParams.media[i].amimage);
+        for(let i = 0; i < that.shareParams.media.length; i ++) {
+          productImgList.push(that.shareParams.media[i].amimage);
         }
         // productImgList = ["/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product4.png"];
         // productImgList = ["/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product4.png", "/static/images/share/product5.png", "/static/images/share/product.jpg"];
@@ -87,7 +89,6 @@
             }
           }
         }
-
         // 添加价格文字
         let price = this.shareParams.product.prprice.split(".");
         context.fillStyle = "#f43b51";
@@ -116,43 +117,41 @@
           img1.src = "/static/images/share/sweep.png";    // 扫码下单
           img1.onload = function(){
             context.drawImage(img1 , 560 , 1190 , 260 , 60);
-
             let img2 = new Image();
             img2.crossOrigin = 'Anonymous';
-            img2.src = "/static/images/share/Qrcode.png";    // 二维码
+            img2.src = that.src;    // 二维码
             img2.onload = function(){
               context.drawImage(img2 , 560 , 920 , 260 , 260);
-
               let img3 = new Image();
               img3.crossOrigin = 'Anonymous';
-              img3.src = "/static/images/share/commitment.png";   // 三个背景为红色的承诺
+              img3.src = that.components_src;   // 三个背景为红色的承诺
               img3.onload = function(){
                 context.drawImage(img3 , 50 , 825 , 800 , 55);
-
+                console.log(img3)
                 let img4 = new Image();
                 img4.crossOrigin = 'Anonymous';
                 img4.src = productImgList[0];
                 img4.onload = function(){
                   context.drawImage(img4 , 50 , 25 , 800 , 800);
-
+                  console.log(img4)
                   let img5 = new Image();
                   img5.crossOrigin = 'Anonymous';
                   img5.src = productImgList[1];
                   img5.onload = function(){
                     context.drawImage(img5 , 875 , 25 , 600 , 600);
-
+                    console.log(img5)
                     let img6 = new Image();
                     img6.crossOrigin = 'Anonymous';
                     img6.src = productImgList[2];
                     img6.onload = function(){
                       context.drawImage(img6 , 875 , 650 , 600 , 600);
-
+                      console.log(img6)
                       let img9 = new Image();
                       img9.crossOrigin = 'Anonymous';
                       img9.src = "/static/images/share/delete.png";
                       img9.onload = function(){
                         context.drawImage(img9 , 175 , 1180 , 150 , 20);
-
+                        console.log(img9)
                         // 大集合图
                         if(productImgList.length == 6) {
 
@@ -183,6 +182,7 @@
 
                           // document.getElementById('avatar').src = base64;
                           img.setAttribute('src' , base64);
+
                         }
                       }
                     }
@@ -192,6 +192,7 @@
             }
           }
         };
+
       },
       // getEr(){
       //   axios.post(api.share_qrcode +'?token=' +localStorage.getItem('token'),{
