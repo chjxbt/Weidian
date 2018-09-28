@@ -28,6 +28,13 @@ class SProduct(SBase):
         return product_list
 
     @close_session
+    def get_product_list_contail_title(self, kw):
+        """模糊搜索商品名字"""
+        product_list = self.session.query(Product).filter_by(
+            PRstatus=1, PReditstate=1).filter(Product.PRtitle.contains(kw)).all()
+        return product_list
+
+    @close_session
     def get_all_by_filter(self, pagenum, pagesize):
         pass
 

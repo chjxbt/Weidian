@@ -16,7 +16,8 @@ class ABigActivity(Resource):
         apis = {
             "get_home_banner": "self.cbigactivity.get_home_banner()",
             "get_discover_banner": "self.cbigactivity.get_discover_banner()",
-            "get_bigactivity": "self.cbigactivity.get_bigactivity()"
+            "get_bigactivity": "self.cbigactivity.get_bigactivity()",
+            'get_bigactivitys': "self.cbigactivity.get_bigactivity_list()",
         }
         res = eval(apis[bigactivity])
         return jsonify(res)
