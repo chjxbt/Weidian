@@ -60,6 +60,7 @@
         },
       mounted(){
         common.changeTitle('我的');
+        this.$store.state.tabbar_select = '我的';
       },
         methods: {
           getInfo(){
