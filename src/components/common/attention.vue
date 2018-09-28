@@ -4,7 +4,7 @@
       <div class="m-modal-head">
         <span class="m-close" @click="closeModal('show_fixed')"> x </span>
       </div>
-      <div class="m-modal-content" v-if="is_sub">
+      <div class="m-modal-content" v-if="!is_sub">
         <h3 class="h3-text">还差一步就可以转发内容啦</h3>
         <div>
           <img :src="wximg" class="m-share-img" alt="">
@@ -12,7 +12,7 @@
         </div>
       </div>
 
-      <div class="m-modal-content" v-if="!is_sub">
+      <div class="m-modal-content" v-if="is_sub">
         <img id="avatar" class="canvas-img">
         <p class="grey-text">长按图片分享您的专属二维码</p>
       </div>
@@ -52,7 +52,7 @@
         for(let i = 0; i < that.shareParams.media.length; i ++) {
           productImgList.push(that.shareParams.media[i].amimage);
         }
-        productImgList = ["/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product4.png"];
+        // productImgList = ["/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product4.png"];
         // productImgList = ["/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product4.png", "/static/images/share/product5.png", "/static/images/share/product.jpg"];
 
         let canvas = document.createElement("canvas");
@@ -119,14 +119,14 @@
             context.drawImage(img1 , 560 , 1190 , 260 , 60);
             let img2 = new Image();
             img2.crossOrigin = 'Anonymous';
-            // img2.src = that.src;    // 二维码
-            img2.src = '/static/images/share/Qrcode.png'
+            img2.src = that.src;    // 二维码
+            // img2.src = '/static/images/share/Qrcode.png'
             img2.onload = function(){
               context.drawImage(img2 , 560 , 920 , 260 , 260);
               let img3 = new Image();
               img3.crossOrigin = 'Anonymous';
-              // img3.src = that.components_src;   // 三个背景为红色的承诺
-              img3.src = '/static/images/share/commitment.png';
+              img3.src = that.components_src;   // 三个背景为红色的承诺
+              // img3.src = '/static/images/share/commitment.png';
               img3.onload = function(){
                 context.drawImage(img3 , 50 , 825 , 800 , 55);
                 console.log(img3)
