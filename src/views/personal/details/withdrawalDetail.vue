@@ -11,7 +11,7 @@
             <p>消费返现</p>
             <p class="m-money-info-date">2018.07.30 19:27:15</p>
           </div>
-          <div class="m-red">-1.35</div>
+          <div class="m-red">+1.35</div>
         </li>
 
       </ul>

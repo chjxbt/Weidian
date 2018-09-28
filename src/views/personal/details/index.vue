@@ -17,8 +17,8 @@
           <p class="m-red">0.00</p>
         </div>
       </div>
-      <p class="m-select-date">
-        <span>2018年8月</span>
+      <p class="m-select-date" @click="showPicker">
+        <span>{{date[0]}}年{{date[1]}}月</span>
         <span class="m-select-date-icon"></span>
       </p>
       <div class="m-money-details">
@@ -29,59 +29,118 @@
 
         <div v-if="isIncome">
           <p class="m-income-expenditure">
-            <span class="active">收入</span>
-            <span>支出</span>
+            <span :class="out ? 'active':''" @click="changeOut('out',true)">收入</span>
+            <span :class="!out ? 'active':''" @click="changeOut('out',false)">支出</span>
           </p>
           <p class="m-income-expenditure-total">
             <span >本月总计</span>
-            <span class="m-red">￥0.00</span>
+            <span class="m-red">￥2.70</span>
           </p>
           <div class="m-scroll">
-            <ul class="m-money-info">
+            <ul class="m-money-info" v-if="out">
               <li>
                 <div>
                   <p>消费返现</p>
                   <p class="m-money-info-date">2018.07.30 19:27:15</p>
                 </div>
-                <div class="m-red">1.35</div>
+                <div class="m-red">+1.35</div>
+              </li>
+              <li>
+                <div>
+                  <p>消费返现</p>
+                  <p class="m-money-info-date">2018.07.30 19:27:15</p>
+                </div>
+                <div class="m-red">+1.35</div>
+              </li>
+            </ul>
+            <ul class="m-money-info" v-else>
+              <li>
+                <div>
+                  <p>消费返现</p>
+                  <p class="m-money-info-date">2018.07.30 19:27:15</p>
+                </div>
+                <div class="m-red">-1.35</div>
+              </li>
+              <li>
+                <div>
+                  <p>邀请开店</p>
+                  <p class="m-money-info-date">2018.07.30 19:27:15</p>
+                </div>
+                <div class="m-red">-1.35</div>
               </li>
             </ul>
           </div>
         </div>
         <div v-else>
           <p class="m-income-expenditure">
-            <span class="active">发出</span>
-            <span>收到</span>
+            <span :class="send ? 'active':''" @click="changeOut('send',true)">发出</span>
+            <span :class="!send ? 'active':''" @click="changeOut('send',false)">收到</span>
           </p>
           <div class="m-total-share">
-            <p>共94次贝币分享</p>
+            <p>共9次贝币分享</p>
             <p>共<span class="m-red m-ft-30 m-ft-b">873</span>贝币</p>
           </div>
 
           <div class="m-scroll">
-            <div class="m-new-info">
+            <div class="m-new-info" v-if="send">
               <discount-coupon></discount-coupon>
             </div>
-
+            <div class="m-new-info" v-else>
+              <discount-coupon></discount-coupon>
+              <discount-coupon></discount-coupon>
+              <discount-coupon></discount-coupon>
+            </div>
           </div>
         </div>
       </div>
+      <picker :show_picker="show_picker" :slots="slots" @pickerSave="pickerSave"></picker>
     </div>
 
 </template>
 
 <script type="text/ecmascript-6">
-   import discountCoupon from '../../../components/common/discountCoupon'
+   import discountCoupon from '../../../components/common/discountCoupon';
+   import {Toast,MessageBox} from 'mint-ui';
+   import picker from '../../../components/common/picker';
     export default {
         data() {
             return {
                 name: '',
-              isIncome:true
+              isIncome:true,
+              show_picker:false,
+              date:['2018', '01'],
+              slots: [
+                {
+                  flex: 1,
+                  values: ['2017', '2018', '2019'],
+                  className: 'slot1',
+                  textAlign: 'right'
+                }, {
+                  divider: true,
+                  content: '-',
+                  className: 'slot2'
+                }, {
+                  flex: 1,
+                  values: ['01', '02', '03', '04', '05', '06','07','08','09','10','11','12'],
+                  className: 'slot3',
+                  textAlign: 'left'
+                }
+              ],
+              out:true,
+              send:true
             }
         },
         components: {
-          discountCoupon
+          discountCoupon,
+          picker
         },
+      mounted(){
+        let  myDate = new Date();
+        let _arr = this.date;
+        _arr[0] = myDate.getFullYear(); //获取完整的年份(4位,1970-????)
+        _arr[1] = myDate.getMonth()>=9?(myDate.getMonth() +1): '0' +(myDate.getMonth() +1) ; //获取当前月份(0-11,0代表1月)
+        this.date = [].concat(_arr)
+      },
         methods: {
           detailClick(){
             this.$router.push('/withdrawalDetail');
@@ -91,6 +150,18 @@
           },
           moneyTypeClick(v){
             this.isIncome = v;
+          },
+          pickerSave(v,i){
+            this.show_picker = v;
+            if(i)
+              this.date = i;
+          },
+          showPicker(v){
+            this.show_picker = v;
+          },
+          changeOut(v,bool){
+            console.log(v)
+            this[v] = bool;
           }
         },
         created() {

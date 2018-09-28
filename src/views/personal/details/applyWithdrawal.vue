@@ -5,17 +5,17 @@
         <div class="m-input-amount">
           <p class="m-border">
             <span class="m-ft-50 m-red m-ft-b">￥</span>
-            <input type="text" placeholder="最大可提现X元" class="m-input-amount-input">
-            <span class="m-close-icon"></span>
+            <input type="number" v-model="money" placeholder="最大可提现X元" class="m-input-amount-input">
+            <span class="m-close-icon" @click="clearMoney"></span>
           </p>
           <p>
             <input type="text" placeholder="可用余额9.01元（仅支持大于10元的提现申请）">
           </p>
         </div>
       </div>
-      <div class="m-apply-withdrawal-btn">
+      <div class="m-apply-withdrawal-btn" v-if="bank_status">
         <span @click="applyClick">提现到银行卡</span></div>
-      <div class="m-apply-withdrawal-btn m-apply-withdrawal-btn-two">
+      <div class="m-apply-withdrawal-btn m-apply-withdrawal-btn-two" v-else>
         <span class="active" @click="applyClick">提现到银行卡</span>
         <span @click="applyClick">提现到微信</span>
       </div>
@@ -47,7 +47,9 @@
         data() {
             return {
                 name: '',
-              show_modal:false
+              show_modal:false,
+              money:'',
+              bank_status:true
             }
         },
         components: {},
@@ -57,6 +59,9 @@
           },
           applyClick(){
             this.show_modal = true;
+          },
+          clearMoney(){
+            this.money = '';
           }
         },
         created() {
@@ -94,6 +99,7 @@
       }
       .m-input-amount-input{
         width: 400px;
+        color: #333;
       }
       p.m-border{
         border-bottom: 1px solid #c1c1c1;

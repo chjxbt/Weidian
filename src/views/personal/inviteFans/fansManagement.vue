@@ -14,7 +14,7 @@
       <div class="m-fans-img-box"></div>
       <div class="m-fans-type">
         <span :class=" fans_type == 'exclusive' ? 'active':''" @click="fansChange('exclusive')">专属粉丝 (15人) </span>
-        <span :class=" fans_type == 'invite' ? 'active':''" @click="fansChange('invite')">邀请潜在粉丝（125人）</span>
+        <!--<span :class=" fans_type == 'invite' ? 'active':''" @click="fansChange('invite')">邀请潜在粉丝（125人）</span>-->
       </div>
       <div class="m-flex-between m-ft-b m-fans-total-money">
         <span>专属粉丝累计收益</span>
