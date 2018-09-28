@@ -65,6 +65,20 @@
         if(localStorage.getItem('user_level') == 0){
           this.show_modal = true
         }
+        if(this.$route.query.name){
+          switch (this.$route.query.name){
+            case '赚钱学院':
+              this.getTopnav(3);
+              break;
+            case '素材圈':
+              this.getTopnav(1);
+              break;
+
+          }
+        }else{
+          this.getTopnav();
+        }
+
       },
       methods: {
         loadTop() {
@@ -90,12 +104,13 @@
           this.nav_select = v;
         },
         // 获取上部导航
-        getTopnav() {
+        getTopnav(index) {
+          let _index = index || 0;
           axios.get(api.get_dp_topnav).then(res => {
             if(res.data.status == 200) {
               this.nav_list = res.data.data;
               this.sub = this.nav_list[1].sub;
-              this.nav_list[0].click = true;
+              this.nav_list[_index].click = true;
             }else{
               Toast({ message: res.data.message, className: 'm-toast-fail' });
             }
@@ -104,6 +119,7 @@
         // 跳转页面
         toPage(page) {
           if(page == "index") {
+            this.$store.state.tabbar_select = '首页';
             this.$router.push('/index');
           }else if(page == "partner") {
             this.$router.push('/inviteStore');
@@ -112,7 +128,7 @@
         }
       },
       created() {
-        this.getTopnav();
+
       }
     }
 </script>

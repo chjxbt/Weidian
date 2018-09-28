@@ -116,26 +116,31 @@
                 {
                   name:'我的收藏',
                   src:'/static/images/icon-collect-personal.png',
-                  url:'/collect'
+                  url:'/collect',
+                  params:''
                 },{
                   name:'赚钱学院',
                   src:'/static/images/icon-make-money-personal.png',
-                  url:''
+                  url:'/discover',
+                  params:'赚钱学院'
                 },
                 {
                   name:'我的导师',
                   src:'/static/images/icon-teacher-personal.png',
-                  url:''
+                  url:'',
+                  params:''
                 },
                 {
                   name:'素材圈',
                   src:'/static/images/icon-material-personal.png',
-                  url:''
+                  url:'/discover',
+                  params:'素材圈'
                 },
                 {
                   name:'快速投诉',
                   src:'/static/images/icon-complain-personal.png',
-                  url:'/complain'
+                  url:'/complain',
+                  params:''
                 }
               ],
               short:null
@@ -217,7 +222,13 @@
           /*底部图标点击*/
           navClick(v){
            if(v.url){
-             this.$router.push(v.url);
+             if(v.params){
+               this.$store.state.tabbar_select = '发现';
+               this.$router.push({path: v.url, query: { name :v.params }});
+             }else{
+               this.$router.push(v.url);
+             }
+
            }
           },
           // 临时方法，去往二三级页面的会员中心

@@ -26,11 +26,16 @@
         components: {},
         methods: {
           tabbarClick(v){
-            console.log(v)
+
           }
         },
       mounted(){
-          console.log(this.$store.state.tabbar_select)
+
+      },
+      computed:{
+        select(){
+          return this.$store.state.tabbar_select
+        }
       },
       watch: {
         selected: function (val, oldVal) {
@@ -53,6 +58,10 @@
               this.$router.push('/personal');
               break;
           }
+        },
+        select: function (val) {
+          console.log((val,'asdasda'))
+          this.selected = this.$store.state.tabbar_select
         }
       },
 

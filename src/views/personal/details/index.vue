@@ -1,6 +1,7 @@
 <template>
     <div class="m-details">
       <div class="m-total-money">
+        <span class="m-help">帮助</span>
         <p>可提现金额数额</p>
         <p class="m-red">0.00</p>
         <span class="m-total-detail" @click="detailClick">提现明细</span>
@@ -108,6 +109,13 @@
       box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.16);
       position: relative;
       padding-top: 20px;
+      .m-help{
+        position: absolute;
+        right: 20px;
+        top: 20px;
+        font-size: 24px;
+        color: #a4a4a4;
+      }
       p{
         margin: 20px 0;
         &.m-red{

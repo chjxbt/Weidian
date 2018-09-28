@@ -318,9 +318,9 @@
               if(res.data.status == 200){
                this.task_list = res.data.data;
                this.TArole = res.data.TArole;
-                if(localStorage.getItem('is_today_first')){
+                if(localStorage.getItem('is_today_first') == 1){
                   this.show_task = true;
-                  window.localStorage.setItem("is_today_first",false);
+                  window.localStorage.setItem("is_today_first",0);
                 }
                if(res.data.is_complate){
                  this.img_src = res.data.TAcomplateNotifications;

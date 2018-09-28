@@ -39,14 +39,7 @@ let store= new Vuex.Store({
   },
   mutations: {
     add(state,route) {
-      state.now=route.name;
-      var len=Object.keys(state.route);
-      if (len.length<5||!!state.route[route.name]) {
-        state.route[route.name]=route.path;
-      }else{
-        delete state.route[len[0]]
-        state.route[route.name]=route.path;
-      }
+      state.tabbar_select=route;
     },
     remove(state,name){
       Vue.delete(state.route,name)
