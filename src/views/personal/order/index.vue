@@ -15,7 +15,7 @@
             </li>
           </template>
         </ul>
-        <ul class="m-myOrder-content-nav-open" v-else>
+        <ul class="m-myOrder-content-nav-open" v-if="!isOpen">
           <template v-for="(item,index) in order_num">
             <li :class="item.click?'active':''" @click="statusClick(index)" >
               {{item.status}}
@@ -71,7 +71,7 @@
               total_count:0,
               isScroll:true,
               order_num:[],
-              isOpen:false,
+              isOpen:true,
               isSell:true,
               bottom_show:false
             }
@@ -80,7 +80,7 @@
           oneOrder
         },
       mounted(){
-          // this.isOpen = localStorage.getItem('level') == 'partner'? true:false;
+          this.isOpen = localStorage.getItem('level') == 'partner'? true:false;
         common.changeTitle('我的订单');
       },
         methods: {
