@@ -707,7 +707,7 @@ class TaskLevel(BaseModel):
 
     @orm.reconstructor
     def __init__(self):
-        self.fields = ['TAlevel', "TArole", "TAcomplateNotifications", "RAid","RAnumber"]
+        self.fields = ['TAlevel', "TArole", "TAcomplateNotifications", "TLid"]
 
 
 # 任务
@@ -734,7 +734,7 @@ class Task(BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['TAname', "TAtype", "TAhead", "TLid","TAid"]
+        self.fields = ['TAname', "TAtype", "TAhead", "TLid", "TAid"]
 
 
 # 用户任务关联表

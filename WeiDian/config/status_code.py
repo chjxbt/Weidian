@@ -42,3 +42,6 @@ error_complain_exit = 405905
 
 error_get_user_info = 405906
 error_get_jsapi = 405907
+
+error_update_data = 405908
+
