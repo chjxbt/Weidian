@@ -81,4 +81,5 @@ update_data_error = '更新数据失败'
 create_home_bigactivity = '创建首页专题成功'
 create_discover_bigactivity = '创建发现页专题成功'
 get_bigactivity_success = '获取专题页内容成功'
+save_photo_success = '上传图片成功'
 

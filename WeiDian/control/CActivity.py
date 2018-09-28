@@ -172,12 +172,12 @@ class CActivity(BaseActivityControl):
         media = data.get('media')             # 多媒体
         tags = data.get('tags')               # 右上角tag标签
         ACistop = data.get('ACistop', 0)
+        ACtitle = data.get('ACtitle')
 
-        if ACistop:
+        if str(ACistop) == 'True':
             istop = self.sactivity.get_top_activity(TopnavId)
             if istop:
-                self.sactivity.change_top_act_status(istop.ACid, {"ACistop":False})
-
+                self.sactivity.change_top_act_status(istop.ACid, {'ACistop': False})
 
 
 
@@ -204,6 +204,7 @@ class CActivity(BaseActivityControl):
             'ACProductsSoldFakeNum': data.get('soldnum', 0),   # 商品的销售量
             'ACstarttime': ACstarttime,
             'ACendtime': ACendtime,
+            'ACtitle': ACtitle,
             'ACistop': ACistop  # TODO 判断置顶待完善
         })
         # 创建media
@@ -248,10 +249,8 @@ class CActivity(BaseActivityControl):
 
     @verify_token_decorator
     def update_activity(self):
-        if not hasattr(request, 'user'):
-            return TOKEN_ERROR  # 未登录, 或token错误
         if not is_admin():
-            return AUTHORITY_ERROR  # 权限不足
+            raise AUTHORITY_ERROR(u'当前非管理员权限')
         args = request.args.to_dict()
         logger.info("this is update activity args %s", args)
         data = request.json

@@ -8,7 +8,7 @@ from WeiDian import logger
 from WeiDian.common.get_model_return_list import get_model_return_dict
 from WeiDian.common.import_status import import_status
 from WeiDian.common.params_require import parameter_required
-from WeiDian.common.timeformat import get_db_time_str, format_for_db
+from WeiDian.common.timeformat import get_db_time_str, format_for_db, get_web_time_str
 from WeiDian.common.token_required import verify_token_decorator, is_admin
 from WeiDian.config.response import TOKEN_ERROR, SYSTEM_ERROR, AUTHORITY_ERROR
 from flask import request
@@ -37,11 +37,13 @@ class CBigActivity():
         page_size = args.get('page_size')
         try:
             activity_list = self.sactivity.get_bigactivity_by_baid(baid, int(page_num), int(page_size))
+            total_count = self.sactivity.get_bigactivity_count_by_baid(baid)
             banner = get_model_return_dict(self.sbigactivity.get_bigactivity_banner_by_baid(baid))['BAimage']
             response = import_status("get_bigactivity_success", "OK")
             response['data'] = {
                 'activity': activity_list,
-                'banner': banner
+                'banner': banner,
+                'total_count': total_count
             }
             return response
         except:
@@ -77,6 +79,9 @@ class CBigActivity():
                 raise SYSTEM_ERROR(u"系统繁忙")
             if lasting == 'true':
                 baimages = filter(lambda img: img.BAstarttime < get_db_time_str() < img.BAendtime, baimages)
+            for img in baimages:
+                img.BAstarttime = get_web_time_str(img.BAstarttime)
+                img.BAendtime = get_web_time_str(img.BAendtime)
             data = import_status("get_banner_success", "OK")
             data["data"] = baimages
             return data
@@ -99,6 +104,9 @@ class CBigActivity():
                 raise SYSTEM_ERROR(u"系统繁忙")
             if lasting == 'true':
                 baimages = filter(lambda img: img.BAstarttime < get_db_time_str() < img.BAendtime, baimages)
+            for img in baimages:
+                img.BAstarttime = get_web_time_str(img.BAstarttime)
+                img.BAendtime = get_web_time_str(img.BAendtime)
             data = import_status("get_banner_success", "OK")
             data["data"] = baimages
             return data
