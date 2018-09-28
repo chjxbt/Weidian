@@ -348,14 +348,23 @@
           },
           /*获取滚动轮播图*/
           getSwipe(){
-            axios.get(api.get_all_banner,{params:{
+            /*axios.get(api.get_all_banner,{params:{
                 lasting:true
               }}).then(res => {
-               if(res.data.status == 200){
-                 this.swipe_items = res.data.data;
-               }else{
-                 Toast({ message: res.data.message, className: 'm-toast-fail' });
-               }
+              if(res.data.status == 200){
+                this.swipe_items = res.data.data;
+              }else{
+                Toast({ message: res.data.message, className: 'm-toast-fail' });
+              }
+            })*/
+
+            // 获取轮播图的新接口
+            axios.get(api.get_home_banner + '?lasting=true&token=' + localStorage.getItem('token')).then(res => {
+              if(res.data.status == 200){
+                this.swipe_items = res.data.data;
+              }else{
+                Toast({ message: res.data.message, className: 'm-toast-fail' });
+              }
             })
           },
           /*获取热文*/
