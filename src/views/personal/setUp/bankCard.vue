@@ -33,7 +33,7 @@
               </template>
             </ul>
             <div class="m-bank-modal-btn">
-              <span @click="updateCard(true)" v-if="isDel">修改银行卡</span>
+              <span @click="updateCard(true)" v-if="isDel">解除银行卡</span>
               <span @click="updateCard(false)" v-else>修改银行卡</span>
             </div>
           </div>
