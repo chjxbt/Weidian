@@ -9,11 +9,11 @@
           <!--<input type="text" v-model="form.usname" class="m-setUp-input" placeholder="小居居">-->
           <span class="m-setUp-input">{{form.usname}}</span>
         </div>
-        <div class="m-row">
-          <span class="m-form-label">微信号</span>
-          <!--<input type="text" class="m-setUp-input" placeholder="xiaojujuxiaokeai2018">-->
-          <span class="m-setUp-input">{{form.wxnum}}</span>
-        </div>
+        <!--<div class="m-row">-->
+          <!--<span class="m-form-label">微信号</span>-->
+          <!--&lt;!&ndash;<input type="text" class="m-setUp-input" placeholder="xiaojujuxiaokeai2018">&ndash;&gt;-->
+          <!--<span class="m-setUp-input">{{form.wxnum}}</span>-->
+        <!--</div>-->
         <div class="m-row">
           <span class="m-form-label">手机号</span>
           <!--<input type="text" class="m-setUp-input" placeholder="12345678912">-->
