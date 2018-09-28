@@ -7,9 +7,12 @@
      <div class="m-index" v-if="page == '首页'">
        <h3 class="m-title">浮窗管理</h3>
 
-       <h3 class="m-title">任务等级管理</h3>
-       <img v-if="levelTableClose" class="table-close-img" src="../../assets/images/table_close.png" @click="tableOpen">
-       <img v-if="!levelTableClose" class="table-close-img" src="../../assets/images/table_open.png" @click="tableOpen">
+       <div class="title-img-box">
+         <h3 class="m-title">任务等级管理</h3>
+         <img v-if="levelTableClose" class="table-close-img" src="../../assets/images/table_close.png" @click="tableOpen">
+         <img v-if="!levelTableClose" class="table-close-img" src="../../assets/images/table_open.png" @click="tableOpen">
+       </div>
+
        <div v-if="!levelTableClose" class="content-table">
          <el-table :data="levelList" border style="width: 100%" v-loading="levelLoading">
            <el-table-column prop="talevel" label="任务等级" width="120"></el-table-column>
@@ -449,9 +452,11 @@
       taskTypeChange(v) {
         console.log(v);
       },
+      // 打开/关闭任务表格
       tableOpen() {
         if(this.levelTableClose) {
           this.levelTableClose = false;
+          this.getAllTaskLevel();   // 获取所有任务等级
         }else if(!this.levelTableClose) {
           this.levelTableClose = true;
         }
@@ -524,7 +529,6 @@
       }
     },
     mounted() {
-      this.getAllTaskLevel();   // 获取所有任务等级
       this.getAllTaskType();    // 获取任务类型
       this.getAllTask();        // 获取所有任务
     }
@@ -537,12 +541,14 @@
     font-size: 18px;
     margin-bottom: 0.1rem;
   }
+  .title-img-box {
+    display: flex;
+    justify-content: flex-start;
+  }
   .table-close-img {
     width: 0.18rem;
     height: 0.12rem;
-    position: absolute;
-    left: 4.5rem;
-    top: 2.3rem;
+    padding: 0.02rem 0 0 0.2rem;
   }
 
   /* 设置滚动条的样式 */
