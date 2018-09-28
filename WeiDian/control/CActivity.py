@@ -79,10 +79,16 @@ class CActivity(BaseActivityControl):
                 activity_list = filter(lambda act: act.ACstarttime < now_time < act.ACendtime, activity_list)
             for activity in activity_list:
                 self.sactivity.update_view_num(activity.ACid)
-            map(self.fill_detail, activity_list)
-            map(self.fill_comment_two, activity_list)
-            map(self.fill_like_num, activity_list)
-            map(self.fill_type, activity_list)
+                self.fill_detail(activity)
+                self.fill_like_num(activity)
+                self.fill_type(activity)
+                if activity.ACSkipType == 0:
+                    self.fill_comment_two(activity)
+
+            # map(self.fill_detail, activity_list)
+            # map(self.fill_comment_two, activity_list)
+            # map(self.fill_like_num, activity_list)
+            # map(self.fill_type, activity_list)
             # s5 = time.time()
             # map(self.fill_product, activity_list)
             # e5 = time.time()
@@ -148,95 +154,103 @@ class CActivity(BaseActivityControl):
     @verify_token_decorator
     def add_one(self):
         """添加一个活动, 需要管理员的登录状态"""
-        if not hasattr(request, 'user'):
-            return TOKEN_ERROR  # 未登录, 或token错误
         if not is_admin():
-            return AUTHORITY_ERROR  # 权限不足
+            raise AUTHORITY_ERROR(u'当前非管理员权限')
         data = request.json
+        logger.info("add activity data is %s", data)
+        parameter_required('ACtext', 'TopnavId', 'ACSkipType')
         now_time = datetime.strftime(datetime.now(), format_for_db)
-        acstarttime = data.get('acstarttime', now_time)  # 活动开始时间, 默认当前时间
-        asstarttime_str_to_time = datetime.strptime(acstarttime, format_for_db)
-        # 3天以后
-        three_days_later = datetime.strftime(
-            asstarttime_str_to_time +
-            timedelta(
-                days=3),
-            format_for_db)
-        acendtime = data.get('acendtime', three_days_later)  # 活动结束时间, 默认7天以后
-        # istop =
-        topnavid = data.get('topnavid')  # 导航页面
-        actext = data.get('actext')  # 文字内容
-        prid = data.get('prid')  # 商品id
-        media = data.get('media')  # 多媒体
-        tags = data.get('tags')  # 右上角tag标签
-        if not media or not actext or not prid or not topnavid:
-            return PARAMS_MISS
-        relation_product = self.sproduct.get_product_by_prid(prid)  # 关联的商品
-        if not relation_product:  # 如果没有该商品
-            return SYSTEM_ERROR("prid错误，没有该商品")
+        ACstarttime = data.get('acstarttime', now_time)                         # 活动开始时间, 默认当前时间
+        ACstarttime_str_to_time = datetime.strptime(ACstarttime, format_for_db)
+        three_days_later = datetime.strftime(ACstarttime_str_to_time + timedelta(days=3), format_for_db)
+        ACendtime = data.get('ACendtime', three_days_later)                     # 活动结束时间, 默认3天以后
+        TopnavId = data.get('TopnavId')       # 导航页面
+        ACtext = data.get('ACtext')           # 文字内容
+        ACSkipType = data.get('ACSkipType')   # 跳转类型
+        BAid = data.get('BAid', '0')          # 专题id
+        PRid = data.get('PRid', '0')          # 商品id
+        media = data.get('media')             # 多媒体
+        tags = data.get('tags')               # 右上角tag标签
+        ACistop = data.get('ACistop', 0)
+        ACtitle = data.get('ACtitle')
+
+        if str(ACistop) == 'True':
+            istop = self.sactivity.get_top_activity(TopnavId)
+            if istop:
+                self.sactivity.change_top_act_status(istop.ACid, {'ACistop': False})
+
+
+
+        # if not media or not ACtext or not prid or not topnavid:
+        #     return PARAMS_MISS
+        # relation_product = self.sproduct.get_product_by_prid(PRid)  # 关联的商品
+        # if not relation_product:  # 如果没有该商品
+        #     return SYSTEM_ERROR("prid错误，没有该商品")
         # 创建活动
-        acid = str(uuid.uuid1())
-        add_model('Activity', **{
-            'ACid': acid,
-            'PRid': relation_product.PRid,
+        ACid = str(uuid.uuid1())
+        self.sactivity.add_model('Activity', **{
+            'ACid': ACid,
+            # 'PRid': relation_product.PRid,
+            'ACSkipType': ACSkipType,
+            'BAid': BAid,
+            'PRid': PRid,
             'SUid': request.user.id,
-            'ACtype': data.get('actype'),  # 类型
-            'TopnavId': topnavid,
-            'ACtext': actext,
+            'ACtype': data.get('ACtype'),  # 类型
+            'TopnavId': TopnavId,
+            'ACtext': ACtext,
             'AClikeFakeNum': data.get('likenum', 0),  # 喜欢数
             'ACbrowsenum': data.get('browsenum', 0),  # 浏览数
             'ACforwardFakenum': data.get('fowardnum', 0),  # 转发数量
             'ACProductsSoldFakeNum': data.get('soldnum', 0),   # 商品的销售量
-            'ACstarttime': acstarttime,
-            'ACendtime': acendtime,
-            'ACistop': data.get('acistop'), # TODO 判断置顶待完善
+            'ACstarttime': ACstarttime,
+            'ACendtime': ACendtime,
+            'ACtitle': ACtitle,
+            'ACistop': ACistop  # TODO 判断置顶待完善
         })
         # 创建media
         image_num = 0  # 标志用来限制图片或视频的数量
-        for img_or_vido in media:
-            img_or_vido_keys = img_or_vido.keys()
-            if 'amimage' in img_or_vido_keys and 'amvideo' not in img_or_vido_keys:
+        for img_or_video in media:
+            img_or_video_keys = img_or_video.keys()
+            if 'AMimage' in img_or_video_keys and 'AMvideo' not in img_or_video_keys:
                 """图片"""
-                add_model('ActivityMedia', **{
+                self.smedia.add_model('ActivityMedia', **{
                     'AMid': str(uuid.uuid1()),
-                    'ACid': acid,
-                    'AMimage': img_or_vido.get('amimage'),
-                    'AMsort': img_or_vido.get('amsort', 1)
+                    'ACid': ACid,
+                    'AMimage': img_or_video.get('AMimage'),
+                    'AMsort': img_or_video.get('AMsort', 1)
                 })
                 image_num += 1
                 if image_num >= 9:
-                    break
-            elif 'amimage' not in img_or_vido_keys and 'amvideo' in img_or_vido_keys:
+                    raise SYSTEM_ERROR(u"图片超出数量限制")
+            elif 'AMimage' not in img_or_video_keys and 'AMvideo' in img_or_video_keys:
                 """视频"""
                 if image_num < 1:
                     # 只有在无图片的状况下才会添加视频
-                    add_model('ActivityMedia', **{
+                    self.smedia.add_model('ActivityMedia', **{
                         'AMid': str(uuid.uuid1()),
-                        'ACid': acid,
-                        'AMvideo': img_or_vido.get('amvideo')
+                        'ACid': ACid,
+                        'AMvideo': img_or_video.get('AMvideo')
                     })
                     # 只可以添加一个视频, 且不可以再添加图片
                     break
-
         # 创建tag
         if tags:
             for tag in tags:
                 add_model('ActivityTag', **{
                     'ATid': str(uuid.uuid1()),
-                    'ACid': acid,
-                    'ATname': tag.get('atname'),
+                    'ACid': ACid,
+                    'ATname': tag.get('ATname'),
                 })
         response_make_activity = import_status('add_activity_success', 'OK')
-        response_make_activity['data'] = {}
-        response_make_activity['data']['acid'] = acid
+        response_make_activity['data'] = {
+            'ACid': ACid
+        }
         return response_make_activity
 
     @verify_token_decorator
     def update_activity(self):
-        if not hasattr(request, 'user'):
-            return TOKEN_ERROR  # 未登录, 或token错误
         if not is_admin():
-            return AUTHORITY_ERROR  # 权限不足
+            raise AUTHORITY_ERROR(u'当前非管理员权限')
         args = request.args.to_dict()
         logger.info("this is update activity args %s", args)
         data = request.json

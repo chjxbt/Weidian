@@ -47,9 +47,13 @@ class CProduct(BaseProductControl):
         page = int(args.get('page', 1))  # 页码
         start = int(args.get('start', 0))  # 起始位置
         count = int(args.get('count', 15))  # 取出条数
+        kw = args.get('kw')
         if not start:
             start = (page -1) * count
-        product_list = self.sproduct.get_all()
+        if kw:
+            product_list = self.sproduct.get_product_list_contail_title(kw)
+        else:
+            product_list = self.sproduct.get_all()
         len_product_list = len(product_list)
         if count > 30:
             count = 30

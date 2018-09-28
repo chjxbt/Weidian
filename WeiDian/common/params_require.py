@@ -1,4 +1,4 @@
-# *- coding:utf8 *-
+# -*- coding:utf8 -*-
 from flask import request
 
 from WeiDian.config.response import PARAMS_MISS

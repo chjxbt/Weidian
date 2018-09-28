@@ -41,6 +41,11 @@ class BaseModel(AbstractConcreteBase, Base):
         return self
 
     @property
+    def clean(self):
+        self.fields = []
+        return self
+
+    @property
     def all(self):
         return self.__table__.columns.keys()
 
