@@ -114,16 +114,18 @@ class CUser():
                 "accesstoken": access_token,
                 "subscribe": subscribe,
             })
-            # # todo task modify
-            # task_list = self.stask.get_task_by_level(0)
-            # for task in task_list:
-            #     self.suser.add_model("TaskUser", **{
-            #         "TUid": str(uuid.uuid1()),
-            #         "USid": usid,
-            #         "TAid": task.TAid,
-            #         "TUstatus": 0,
-            #         "TUnumber": 0
-            #     })
+
+            tasl_level = self.stask.get_tasklevel_by_level(1)
+            task_list = self.stask.get_task_by_tlid(tasl_level.TLid)
+
+            for task in task_list:
+                self.suser.add_model("TaskUser", **{
+                    "TUid": str(uuid.uuid1()),
+                    "USid": usid,
+                    "TAid": task.TAid,
+                    "TUstatus": 0,
+                    "TUnumber": 0
+                })
             self.smycenter.add_model("MyCenter", **{
                 "MYid": str(uuid.uuid1()),
                 "USid": usid,

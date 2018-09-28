@@ -1,5 +1,6 @@
 # -*- coding:utf8 -*-
 import uuid
+import os
 from datetime import datetime
 from WeiDian.config.response import SYSTEM_ERROR
 from flask import request
@@ -8,7 +9,7 @@ from WeiDian.common.divide import Partner
 from WeiDian.common.token_required import is_partner
 from WeiDian.common.timeformat import get_web_time_str
 from WeiDian.config.enums import activity_type, TASK_STATUS
-
+from WeiDian import logger
 
 class BaseActivityControl():
 
@@ -443,3 +444,22 @@ class BaseTask():
             "TAendTime", "TAstartTime", "TAduration"
         )
         return task
+
+
+class BaseFile():
+
+    def upload_file(self, rootdir):
+        from WeiDian.common.timeformat import get_db_time_str
+        from WeiDian.config.setting import QRCODEHOSTNAME, LinuxRoot, LinuxImgs
+        files = request.files.get("file")
+        filessuffix = str(files.filename).split(".")[-1]
+        filedir = os.path.join(LinuxRoot, LinuxImgs, rootdir)
+        if not os.path.isdir:
+            os.mkdir(filedir)
+
+        filename = rootdir + request.user.openid + get_db_time_str() + "." + filessuffix
+        filepath = os.path.join(filedir, filename)
+        print(filepath)
+        files.save(filepath)
+        url = QRCODEHOSTNAME + "/imgs/{0}/".format(rootdir) + filename
+        return url

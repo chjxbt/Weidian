@@ -4,6 +4,7 @@ from flask import request
 from WeiDian.config.response import PARAMS_MISS
 from WeiDian import logger
 
+
 def parameter_required(*required):
     """
     验证缺失的参数
@@ -23,8 +24,8 @@ def parameter_required(*required):
 
         if missed:
             missed_params = '/'.join(missed)
-            if isinstance(missed_params, unicode):
-                missed_params = missed_params.encode("utf8")
+            if isinstance(missed_params, str):
+                missed_params = missed_params.encode("unicode")
             logger.debug('missed params is %s', missed_params)
             raise PARAMS_MISS(u'必要参数缺失: ' + missed_params)
     return body_data
