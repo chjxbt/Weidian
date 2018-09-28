@@ -2,7 +2,7 @@
     <div class="m-img-modal">
       <div class="m-modal-state">
         <span class="m-close" @click="closeModal">X</span>
-        <img :src="src" alt="">
+        <img :src="src"  alt="">
       </div>
     </div>
 
@@ -50,6 +50,7 @@
     img{
       width: 600px;
       height: 600px;
+      background-color: #fff;
     }
     .m-close{
       position: absolute;

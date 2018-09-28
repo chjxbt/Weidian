@@ -1,25 +1,7 @@
 <template>
     <div class="m-inviteStore">
-      <span class="m-inviteStore-rule m-ft-20 m-bg-main-color tr" @click="show_rule = true">规 则</span>
-      <div class="m-modal" v-if="show_rule">
-        <div class="m-modal-state">
-          <div class="m-modal-head">
-            <img src="http://img1.imgtn.bdimg.com/it/u=1767479973,4078045028&fm=26&gp=0.jpg" class="m-modal-img">
-          </div>
-          <div class="m-modal-content">
-            <h2>升级成为店主·方可使用此功能</h2>
-            <ul class="m-modal-ul">
-              <li>·<span>每日10荐 </span>精品推荐</li>
-              <li>·<span>素&nbsp;&nbsp;材&nbsp;&nbsp;圈</span>时尚买家秀</li>
-              <li>·<span>公&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;告</span>活动奖励不多，更多玩法</li>
-              <li>·<span>教&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;程</span>精品专属教程</li>
-            </ul>
-          </div>
-          <div class="m-modal-foot">
-            <span class="modal-foot-btn" @click="show_rule = false">我 已 知 晓</span>
-          </div>
-        </div>
-      </div>
+      <span class="m-inviteStore-rule m-ft-20 m-bg-main-color tr" @click="show_rule = true" >规 则</span>
+      <rule :show_modal="show_rule" :rule="rule" @showModal="showModalRule"></rule>
 
       <div class="m-inviteStore-img-box">
         <img src="http://d6.yihaodianimg.com/N00/M00/FE/31/CgMBmVNv9WCAWLTNAAXxZghPNoo13800.jpg" class="m-inviteStore-img">
@@ -163,11 +145,11 @@
           </div>
         </div>
       </div>
-      <div class="m-inviteStore-btn" @click="showModal(true)">立 即 邀 请</div>
+      <div class="m-inviteStore-btn" @click="showModal('show_modal',true)">立 即 邀 请</div>
 
       <div class="m-inviteStore-modal" v-if="show_modal">
         <div class="m-inviteStore-modal-state">
-          <span class="m-inviteStore-modal-close" @click="showModal(false)"> X</span>
+          <span class="m-inviteStore-modal-close" @click="showModal('show_modal',false)"> X</span>
           <span class="m-inviteStore-modal-logo"></span>
 
           <div class="m-inviteStore-modal-content">
@@ -199,16 +181,23 @@
               <span class="m-check"></span>
               <span>不使用新衣币</span>
             </div>
-            <span class="m-inviteStore-modal-btn">确定</span>
+            <span class="m-inviteStore-modal-btn" @click="showModal('show_img',true)">确定</span>
           </div>
         </div>
       </div>
+      <img-modal v-if="show_img" :src="img_src" @closeModal="closeModal"></img-modal>
     </div>
 
 </template>
 
 <script type="text/ecmascript-6">
-  import discountCoupon from '../../../components/common/discountCoupon'
+  import discountCoupon from '../../../components/common/discountCoupon';
+  import rule from '../../../components/common/rule';
+  import axios from 'axios';
+  import api from '../../../api/api';
+  import {Toast} from 'mint-ui';
+  import common from '../../../common/js/common';
+  import imgModal from '../../../components/common/imgModal';
     export default {
       data() {
         return {
@@ -231,20 +220,55 @@
             }
           ],
           show_modal:false,
-          show_rule: false
+          show_rule: false,
+          show_img:false,
+          rule:''
         }
       },
-      components: { discountCoupon },
+      components: {
+        discountCoupon,
+        rule,
+        imgModal},
       methods: {
         navChange(v){
           this.now = v
         },
-        showModal(v){
-            this.show_modal = v;
-        }
+        showModal(v,bool){
+            this[v] = bool;
+            if(v == 'show_img'){
+              this.show_modal = false;
+            }
+        },
+        showModalRule(v){
+          this.show_rule =v;
+        },
+        getRule(){
+          axios.get(api.get_rule_mycenter,{
+            params:{
+              token:localStorage.getItem('token')
+            }
+          }).then(res => {
+            if(res.data.status == 200){
+              for(let i =0;i<res.data.data.length;i++){
+                if(res.data.data[i].lrtype == 4 ){
+                  this.rule = res.data.data[i].lrtext;
+                  return false;
+                }
+              }
+            }else{
+              Toast({ message: res.data.message, className: 'm-toast-fail' });
+            }
+          },error => {
+            Toast({ message: error.data.message, className: 'm-toast-fail' });            })
+        },
+        /*关闭模态框*/
+        closeModal(v){
+          this[v]  = false;
+        },
       },
       mounted(){
-
+        common.changeTitle('邀请开店');
+        this.getRule();
       },
       created() {
 

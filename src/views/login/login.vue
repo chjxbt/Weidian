@@ -88,6 +88,8 @@
                 window.localStorage.setItem("is_first",res.data.data.is_first);
                 window.localStorage.setItem("wximg",res.data.data.wximg);
                 window.localStorage.setItem("subscribe",res.data.data.subscribe);
+                window.localStorage.setItem("is_today_first",res.data.data.is_today_first);
+                window.localStorage.setItem("user_level",res.data.data.user_level);
                 this.$store.state.tabbar = res.data.data.icon;
                 this.$store.state.tabbar_select = res.data.data.icon[0].name;
                 this.$router.push('/index/index');

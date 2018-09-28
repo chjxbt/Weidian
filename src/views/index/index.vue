@@ -211,6 +211,7 @@
           this.getHot();
         this.getTopnav();
         this.getTask();
+
           let that =this;
         this.interval = window.setInterval(that.animation,3000);
 
@@ -317,6 +318,10 @@
               if(res.data.status == 200){
                this.task_list = res.data.data;
                this.TArole = res.data.TArole;
+                if(localStorage.getItem('is_today_first')){
+                  this.show_task = true;
+                  window.localStorage.setItem("is_today_first",false);
+                }
                if(res.data.is_complate){
                  this.img_src = res.data.TAcomplateNotifications;
                  this.show_img = true;

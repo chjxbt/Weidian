@@ -16,7 +16,7 @@
 
       <div class="m-modal" v-if="show_modal">
         <div class="m-modal-state">
-          <div class="m-modal-head">
+          <div class="m-modal-head m-modal-store">
             <img src="http://cdn2.55haitao.com/bbs/data/attachment/forum/201411/20/132745toqfxf1r19k3y333.jpg" class="m-modal-img">
           </div>
           <div class="m-modal-content">
@@ -61,6 +61,11 @@
         }
       },
       components: { navbar, fodder, every, announcement, course, iconList },
+      mounted(){
+        if(localStorage.getItem('user_level') == 0){
+          this.show_modal = true
+        }
+      },
       methods: {
         loadTop() {
           if(this.nav_select == 0) {
@@ -122,6 +127,10 @@
       .m-modal-head{
         padding: 10px 20px;
         margin: -1px;
+        &.m-modal-store{
+          width: 100%;
+          padding: 0;
+        }
         .m-modal-img{
           display: block;
           width: 100%;
