@@ -47,7 +47,7 @@
        <el-form :label-position="labelPosition" label-width="100px" :model="formIndex">
          <div class="m-form-item m-item-modal">
            <el-form-item label="任务等级">
-             <el-select v-model="taskLevel" placeholder="请选择">
+             <el-select v-model="taskLevel" clearable placeholder="请选择">
                <el-option v-for="item in taskLevelList" :key="item" :label="item" :value="item"></el-option>
              </el-select>
            </el-form-item>
@@ -55,7 +55,7 @@
              <el-input v-model="formIndex.title" class="m-input-m"></el-input>
            </el-form-item>
            <el-form-item label="任务类型">
-             <el-select v-model="taskType" placeholder="请选择" @change="taskTypeChange">
+             <el-select v-model="taskType" clearable placeholder="请选择" @change="taskTypeChange">
                <el-option v-for="item in taskTypeList" :key="item" :label="item" :value="item"></el-option>
              </el-select>
            </el-form-item>
@@ -70,8 +70,8 @@
                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
              </el-upload>
            </el-form-item>
-           <el-form-item label="内容">
-             <el-input v-model="formIndex.content" class="m-input-m"></el-input>
+           <el-form-item label="视频">
+             <el-input v-model="formIndex.content" class="m-input-m" :disabled="taskVideo"></el-input>
            </el-form-item>
            <el-form-item label="完成度">
              <el-input v-model="formIndex.ratio" class="m-input-m"></el-input>
@@ -302,6 +302,8 @@
         levelLoading: true,
         taskList: [],
         taskLoading: true,
+        taskVideo: true,
+
         options: [{
           value: '选项1',
           label: '黄金糕'
@@ -320,7 +322,7 @@
         }],
         value: '',
         taskLevel: '',
-        taskLevelList: [1, 2, 3, 4],
+        taskLevelList: ["等级1", "等级2", "等级3", "等级4"],
         taskType: '',
         taskTypeList: [],
         imageUrl:'',
@@ -365,6 +367,7 @@
             this.levelList = res.data.data;
             this.levelLoading = false;
             for(let i = 0; i < this.levelList.length; i ++) {
+              this.levelList[i].talevel = '等级' + this.levelList[i].talevel;
               this.levelList[i].doneTip = "【图片】";
 
               // 显示奖励
@@ -407,7 +410,7 @@
         axios.get(api.get_all_task + '?token=' + localStorage.getItem('token')).then(res => {
           if(res.data.status == 200){
             this.taskList = res.data.data;
-            console.log(this.taskList);
+            // console.log(this.taskList);
 
             for(let i = 0; i < this.taskList.length; i ++) {
 
@@ -450,22 +453,28 @@
       },
       // 选择任务类型
       taskTypeChange(v) {
+        // 任务类型为观看视频时，视频输入框可填写，否则不可填
+        if(v.indexOf('视频') == 2) {
+          this.taskVideo = false;
+        }else {
+          this.taskVideo = true;
+        }
         console.log(v);
       },
       // 打开/关闭任务表格
       tableOpen() {
         if(this.levelTableClose) {
           this.levelTableClose = false;
-          this.getAllTaskLevel();   // 获取所有任务等级
+          // this.getAllTaskLevel();   // 获取所有任务等级
         }else if(!this.levelTableClose) {
           this.levelTableClose = true;
         }
       },
-      // 任务列表的编辑
+      // 编辑按钮
       editDone(row) {
         console.log(row);
       },
-      // 任务列表的删除
+      // 删除按钮
       deleteDone() {
         this.$confirm('此操作将删除该任务, 是否继续?', '提示', {
           confirmButtonText: '确定',
@@ -477,7 +486,7 @@
           this.$message({ type: 'info', message: '已取消删除' });
         });
       },
-      // 首页提交
+      // 弹框管理-首页-提交
       submit() {
         console.log(this.formIndex);
 
@@ -529,6 +538,7 @@
       }
     },
     mounted() {
+      this.getAllTaskLevel();   // 获取所有任务等级
       this.getAllTaskType();    // 获取任务类型
       this.getAllTask();        // 获取所有任务
     }
