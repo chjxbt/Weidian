@@ -16,7 +16,7 @@ from WeiDian.common.TransformToList import add_model
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db, get_db_time_str
 from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR
-from WeiDian.control.BaseControl import BaseActivityControl
+from WeiDian.control.BaseControl import BaseActivityControl, BaseFile
 sys.path.append(os.path.dirname(os.getcwd()))
 
 
@@ -302,5 +302,13 @@ class CActivity(BaseActivityControl):
         response["data"] = url
         return response
 
+    @verify_token_decorator
+    def upload_home_images(self):
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'权限不足')
+        filetype = request.args.to_dict().get("filetype", 'home')
 
-
+        url = BaseFile().upload_file(filetype)
+        res = import_status("save_poster_success", "OK")
+        res['data'] = url
+        return res

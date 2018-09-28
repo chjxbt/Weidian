@@ -14,9 +14,10 @@ from WeiDian.common.params_require import parameter_required
 from WeiDian.common.timeformat import get_db_time_str, format_for_db
 from WeiDian.common.token_required import verify_token_decorator, is_tourist, is_admin
 from WeiDian.config.enums import TASK_TYPE
+from WeiDian.config.setting import QRCODEHOSTNAME
 from WeiDian.config.response import AUTHORITY_ERROR, SYSTEM_ERROR, TOKEN_ERROR, PARAMS_ERROR
 from WeiDian.control.BaseControl import BaseTask
-
+import platform
 
 class CTask(BaseTask):
 
@@ -288,4 +289,28 @@ class CTask(BaseTask):
     def upload_task_img(self):
         if not is_admin():
             raise AUTHORITY_ERROR(u"权限不足")
-        
+        formdata = request.form
+        logger.info("formdata is %s", formdata)
+        files = request.files.get("file")
+
+        if platform.system() == "Windows":
+            rootdir = "D:/task"
+        else:
+            rootdir = "/opt/WeiDian/imgs/task/"
+        if not os.path.isdir(rootdir):
+            os.mkdir(rootdir)
+        # if "FileType" not in formdata:
+        #     return
+        filessuffix = str(files.filename).split(".")[-1]
+        # index = formdata.get("index", 1)
+        filename = request.user.openid + get_db_time_str() + "." + filessuffix
+        filepath = os.path.join(rootdir, filename)
+        print(filepath)
+        files.save(filepath)
+        response = import_status("save_poster_success", "OK")
+        # url = Inforcode.ip + Inforcode.LinuxImgs + "/" + filename
+        url = QRCODEHOSTNAME + "/imgs/task/" + filename
+        # print(url)
+        logger.info("this url is %s", url)
+        response["data"] = url
+        return response
