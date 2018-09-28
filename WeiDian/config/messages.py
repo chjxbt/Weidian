@@ -76,3 +76,4 @@ add_task_success = "添加任务成功"
 get_task_success = "获取任务成功"
 do_task_success = '做任务成功'
 make_qrcode_success = "生成分享二维码成功"
+save_poster_success = "生成分享图成功"

@@ -125,8 +125,8 @@ class CUser():
             self.smycenter.add_model("MyCenter", **{
                 "MYid": str(uuid.uuid1()),
                 "USid": usid,
-                "MYranking": 0,
-                "MYrewards": 0
+                "MYranking": '0',
+                "MYrewards": '0'
             })
         else:
             usid = user.USid

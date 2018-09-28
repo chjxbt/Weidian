@@ -6,7 +6,6 @@ from WeiDian.common.single import singleton
 sys.path.append(os.path.dirname(os.getcwd()))
 
 
-@singleton
 class Partner(object):
     """佣金分成设置, 后续设置"""
     def __init__(self, config_file_path='WeiDian/config/divide_config.cfg'):
@@ -54,6 +53,13 @@ class Partner(object):
         self.cf.set('access_token', 'access_token', token)
         self.cf.set("access_token", "lasttime", updatetime)
         self.cf.set("access_token", "jsapiticket", jsapiticket)
+        self.cf.write(open(self.config_file_path, "w"))
+
+    def get_item(self, skip, skip_type):
+        return self.cf.get(skip, skip_type)
+
+    def set_item(self, skip, skip_type, value):
+        self.cf.set(skip, skip_type, value.encode('utf8'))
         self.cf.write(open(self.config_file_path, "w"))
 
 
