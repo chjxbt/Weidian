@@ -1,4 +1,5 @@
 # -*- coding:utf8 -*-
+import json
 import sys
 import os
 from flask import jsonify
@@ -15,9 +16,10 @@ class AActivity(Resource):
         print activity
         apis = {
             "get_all": "self.control_activity.get_all()",
-            "get_one": "self.control_activity.get_one()",
+            "get_one": "self.control_activity.get_one()"
         }
         res = eval(apis[activity])
+        # res = {7777:"666"}
         return jsonify(res)
 
     def post(self, activity):
@@ -28,7 +30,8 @@ class AActivity(Resource):
             "del_one": "self.control_activity.delete_one()",
             "stop_one": "self.control_activity.stop_one()",
             "update_act": "self.control_activity.update_activity()",
-            "share_qrcode": "self.control_activity.share_activity()"
+            "share_qrcode": "self.control_activity.share_activity()",
+            "generate_poster": "self.control_activity.generate_poster()"
         }
         res = eval(apis[activity])
         return jsonify(res)

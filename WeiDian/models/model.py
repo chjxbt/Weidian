@@ -20,7 +20,8 @@ class Activity(BaseModel):
     """
     __tablename__ = 'activity'
     ACid = Column(String(64), primary_key=True)
-    PRid = Column(String(64), nullable=False)  # 活动商品
+    PRid = Column(String(64))  # 活动商品id
+    BAid = Column(String(64))  # 二跳页id
     SUid = Column(String(64), nullable=False)  # 发布者(超级用户才可以发布)
     ACtype = Column(Integer, default=0)  # 活动分类, 具体分类如下
     # {0 普通动态, 1 满减, 2 满赠, 3 优惠券, 4 砍价, 5 拼团, 6 单品优惠券, 7 一元秒杀, 8 前几分钟半价, 9 限时抢, 10 X元X件}
@@ -38,8 +39,8 @@ class Activity(BaseModel):
     ACisended = Column(Boolean, default=False)  # 是否被手动截止
     ACisdelete = Column(Boolean, default=False)  # 是否删除
     ACistop = Column(Boolean, default=False)  # 是否置顶
-    ACtitle = Column(Text, nullable=False)  # 活动标题（公告、教程页）
-    # ACtype =
+    ACtitle = Column(Text)  # 活动标题（公告、教程页）
+    ACSkipType = Column(Integer, default=0)  # 跳转类型{0:无跳转类型, 1:专题, 2:商品}
 
 
     @orm.reconstructor
@@ -48,6 +49,7 @@ class Activity(BaseModel):
         self.fields = [
             'ACid',
             'PRid',
+            'BAid',
             'ACtype',
             'ACtext',
             'ACbrowsenum',
@@ -57,7 +59,9 @@ class Activity(BaseModel):
             'ACistop',
             'ACisended',
             'TopnavId',
-            'ACtitle']
+            'ACtitle',
+            'ACSkipType'
+        ]
 
 
 class ActivityComment(BaseModel):
@@ -275,23 +279,6 @@ class ProductLike(BaseModel):
         self.fields = self.all
 
 
-class RecommendBanner(BaseModel):
-    """每日十荐页上部轮播图"""
-    __tablename__ = 'recommendbanner'
-    RBid = Column(String(64), primary_key=True)
-    RBimage = Column(String(255))  # 图片
-    PRid = Column(String(64))  # 推荐页轮播图对应的商品
-    RBcreatetime = Column(String(14))  # 创建时间
-    RBstarttime = Column(String(14))  # 上线时间
-    RBendtime = Column(String(14))  # 下线时间
-    RBsort = Column(Integer)  # 顺序标志
-
-    @orm.reconstructor
-    @auto_createtime
-    def __init__(self):
-        self.fields = self.all
-
-
 class Recommend(BaseModel):
     """每日十荐页中部商品区域"""
     __tablename__ = 'recommend'
@@ -465,11 +452,13 @@ class HotMessage(BaseModel):
     __tablename__ = 'hotmessage'
     HMid = Column(String(64), primary_key=True)
     HMtext = Column(String(64), nullable=False)  # 热文文字
-    PRid = Column(String(64), nullable=False)  # 对应商品
+    PRid = Column(String(64))  # 对应商品
+    BAid = Column(String(64))  # 对应专题
     HMcreatetime = Column(String(14))  # 创建时间
     HMstarttime = Column(String(14))  # 上线时间
     HMendtime = Column(String(14))  # 下线时间
     HMsort = Column(Integer)  # 热文的顺序标志
+    HMSkipType = Column(Integer, default=0)  # 跳转类型{0:无跳转类型, 1:专题, 2:商品}
 
     @orm.reconstructor
     @auto_createtime
@@ -478,42 +467,92 @@ class HotMessage(BaseModel):
             'HMid',
             'HMtext',
             'PRid',
+            'BAid',
             'HMcreatetime',
             'HMstarttime',
             'HMendtime',
-            'HMsort'
+            'HMsort',
+            'HMSkipType'
         ]
 
 
-class Banner(BaseModel):
+
+class BigActivity(BaseModel):
     """
-    轮播图
+    轮播图/专场
     """
-    __tablename__ = 'banner'
+    __tablename__ = 'bigactivity'
     BAid = Column(String(64), primary_key=True)
-    BAimage = Column(String(255))  # 图片
-    ACid = Column(String(64))  # 轮播图对应的活动
-    BAcreatetime = Column(String(14))  # 创建时间
-    BAstarttime = Column(String(14))  # 上线时间
-    BAendtime = Column(String(14))  # 下线时间
-    BAsort = Column(Integer)  # 顺序标志
+    BAimage = Column(String(255))                   # 专题图片
+    BAcreatetime = Column(String(14))               # 创建时间
+    BAstarttime = Column(String(14))                # 上线时间
+    BAendtime = Column(String(14))                  # 下线时间
+    BAurl = Column(String(255))                     # 专题外链（可能不用）
+    BAsort = Column(Integer, default=0)             # 顺序标志
+    BAposition = Column(Integer, default=0)         # 图片展示位置{0:首页 1:发现页}
+    BAisdisplay = Column(Boolean, default=True)     # 是否展示
+    BAisdelete = Column(Boolean, default=False)     # 删除
 
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = self.all
+        self.fields = ['BAid', 'BAimage', 'BAposition', 'BAisdisplay','BAstarttime', 'BAurl', 'BAendtime', 'BAsort']
+
+#
+# class RecommendBanner(BaseModel):
+#     """每日十荐页上部轮播图"""
+#     __tablename__ = 'recommendbanner'
+#     RBid = Column(String(64), primary_key=True)
+#     RBimage = Column(String(255))  # 图片
+#     PRid = Column(String(64))  # 推荐页轮播图对应的商品
+#     RBcreatetime = Column(String(14))  # 创建时间
+#     RBstarttime = Column(String(14))  # 上线时间
+#     RBendtime = Column(String(14))  # 下线时间
+#     RBsort = Column(Integer)  # 顺序标志
+#
+#     @orm.reconstructor
+#     @auto_createtime
+#     def __init__(self):
+#         self.fields = self.all
 
 
-# 可能用不到
-class SpicialActivity(BaseModel):
+
+class Banner(BaseModel):
     """
-    轮播对应的专场活动
+    首页轮播图/专场题图
     """
-    __tablename__ = 'spicialactivity'
-    SAid = Column(String(64), primary_key=True)
-    ACid = Column(String(64), nullable=False)  # 对应活动的id
-    BAid = Column(String(64), nullable=False)  # 对应的轮播图
-    SAtext = Column(Text)  # 活动专场介绍
+    __tablename__ = 'banner'
+    BAid = Column(String(64), primary_key=True)
+    BAimage = Column(String(255))  # 图片
+    # ACid = Column(String(64))  # 轮播图对应的活动
+    SAid = Column(String(64))  # 对应的专场
+    BAcreatetime = Column(String(14))  # 创建时间
+    BAstarttime = Column(String(14))  # 上线时间
+    BAendtime = Column(String(14))  # 下线时间
+    BAsort = Column(Integer)  # 顺序标志
+    BAisdelete = Column(Boolean, default=False)  # 删除
+
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = ['BAid', 'BAimage', 'SAid', 'BAstarttime', 'BAendtime', 'BAsort']
+
+
+# class SpicialActivity(BaseModel):
+#     """
+#     专题活动页（废弃）
+#     """
+#     __tablename__ = 'spicialactivity'
+#     SAid = Column(String(64), primary_key=True)
+#     SAtext = Column(Text)                           # 专题介绍(可能用不到)
+#     # SAbanner = Column(String(255) )                # 专题页banner图
+#     SAcreatetime = (String(14))                     # 创建时间
+#     SAisdelete = Column(Boolean, default=False)     # 删除
+#
+#     @orm.reconstructor
+#     @auto_createtime
+#     def __init__(self):
+#         self.fields = ['SAid', 'SAtext']
 
 
 class User(BaseModel):

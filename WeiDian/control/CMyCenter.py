@@ -38,9 +38,11 @@ class CMyCenter(BaseMyCenterControl):
         if is_tourist():
             return AUTHORITY_ERROR(u"未登录")
         try:
+            print (request.user.USname).encode('utf8')
+            print (request.user.USid).encode('utf8')
             my_info = self.smycenter.get_my_info_by_usid(request.user.id)
             logger.debug("get my info by usid")
-            my_info = self.fill_user_info(my_info)
+            self.fill_user_info(my_info)
             data = import_status("get_my_info_success", "OK")
             data["data"] = my_info
             return data

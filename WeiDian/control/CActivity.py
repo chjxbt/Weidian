@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from WeiDian import logger
 from WeiDian.common.make_qrcode import make_qrcode
 from WeiDian.common.params_require import parameter_required
-from WeiDian.config.setting import QRCODEHOSTNAME
+from WeiDian.config.setting import QRCODEHOSTNAME, LinuxRoot, LinuxImgs, WindowsRoot
 from flask import request
 import math
 import uuid
@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session
 from WeiDian.common.token_required import verify_token_decorator, is_admin, is_tourist
 from WeiDian.common.TransformToList import add_model
 from WeiDian.common.import_status import import_status
-from WeiDian.common.timeformat import format_for_db
+from WeiDian.common.timeformat import format_for_db, get_db_time_str
 from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR
 from WeiDian.control.BaseControl import BaseActivityControl
 sys.path.append(os.path.dirname(os.getcwd()))
@@ -49,59 +49,51 @@ class CActivity(BaseActivityControl):
         """
         if is_tourist():
             return AUTHORITY_ERROR(u"未登录")
-        print '已登录'
         args = request.args.to_dict()
         logger.info("this is get all activity args %s", args)
+        parameter_required('tnid', 'start', 'count')
         tnid = args.get('tnid')  # 导航id
         suid = args.get('suid')  # 管理员id
-        lasting = args.get('lasting', 'true')  # 是否正在进行的活动
-        page = args.get('page')  # 页码
+        lasting = args.get('lasting', True)  # 是否正在进行的活动
         start = int(args.get('start', 0))  # 起始位置
-        count = int(args.get('count', 15))  # 取出条数
+        count = int(args.get('count', 5))  # 取出条数
+        page = (args.get('page'))
         if not page:
-            page = math.floor(start / count) + 1
+            page = int(math.floor(start / count) + 1)
         if not (tnid or suid):
-            return PARAMS_MISS
-        if tnid:
-            # ss = time.time()
-            activity_list = self.sactivity.get_activity_by_topnavid(tnid, page, count)
-            len_aclist = self.sactivity.get_activity_count(tnid)
-            # ee = time.time()
-            # print "query act %s" %(ee - ss)
-        if suid:
-            activity_list = self.sactivity.get_activity_by_suid(suid, page, count)
-        if lasting == 'true':
-            now_time = datetime.strftime(datetime.now(), format_for_db)
-            activity_list = filter(lambda act: act.ACstarttime < now_time < act.ACendtime, activity_list)
-        # s1 = time.time()
-        map(self.fill_detail, activity_list)
-        # e1 = time.time()
-        # print "filldetail %s" %(e1 - s1)
-        # sss = time.time()
-        for activity in activity_list:
-            self.sactivity.update_view_num(activity.ACid)
-        # eee = time.time()
-        # print "update num is %s" %(eee-sss)
-        # s2 = time.time()
-        map(self.fill_comment_two, activity_list)
-        # e2 = time.time()
-        # print "fillcomment %s" %(e2 - s2)
-        # s3 = time.time()
-        map(self.fill_like_num, activity_list)
-        # e3 = time.time()
-        # print "fill_like_num %s" %(e3 - s3)
-        # s4 = time.time()
-        map(self.fill_type, activity_list)
-        # e4 = time.time()
-        # print "fill_type %s" %(e4 - s4)
-        # s5 = time.time()
-        map(self.fill_product, activity_list)
-        # e5 = time.time()
-        # print "fill_product %s" %(e5 - s5)
-        data = import_status("get_activity_list_success", "OK")
-        data["count"] = len_aclist
-        data["data"] = activity_list
-        return data
+            raise PARAMS_MISS(u"参数缺失")
+        try:
+            if tnid:
+                activity_list = self.sactivity.get_activity_by_topnavid(tnid, page, count)
+                len_aclist = self.sactivity.get_activity_count(tnid)
+                logger.debug("get activity_list")
+
+            if suid:
+                activity_list = self.sactivity.get_activity_by_suid(suid, page, count)
+
+            if not activity_list:
+                raise SYSTEM_ERROR(u'数据库错误')
+
+            if lasting is True:
+                now_time = datetime.strftime(datetime.now(), format_for_db)
+                activity_list = filter(lambda act: act.ACstarttime < now_time < act.ACendtime, activity_list)
+            for activity in activity_list:
+                self.sactivity.update_view_num(activity.ACid)
+            map(self.fill_detail, activity_list)
+            map(self.fill_comment_two, activity_list)
+            map(self.fill_like_num, activity_list)
+            map(self.fill_type, activity_list)
+            # s5 = time.time()
+            # map(self.fill_product, activity_list)
+            # e5 = time.time()
+            # print "fill_product %s" %(e5 - s5)
+            data = import_status("get_activity_list_success", "OK")
+            data["count"] = len_aclist
+            data["data"] = activity_list
+            return data
+        except:
+            logger.exception("get activity error")
+            return SYSTEM_ERROR(u"服务器繁忙")
 
     def get_one(self):
         """通过acid获取活动及活动下的评论
@@ -259,13 +251,12 @@ class CActivity(BaseActivityControl):
         response['data'] = {'acid': args["acid"]}
         return response
 
-
     @verify_token_decorator
     def share_activity(self):
         if not hasattr(request, 'user'):
             return TOKEN_ERROR  # 未登录, 或token错误
         data = request.json
-        logger.info("share qrcode data is %s" %data)
+        logger.info("share qrcode data is %s", data)
         data_url = data.get("dataurl")
         now_time = datetime.strftime(datetime.now(), '%Y%m%d%H%M%S')
         logger.debug("get user info")
@@ -273,13 +264,43 @@ class CActivity(BaseActivityControl):
             user = self.suser.get_user_by_user_id(request.user.id)
             if not user:
                 return SYSTEM_ERROR(u'找不到该用户')
-            save_path = "/opt/WeiDian/imgs/qrcode/" + user.openid + now_time + '.png' if "Linux" == platform.system() else r"D:/qrcode/" + user.openid + now_time + '.png'
+            save_path = LinuxRoot + LinuxImgs + "/qrcode/" + user.openid + now_time + '.png' if platform.system() == "Linux" else WindowsRoot + "qrcode/" + user.openid + now_time + '.png'
             make_qrcode(user.USheader, data_url, save_path)
             response = import_status("make_qrcode_success", "OK")
-            response["qrcodeurl"] = QRCODEHOSTNAME + '/imgs/qrcode/' + user.openid + now_time + '.png'
+            response["qrcodeurl"] = QRCODEHOSTNAME + '/' + LinuxImgs + '/qrcode/' + user.openid + now_time + '.png'
+            response["components"] = QRCODEHOSTNAME + '/' + LinuxImgs + '/components.png'
             return response
         except:
             logger.debug("make qrcode error")
             return SYSTEM_ERROR
+
+    @verify_token_decorator
+    def generate_poster(self):
+        formdata = request.form
+        logger.info("formdata is %s", formdata)
+        files = request.files.get("file")
+
+        if platform.system() == "Windows":
+            rootdir = "D:/qrcode"
+        else:
+            rootdir = "/opt/WeiDian/imgs/shareposter/"
+        if not os.path.isdir(rootdir):
+            os.mkdir(rootdir)
+        # if "FileType" not in formdata:
+        #     return
+        filessuffix = str(files.filename).split(".")[-1]
+        # index = formdata.get("index", 1)
+        filename = request.user.openid + get_db_time_str() + "." + filessuffix
+        filepath = os.path.join(rootdir, filename)
+        print(filepath)
+        files.save(filepath)
+        response = import_status("save_poster_success", "OK")
+        # url = Inforcode.ip + Inforcode.LinuxImgs + "/" + filename
+        url = QRCODEHOSTNAME + "/imgs/shareposter/" + filename
+        # print(url)
+        logger.info("this url is %s", url)
+        response["data"] = url
+        return response
+
 
 

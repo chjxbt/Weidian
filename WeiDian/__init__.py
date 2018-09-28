@@ -35,7 +35,7 @@ mp = WeixinMP(APP_ID, APP_SECRET_KEY)
 from werkzeug.exceptions import HTTPException
 from WeiDian.apis.v1 import AActivity, AHotMessage, ABanner, ASearchField, ATopNav, \
     ASuperUser, AProduct, ARecommendBanner, AShoppingCart, AActivityComment, AUser, ARecommend, AOrder, AProductLike, \
-    ARecommendLike, AActivityLike, AMyCenter, AComplain, AAdImage, ATask
+    ARecommendLike, AActivityLike, AMyCenter, AComplain, AAdImage, ATask, ABigActivity
 # from test.test_maketoken import create_test_url
 
 
@@ -57,7 +57,7 @@ class JSONEncoder(_JSONEncoder):
             raise o()
         if isinstance(o, HTTPException):
             raise o
-        raise Exception()
+        raise Exception(o + 'is not jsonserializer')
 
 
 class Flask(_Flask):
@@ -100,6 +100,7 @@ def register_route(app):
     app.add_url_rule('/complain/<string:complain>', view_func=AComplain.as_view('complain'))
     app.add_url_rule('/adimage/<string:adimage>', view_func=AAdImage.as_view('adimage'))
     app.add_url_rule('/task/<string:task>', view_func=ATask.as_view('task'))
+    app.add_url_rule('/bigactivity/<string:bigactivity>', view_func=ABigActivity.as_view('bigactivity'))
 
 
 def create_app():

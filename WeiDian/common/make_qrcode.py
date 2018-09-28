@@ -12,7 +12,7 @@ def make_qrcode(img_src, data_url, save_path):
     """
     :param img_src: 二维码中心图片
     :param data_url: 生成二维码的地址
-    :param save_path: 二维码存储路径+文件名，必须为.png格式
+    :param save_path: 二维码存储路径+文件名, 图片为.png格式
     :return:
     """
     qr = qrcode.QRCode(version=5, error_correction=qrcode.constants.ERROR_CORRECT_H, box_size=8, border=4)

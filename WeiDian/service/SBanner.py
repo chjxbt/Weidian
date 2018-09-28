@@ -27,13 +27,12 @@ class SBnner(SBase):
         banner = self.session.query(Banner).filter_by(BAid=baid).first()
         return banner
 
-    @close_session
-    def add_one_banner(self, banner):
-        self.session.add(banner)
 
     @close_session
     def del_banner(self, baid):
         return self.session.query(Banner).filter_by(BAid=baid).delete()
+
+
 
 
 

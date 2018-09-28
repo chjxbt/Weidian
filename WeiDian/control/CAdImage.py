@@ -25,12 +25,12 @@ class CAdImage():
         if is_tourist():
             return AUTHORITY_ERROR(u"未登录")
         args = request.args.to_dict()
-        lasting = args.get('lasting', 'true')
+        lasting = args.get('lasting', True)
         logger.info("get image args is %s", args)
         try:
             logger.debug("get my image list")
             adimage_list = self.sadimage.get_myimage()
-            if lasting is 'true':
+            if lasting is True:
                 now_time = datetime.strftime(datetime.now(), format_for_db)
                 adimage_list = filter(lambda adimage: adimage.AIstarttime < now_time < adimage.AIendtime, adimage_list)
             for adimage in adimage_list:

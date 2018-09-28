@@ -11,11 +11,13 @@ class ABanner(Resource):
     def __init__(self):
         self.cbanner = CBanner()
 
+
     def get(self, banner):
         print banner
         apis = {
             "get_all": "self.cbanner.get_all()",
-            "get_one": "self.cbanner.get_one()"
+            "get_one": "self.cbanner.get_one()",
+
         }
         res = eval(apis[banner])
         return jsonify(res)

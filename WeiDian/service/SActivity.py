@@ -2,7 +2,8 @@
 import sys
 import os
 from datetime import datetime
-from WeiDian.common.timeformat import format_for_db
+
+from WeiDian.common.divide import Partner
 from SBase import SBase, close_session
 from WeiDian.models.model import Activity, Product
 sys.path.append(os.path.dirname(os.getcwd()))
@@ -19,60 +20,56 @@ class SActivity(SBase):
 
     @close_session
     def get_activity_count(self, tnid):
-        return self.session.query(Activity).filter_by(ACisdelete=False, TopnavId=tnid).count()
+        settings = Partner()
+        skiptype = settings.get_item('skip', 'skip_type')
+        print skiptype
+        return self.session.query(Activity).filter_by(ACisdelete=False, TopnavId=tnid, ACSkipType=skiptype).count()
 
     @close_session
     def get_activity_by_topnavid(self, tnid, page_num, page_size):
         """根据导航的id获取活动"""
-        return self.session.query(Activity).filter_by(ACisdelete=False, TopnavId=tnid).order_by(Activity.ACcreatetime.desc()).offset(page_size * (page_num - 1)).limit(page_size).all()
+        settings = Partner()
+        skiptype = settings.get_item('skip', 'skip_type')
+        return self.session.query(Activity).filter_by(ACisdelete=False, TopnavId=tnid, ACSkipType=skiptype).order_by(Activity.ACcreatetime.desc()).offset(page_size * (page_num - 1)).limit(page_size).all()
 
     @close_session
     def get_activity_by_suid(self, suid, page_num, page_size):
         acvitity_list = self.session.query(Activity).filter_by(ACisdelete=False, SUid=suid).order_by(Activity.ACcreatetime.desc()).offset(page_size * (page_num - 1)).limit(page_size).all()
         return acvitity_list
 
-    @close_session
-    def get_lasting_activity_by_topnavid(self, navid):
-        """该导航下的所有正在进行的活动"""
-        now_time = datetime.strftime(datetime.now(), '%Y%m%d%H%M%S')
-        all_activity = self.session.query(Activity).filter_by(ACisdelete=False, TopnavId=navid)
-        all_lasting_activity = all_activity.filter(now_time < Activity.ACendtime, now_time > Activity.ACstarttime).all()
-        print all_lasting_activity
-        return all_lasting_activity
+    # @close_session
+    # def get_lasting_activity_by_topnavid(self, navid):
+    #     """该导航下的所有正在进行的活动"""
+    #     now_time = datetime.strftime(datetime.now(), '%Y%m%d%H%M%S')
+    #     all_activity = self.session.query(Activity).filter_by(ACisdelete=False, TopnavId=navid)
+    #     all_lasting_activity = all_activity.filter(now_time < Activity.ACendtime, now_time > Activity.ACstarttime).all()
+    #     print all_lasting_activity
+    #     return all_lasting_activity
 
     @close_session
     def update_view_num(self, acid):
+        return self.session.query(Activity).filter_by(ACid=acid).update({Activity.ACbrowsenum: Activity.ACbrowsenum+1})
         # cur_activity = self.session.query(Activity).filter_by(ACid=acid).first()
         # cur_activity.ACbrowsenum += 1
         # self.session.add(cur_activity)
         # self.session.commit()
-        return self.session.query(Activity).filter_by(ACid=acid).update({Activity.ACbrowsenum: Activity.ACbrowsenum+1})
-
-    @close_session
-    def add_activity(self, activity):
-        self.session.add(activity)
 
     @close_session
     def delete_activity(self, acid):
-        """
-        根据活动id删除
-        """
+        """删除活动"""
         return self.session.query(Activity).filter_by(ACid=acid).update({Activity.ACisdelete: True})
 
     @close_session
     def stop_activity(self, acid):
-        """
-        手动停止活动
-        """
+        """手动停止活动"""
         return self.session.query(Activity).filter_by(ACid=acid).update({Activity.ACisended: True})
 
     @close_session
     def get_activity_by_acid(self, acid):
         """根据id获取活动"""
-        activity = self.session.query(Activity).filter_by(ACid=acid).first()
+        return self.session.query(Activity).filter_by(ACid=acid, ACisdelete=False).first()
         # if not activity:
         #     raise ApiException()
-        return activity
 
     @close_session
     def get_activity_by_prid(self, prid):
@@ -95,12 +92,14 @@ class SActivity(SBase):
 
     @close_session
     def update_activity_by_acid(self, acid, activity):
+        """更新活动"""
         return self.session.query(Activity).filter_by(ACid=acid).update(activity)
 
     @close_session
-    def foward_activity(self, forward):
-        """转发活动"""
-        self.session.add(forward)
+    def get_bigactivity_by_baid(self, baid, page_num, page_size):
+        """获取专题页内容"""
+        return self.session.query(Activity).filter_by(BAid=baid, ACSkipType=2, ACisdelete=False).order_by(Activity.ACcreatetime).offset(page_size * (page_num - 1)).limit(page_size).all()
+
 
 #
 # if __name__ == '__main__':
