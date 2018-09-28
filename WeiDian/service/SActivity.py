@@ -31,6 +31,10 @@ class SActivity(SBase):
         return self.session.query(Activity).filter_by(ACisdelete=False, TopnavId=tnid, ACistop=True).first()
 
     @close_session
+    def change_top_act_status(self, acid, status):
+        return self.session.query(Activity).filter_by(ACid=acid).update(status)
+
+    @close_session
     def get_activity_by_topnavid(self, tnid, page_num, page_size):
         """根据导航的id获取活动"""
         settings = Partner()

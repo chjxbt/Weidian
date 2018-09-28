@@ -174,8 +174,13 @@ class CActivity(BaseActivityControl):
         ACistop = data.get('ACistop', 0)
 
         if ACistop:
-            pass
-        # todo 未完
+            istop = self.sactivity.get_top_activity(TopnavId)
+            if istop:
+                self.sactivity.change_top_act_status(istop.ACid, {"ACistop":False})
+
+
+
+
         # if not media or not ACtext or not prid or not topnavid:
         #     return PARAMS_MISS
         # relation_product = self.sproduct.get_product_by_prid(PRid)  # 关联的商品

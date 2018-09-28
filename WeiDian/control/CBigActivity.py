@@ -36,7 +36,7 @@ class CBigActivity():
         page_num = args.get('page_num')
         page_size = args.get('page_size')
         try:
-            activity_list = self.sactivity.get_bigactivity_by_baid(baid, page_num, page_size)
+            activity_list = self.sactivity.get_bigactivity_by_baid(baid, int(page_num), int(page_size))
             banner = get_model_return_dict(self.sbigactivity.get_bigactivity_banner_by_baid(baid))['BAimage']
             response = import_status("get_bigactivity_success", "OK")
             response['data'] = {
@@ -45,7 +45,7 @@ class CBigActivity():
             }
             return response
         except:
-            logger.debug("get bigactivity error")
+            logger.exception("get bigactivity error")
             raise SYSTEM_ERROR()
 
     # @verify_token_decorator
