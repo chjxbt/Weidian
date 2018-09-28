@@ -2,6 +2,7 @@
 import platform
 import sys
 import os
+import base64
 from datetime import datetime, timedelta
 from WeiDian import logger
 from WeiDian.common.make_qrcode import make_qrcode
@@ -290,10 +291,10 @@ class CActivity(BaseActivityControl):
 
     @verify_token_decorator
     def generate_poster(self):
-        formdata = request.form
-        logger.info("formdata is %s", formdata)
-        files = request.files.get("file")
-
+        # formdata = request.form
+        data = request.json
+        logger.info("data is %s", data)
+        # files = request.files.get("file")
         if platform.system() == "Windows":
             rootdir = "D:/qrcode"
         else:
@@ -302,12 +303,19 @@ class CActivity(BaseActivityControl):
             os.mkdir(rootdir)
         # if "FileType" not in formdata:
         #     return
-        filessuffix = str(files.filename).split(".")[-1]
+        # filessuffix = str(files.filename).split(".")[-1]
         # index = formdata.get("index", 1)
-        filename = request.user.openid + get_db_time_str() + "." + filessuffix
+        # filename = request.user.openid + get_db_time_str() + "." + filessuffix
+        filename = request.user.openid + get_db_time_str() + ".png"
         filepath = os.path.join(rootdir, filename)
         print(filepath)
-        files.save(filepath)
+        # files.save(filepath)
+        baseimg = data.get('baseimg')
+        imgdata = baseimg.split(',')[-1]
+        img = base64.b64decode(imgdata)
+        file = open(filepath, 'wb')
+        file.write(img)
+        file.close()
         response = import_status("save_poster_success", "OK")
         # url = Inforcode.ip + Inforcode.LinuxImgs + "/" + filename
         url = QRCODEHOSTNAME + "/imgs/shareposter/" + filename
