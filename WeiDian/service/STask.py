@@ -59,3 +59,7 @@ class STask(SBase):
     @close_session
     def get_task_level_all(self):
         return self.session.query(TaskLevel).all()
+
+    @close_session
+    def get_all_user_task(self):
+        return self.session.query(TaskUser).all()

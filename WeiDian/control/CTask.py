@@ -195,11 +195,13 @@ class CTask(BaseTask):
         if not user_task:
             raise SYSTEM_ERROR(u"服务器繁忙")
         task = self.stask.get_task_by_taid(user_task.TAid)
-        logger.info('get task : %s', task)
+        logger.info('get task : %s', dict(task))
 
-        if task.TAtype == '0':
+        if str(task.TAtype) == '0':
+            logger.debug('start update task')
             # self.add_user_task_raward(request.user.id, task.TLid)
-            self.stask.update_user_task(user_task.TUid, {"TUstatus": 1})
+            update_result = self.stask.update_user_task(user_task.TUid, {"TUstatus": 1})
+            logger.debug('get update result %s', update_result)
         else:
             # todo 其他类型任务执行
             pass
@@ -223,22 +225,41 @@ class CTask(BaseTask):
     #         return AUTHORITY_ERROR(u'未登录')
 
     def add_user_task_raward(self, usid, tlid):
-        taskraward = self.sraward.get_raward_by_tlid(tlid)
-        self.sraward.add_model("UserRaward", **{
-            "URid": str(uuid.uuid1()),
-            "RAid": taskraward.RAid,
-            "USid": usid,
-            "RAnumber": taskraward.RAnumber,
-        })
+        taskraward_list = self.sraward.get_raward_by_tlid(tlid)
+        for taskraward in taskraward_list:
+            self.sraward.add_model("UserRaward", **{
+                "URid": str(uuid.uuid1()),
+                "RAid": taskraward.RAid,
+                "USid": usid,
+                "RAnumber": taskraward.RAnumber,
+            })
 
     def add_user_task(self, usid, task_level):
+        if int(task_level) == 1:
+            tlid = self.stask.get_tasklevel_by_level(4)
+            task_list = self.stask.get_task_by_tlid(tlid.TLid)
+            self.add_user_task_detail(usid, task_list)
 
         task_level = self.stask.get_tasklevel_by_level(int(task_level) + 1)
+
         task_list = self.stask.get_task_by_tlid(task_level.TLid)
+        self.add_user_task_detail(usid, task_list)
+
+    def add_user_task_detail(self, usid, task_list):
         for task in task_list:
             duration = task.TAduration
-            duration_end = (datetime.datetime.now() + datetime.timedelta(days=duration)).strftime(format_for_db)
-            endtime = min(task.TAendTime, duration_end)
+            duration_end = None
+            if duration:
+                duration_end = (datetime.datetime.now() + datetime.timedelta(days=duration)).strftime(format_for_db)
+
+            endtime = None
+            if duration_end and task.TAendTime:
+                endtime = min(task.TAendTime, duration_end)
+            elif duration_end:
+                endtime = duration_end
+            elif task.TAendTime:
+                endtime = task.TAendTime
+
             self.stask.add_model("TaskUser", **{
                 "TUid": str(uuid.uuid1()),
                 "USid": usid,
@@ -314,3 +335,21 @@ class CTask(BaseTask):
         logger.info("this url is %s", url)
         response["data"] = url
         return response
+
+    @verify_token_decorator
+    def get_all_user_task(self):
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'权限不足')
+        user_task = self.stask.get_all_user_task()
+        map(self.fill_task_detail, user_task)
+
+        return user_task
+
+    @verify_token_decorator
+    def del_task(self):
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'权限不足')
+        data = request.json
+        logger.debug('get del task data, %s', data)
+        update_result = self.stask.update_task(data.get("TAid"), {"TAstatus": 4})
+        return import_status("delete_success", "OK")
