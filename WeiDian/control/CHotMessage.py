@@ -23,6 +23,8 @@ class CHotMessage():
         self.s_hotmessage = SHotMessage()
         from WeiDian.service.SProduct import SProduct
         self.sproduct = SProduct()
+        self.hotmessage_type = ['0', '1', '2', '3']
+        # self.hostmessage_update_key = ['HMtext', "HMcontent", "HMstarttime", 'HMendtime', "HMsort"]
 
     def get_all(self):
         """活动所有热文"""
@@ -58,7 +60,7 @@ class CHotMessage():
         # if not self.sproduct.get_product_by_prid(prid):
         #     return SYSTEM_ERROR
         HMSkipType = data.get('HMSkipType')
-        if str(HMSkipType) not in ['0', '1', '2']:
+        if str(HMSkipType) not in self.hotmessage_type:
             raise SYSTEM_ERROR(u'参数错误')
         # elif str(HMSkipType) == '1':
         #     PRid = data.get('PRid')
@@ -75,8 +77,9 @@ class CHotMessage():
                 'HMendtime': HMendtime,
                 'HMsort': data.get('HMsort'),
                 'HMSkipType': HMSkipType,
-                'PRid': data.get('PRid', '0'),
-                'BAid': data.get('BAid', '0')
+                # 'PRid': data.get('PRid', '0'),
+                # 'BAid': data.get('BAid', '0')
+                "HMcontent": data.get("HMcontent")
             })
             response_make_hotmesasge = import_status('add_hotmessage_success', 'OK')
             response_make_hotmesasge['data'] = {'HMid': HMid}
@@ -98,19 +101,29 @@ class CHotMessage():
         hmid = data.get('hmid')
         hot = {}
         hot['HMid'] = data['hmid']
+        from WeiDian.models.model import HotMessage
+        filter_change = {HotMessage.HMid == hmid}
+        hostmessage_change = self.s_hotmessage.get_hotmessage_by_filter(filter_change)
+        if not hostmessage_change:
+            raise SYSTEM_ERROR(u'热文不存在')
+
         if 'hmtext' in data.keys():
             hot['HMtext'] = data['hmtext']
-        if 'prid' in data.keys():
-            hot['PRid'] = data['prid']
+        if 'hmcontent' in data.keys():
+            hot['HMcontent'] = data['hmcontent']
         if 'hmstarttime' in data.keys():
-            hot['HMstarttime'] = data['hmstarttime']
+            hot['HMstarttime'] = get_db_time_str(data['hmstarttime'])
         if 'hmendtime' in data.keys():
-            hot['HMendtime'] = data['hmendtime']
+            hot['HMendtime'] = get_db_time_str(data['hmendtime'])
         if 'hmsort' in data:
             hot['HMsort'] = data['hmsort']
         update_info = self.s_hotmessage.update_hot_by_hmid(hmid, hot)
         if not update_info:
-            return SYSTEM_ERROR('热文不存在')
+            return SYSTEM_ERROR(u'热文不存在')
+        filter_changed = {HotMessage.HMsort == hostmessage_change.HMsort}
+        hostmessage_changeed = self.s_hotmessage.get_hotmessage_by_filter(filter_changed)
+        if hostmessage_changeed:
+            self.s_hotmessage.update_hot_by_hmid(hostmessage_changeed.HMid, {"HMsort": hostmessage_change.HMsort})
         response_update_hotmessage = import_status('update_hotmessage_success', 'OK')
         response_update_hotmessage['data'] = {'hmid': hmid}
         return response_update_hotmessage

@@ -452,13 +452,14 @@ class HotMessage(BaseModel):
     __tablename__ = 'hotmessage'
     HMid = Column(String(64), primary_key=True)
     HMtext = Column(String(64), nullable=False)  # 热文文字
-    PRid = Column(String(64))  # 对应商品
-    BAid = Column(String(64))  # 对应专题
+    # PRid = Column(String(64))  # 对应商品
+    # BAid = Column(String(64))  # 对应专题
+    HMcontent = Column(String(64))  # 对应跳转id
     HMcreatetime = Column(String(14))  # 创建时间
     HMstarttime = Column(String(14))  # 上线时间
     HMendtime = Column(String(14))  # 下线时间
     HMsort = Column(Integer)  # 热文的顺序标志
-    HMSkipType = Column(Integer, default=0)  # 跳转类型{0:无跳转类型, 1:专题, 2:商品}
+    HMSkipType = Column(Integer, default=0)  # 跳转类型{0:无跳转类型, 1:专题, 2:商品, 3: 推文}
     HMisdelete = Column(Boolean, default=False)  # 删除
 
     @orm.reconstructor
@@ -467,13 +468,12 @@ class HotMessage(BaseModel):
         self.fields = [
             'HMid',
             'HMtext',
-            'PRid',
-            'BAid',
             'HMcreatetime',
             'HMstarttime',
             'HMendtime',
             'HMsort',
-            'HMSkipType'
+            'HMSkipType',
+            'HMcontent'
         ]
 
 

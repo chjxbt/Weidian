@@ -56,7 +56,14 @@ class SHotMessage(SBase):
 
     @close_session
     def del_one_hot(self, hmid):
-        return self.session.query(HotMessage).filter_by(HMid == hmid).delete()
+        return self.session.query(HotMessage).filter_by(HMid = hmid).delete()
 
 
+    @close_session
+    def get_hotmessage_by_filter(self, hot_filter):
+        settings = Partner()
+        skiptype = settings.get_item('skip', 'skip_type')
+        hot_filter.add(HotMessage.HMisdelete == False)
+        hot_filter.add(HotMessage.HMSkipType == skiptype)
+        return self.session.query(HotMessage).filter(*hot_filter).first()
 
