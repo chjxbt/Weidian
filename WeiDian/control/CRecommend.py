@@ -161,10 +161,8 @@ class CRecommend(BaseProductControl):
             return TOKEN_ERROR  # 未登录, 或token错误
         if not is_admin():
             return AUTHORITY_ERROR  # 权限不足
-        data = request.json
+        data = parameter_required(u'REid')
         reid = data.get('REid')
-        if not reid:
-            return PARAMS_MISS
         self.srecommend.del_recommend(reid)
         response_del_recommend = import_status('del_recommend_success', 'OK')
         response_del_recommend['data'] = {}
