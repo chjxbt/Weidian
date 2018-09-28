@@ -78,4 +78,5 @@ do_task_success = '做任务成功'
 make_qrcode_success = "生成分享二维码成功"
 save_poster_success = "生成分享图成功"
 update_data_error = '更新数据失败'
+save_photo_success = '上传图片成功'
 

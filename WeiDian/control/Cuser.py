@@ -98,6 +98,7 @@ class CUser():
         upperd = self.suser.get_user_by_openid(args.get("UPPerd", ""))
 
         upperd_id = upperd.USid if upperd else None
+        user_level = 0 if is_first else user.USlevel
 
         if is_first:
             usid = str(uuid.uuid1())
@@ -161,12 +162,13 @@ class CUser():
         response = import_status("SUCCESS_GET_OPENID", "OK")
         from WeiDian.config.enums import icon
         response["data"] = {
-            "is_first": is_first,
+            "is_first": int(is_first),
             "subscribe": subscribe,
             "openid": openid,
             "access_token": access_token,
             "wximg": wximg,
-            "is_today_first": is_today_first,
+            'user_level': user_level,
+            "is_today_first": int(is_today_first),
             "token": usid_to_token(usid),
             "icon": icon
         }

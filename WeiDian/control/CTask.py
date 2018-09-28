@@ -303,11 +303,11 @@ class CTask(BaseTask):
         #     return
         filessuffix = str(files.filename).split(".")[-1]
         # index = formdata.get("index", 1)
-        filename = request.user.openid + get_db_time_str() + "." + filessuffix
+        filename = request.user.id + get_db_time_str() + "." + filessuffix
         filepath = os.path.join(rootdir, filename)
         print(filepath)
         files.save(filepath)
-        response = import_status("save_poster_success", "OK")
+        response = import_status("save_photo_success", "OK")
         # url = Inforcode.ip + Inforcode.LinuxImgs + "/" + filename
         url = QRCODEHOSTNAME + "/imgs/task/" + filename
         # print(url)
