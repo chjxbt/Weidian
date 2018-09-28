@@ -24,3 +24,8 @@ class SBigActivity(SBase):
     def get_bigactivity_banner_by_baid(self, baid):
         """获取专题页题图"""
         return self.session.query(BigActivity.BAimage).filter_by(BAid=baid).first()
+
+    @close_session
+    def get_big_act_list(self):
+        """获取专题列表"""
+        return self.session.query(BigActivity).order_by(BigActivity.BAisdelete == False).order_by(BigActivity.BAcreatetime).all()

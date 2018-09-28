@@ -48,6 +48,22 @@ class CBigActivity():
             logger.exception("get bigactivity error")
             raise SYSTEM_ERROR()
 
+    @verify_token_decorator
+    def get_bigactivity_list(self):
+        """获取专题列表"""
+        if not hasattr(request, 'user'):
+            raise TOKEN_ERROR(u"未登录/token错误")
+        try:
+            big_act_list = self.sbigactivity.get_big_act_list()
+            # map(lambda x: x.clean.add('BAid', 'BAtext'), big_act_list)
+            response = import_status("get_bigactivity_success", "OK")
+            response['data'] = big_act_list
+            return response
+        except Exception as e:
+            logger.debug("get bigactivity list error")
+            raise SYSTEM_ERROR(u'专题列表失败')
+
+
     # @verify_token_decorator
     def get_home_banner(self):
         """获取首页轮播图"""
