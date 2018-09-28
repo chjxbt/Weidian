@@ -138,8 +138,6 @@ class CRecommend(BaseProductControl):
             'REfakeviewnum': data.get('REfakeviewnum'),
             'RElikefakenum': data.get('RElikefakenum')
         }
-        import ipdb
-        ipdb.set_trace()
         recommend = {k: v for k, v in recommend.items() if v is not None}
         res = self.srecommend.update_recommend_by_reid(reid, recommend)
         if not res:
@@ -164,7 +162,7 @@ class CRecommend(BaseProductControl):
         if not is_admin():
             return AUTHORITY_ERROR  # 权限不足
         data = request.json
-        reid = data.get('reid')
+        reid = data.get('REid')
         if not reid:
             return PARAMS_MISS
         self.srecommend.del_recommend(reid)
