@@ -459,6 +459,7 @@ class HotMessage(BaseModel):
     HMendtime = Column(String(14))  # 下线时间
     HMsort = Column(Integer)  # 热文的顺序标志
     HMSkipType = Column(Integer, default=0)  # 跳转类型{0:无跳转类型, 1:专题, 2:商品}
+    HMisdelete = Column(Boolean, default=False)  # 删除
 
     @orm.reconstructor
     @auto_createtime
@@ -483,7 +484,8 @@ class BigActivity(BaseModel):
     """
     __tablename__ = 'bigactivity'
     BAid = Column(String(64), primary_key=True)
-    BAimage = Column(String(255))                   # 专题图片
+    BAtext = Column(String(125), nullable=False)    # 专题名
+    BAimage = Column(String(255), nullable=False)   # 专题图片
     BAcreatetime = Column(String(14))               # 创建时间
     BAstarttime = Column(String(14))                # 上线时间
     BAendtime = Column(String(14))                  # 下线时间
@@ -496,7 +498,7 @@ class BigActivity(BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['BAid', 'BAimage', 'BAposition', 'BAisdisplay','BAstarttime', 'BAurl', 'BAendtime', 'BAsort']
+        self.fields = ['BAid', 'BAtext', 'BAimage', 'BAposition', 'BAisdisplay', 'BAstarttime', 'BAendtime', 'BAsort']
 
 #
 # class RecommendBanner(BaseModel):

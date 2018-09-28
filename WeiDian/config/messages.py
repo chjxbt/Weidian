@@ -78,4 +78,6 @@ do_task_success = '做任务成功'
 make_qrcode_success = "生成分享二维码成功"
 save_poster_success = "生成分享图成功"
 update_data_error = '更新数据失败'
+create_home_bigactivity = '创建首页专题成功'
+create_discover_bigactivity = '创建发现页专题成功'
 

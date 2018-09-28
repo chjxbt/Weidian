@@ -21,3 +21,10 @@ class ABigActivity(Resource):
         res = eval(apis[bigactivity])
         return jsonify(res)
 
+    def post(self, bigactivity):
+        apis = {
+            "create_hbact": "self.cbigactivity.create_home_bigactivity()",
+            "create_dbact": "self.cbigactivity.create_discover_bigactivity()"
+        }
+        res = eval(apis[bigactivity])
+        return jsonify(res)

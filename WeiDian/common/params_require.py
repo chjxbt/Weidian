@@ -1,4 +1,4 @@
-# *- coding:utf8 *-
+# -*- coding:utf8 -*-
 from flask import request
 
 from WeiDian.config.response import PARAMS_MISS
@@ -26,6 +26,6 @@ def parameter_required(*required):
             if isinstance(missed_params, unicode):
                 missed_params = missed_params.encode("utf8")
             logger.debug('missed params is %s', missed_params)
-            raise PARAMS_MISS('必要参数缺失: ' + missed_params)
+            raise PARAMS_MISS(u'必要参数缺失: ' + missed_params)
     return body_data
     # TODO 校验参数待重新修改

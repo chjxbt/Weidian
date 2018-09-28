@@ -26,11 +26,16 @@ class SActivity(SBase):
         return self.session.query(Activity).filter_by(ACisdelete=False, TopnavId=tnid, ACSkipType=skiptype).count()
 
     @close_session
+    def get_top_activity(self, tnid):
+        """获取置顶推文"""
+        return self.session.query(Activity).filter_by(ACisdelete=False, TopnavId=tnid, ACistop=True).first()
+
+    @close_session
     def get_activity_by_topnavid(self, tnid, page_num, page_size):
         """根据导航的id获取活动"""
         settings = Partner()
         skiptype = settings.get_item('skip', 'skip_type')
-        return self.session.query(Activity).filter_by(ACisdelete=False, TopnavId=tnid, ACSkipType=skiptype).order_by(Activity.ACcreatetime.desc()).offset(page_size * (page_num - 1)).limit(page_size).all()
+        return self.session.query(Activity).filter_by(ACisdelete=False, TopnavId=tnid, ACSkipType=skiptype).order_by(Activity.ACistop.desc(), Activity.ACcreatetime.desc()).offset(page_size * (page_num - 1)).limit(page_size).all()
 
     @close_session
     def get_activity_by_suid(self, suid, page_num, page_size):

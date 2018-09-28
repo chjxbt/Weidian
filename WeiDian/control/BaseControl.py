@@ -44,7 +44,7 @@ class BaseActivityControl():
             'media',
             'tags',
             'foward',
-            'soldnum',
+            # 'soldnum',
             'remaintime')
         return act
 
