@@ -16,7 +16,7 @@
           <span v-else-if="item.oipaystatus == 3" class="m-flex-center-col" >
                 <span>支付超时</span>
           </span>
-          <span v-else class="m-red">{{item.oipaystatusmsg}}</span>
+          <span v-else class="m-red" @click="orderClick(item)">{{item.oipaystatusmsg}}</span>
 
         </p>
       </div>
@@ -53,7 +53,13 @@
             default:null
           }
         },
-        methods: {},
+        methods: {
+          orderClick(i){
+             if(i.oipaystatusmsg == '待支付'){
+               this.$router.push({path: '/orderStatus', query: { oiid :i.oiid }});
+             }
+          }
+        },
         created() {
 
         }

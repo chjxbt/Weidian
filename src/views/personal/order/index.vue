@@ -52,7 +52,20 @@
         data() {
             return {
                 name: '',
-              order_list:[],
+              order_list:[{
+                "complainstatus": {
+                  "cotreatstatus": 0
+                },
+                "oicreatetime": "20180912000000",
+                "oiid": "1",
+                "oipaystatus": 2,
+                "oipaystatusmsg": "待支付",
+                "oisn": "111",
+                "productinfo": {
+                  "opiproductimages": "http://sucimg.itc.cn/avatarimg/511d66117178440ab856bac04ddf8b1d_1523243887972",
+                  "opiproductname": "这是商品名字1"
+                }
+              }],
               page_size:3,
               page_num:1,
               total_count:0,

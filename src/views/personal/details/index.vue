@@ -112,7 +112,7 @@
       .m-help{
         position: absolute;
         right: 20px;
-        top: 20px;
+        top: 40px;
         font-size: 24px;
         color: #a4a4a4;
       }
