@@ -176,6 +176,7 @@ class CTask(BaseTask):
             self.add_user_task_raward(request.user.id, task_level.TLid)
             if task_level.TAlevel < 3:
                 self.add_user_task(request.user.id, task_level.TAlevel)
+        response['RAward'] = self.fill_reward(task_level)
         response['data'] = task_list
         response['TArole'] = task_level.TArole
         response['TAcomplateNotifications'] = task_level.TAcomplateNotifications
