@@ -122,7 +122,7 @@
             this.$store.state.tabbar_select = '首页';
             this.$router.push('/index');
           }else if(page == "partner") {
-            this.$router.push('/inviteStore');
+            this.$router.push('/invitationLetter');
             // this.show_modal = false;
           }
         }
