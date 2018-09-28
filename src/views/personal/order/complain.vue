@@ -225,8 +225,9 @@
       .m-complain-type-btn{
         display: block;
         width: 264px;
-        height: 60px;
-        line-height: 60px;
+        padding: 5px 0;
+        /*height: 60px;*/
+        /*line-height: 60px;*/
         background-color: #666;
         color: #fff;
         font-size: 30px;
