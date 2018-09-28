@@ -286,8 +286,9 @@
       span{
         display: inline-block;
         width: 90px;
-        height: 30px;
-        line-height: 30px;
+        /*height: 30px;*/
+        padding: 0 10px;
+        /*line-height: 35px;*/
         text-align: center;
         background-color: @mainColor;
         color: #fff;
