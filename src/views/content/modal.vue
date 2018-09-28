@@ -5,23 +5,42 @@
       <w-tab :list="tab_list" @wTabClick="wTabClick"></w-tab>
       <!--首页-->
      <div class="m-index" v-if="page == '首页'">
+       <h3 class="m-title">浮窗管理</h3>
 
-       <div class="content-table">
-         <el-table :data="tableData" border style="width: 100%">
-           <el-table-column prop="taname" label="任务标题" width="240"></el-table-column>
-           <el-table-column prop="tatype" label="任务类型" width="240"></el-table-column>
+       <h3 class="m-title">任务等级管理</h3>
+       <img v-if="levelTableClose" class="table-close-img" src="../../assets/images/table_close.png" @click="tableOpen">
+       <img v-if="!levelTableClose" class="table-close-img" src="../../assets/images/table_open.png" @click="tableOpen">
+       <div v-if="!levelTableClose" class="content-table">
+         <el-table :data="levelList" border style="width: 100%" v-loading="levelLoading">
+           <el-table-column prop="talevel" label="任务等级" width="120"></el-table-column>
            <el-table-column prop="reward" label="奖励方式"></el-table-column>
-           <el-table-column fixed="right" label="管理" width="240">
+           <el-table-column prop="doneTip" label="完成提示" width="120"></el-table-column>
+           <el-table-column prop="tarole" label="规则"></el-table-column>
+           <el-table-column fixed="right" label="管理" width="150">
              <template slot-scope="scope">
-               <el-button @click="handleClick(scope.row)" type="text" size="small">编辑</el-button>
-               <el-button type="text" size="small">|</el-button>
+               <el-button @click="editDone(scope.row)" type="text" size="small">编辑</el-button>
+               <el-button type="text" size="small" readonly>|</el-button>
                <el-button @click="deleteDone" type="text" size="small">删除</el-button>
              </template>
            </el-table-column>
          </el-table>
        </div>
 
-       <h3 class="m-title">浮窗管理</h3>
+       <h3 class="m-title">任务管理</h3>
+       <div class="content-table">
+         <el-table :data="taskList" border style="width: 100%" v-loading="taskLoading">
+           <el-table-column prop="taname" label="任务标题"></el-table-column>
+           <el-table-column prop="tatype" label="任务类型"></el-table-column>
+           <el-table-column fixed="right" label="管理" width="260">
+             <template slot-scope="scope">
+               <el-button @click="editDone(scope.row)" type="text" size="small">编辑</el-button>
+               <el-button type="text" size="small" readonly>|</el-button>
+               <el-button @click="deleteDone" type="text" size="small">删除</el-button>
+             </template>
+           </el-table-column>
+         </el-table>
+       </div>
+
        <el-form :label-position="labelPosition" label-width="100px" :model="formIndex">
          <div class="m-form-item m-item-modal">
            <el-form-item label="任务等级">
@@ -275,7 +294,11 @@
           { name:'发现', url:'', active:false },
           { name:'我的', url:'', active:false }
         ],
-        tableData: [],
+        levelTableClose: true,
+        levelList: [],
+        levelLoading: true,
+        taskList: [],
+        taskLoading: true,
         options: [{
           value: '选项1',
           label: '黄金糕'
@@ -332,56 +355,76 @@
     },
     components:{ pageTitle, wTab },
     methods:{
+      // 获取所有任务等级
+      getAllTaskLevel() {
+        axios.get(api.get_all_task_level + '?token=' + localStorage.getItem('token')).then(res => {
+          if(res.data.status == 200){
+            this.levelList = res.data.data;
+            this.levelLoading = false;
+            for(let i = 0; i < this.levelList.length; i ++) {
+              this.levelList[i].doneTip = "【图片】";
+
+              // 显示奖励
+              let raward = this.levelList[i].raward;
+              this.levelList[i].reward = "";
+              for(let j = 0; j < raward.length; j ++) {
+                if(raward[j].ratype == 0) {
+                  // 如果是多个奖励，则在每两个奖励之间加上 + 号
+                  if(this.levelList[i].reward) {
+                    this.levelList[i].reward = this.levelList[i].reward + " + ";
+                  }
+                  this.levelList[i].reward = this.levelList[i].reward + raward[j].ranumber + "张满" + raward[j].rafilter + "-" + raward[j].raamount + "新衣币";
+                }else if(raward[j].ratype == 1) {
+                  if(this.levelList[i].reward) {
+                    this.levelList[i].reward = this.levelList[i].reward + " + ";
+                  }
+                  if(raward[j].ranumber == 1) {
+                    this.levelList[i].reward = this.levelList[i].reward + "售出首单佣金上涨" + raward[j].raratio + "%";
+                  }else if(raward[j].ranumber > 1) {
+                    this.levelList[i].reward = this.levelList[i].reward + "佣金上涨" + raward[j].raratio + "%";
+                  }
+                }else if(raward[j].ratype == 2) {
+                  if(this.levelList[i].reward) {
+                    this.levelList[i].reward = this.levelList[i].reward + " + ";
+                  }
+                  this.levelList[i].reward = this.levelList[i].reward + raward[j].ranumber + "张" + raward[j].raamount + "元无门槛新衣币";
+                }
+              }
+            }
+            // console.log(this.levelList);
+          }else{
+            this.$message.error(res.data.message);
+          }
+        },error => {
+          this.$message.error(error.data.message);
+        })
+      },
       // 获取所有任务
       getAllTask(){
         axios.get(api.get_all_task + '?token=' + localStorage.getItem('token')).then(res => {
           if(res.data.status == 200){
-            this.tableData = res.data.data;
+            this.taskList = res.data.data;
+            console.log(this.taskList);
 
-            for(let i = 0; i < this.tableData.length; i ++) {
+            for(let i = 0; i < this.taskList.length; i ++) {
 
               // 判断任务类型   0: "满减", 1: "佣金加成", 2: "无门槛"
-              switch (this.tableData[i].tatype){
+              switch (this.taskList[i].tatype){
                 case 0:
-                  this.tableData[i].tatype = this.taskTypeList[0];
+                  this.taskList[i].tatype = this.taskTypeList[0];
                   break;
                 case 1:
-                  this.tableData[i].tatype = this.taskTypeList[1];
+                  this.taskList[i].tatype = this.taskTypeList[1];
                   break;
                 case 2:
-                  this.tableData[i].tatype = this.taskTypeList[2];
+                  this.taskList[i].tatype = this.taskTypeList[2];
                   break;
                 case 3:
-                  this.tableData[i].tatype = this.taskTypeList[3];
+                  this.taskList[i].tatype = this.taskTypeList[3];
                   break;
               }
-              // 显示奖励
-              let raward = res.data.data[i].raward;
-              this.tableData[i].reward = "";
-              for(let j = 0; j < raward.length; j ++) {
-                if(raward[j].ratype == 0) {
-                  // 如果是多个奖励，则在每两个奖励之间加上 + 号
-                  if(this.tableData[i].reward) {
-                    this.tableData[i].reward = this.tableData[i].reward + " + ";
-                  }
-                  this.tableData[i].reward = this.tableData[i].reward + raward[j].ranumber + "张满" + raward[j].rafilter + "-" + raward[j].raamount + "新衣币";
-                }else if(raward[j].ratype == 1) {
-                  if(this.tableData[i].reward) {
-                    this.tableData[i].reward = this.tableData[i].reward + " + ";
-                  }
-                  if(raward[j].ranumber == 1) {
-                    this.tableData[i].reward = this.tableData[i].reward + "售出首单佣金上涨" + raward[j].raratio + "%";
-                  }else if(raward[j].ranumber > 1) {
-                    this.tableData[i].reward = this.tableData[i].reward + "佣金上涨" + raward[j].raratio + "%";
-                  }
-                }else if(raward[j].ratype == 2) {
-                  if(this.tableData[i].reward) {
-                    this.tableData[i].reward = this.tableData[i].reward + " + ";
-                  }
-                  this.tableData[i].reward = this.tableData[i].reward + raward[j].ranumber + "张" + raward[j].raamount + "元无门槛新衣币";
-                }
-              }
             }
+            this.taskLoading = false;
           }else{
             this.$message.error(res.data.message);
           }
@@ -394,7 +437,7 @@
         axios.get(api.get_all_task_type).then(res => {
           if(res.data.status == 200){
             this.taskTypeList = res.data.data;
-            console.log(this.taskTypeList)
+            // console.log(this.taskTypeList)
           }else{
             this.$message.error(res.data.message);
           }
@@ -406,8 +449,15 @@
       taskTypeChange(v) {
         console.log(v);
       },
+      tableOpen() {
+        if(this.levelTableClose) {
+          this.levelTableClose = false;
+        }else if(!this.levelTableClose) {
+          this.levelTableClose = true;
+        }
+      },
       // 任务列表的编辑
-      handleClick(row) {
+      editDone(row) {
         console.log(row);
       },
       // 任务列表的删除
@@ -474,8 +524,9 @@
       }
     },
     mounted() {
-      this.getAllTaskType();
-      this.getAllTask();
+      this.getAllTaskLevel();   // 获取所有任务等级
+      this.getAllTaskType();    // 获取任务类型
+      this.getAllTask();        // 获取所有任务
     }
   }
 </script>
@@ -485,6 +536,13 @@
   .m-title{
     font-size: 18px;
     margin-bottom: 0.1rem;
+  }
+  .table-close-img {
+    width: 0.18rem;
+    height: 0.12rem;
+    position: absolute;
+    left: 4.5rem;
+    top: 2.3rem;
   }
 
   /* 设置滚动条的样式 */
