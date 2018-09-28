@@ -11,7 +11,7 @@ from flask import request
 from WeiDian import logger
 from WeiDian.common.import_status import import_status
 from WeiDian.common.params_require import parameter_required
-from WeiDian.common.timeformat import get_db_time_str
+from WeiDian.common.timeformat import get_db_time_str, format_for_db
 from WeiDian.common.token_required import verify_token_decorator, is_tourist, is_admin
 from WeiDian.config.enums import TASK_TYPE
 from WeiDian.config.response import AUTHORITY_ERROR, SYSTEM_ERROR, TOKEN_ERROR, PARAMS_ERROR
@@ -42,9 +42,6 @@ class CTask(BaseTask):
         ]
         self.add_task_level = [
             "TAlevel", "TArole", "TAcomplateNotifications", "reward"
-        ]
-        self.get_reward_params = [
-            ""
         ]
 
     def get_all_task_type(self):
@@ -158,7 +155,9 @@ class CTask(BaseTask):
             return SYSTEM_ERROR(u'r当前没有任务')
 
         map(self.fill_task_detail, task_list)
+
         task_level = self.stask.get_task_level_by_tlid(task_list[0].TLid)
+        logger.debug('get task list %s', dict(task_level))
         # from WeiDian.common.divide import Partner
         # pa = Partner()
         # role = pa.cf.get(task_level, 'role')
@@ -232,17 +231,18 @@ class CTask(BaseTask):
         })
 
     def add_user_task(self, usid, task_level):
+
         task_level = self.stask.get_tasklevel_by_level(int(task_level) + 1)
         task_list = self.stask.get_task_by_tlid(task_level.TLid)
         for task in task_list:
-            # todo 结束时间计算
             duration = task.TAduration
-            # endtime = min(task.TAendTime, )
+            duration_end = (datetime.datetime.now() + datetime.timedelta(days=duration)).strftime(format_for_db)
+            endtime = min(task.TAendTime, duration_end)
             self.stask.add_model("TaskUser", **{
                 "TUid": str(uuid.uuid1()),
                 "USid": usid,
                 "TAid": task.TAid,
-                "TUendtime": task.TAendTime,
+                "TUendtime": endtime,
                 "TUstatus": 0,
                 "TUnumber": 0
             })
@@ -282,3 +282,10 @@ class CTask(BaseTask):
             logger.exception('get all task level error')
             raise SYSTEM_ERROR(u"服务器繁忙")
         return response
+
+
+    @verify_token_decorator
+    def upload_task_img(self):
+        if not is_admin():
+            raise AUTHORITY_ERROR(u"权限不足")
+        

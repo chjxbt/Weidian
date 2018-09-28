@@ -714,7 +714,7 @@ class TaskUser(BaseModel):
     @auto_createtime
     def __init__(self):
         self.fields = ['TUid', "TAid", "TUcreatetime",
-                       "TUstatus", "TUendtime", "RAid", "TAid", "TUnumber"]
+                       "TUstatus", "TUendtime", "TAid", "TUnumber"]
 
 
 # 优惠券
