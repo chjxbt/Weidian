@@ -3,7 +3,7 @@
     <div class="m-swipe-box">
       <mt-swipe :auto="2000">
         <mt-swipe-item v-for="item in bannerList" :key="item.id">
-          <img :src="item.rbimage" class="img" @click="toActivity(item)">
+          <img :src="item.baimage" class="img" @click="toActivity(item)">
           <!--<span class="desc"></span>-->
         </mt-swipe-item>
       </mt-swipe>
@@ -108,8 +108,17 @@
       },
       // 获取banner滚动图
       getBanner() {
-        let token = localStorage.getItem('token');
-        axios.get(api.get_all_recommendbanner + '?token=' + token).then(res => {
+        /*axios.get(api.get_all_recommendbanner + '?token=' + localStorage.getItem('token')).then(res => {
+          if(res.data.status == 200) {
+            this.bannerList = res.data.data;
+            // console.log(res.data.data);
+          }else{
+            Toast({ message: res.data.message, className: 'm-toast-fail' });
+          }
+        })*/
+
+        // 获取轮播图的新接口
+        axios.get(api.get_discover_banner + '?lasting=true&token=' + localStorage.getItem('token')).then(res => {
           if(res.data.status == 200) {
             this.bannerList = res.data.data;
             // console.log(res.data.data);
@@ -120,8 +129,7 @@
       },
       // 获取每日推荐内容
       getData(){
-        let token = localStorage.getItem('token');
-        axios.get(api.get_info_recommend + '?token=' + token).then(res => {
+        axios.get(api.get_info_recommend + '?token=' + localStorage.getItem('token')).then(res => {
           if(res.data.status == 200) {
             this.recommend = res.data.data[0];
             this.suuser = this.recommend.suuser;
@@ -197,8 +205,8 @@
       },
       // 去活动内容页
       toActivity(activity) {
-        let rbimage = activity.rbimage;
-        this.$router.push({path: "/activityContent", query: { rbimage }});
+        let baid = activity.baid;
+        this.$router.push({path: "/activityContent", query: { baid }});
       },
       // 去产品详情页
       toProduct(i) {
@@ -312,8 +320,8 @@
       },
     },
     mounted() {
-      this.getData();
       this.getBanner();
+      this.getData();
       this.getActivity();
     }
   }

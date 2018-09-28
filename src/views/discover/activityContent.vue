@@ -1,6 +1,6 @@
 <template>
   <div @touchmove="touchMove">
-    <img class="activity-img" :src="rbimage">
+    <img class="activity-img" src="">
 
     <mt-loadmore :top-method="loadTop" ref="loadmore">
       <div class="m-index-section">
@@ -31,7 +31,7 @@
     name: "activityContent",
     data() {
       return {
-        rbimage: "",
+        baid: "",
         activity_list: [],
         icon_list:[
           {
@@ -192,7 +192,7 @@
       },
     },
     mounted() {
-      this.rbimage = this.$route.query.rbimage;
+      this.baid = this.$route.query.baid;
 
       this.getActivity();
     }
