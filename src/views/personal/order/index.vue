@@ -5,13 +5,20 @@
           <span :class="isSell?'active':''" @click="sellClick(true)">销售订单</span>
           <span :class="!isSell?'active':''" @click="sellClick(false)">自买订单</span>
         </div>
-        <div class="m-myOrder-nav m-one" v-else>
-          <span class="active">自买订单</span>
-        </div>
-        <ul class="m-myOrder-content-nav">
+        <!--<div class="m-myOrder-nav m-one" v-else>-->
+          <!--<span class="active">自买订单</span>-->
+        <!--</div>-->
+        <ul class="m-myOrder-content-nav" v-if="isOpen">
           <template v-for="(item,index) in order_num">
             <li :class="item.click?'active':''" @click="statusClick(index)">
               {{item.status}}({{item.count}})
+            </li>
+          </template>
+        </ul>
+        <ul class="m-myOrder-content-nav-open" v-else>
+          <template v-for="(item,index) in order_num">
+            <li :class="item.click?'active':''" @click="statusClick(index)" >
+              {{item.status}}
             </li>
           </template>
         </ul>
@@ -60,7 +67,7 @@
           oneOrder
         },
       mounted(){
-          this.isOpen = localStorage.getItem('level') == 'partner'? true:false;
+          // this.isOpen = localStorage.getItem('level') == 'partner'? true:false;
         common.changeTitle('我的订单');
       },
         methods: {
@@ -205,6 +212,19 @@
         margin: 20px 0;
         li.active{
           color: #000;
+        }
+      }
+      .m-myOrder-content-nav-open{
+        .flex-row(space-around);
+        font-size: 30px;
+        margin: 20px 0;
+        border-bottom: 7px solid #f1f1f1;
+        li{
+          padding: 20px 5px;
+          &.active{
+            color: @mainColor;
+            border-bottom: 3px solid @mainColor;
+          }
         }
       }
     }
