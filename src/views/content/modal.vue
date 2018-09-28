@@ -46,20 +46,32 @@
 
        <el-form :label-position="labelPosition" label-width="100px" :model="formIndex">
          <div class="m-form-item m-item-modal">
-           <el-form-item label="任务等级">
-             <el-select v-model="taskLevel" clearable placeholder="请选择">
-               <el-option v-for="item in taskLevelList" :key="item" :label="item" :value="item"></el-option>
+           <el-form-item label="任务等级" class="required">
+             <el-select v-model="formIndex.taskLevel" clearable placeholder="请选择">
+               <el-option v-for="item in taskLevelList" :key="item.value" :label="item.label" :value="item.value"></el-option>
              </el-select>
            </el-form-item>
-           <el-form-item label="任务标题">
+           <el-form-item label="任务标题" class="required">
              <el-input v-model="formIndex.title" class="m-input-m"></el-input>
            </el-form-item>
-           <el-form-item label="任务类型">
-             <el-select v-model="taskType" clearable placeholder="请选择" @change="taskTypeChange">
-               <el-option v-for="item in taskTypeList" :key="item" :label="item" :value="item"></el-option>
+           <el-form-item label="任务类型" class="required">
+             <el-select v-model="taskType" clearable placeholder="请选择" @change="taskTypeChange" @clear="clearType">
+               <el-option v-for="item in taskTypeList" :key="item.value" :label="item.label" :value="item.value"></el-option>
              </el-select>
            </el-form-item>
-           <el-form-item label="图标" class="m-s">
+           <el-form-item label="图标" class="m-s required" style="width: 2rem;">
+             <el-upload class="avatar-uploader" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false"
+                        :on-success="uploadPicture"
+                        :before-upload="beforeAvatarUpload">
+               <!--:on-remove="handleRemove"-->
+               <img v-if="imageUrl" :src="imageUrl" class="avatar">
+               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+             </el-upload>
+           </el-form-item>
+           <el-form-item :label="video_ratio" class="required">
+             <el-input v-model="formIndex.content" class="m-input-m"></el-input>
+           </el-form-item>
+           <!--<el-form-item label="完成提示" class="m-f">
              <el-upload
                class="avatar-uploader"
                action="https://jsonplaceholder.typicode.com/posts/"
@@ -69,37 +81,20 @@
                <img v-if="imageUrl" :src="imageUrl" class="avatar">
                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
              </el-upload>
-           </el-form-item>
-           <el-form-item label="视频">
-             <el-input v-model="formIndex.content" class="m-input-m" :disabled="taskVideo"></el-input>
-           </el-form-item>
-           <el-form-item label="完成度">
-             <el-input v-model="formIndex.ratio" class="m-input-m"></el-input>
-           </el-form-item>
-           <el-form-item label="完成提示" class="m-f">
-             <el-upload
-               class="avatar-uploader"
-               action="https://jsonplaceholder.typicode.com/posts/"
-               :show-file-list="false"
-               :on-success="handleAvatarSuccess"
-               :before-upload="beforeAvatarUpload">
-               <img v-if="imageUrl" :src="imageUrl" class="avatar">
-               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-             </el-upload>
-           </el-form-item>
+           </el-form-item>-->
          </div>
-         <el-form-item label="奖励方式">
+         <!--<el-form-item label="奖励方式">
            <el-select v-model="value" placeholder="请选择">
              <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
            </el-select>
-         </el-form-item>
+         </el-form-item>-->
          <el-form-item label="备注">
            <el-input v-model="formIndex.memo" class="m-input-m"></el-input>
          </el-form-item>
          <el-form-item label="活动时间">
-           <el-date-picker v-model="value7" type="daterange" align="right" unlink-panels
-                           range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"
-                           :picker-options="pickerOptions2" style="width: 4rem">
+           <el-date-picker v-model="activityTime" type="datetimerange" range-separator="至"
+                           value-format="yyyy-MM-dd HH:mm:ss"
+                           start-placeholder="开始日期" end-placeholder="结束日期" style="width: 4rem;">
            </el-date-picker>
          </el-form-item>
          <el-form-item label="持续时间">
@@ -108,9 +103,9 @@
            </el-input>
            <span class="m-item-add">+</span>
          </el-form-item>
-         <el-form-item label="规则">
+         <!--<el-form-item label="规则">
            <textarea v-model="formIndex.rule" class="m-textarea"></textarea>
-         </el-form-item>
+         </el-form-item>-->
        </el-form>
      </div>
       <!--发现-->
@@ -302,7 +297,8 @@
         levelLoading: true,
         taskList: [],
         taskLoading: true,
-        taskVideo: true,
+        activityTime: [],
+        video_ratio: "视频/完成度",
 
         options: [{
           value: '选项1',
@@ -321,41 +317,14 @@
           label: '北京烤鸭'
         }],
         value: '',
-        taskLevel: '',
-        taskLevelList: ["等级1", "等级2", "等级3", "等级4"],
+        taskLevelList: [
+          { value: "1", label: "等级 1" }, { value: "2", label: "等级 2" }, { value: "3", label: "等级 3" }, { value: "4", label: "等级 4" }
+        ],
         taskType: '',
-        taskTypeList: [],
+        taskTypeList: [{ value: "", label: "" }],
         imageUrl:'',
         labelPosition:'left',
-        formIndex:{ value:'', title: '', content: '', ratio: '', memo: '', rule: '', duration: '' },
-        pickerOptions2: {
-          shortcuts: [{
-            text: '最近七天',
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-              picker.$emit('pick', [start, end]);
-            }
-          }, {
-            text: '最近三十天',
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-              picker.$emit('pick', [start, end]);
-            }
-          }, {
-            text: '最近九十天',
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-              picker.$emit('pick', [start, end]);
-            }
-          }]
-        },
-        value7: ''
+        formIndex:{ value:'', title: '', content: '', ratio: '', memo: '', rule: '', duration: '', taskLevel: '' },
       }
     },
     components:{ pageTitle, wTab },
@@ -417,16 +386,16 @@
               // 判断任务类型   0: "满减", 1: "佣金加成", 2: "无门槛"
               switch (this.taskList[i].tatype){
                 case 0:
-                  this.taskList[i].tatype = this.taskTypeList[0];
+                  this.taskList[i].tatype = this.taskTypeList[0].label;
                   break;
                 case 1:
-                  this.taskList[i].tatype = this.taskTypeList[1];
+                  this.taskList[i].tatype = this.taskTypeList[1].label;
                   break;
                 case 2:
-                  this.taskList[i].tatype = this.taskTypeList[2];
+                  this.taskList[i].tatype = this.taskTypeList[2].label;
                   break;
                 case 3:
-                  this.taskList[i].tatype = this.taskTypeList[3];
+                  this.taskList[i].tatype = this.taskTypeList[3].label;
                   break;
               }
             }
@@ -442,8 +411,9 @@
       getAllTaskType() {
         axios.get(api.get_all_task_type).then(res => {
           if(res.data.status == 200){
-            this.taskTypeList = res.data.data;
-            // console.log(this.taskTypeList)
+            for(let i = 0; i < res.data.data.length; i ++) {
+              this.taskTypeList[i] = { value: i, label: res.data.data[i] };
+            }
           }else{
             this.$message.error(res.data.message);
           }
@@ -453,13 +423,21 @@
       },
       // 选择任务类型
       taskTypeChange(v) {
-        // 任务类型为观看视频时，视频输入框可填写，否则不可填
-        if(v.indexOf('视频') == 2) {
-          this.taskVideo = false;
-        }else {
-          this.taskVideo = true;
+        console.log(v)
+        // 任务类型为观看视频时，视频。否则为完成度
+        if(String(v) == "") {
+          this.video_ratio = "视频/完成度";
         }
-        console.log(v);
+        if(String(v) == "0") {
+          this.video_ratio = "视频";
+        }
+        if(String(v) == "1" || String(v) == "2" || String(v) == "3") {
+          this.video_ratio = "完成度";
+        }
+      },
+      // 清空任务类型选择时
+      clearType(v) {
+        // console.log(v);
       },
       // 打开/关闭任务表格
       tableOpen() {
@@ -470,6 +448,56 @@
           this.levelTableClose = true;
         }
       },
+
+      // 上传标题图片
+      uploadPicture(res, file) {
+        let form = new FormData();
+        form.append("file", file.raw);
+        form.append("FileType", 'NewsPic');
+        form.append("index", 1);
+        axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token'), form).then(res => {
+          if(res.data.status == 200){
+            this.$message({ type: 'success', message: res.data.message });
+          }else{
+            this.$message({ type: 'error', message: res.data.message });
+          }
+          // console.log(res.data);
+          this.imageUrl = res.data.data;
+        });
+      },
+      // 上传图片前的限制方法
+      beforeAvatarUpload(file) {
+        this.$message({ type: 'warning', message: "上传中，请等待" });
+        // 上传前限制图片的宽高比
+        /*let that = this;
+        return new Promise(function(resolve, reject) {
+          let reader = new FileReader();
+          reader.onload = function(event) {
+            let image = new Image();
+            image.onload = function () {
+              if(this.width/this.height>2.7 || this.width/this.height<2.1) {
+                // _this.$message.warning('请上传宽高比为2.1~2.7的图片');
+                that.$notify({ title: '提示', message: '建议上传宽高比为2.1~2.7的图片', type: 'warning' });
+                // reject();
+              }
+              resolve();
+            };
+            image.src = event.target.result;
+          };
+          reader.readAsDataURL(file);
+        });*/
+        const isJPG = file.type === 'image/jpeg' || 'image/png';
+        const isLt2M = file.size / 1024 / 1024 < 20;
+
+        if (!isJPG) {
+          this.$message.error('上传图片只能是 JPG 或 PNG 格式!');
+        }
+        if (!isLt2M) {
+          this.$message.error('上传图片大小不能超过 2MB!');
+        }
+        return isJPG && isLt2M;
+      },
+
       // 编辑按钮
       editDone(row) {
         console.log(row);
@@ -486,39 +514,44 @@
           this.$message({ type: 'info', message: '已取消删除' });
         });
       },
-      // 弹框管理-首页-提交
+      // 弹框管理-首页-提交   添加任务
       submit() {
-        console.log(this.formIndex);
-
-        let token = localStorage.getItem('token');
         let params = {
-          "TAname": this.formIndex.title,
-          "TAtype": "0",
-          "TAhead": "xxx",
-          "TAlevel": "0",
-          "TArole": "xxx",
-          "TAcomplateNotifications": "xxx",
-          "RAid": "1",
-          "TAendTime": "",
-          "TAstartTime": "",
-          "TAduration": "",
-          "RAnumber": 2,
-          "TAmessage": "",
-          "TAurl": "1"
+          TAname: this.formIndex.title,
+          TAtype: this.taskType,
+          TAhead: this.imageUrl,
+          TLid: this.formIndex.taskLevel,
+          TAstartTime: this.activityTime[0],
+          TAendTime: this.activityTime[1],
+          TAduration: this.formIndex.duration,
+          TAmessage: this.formIndex.memo,
+          TAurl: this.formIndex.content
         };
-        axios.post(api.add_task + '?token=' + token, params).then(res=>{
-          if(res.data.status == 200){
+        if(params.TAname == "" || params.TAtype == "" || params.TAhead == "" || params.TLid == "" || params.TAurl == "") {
+          this.$message({ type: 'warning', message: '请填写全部必填项' });
+          console.log(params.TAname == "", params.TAtype == "", params.TAhead == "", params.TLid == "", params.TAurl == "")
+        }else {
+          axios.post(api.add_task + '?token=' + localStorage.getItem('token'), params).then(res=>{
+            if(res.data.status == 200){
+              this.$message({ message: res.data.message, type: 'success' });
+              this.getAllTask();        // 获取所有任务
 
-            this.$message({ message: res.data.message, type: 'success' });
-          }else{
+              this.formIndex.title = "";
+              this.formIndex.taskLevel = "";
+              this.formIndex.duration = "";
+              this.formIndex.memo = "";
+              this.formIndex.content = "";
+              this.taskType = "";
+              this.imageUrl = "";
+              this.activityTime = [];
+
+            }else{
+              this.$message.error(res.data.message);
+            }
+          }, res=>{
             this.$message.error(res.data.message);
-          }
-        }, res=>{
-          this.$message.error(res.data.message);
-        });
-
-
-
+          });
+        }
       },
       // 顶部首页、发现、我的点击切换
       wTabClick(i){
@@ -530,11 +563,16 @@
         this.page = arr[i].name
         this.tab_list = [].concat(arr);
       },
-      handleAvatarSuccess(){
-
-      },
-      beforeAvatarUpload(){
-
+    },
+    watch:{
+      // 判断活动时间是否有问题
+      activityTime(newValue, oldValue) {
+        if(!this.activityTime) {
+          if(newValue[0] == newValue[1]) {
+            this.$message.error("活动时间不正确，请重新选择");
+            this.activityTime = "";
+          }
+        }
       }
     },
     mounted() {
@@ -559,6 +597,10 @@
     width: 0.18rem;
     height: 0.12rem;
     padding: 0.02rem 0 0 0.2rem;
+  }
+  .avatar {
+    width: 0.85rem;
+    height: 0.85rem;
   }
 
   /* 设置滚动条的样式 */

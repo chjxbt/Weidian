@@ -10,6 +10,8 @@ const api={
 
   add_task: title + 'task/add_task',  // 添加或更新任务
 
+  upload_task_img: title + 'task/upload_task_img',  // 上传任务图标
+
 
 
 
