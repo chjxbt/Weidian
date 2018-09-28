@@ -46,6 +46,8 @@ class CRecommend(BaseProductControl):
 
     @verify_token_decorator
     def add_one(self):
+        """添加推荐"""
+        # todo 此处无需添加图片, 关联商品id即可
         if not hasattr(request, 'user'):
             return TOKEN_ERROR  # 未登录, 或token错误
         if not is_admin():
@@ -78,6 +80,7 @@ class CRecommend(BaseProductControl):
                 'REendtime': reendtime,
             })
         except Exception as e:
+            logger.debug("add Recommend error")
             raise SYSTEM_ERROR(u'添加Recommend错误')
         try:
             for item in prid_list:
@@ -88,7 +91,7 @@ class CRecommend(BaseProductControl):
                     'RPsort': item.get('RPsort')
                 })
         except Exception as e:
-            logger.debug("add recommond list error")
+            logger.debug("add recommondproduct list error")
             raise SYSTEM_ERROR(u'添加每日推荐商品RecommendProduct内容出错')
         response_make_recommend = import_status('add_recommend_success', 'OK')
         response_make_recommend['data'] = {}
@@ -127,29 +130,27 @@ class CRecommend(BaseProductControl):
             return TOKEN_ERROR  # 未登录, 或token错误
         if not is_admin():
             return AUTHORITY_ERROR  # 权限不足
-        data = request.json
-        if 'reid' not in data.keys():
-            return PARAMS_MISS
-        reid = data.get('reid')
-        recommend = {}
-        if 'restarttime' in data.keys():
-            recommend['REstarttime'] = data['restarttime']
-        if 'reendtime' in data.keys():
-            recommend['REendtime'] = data['reendtime']
-        if 'reviewnum' in data.keys():
-            recommend['REfakeviewnum'] = data['reviewnum']
-        if 'relikenum' in data.keys():
-            recommend['RElikefakenum'] = data['relikenum']
+        data = parameter_required(u'REid')
+        reid = data.get('REid')
+        recommend = {
+            'REstarttime': data.get('REstarttime'),
+            'REendtime': data.get('REendtime'),
+            'REfakeviewnum': data.get('REfakeviewnum'),
+            'RElikefakenum': data.get('RElikefakenum')
+        }
+        import ipdb
+        ipdb.set_trace()
+        recommend = {k: v for k, v in recommend.items() if v is not None}
         res = self.srecommend.update_recommend_by_reid(reid, recommend)
         if not res:
-            return SYSTEM_ERROR("reid错误，要修改的内容不存在")
-        prid_list = data.get('prid_list')
+            return SYSTEM_ERROR(u"REid错误，要修改的内容不存在")
+        prid_list = data.get('PRid_list')
         for item in prid_list:
             add_model('RecommendProduct', **{
                 'REid': reid,
-                'PRid': item.get('prid'),
+                'PRid': item.get('PRid'),
                 'RPid': str(uuid.uuid4()),
-                'RPsort': item.get('rpsort')
+                'RPsort': item.get('RPsort')
             })
         response_update_recommend = import_status(
             'update_recommend_success', 'OK')
