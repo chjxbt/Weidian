@@ -56,6 +56,7 @@ class CActivity(BaseActivityControl):
         tnid = args.get('tnid')  # 导航id
         suid = args.get('suid')  # 管理员id
         lasting = args.get('lasting', True)  # 是否正在进行的活动
+        acid = args.get("acid", "")
         start = int(args.get('start', 0))  # 起始位置
         count = int(args.get('count', 5))  # 取出条数
         page = (args.get('page'))
@@ -63,9 +64,13 @@ class CActivity(BaseActivityControl):
             page = int(math.floor(start / count) + 1)
         if not (tnid or suid):
             raise PARAMS_MISS(u"参数缺失")
+        from WeiDian.models.model import Activity
         try:
             if tnid:
-                activity_list = self.sactivity.get_activity_by_topnavid(tnid, page, count)
+                acfilter = {Activity.TopnavId == tnid}
+                if acid:
+                    acfilter.add(Activity.ACid == acid)
+                activity_list = self.sactivity.get_activity_by_topnavid(acfilter, page, count)
                 len_aclist = self.sactivity.get_activity_count(tnid)
                 logger.debug("get activity_list")
 

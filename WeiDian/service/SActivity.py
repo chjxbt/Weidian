@@ -34,10 +34,12 @@ class SActivity(SBase):
         return self.session.query(Activity).filter_by(ACid=acid).update(status)
 
     @close_session
-    def get_activity_by_topnavid(self, tnid, page_num, page_size):
+    def get_activity_by_topnavid(self, acfilter, page_num, page_size):
         """根据导航的id获取活动"""
         settings = Partner()
         skiptype = settings.get_item('skip', 'skip_type')
+        acfilter.add(Activity.ACisdelete == False)
+        acfilter.add(Activity.ACSkipType == skiptype)
         print (u"跳转类型为" + skiptype)
         return self.session.query(Activity).filter_by(ACisdelete=False, TopnavId=tnid, ACSkipType=skiptype).order_by(Activity.ACistop.desc(), Activity.ACcreatetime.desc()).offset(page_size * (page_num - 1)).limit(page_size).all()
 
