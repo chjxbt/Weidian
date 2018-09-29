@@ -410,7 +410,7 @@ class BaseTask():
         return self.fill_task_params(task)
 
     def fill_reward(self, task):
-        # todo task TAid -> TLid
+        # 转置为str
         task_raward_list = self.sraward.get_raward_by_tlid(task.TLid)
         if not task_raward_list:
             return
@@ -420,6 +420,7 @@ class BaseTask():
             raward.RAnumber = task_raward.RAnumber
             raward.add("RAnumber")
             rawards.append(raward)
+
         if not rawards:
             return
 
