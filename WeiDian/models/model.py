@@ -917,6 +917,15 @@ class IdentifyingCode(BaseModel):
     @orm.reconstructor
     def __init__(self):
         self.fields = self.all
+
+
+class PartnerSellMount(BaseModel):
+    """合伙人销售额"""
+    __tablename__ = 'partnersellmount'
+    psmid = Column(String(64), primary_key=True)
+    usid = Column(String(64), comment=u'用户')
+    uslevel = Column(Integer, comment=u'等级')
+    sellmount = Column(Float, comment=u'销售额')
 #
 # class PersonalInfo(BaseModel):
 #     """账号设置个人信息"""

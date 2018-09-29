@@ -6,13 +6,16 @@ import os
 import uuid
 
 from WeiDian import logger
+from WeiDian.common.divide import Partner
 from WeiDian.common.import_status import import_status
 from WeiDian.common.params_require import parameter_required
-from WeiDian.common.token_required import verify_token_decorator, is_tourist
+from WeiDian.common.token_required import verify_token_decorator, is_tourist, is_partner
 from WeiDian.config.enums import BANK_MAP
 from WeiDian.config.response import AUTHORITY_ERROR, SYSTEM_ERROR, TOKEN_ERROR, PARAMS_ERROR, TIME_ERROR, PARAMS_MISS
 from WeiDian.control.BaseControl import BaseMyCenterControl
 from flask import request
+
+from WeiDian.service.SOrder import SOrder
 
 sys.path.append(os.path.dirname(os.getcwd()))
 
@@ -31,18 +34,40 @@ class CMyCenter(BaseMyCenterControl):
         self.suesraddress = SUserAddress()
         from WeiDian.service.SBankCard import SBankCard
         self.sbankcard = SBankCard()
-
+        self.sorder = SOrder()
 
     @verify_token_decorator
     def get_info(self):
+        """个人中心需要的数据"""
         if is_tourist():
             return AUTHORITY_ERROR(u"未登录")
         try:
-            print (request.user.USname).encode('utf8')
-            print (request.user.USid).encode('utf8')
-            my_info = self.smycenter.get_my_info_by_usid(request.user.id)
+            user = request.user
+            usid = user.id
+            print (user.USname).encode('utf8')
+            print (user.USid).encode('utf8')
+            my_info = self.smycenter.get_my_info_by_usid(usid)
             logger.debug("get my info by usid")
             self.fill_user_info(my_info)
+            if is_partner() and Partner().get_item('show', 'schedule'):
+                # todo celery
+                # 成功超过vip数量
+                mysell = self.sorder.get_partner_sellmount_by_usid()
+                my_sell_mount =  mysell.sellmount if mysell else 0  # 我的销售总额
+                gt_my_sell_count = self.sorder.get_parter_sellmount_gt(my_sell_mount)  # 营业额比我多的
+                partner_num = self.suser.get_partner_count()  # vip总数
+                lt_my_sell_count = partner_num - gt_my_sell_count  # 比我销售少的
+                partner_num = partner_num or 1
+                percents = int(float(lt_my_sell_count) / partner_num * 100)
+                my_info.fill(percents, 'overpercents')  # 超过%的vip
+                # 保级差额
+
+
+
+
+                import ipdb
+                ipdb.set_trace()
+            # 保级差别
             data = import_status("get_my_info_success", "OK")
             data["data"] = my_info
             return data
