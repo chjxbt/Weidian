@@ -164,7 +164,7 @@ class CTask(BaseTask):
         # role = pa.cf.get(task_level, 'role')
         # cn = pa.cf.get(task_level, 'access')
 
-        map(self.fill_reward, task_list)
+        # map(self.fill_reward, task_list)
         is_complate = not  bool(len([task.TUstatus for task in task_list if task.TUstatus == 0]))
         # logger.debug(len(is_complate))
         # logger.debug(request.user.id)
