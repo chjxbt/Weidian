@@ -632,18 +632,18 @@ class SearchField(BaseModel):
         self.fields = ['SFid', 'SFtext', 'SFsort']
 
 
-class MyCenter(BaseModel):
-    """我的"""
-    __tablename__ = 'mycenter'
-    MYid = Column(String(64), primary_key=True)
-    USid = Column(String(64), nullable=False)
-    MYranking = Column(String(64))  # 我的排名
-    MYrewards = Column(String(64))  # 额外奖励
-
-    @orm.reconstructor
-    def __init__(self):
-        self.fields = ['MYid', 'MYranking', 'MYrewards']
-    # TODO 我的
+# class MyCenter(BaseModel):
+#     """我的"""
+#     __tablename__ = 'mycenter'
+#     MYid = Column(String(64), primary_key=True)
+#     USid = Column(String(64), nullable=False)
+#     MYranking = Column(String(64))  # 我的排名
+#     MYrewards = Column(String(64))  # 额外奖励
+#
+#     @orm.reconstructor
+#     def __init__(self):
+#         self.fields = ['MYid', 'MYranking', 'MYrewards']
+#     # TODO 我的
 
 
 class IndexAdAlert(BaseModel):
@@ -919,13 +919,31 @@ class IdentifyingCode(BaseModel):
         self.fields = self.all
 
 
-class PartnerSellMount(BaseModel):
-    """合伙人销售额"""
-    __tablename__ = 'partnersellmount'
-    psmid = Column(String(64), primary_key=True)
-    usid = Column(String(64), comment=u'用户')
-    uslevel = Column(Integer, comment=u'等级')
-    sellmount = Column(Float, comment=u'销售额')
+class PartnerSellOrinviteMount(BaseModel):
+    """合伙人活动时间内的销售额"""
+    __tablename__ = 'PartnerSellOrinviteMount'
+    PSOMid = Column(String(64), primary_key=True)
+    USid = Column(String(64), comment=u'用户')
+    sellorinvitemount = Column(Float, comment=u'销售额或者邀请人数')
+    PSIMid = Column(String(64), comment=u'销售额或邀请.活动id')
+
+
+class PartnerSellOrInviteMatch(BaseModel):
+    """合伙人销售额或者邀请开店活动"""
+    __tablename__ = 'PartnerSellOrInviteMatch'
+    PSIMid = Column(String(64), primary_key=True)
+    PSIMstarttime = Column(String(16), nullable=False, comment=u'活动起始时间')
+    PSIMendtime = Column(String(16), nullable=False, comment=u'活动结束时间')
+    PSIMrule = Column(Text, comment=u'奖励各个级别规则,格式{1: 122, 2: 5000, 3: 10000}')
+    PSIfavor = Column(Text, comment=u'额外奖励{1: 22, 2: 5000, 3:1000}')
+    PSIMisclose = Column(Boolean, default=False, comment=u'是否关闭')
+    PSIMisdelete = Column(Boolean, default=False, comment=u'是否删除')
+    PSIMtype = Column(String(8), default=u'sell', comment=u'活动类型: sell, invite')
+
+    @orm.reconstructor
+    def __init__(self):
+        self.fields = self.all
+
 #
 # class PersonalInfo(BaseModel):
 #     """账号设置个人信息"""

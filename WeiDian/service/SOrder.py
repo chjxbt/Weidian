@@ -3,7 +3,8 @@ import sys
 import os
 from datetime import datetime
 
-from WeiDian.models.model import OrderInfo, OrderProductInfo, PartnerSellMount
+from WeiDian.common.timeformat import format_for_db
+from WeiDian.models.model import OrderInfo, OrderProductInfo
 from sqlalchemy import or_, extract
 from SBase import SBase, close_session
 sys.path.append(os.path.dirname(os.getcwd()))
@@ -47,22 +48,13 @@ class SOrder(SBase):
         return self.session.query(OrderInfo).filter(or_(OrderInfo.OIpaystatus == s for s in status),).all()
 
     @close_session
-    def get_partner_sellmount_by_usid(self, usid):
-        """获取某个合伙人的销售状态"""
-        return self.session.query(PartnerSellMount).filter(PartnerSellMount.usid == usid).first()
-
-    @close_session
-    def get_parter_sellmount_gt(self, mount):
-        """获取比某个数额多的"""
-        return self.session.query(PartnerSellMount).filter(PartnerSellMount.sellmount > mount).count()
-
-    @close_session
     def get_today_order_by_usid_status(self, usid, status):
         """获取某人今日指定状态订单"""
         today = datetime.now()
+        today_str = datetime.strftime(today, format_for_db)[:9]
         return self.session.query(OrderInfo).filter(or_(OrderInfo.OIpaystatus == s for s in status)).filter(
             OrderInfo.USid == usid,
-            extract('day', OrderInfo.OIpaytime) == today.day
+            OrderInfo.OIpaytime.like(today_str + '%')
         ).all()
     # @close_session
     # def get_user_ordercount(self, usid, status):
