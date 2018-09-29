@@ -73,7 +73,9 @@
             case '素材圈':
               this.getTopnav(1);
               break;
-
+            case '公告':
+              this.getTopnav(2);
+              break;
           }
         }else{
           this.getTopnav();

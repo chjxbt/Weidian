@@ -1,9 +1,9 @@
 <template>
   <div class="m-section-one">
-    <img v-if="list.suuser.suheader" :src="list.suuser.suheader" class="m-section-img"/>
+    <img v-if="list.suuser && list.suuser.suheader" :src="list.suuser.suheader" class="m-section-img"/>
     <div class="m-section-content">
       <div class="m-section-title">
-        <span class="m-title">{{list.suuser.suname}}</span>
+        <span class="m-title" v-if="list.suuser && list.suuser.suname">{{list.suuser.suname}}</span>
         <span class="m-sale" v-if="list.soldnum">已售{{list.soldnum}}件</span>
       </div>
       <div class="m-section-text">
@@ -20,7 +20,7 @@
         </ul>
         <div class="m-section-bottom">
           <div>
-            <div>
+            <div v-if="list.product">
               <span class="m-price-unit"  v-if="list.product != null && list.product.prprice" >￥</span>
               <span class="m-price " v-if="list.product != null && list.product.prprice" >{{list.product.prprice}}</span>
               <span class="m-red m-ft-30" v-if="list.product != null && list.product.prsavemonty">赚{{list.product.prsavemonty}}</span>

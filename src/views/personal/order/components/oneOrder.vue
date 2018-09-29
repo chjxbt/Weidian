@@ -1,6 +1,6 @@
 <template>
-  <div class="m-one-order">
-    <div class="m-one-order-top">
+  <div class="m-one-order" @click="orderClick(item)">
+    <div class="m-one-order-top" >
       <img :src="item.productinfo.opiproductimages" class="m-product-img" alt="" >
       <div class="m-product-info">
         <p class="m-product-name">{{item.productinfo.opiproductname}}</p>
@@ -16,7 +16,7 @@
           <span v-else-if="item.oipaystatus == 3" class="m-flex-center-col" >
                 <span>支付超时</span>
           </span>
-          <span v-else class="m-red" @click="orderClick(item)">{{item.oipaystatusmsg}}</span>
+          <span v-else class="m-red" >{{item.oipaystatusmsg}}</span>
 
         </p>
       </div>
@@ -55,9 +55,10 @@
         },
         methods: {
           orderClick(i){
-             if(i.oipaystatusmsg == '待支付'){
+             // if(i.oipaystatusmsg == '待支付'){
+            console.log(i,'订单')
                this.$router.push({path: '/orderStatus', query: { oiid :i.oiid }});
-             }
+             // }
           }
         },
         created() {

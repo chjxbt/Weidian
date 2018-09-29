@@ -302,13 +302,12 @@
                 _url = this.title + '#/productDetail?openid=' + localStorage.getItem('openid')+ '&prid=' + (name?this.activity_list[list].prid : list);
                 break;
               case 3:
-                _url = this.title + '#/discovery?openid=' + localStorage.getItem('openid') + '&acid=' + (name?this.activity_list[list].acid : list);
+                _url = this.title + '#/discovery?openid=' + localStorage.getItem('openid') + '&acid=' + (name?this.activity_list[list].acid : list)+'&name=赚钱学院';
                 break;
               case 4:
-                _url = this.title + '#/discovery?openid=' + localStorage.getItem('openid')+ '&acid=' + (name?this.activity_list[list].acid : list);
+                _url = this.title + '#/discovery?openid=' + localStorage.getItem('openid')+ '&acid=' + (name?this.activity_list[list].acid : list) +'&name=公告';
                 break;
             }
-            console.log(_url,'ssss')
             return _url;
           },
           /*获取分享的二维码**/

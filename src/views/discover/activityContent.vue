@@ -1,6 +1,6 @@
 <template>
   <div @touchmove="touchMove">
-    <img class="activity-img" src="">
+    <img class="activity-img" :src="banner">
 
     <mt-loadmore :top-method="loadTop" ref="loadmore">
       <div class="m-index-section">
@@ -12,7 +12,11 @@
 
     <!--<share v-if="show_fixed" @fixedClick="fixedClick"></share>-->
     <attention v-if="show_fixed" @closeModal="closeModal('show_fixed')"></attention>
-
+    <div class="bottom-prompt" v-if="bottom_show">
+      <div class="bottom-line"></div>
+      <div class="m-grey-color">我是有底线的</div>
+      <div class="bottom-line"></div>
+    </div>
     <!--<m-footer></m-footer>-->
   </div>
 </template>
@@ -32,6 +36,7 @@
     data() {
       return {
         baid: "",
+        banner:'',
         activity_list: [],
         icon_list:[
           {
@@ -54,7 +59,8 @@
         tnid: "5ed4e908-a6db-11e8-b2ff-0cd292f93404", // ertiao
         isScroll: true,
         total_count: 0,
-        count: 5
+        count: 5,
+        bottom_show:false,
       }
     },
     components: { mFooter, ctx, share, attention },
@@ -67,32 +73,34 @@
       touchMove(){
         let scrollTop = common.getScrollTop();
         let scrollHeight = common.getScrollHeight();
-        let ClientHeight = common.getClientHeight()
-        if (scrollTop + ClientHeight >= scrollHeight -10) {
+        let ClientHeight = common.getClientHeight();
+        if (scrollTop + ClientHeight  >= scrollHeight -10) {
           if(this.isScroll){
             this.isScroll = false;
-            this.loadBottom();
-          }else  if(this.activity_list.length == this.total_count){
-            this.isScroll = false;
-            Toast({ message: '数据已加载完', className: 'm-toast-warning' });
+            if(this.activity_list.length == this.total_count){
+              this.bottom_show = true;
+            }else{
+              this.loadBottom();
+            }
           }
+
         }
       },
       /*获取活动列表*/
       getActivity(start, count){
         axios.get(api.get_bigactivity + '?token=' + localStorage.getItem('token'), {
-          params: { page_num: start || 0, page_size: count || this.count, baid: this.baid }}).then(res => {
+          params: { page_num: start || 1, page_size: count || this.count, baid: this.baid }}).then(res => {
           if(res.data.status == 200){
             this.isScroll = true;
-            this.total_count = res.data.count;
-
+            this.total_count = res.data.data.total_count;
+            this.banner = res.data.data.banner;
             if(start){
-              this.activity_list = this.activity_list.concat(res.data.data);
+              this.activity_list = this.activity_list.concat(res.data.data.activity);
               if(this.activity_list.length == this.total_count){
                 this.isScroll = false;
               }
             }else{
-              this.activity_list = res.data.data;
+              this.activity_list = res.data.data.activity;
             }
 
             let arr = [].concat(this.activity_list);
@@ -134,7 +142,7 @@
       // 上拉加载更多
       loadBottom() {
         this.getActivity(this.activity_list.length, this.count);
-        this.$refs.loadmore.onBottomLoaded();
+        // this.$refs.loadmore.onBottomLoaded();
       },
       /*每个活动icon点击*/
       iconClick(v, list){
