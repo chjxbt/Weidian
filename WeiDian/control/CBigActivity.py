@@ -262,9 +262,12 @@ class CBigActivity(BaseActivityControl):
             bact_change = self.sbigactivity.get_big_act_by_filter({BigActivity.BAid == baid})
             if not bact_change:
                 raise SYSTEM_ERROR(u'数据错误，无此专题')
-            bact_changed = self.sbigactivity.get_big_act_by_filter({BigActivity.BAsort == data.get('BAsort')})
-            if bact_changed:
-                self.sbigactivity.update_bigact(bact_changed.BAid, {"BASort": bact_change.BAsort})
+            if data.get('basort'):
+                bact_changed = self.sbigactivity.get_big_act_by_filter({BigActivity.BAsort == data.get('basort')})
+                if bact_changed:
+                    print str(bact_changed.BAid)
+                    print str(bact_change.BAsort)
+                    self.sbigactivity.update_bigact(bact_changed.BAid, {"BAsort": bact_change.BAsort})
 
             self.sbigactivity.update_bigact(baid, upinfo)
             response = import_status("update_bigact_success", "OK")
@@ -272,8 +275,6 @@ class CBigActivity(BaseActivityControl):
                 "baid": baid
             }
             return response
-            # else:
-            #     raise SYSTEM_ERROR(u"数据错误，无此专题")
         except:
             logger.exception("update bigact error")
             return SYSTEM_ERROR(u"系统繁忙")
