@@ -58,7 +58,7 @@
           <div class="m-modal-content">
             <h3 class="m-modal-award-title">
               <span>奖励任务</span>
-              <span class="m-modal-award-info" v-if="task_reward">{{task_reward}}</span>
+              <span class="m-modal-award-info" v-if="task_reward">{{task_reward.raward}}</span>
               <!--<span class="m-modal-award-info" v-if="task_reward && task_reward.ratype == 0">满{{task_reward.rafilter}}减{{task_reward.raamount}}</span>-->
               <!--<span class="m-modal-award-info" v-if="task_reward && task_reward.ratype == 1">佣金上浮{{task_reward.raratio}}</span>-->
               <!--<span class="m-modal-award-info" v-if="task_reward">{{task_reward.raamount}}元新衣币<span v-if="task_reward.ranumber">*{{task_reward.ranumber}}张</span></span>-->
@@ -125,7 +125,7 @@
       mixins: [wxapi],
         data() {
             return {
-              title:'http:/www.daaiti.cn:8080/',
+              title: 'https://weidianweb.daaiti.cn/#/',
               course:1,
               count:5,
               total_count:0,
@@ -287,28 +287,50 @@
           },
           hotClick(item){
             // this.changeRoute(item.hmskiptype,item.hmcontent)
-            window.location.href = this.changeRoute(item.hmskiptype,item.hmcontent);
+           this.changeRoute(item.hmskiptype,item.hmcontent);
           },
           changeRoute(type,list,name){
             let _url = '';
-            switch (type){
-              case 0:
-                return false;
-                break;
-              case 1:
-              _url = this.title +'#/activityContent?openid=' + localStorage.getItem('openid') + '&baid=' + (name?this.activity_list[list].baid : list);
-              break;
-              case 2:
-                _url = this.title + '#/productDetail?openid=' + localStorage.getItem('openid')+ '&prid=' + (name?this.activity_list[list].prid : list);
-                break;
-              case 3:
-                _url = this.title + '#/discovery?openid=' + localStorage.getItem('openid') + '&acid=' + (name?this.activity_list[list].acid : list)+'&name=赚钱学院';
-                break;
-              case 4:
-                _url = this.title + '#/discovery?openid=' + localStorage.getItem('openid')+ '&acid=' + (name?this.activity_list[list].acid : list) +'&name=公告';
-                break;
+            if(name){
+              switch (type){
+                case 0:
+                  return false;
+                  break;
+                case 1:
+                  _url = this.title +'activityContent?openid=' + localStorage.getItem('openid') + '&baid=' + (name?this.activity_list[list].baid : list);
+                  break;
+                case 3:
+                  _url = this.title + 'productDetail?openid=' + localStorage.getItem('openid')+ '&prid=' + (name?this.activity_list[list].prid : list);
+                  break;
+                case 2:
+                  _url = this.title + 'discover/index?openid=' + localStorage.getItem('openid') + '&acid=' + (name?this.activity_list[list].acid : list)+'&name=赚钱学院';
+                  break;
+                case 4:
+                  _url = this.title + 'discover/index/index?openid=' + localStorage.getItem('openid')+ '&acid=' + (name?this.activity_list[list].acid : list) +'&name=公告';
+                  break;
+              }
+              return _url;
+            }else{
+              switch (type){
+                case 0:
+                  return false;
+                  break;
+                case 1:
+                  this.$router.push({path: '/activityContent', query: { openid :localStorage.getItem('openid'), baid: list}});
+                  break;
+                case 2:
+                  this.$router.push({path: '/productDetail', query: { openid :localStorage.getItem('openid'), prid: list}});
+                  break;
+                case 3:
+                  this.$router.push({path: '/discover', query: { openid :localStorage.getItem('openid'), acid: list,name: '赚钱学院'}});
+                  break;
+                case 4:
+                  this.$router.push({path: '/discover', query: { openid :localStorage.getItem('openid'), acid: list,name: '公告'}});
+                  break;
+              }
             }
-            return _url;
+
+
           },
           /*获取分享的二维码**/
           getEr(id,list){
@@ -336,7 +358,7 @@
               if(res.data.status == 200){
                this.task_list = res.data.data;
                this.TArole = res.data.TArole;
-               this.task_reward = res.data.raward;
+               this.task_reward = res.data.RAward;
                 if(localStorage.getItem('is_today_first') == 1){
                   this.show_task = true;
                   window.localStorage.setItem("is_today_first",0);

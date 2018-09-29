@@ -56,7 +56,7 @@
           /*nav_list: [{ tnid: "1" }, { tnid: "1" },
             { tnid: "1" }, { tnid: "1" }],// 5ed4e908-a6db-11e8-b2ff-0cd292f93404*/
           nav_list: [{ tnid: "1" }],// 5ed4e908-a6db-11e8-b2ff-0cd292f93404
-          nav_select: '0',
+          nav_select: '',
           sub: []
         }
       },
@@ -113,6 +113,7 @@
               this.nav_list = res.data.data;
               this.sub = this.nav_list[1].sub;
               this.nav_list[_index].click = true;
+              this.nav_select = _index;
             }else{
               Toast({ message: res.data.message, className: 'm-toast-fail' });
             }

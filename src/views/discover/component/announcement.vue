@@ -136,7 +136,7 @@
       /*获取活动列表*/
       getActivity(start, count){
         axios.get(api.get_all_activity + "?token=" + localStorage.getItem('token'), {
-          params: { start: start || 0, count: count || this.count, tnid: this.tnid }}).then(res => {
+          params: { start: start || 0, count: count || this.count, tnid: this.tnid,acid: (this.$route.query.name == '公告' && this.$route.query.acid) || ''  }}).then(res => {
           if(res.data.status == 200){
 
             this.isScroll = true;
@@ -330,6 +330,8 @@
       }
     },
     mounted() {
+      if(this.$route.query.name == '公告')
+         this.$store.state.tabbar_select = '发现';
       this.getActivity();
       // this.getCommentList();
     }

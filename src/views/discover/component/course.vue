@@ -194,12 +194,10 @@
       /*获取活动列表*/
       getActivity(start, count){
         axios.get(api.get_all_activity + '?token=' + localStorage.getItem('token'), {
-          params: { start: start || 0, count: count || this.count, tnid: this.tnid }}).then(res => {
+          params: { start: start || 0, count: count || this.count, tnid: this.tnid,acid: (this.$route.query.name == '赚钱学院' && this.$route.query.acid) || '' }}).then(res => {
           if(res.data.status == 200){
-
             this.isScroll = true;
             this.total_count = res.data.count;
-
             if(start){
               this.activity_list = this.activity_list.concat(res.data.data);
               if(this.activity_list.length == this.total_count){
@@ -347,7 +345,10 @@
       }
     },
     mounted() {
-      this.getActivity();
+      if(this.$route.query.name == '赚钱学院')
+        this.$store.state.tabbar_select = '发现';
+        this.getActivity()
+
       // console.log(this.tnid);
     }
   }

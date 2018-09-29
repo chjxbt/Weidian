@@ -49,7 +49,13 @@
               this.$router.push('/service');
               break;
             case '发现':
-              this.$router.push('/discover');
+              if(this.$route.path == '/discover/index'){
+
+                } else{
+                this.$router.push('/discover');
+              }
+
+
               break;
             case '购物车':
               this.$router.push('/shopping');

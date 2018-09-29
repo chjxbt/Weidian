@@ -53,6 +53,7 @@ const api={
   get_user_task: title + '/task/get_user_task',//获取任务
   do_task: title +'/task/do_task',//做任务
   get_bigactivity : title + '/bigactivity/get_bigactivity',//专题页
+  get_one_product: title + '/product/get_one',//获取商品详情
 };
 
 export default api

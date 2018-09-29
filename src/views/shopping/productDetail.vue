@@ -1,26 +1,27 @@
 <template>
-  <div>
+  <div v-if="product_info != null">
     <!--/static/images/icon-more.png-->
     <img src="" class="back-img" @click="backPage">
-    <img src="http://s9.rr.itc.cn/r/wapChange/20167_8_22/a87n9v8965341955628.jpg" class="product-img">
+    <!--<img src="http://s9.rr.itc.cn/r/wapChange/20167_8_22/a87n9v8965341955628.jpg" class="product-img">-->
+    <img :src="product_info.prmainpic"  class="product-img">
     <div class="product-activity m-ft-26 m-bg-main-color">
       <span class="activity-text-one">限时特卖</span>
       <span class="activity-text-two tr">距离结束仅剩</span>
       <span class="activity-text-three">2天07时11分28秒</span>
     </div>
     <div class="product-prices">
-      <span class="new-price m-ft-38 m-black m-ft-b">￥160</span>
-      <span class="old-price m-grey m-ft-28">￥299</span>
-      <span class="make-money m-ft-38 m-red m-ft-b tl">赚12.5</span>
+      <span class="new-price m-ft-38 m-black m-ft-b">￥{{product_info.prprice}}</span>
+      <span class="old-price m-grey m-ft-28">￥{{product_info.proldprice}}</span>
+      <span class="make-money m-ft-38 m-red m-ft-b tl">赚{{product_info.prsavemonty}}</span>
       <img v-if="collectionVisible" src="/static/images/icon-unlike.png" class="collection-share-img" @click="collection">
       <img v-if="!collectionVisible" src="/static/images/icon-like.png" class="collection-share-img" @click="collection">
       <img src="/static/images/icon-share.png" class="collection-share-img" @click="shareProduct">
     </div>
-    <div class="product-name m-ft-32 tl">【眼唇速效 卸妆神器】 Bifesta斌若诗 眼唇卸妆液  145ml 曼巴拉巴拉巴拉巴拉巴拉巴拉巴拉巴拉巴拉巴拉巴拉巴拉巴</div>
-    <div class="product-buyer-quantity m-ft-28 m-grey tl">20.5万人购买</div>
+    <div class="product-name m-ft-32 tl">{{product_info.prtitle}}</div>
+    <div class="product-buyer-quantity m-ft-28 m-grey tl">{{product_info.prsoldnum}}人购买</div>
     <div v-if="ownerVisible" class="owner-price m-ft-26 m-bg-main-color">
       <img src="/static/images/icon-radio.png" class="owner-price-img">
-      <span class="owner-price-one tl">店主价￥55.00</span>
+      <span class="owner-price-one tl">店主价￥{{product_info.prkeeperprice}}</span>
       <span class="owner-price-two tr">成为店主 ></span>
     </div>
     <div class="product-commitment" v-for="item in commitmentList">
@@ -89,8 +90,8 @@
     </div>
     <div class="product-detail-text m-ft-22 m-grey-color">—— 详情 ——</div>
     <ul style="margin-bottom: 15%">
-      <li v-for="brand in brandList">
-        <img v-lazy="brand" class="detail-img">
+      <li v-for="brand in product_info.images">
+        <img v-lazy="brand.piurl"  class="detail-img">
       </li>
     </ul>
     <div class="to-buy">
@@ -109,7 +110,9 @@
 
 <script>
   import productParams from "../shopping/components/productParams";
-
+  import api from '../../api/api';
+  import axios from 'axios';
+  import {Toast} from 'mint-ui';
   export default {
     data() {
       return {
@@ -120,12 +123,25 @@
         evaluationTabs: ["衣服不错(50)", "面料好(30)", "穿着舒服(30)"],
         evaluationPictures: ["http://image2.suning.cn/content/catentries/00000000010295/000000000102956200/fullimage/000000000102956200_8f.jpg", "http://image4.suning.cn/content/catentries/00000000010292/000000000102925077/fullimage/000000000102925077_6f.jpg",
                              "http://img0.imgtn.bdimg.com/it/u=12035839,3404122673&fm=26&gp=0.jpg", "http://image3.suning.cn/content/catentries/00000000010295/000000000102955143/fullimage/000000000102955143_2f.jpg"],
-        brandList: []
+        brandList: [],
+        product_info:null,
         // brandList: [{img: "http://pic1.win4000.com/wallpaper/8/599d1d60036a2.jpg"}, {img: "http://bbsfiles.vivo.com.cn/vivobbs/attachment/forum/201804/25/145712qjc3gwcbtvgoct9w.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/57eb314a3c143.jpg"}, {img: "http://pic1.win4000.com/wallpaper/8/57eb322625b50.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc06f60ecf.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc080092c6.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc07478a17.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc08474821.jpg"}]
       }
     },
     components: { productParams },
     methods: {
+      getInfo(){
+        axios.get(api.get_one_product,{
+          params:{
+            prid:this.$route.query.prid,
+            token:localStorage.getItem('token')
+          }
+        }).then(res => {
+          if(res.data.status == 200){
+            this.product_info =  res.data.data;
+          }
+        })
+      },
       // 返回上一页
       backPage() {
         this.$router.push('/shopping/index');
@@ -176,6 +192,7 @@
             that.brandList[i] = that.brandList[i].match(/"(\S*)" data-ext="jpeg"/)[1];
             that.brandList[i] = "https://img.weidiango.com/" + that.brandList[i];
           }
+          console.log(that.brandList)
         },function(response){
           console.log('error', response);   // 发生错误
         });
@@ -183,6 +200,7 @@
     },
     mounted() {
       this.imgsDone();
+      this.getInfo();
     },
     created() {
       let prid = this.$route.query.prid;
