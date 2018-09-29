@@ -2,7 +2,7 @@
 import sys
 import os
 from SBase import SBase, close_session
-from WeiDian.models.model import Product, ProductLike, Recommend, RecommendProduct
+from WeiDian.models.model import Product, ProductLike, Recommend, RecommendProduct, Activity
 sys.path.append(os.path.dirname(os.getcwd()))
 
 
@@ -66,6 +66,5 @@ class SProduct(SBase):
         return self.session.query(Product).filter(Product.PRname.like("%{0}%".format(prname))).all()
 
     @close_session
-    def get_product_relation_act(self):
-        return self.session.query()
-    # todo 商品关联的活动
+    def get_product_relation_act_by_prid(self, prid):
+        return self.session.query(Activity).filter(Activity.PRid == prid, Activity.ACisdelete == False).all()
