@@ -3,7 +3,17 @@
       <div class="m-order-box">
         <div class="m-part-one">
          <cell :item="part_title"  ></cell>
-          <order :list="order_list"></order>
+          <!--<order :list="order_list"></order>-->
+          <ul class="m-part-list">
+            <template v-for="(item,index) in order_list">
+              <li @click="orderIcon">
+                <img :src="item.src" class="m-part-list-icon" />
+                <span>{{item.name}}
+                  <span class="m-red">({{item.num}})</span>
+                </span>
+              </li>
+            </template>
+          </ul>
         </div>
       </div>
 
@@ -63,24 +73,30 @@
                   name:'待支付',
                   src:'/static/images/icon-pay-personal.png',
                   value:'',
-                  num:1
+                  num:0
                 },{
                   name:'待发货',
                   src:'/static/images/icon-wait-send-personal.png',
                   value:'',
-                  num:2
+                  num:0
                 },
                 {
-                  name:'已发货',
+                  name:'待收货',
                   src:'/static/images/icon-sent-personal.png',
                   value:'',
                   num:0
                 },
                 {
-                  name:'已取消',
-                  src:'/static/images/icon-cancel-personal.png',
+                  name:'待评价',
+                  src:'/static/images/icon-comment-personal.png',
                   value:'',
-                  num:3
+                  num:0
+                },
+                {
+                  name:'退换货',
+                  src:'/static/images/icon-change-personal.png',
+                  value:'',
+                  num:0
                 }
               ],
               short:null,
@@ -109,11 +125,14 @@
                     case '待发货':
                       this.order_list[1].value = res.data.data[i].count;
                       break;
-                    case '已发货':
+                    case '待收货':
                       this.order_list[2].value = res.data.data[i].count;
                       break;
-                    case '已取消':
+                    case '待评价':
                       this.order_list[3].value = res.data.data[i].count;
+                      break;
+                    case '退换货':
+                      this.order_list[4].value = res.data.data[i].count;
                       break;
                   }
                 }
@@ -146,6 +165,9 @@
           },
           cellClick(v){
 
+          },
+          orderIcon(){
+            this.$router.push("/order");
           }
         },
         created() {

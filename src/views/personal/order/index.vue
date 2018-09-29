@@ -26,12 +26,12 @@
 
       <div class="m-myOrder-content" @touchmove="touchMove" >
 
-        <div class="m-myOrder-list">
+        <div class="m-myOrder-list" v-if="order_list.length > 0">
           <template v-for="(items,index) in order_list">
             <one-order :item="items"></one-order>
           </template>
-
         </div>
+        <div class="m-no-order" v-else>暂无订单</div>
         <div class="bottom-prompt" v-if="bottom_show">
           <div class="bottom-line"></div>
           <div class="m-grey-color">我是有底线的</div>
@@ -236,5 +236,9 @@
       }
     }
   }
-
+.m-no-order{
+  font-size: 30px;
+  color: #c1c1c1;
+  margin-top: 400px;
+}
 </style>

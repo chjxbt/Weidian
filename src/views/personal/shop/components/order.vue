@@ -25,7 +25,7 @@
         },
         methods: {
           navClick(v){
-            if(v.url){
+            if(v.url) {
               this.$router.push(v.url);
             }
           },

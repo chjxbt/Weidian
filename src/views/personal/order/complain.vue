@@ -30,7 +30,7 @@
         <span class="active">自买订单</span>
       </div>
       <div class="m-complain-order-list">
-        <div class="m-no-complain-order" v-if="!have_order">
+        <div class="m-no-complain-order" v-if="order_list.length == 0">
           尚无相关订单...
         </div>
         <div class="m-one-complain-order" v-else>

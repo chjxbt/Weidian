@@ -628,8 +628,6 @@
           // 处理合成图片要的参数
           shareDone(list) {
             this.getEr(this.activity_list[list].acskiptype,list);
-
-
           },
           /*做任务*/
           makeTask(i){
