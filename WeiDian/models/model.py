@@ -477,7 +477,6 @@ class HotMessage(BaseModel):
         ]
 
 
-
 class BigActivity(BaseModel):
     """
     轮播图/专场

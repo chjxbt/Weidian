@@ -99,24 +99,23 @@ class CHotMessage():
         if 'hmid'not in data.keys():
             return PARAMS_MISS
         hmid = data.get('hmid')
-        hot = {}
-        hot['HMid'] = data['hmid']
+        hot = {
+            "HMid": data.get("hmid"),
+            "HMtext": data.get("hmtext"),
+            "HMcontent": data.get("hmcontent"),
+            "HMstarttime": get_db_time_str(data.get("hmstarttime")),
+            "HMsort": data.get("hmsort"),
+        }
+        hot = {k: v for k, v in hot.items() if v}
+        if data.get("hmendtime"):
+            hot["HMendtime"] = get_db_time_str(data.get("hmendtime")),
+
         from WeiDian.models.model import HotMessage
         filter_change = {HotMessage.HMid == hmid}
         hostmessage_change = self.s_hotmessage.get_hotmessage_by_filter(filter_change)
         if not hostmessage_change:
             raise SYSTEM_ERROR(u'热文不存在')
 
-        if 'hmtext' in data.keys():
-            hot['HMtext'] = data['hmtext']
-        if 'hmcontent' in data.keys():
-            hot['HMcontent'] = data['hmcontent']
-        if 'hmstarttime' in data.keys():
-            hot['HMstarttime'] = get_db_time_str(data['hmstarttime'])
-        if 'hmendtime' in data.keys():
-            hot['HMendtime'] = get_db_time_str(data['hmendtime'])
-        if 'hmsort' in data:
-            hot['HMsort'] = data['hmsort']
         update_info = self.s_hotmessage.update_hot_by_hmid(hmid, hot)
         if not update_info:
             return SYSTEM_ERROR(u'热文不存在')
