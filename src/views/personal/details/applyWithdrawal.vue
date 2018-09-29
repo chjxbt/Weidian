@@ -5,7 +5,7 @@
         <div class="m-input-amount">
           <p class="m-border">
             <span class="m-ft-50 m-red m-ft-b">￥</span>
-            <input type="number" v-model="money" placeholder="最大可提现X元" class="m-input-amount-input">
+            <input type="money"  v-model="money" placeholder="最大可提现X元" class="m-input-amount-input">
             <span class="m-close-icon" @click="clearMoney"></span>
           </p>
           <p>
@@ -52,7 +52,15 @@
               bank_status:true
             }
         },
-        components: {},
+        watch :{
+          'money': function (curVal, oldVal) {
+            if (!curVal) {
+              this.money = ''
+              return false
+            }
+            this.money = curVal.match(/\d/ig) ? curVal.match(/\d/ig).join('') : ''
+          }
+        },
         methods: {
           knownClick(){
             this.show_modal = false;
@@ -61,6 +69,7 @@
             this.show_modal = true;
           },
           clearMoney(){
+            console.log(this.money)
             this.money = '';
           }
         },
