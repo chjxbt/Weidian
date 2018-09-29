@@ -77,8 +77,8 @@ class CActivity(BaseActivityControl):
             if suid:
                 activity_list = self.sactivity.get_activity_by_suid(suid, page, count)
 
-            if not activity_list:
-                raise SYSTEM_ERROR(u'数据库错误')
+            # if not activity_list:
+            #     raise SYSTEM_ERROR(u'数据库错误')
 
             if lasting is True:
                 now_time = datetime.strftime(datetime.now(), format_for_db)

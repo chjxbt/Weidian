@@ -158,6 +158,8 @@ class CBigActivity():
                 "BAendtime": BAendtime,
                 "BAsort": data.get('BAsort', 0),
                 "BAposition": 0,
+                "BAisdisplay": data.get('BAisdisplay', 1)
+
             })
             response = import_status("create_home_bigactivity", "OK")
             response["data"] = {
@@ -192,6 +194,7 @@ class CBigActivity():
                 "BAendtime": BAendtime,
                 "BAsort": data.get('BAsort', 0),
                 "BAposition": 1,
+                "BAisdisplay": data.get('BAisdisplay', 1)
             })
 
             response = import_status("create_discover_bigactivity", "OK")
@@ -222,7 +225,8 @@ class CBigActivity():
                     "BAstarttime": get_db_time_str(data.get("bastarttime")),
                     "BAendtime": get_db_time_str(data.get("baendtime")),
                     "BAsort": data.get('basort'),
-                    "BAisdisplay": data.get('baisdisplay')
+                    "BAisdisplay": data.get('baisdisplay'),
+                    "BAisdelete": data.get('baisdelete')
                 }
                 upinfo = {k: v for k, v in upinfo.items() if v not in self.empty}
                 self.sbigactivity.update_bigact(args['baid'], upinfo)
