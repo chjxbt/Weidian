@@ -14,7 +14,7 @@ class AMyCenter(Resource):
     def get(self, myinfo):
         print (myinfo)
         apis = {
-            "get_info": "self.control_mycenter.get_info()",
+            "get_info": "self.control_mycenter.get_info_top()",
             "get_rule": "self.control_mycenter.get_levelrules()",
             "get_account_info": "self.control_mycenter.get_accountinfo()",
             "get_address": "self.control_mycenter.get_useraddress()",
