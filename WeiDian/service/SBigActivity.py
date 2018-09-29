@@ -34,6 +34,7 @@ class SBigActivity(SBase):
     def get_one_big_act(self, baid):
         """获取单个专题"""
         return self.session.query(BigActivity).filter(BigActivity.BAid == baid).first()
+
     @close_session
     def update_bigact(self, baid, bigact):
         """修改专题"""

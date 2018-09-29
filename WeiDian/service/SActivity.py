@@ -38,7 +38,7 @@ class SActivity(SBase):
         """根据导航的id获取活动"""
         settings = Partner()
         skiptype = settings.get_item('skip', 'skip_type')
-        print (u"跳转类型为" + skiptype)
+        # print (u"跳转类型为" + skiptype.encode('utf8'))
         return self.session.query(Activity).filter_by(ACisdelete=False, TopnavId=tnid, ACSkipType=skiptype).order_by(Activity.ACistop.desc(), Activity.ACcreatetime.desc()).offset(page_size * (page_num - 1)).limit(page_size).all()
 
     @close_session
