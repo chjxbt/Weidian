@@ -26,7 +26,7 @@
           <el-table-column prop="title" label="时间" width="420">
             <template slot-scope="scope">
               <el-date-picker v-model="scope.row.activityTime" type="datetimerange" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
-                              start-placeholder="开始日期" end-placeholder="结束日期" style="width: 3rem;" :disabled="scope.row.disabled" @blur="timeClick(scope)">
+                              start-placeholder="开始日期" end-placeholder="结束日期" style="width: 3.5rem;" :disabled="scope.row.disabled" @blur="timeClick(scope)">
               </el-date-picker>
             </template>
           </el-table-column>
@@ -124,20 +124,21 @@
           <el-table-column prop="num" label="推文时间" width="420">
             <template slot-scope="scope">
               <el-date-picker v-model="scope.row.activityTime" type="datetimerange" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
-                              start-placeholder="开始日期" end-placeholder="结束日期" style="width: 3rem;" @blur="activityTimeClick(scope)">
+                              start-placeholder="开始日期" end-placeholder="结束日期" style="width: 3.5rem;" @blur="activityTimeClick(scope)" :disabled="scope.row.disabled">
               </el-date-picker>
             </template>
           </el-table-column>
           <el-table-column prop="actext" label="推文内容">
             <template slot-scope="scope">
-              <el-input type="textarea" :autosize="{ minRows: 3, maxRows: 3 }" placeholder="请输入推文内容" v-model="scope.row.actext"></el-input>
+              <el-input type="textarea" :autosize="{ minRows: 3, maxRows: 3 }" placeholder="请输入推文内容" v-model="scope.row.actext" :disabled="scope.row.disabled"></el-input>
             </template>
           </el-table-column>
           <el-table-column fixed="right" label="管理" width="230">
             <template slot-scope="scope">
-              <el-button @click="editClick(scope, 'banner1')" type="text" size="small">编辑</el-button>
+              <el-button @click="editClick(scope, 'activity')" type="text" size="small" v-if="scope.row.editSave == '1'">编辑</el-button>
+              <el-button @click="saveClick(scope, 'activity')" type="text" size="small" v-if="scope.row.editSave == '2'">保存</el-button>
               <el-button type="text" size="small">|</el-button>
-              <el-button type="text" size="small">删除</el-button>
+              <el-button type="text" size="small" @click="deleteActivity(scope)">删除</el-button>
               <el-button type="text" size="small">|</el-button>
               <el-button type="text" size="small">上移</el-button>
             </template>
@@ -153,7 +154,7 @@
           </div>
         </div>
       </div>
-      <div class="m-form-item" style="min-height: 1.7rem; max-height: 1.7rem">
+      <div class="m-form-item" style="min-height: 1.8rem; max-height: 1.8rem">
         <p class="m-form-label">推文图片</p>
         <div class="m-item-content">
           <div class=" m-item-row">
@@ -206,16 +207,32 @@
         </div>
       </div>
 
-      <div class="m-form-item">
+      <p class="m-form-label">活动时间</p>
+      <div class="m-item-content">
+        <el-date-picker v-model="activityTime1" type="datetimerange" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
+                        start-placeholder="开始日期" end-placeholder="结束日期" style="width: 4rem;">
+        </el-date-picker>
+      </div>
+
+    <!--  <div class="m-form-item">
         <p class="m-form-label">活动角标</p>
         <div class="m-item-content">
           <div class=" m-item-row">
             <el-input v-model="activityBadge" placeholder="爆款" maxlength="2" style="width: 0.5rem; text-align: center"></el-input>
           </div>
         </div>
-      </div>
+      </div>-->
 
       <div class="num-list">
+        <div class="num-box">
+          <p class="m-form-label">活动角标</p>
+          <div class="m-item-content">
+            <div class=" m-item-row">
+              <el-input v-model="activityBadge" placeholder="限两个字" maxlength="2" class="m-input-s"></el-input>
+            </div>
+          </div>
+        </div>
+
         <div class="num-box">
           <p class="m-form-label">虚拟点赞数</p>
           <div class="m-item-content">
@@ -233,13 +250,6 @@
             </div>
           </div>
         </div>
-      </div>
-
-      <p class="m-form-label">活动时间</p>
-      <div class="m-item-content">
-        <el-date-picker v-model="activityTime1" type="datetimerange" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
-                        start-placeholder="开始日期" end-placeholder="结束日期" style="width: 4rem;">
-        </el-date-picker>
       </div>
 
       <div class="m-form-confirm-btn">
@@ -410,33 +420,10 @@
           this.hotMessageList[scope.$index].disabled = false;
           this.hotMessageList[scope.$index].editSave = "2";
           // this.hotMessageList = this.hotMessageList.concat();
-        }
-      },
-      // 添加banner
-      addBannerClick(scope) {
-        let banner = this.bannerList[scope.$index];
-        let params = {
-          BAimage: banner.baimage,
-          BAtext: banner.batext,
-          BAstarttime: banner.activityTime[0],
-          BAendtime: banner.activityTime[1],
-          BAisdisplay: banner.baisdisplay,
-          BAsort: this.bannerList[this.bannerList.length - 2].basort + 1
-        };
-        if(params.BAimage == undefined || params.BAtext == "" || params.BAstarttime == undefined || params.BAendtime == undefined) {
-          this.$message({ message: "请完整填写", type: 'warning' });
-        }else {
-          axios.post(api.create_hbact + '?token=' + localStorage.getItem('token'), params).then(res=>{
-            if(res.data.status == 200){
-              this.$message({ message: "保存成功", type: 'success' });
-              this.getBanner();       // 获取专题
-              this.addBannerBtn = true;
-              // this.bannerList[scope.$index].disabled = true;
-              // this.bannerList[scope.$index].addSaveEdit = "3";
-            }else{
-              this.$message.error(res.data.message);
-            }
-          });
+        }else if(where == "activity") {
+          this.activityList[scope.$index].disabled = false;
+          this.activityList[scope.$index].editSave = "2";
+          this.bannerList = this.bannerList.concat();
         }
       },
       // 保存编辑后的banner
@@ -479,6 +466,11 @@
               this.$message.error(res.data.message);
             }
           });
+        }else if(where == "activity") {
+          console.log("activity-save");
+          this.activityList[scope.$index].disabled = true;
+          this.activityList[scope.$index].editSave = "1";
+          this.activityList = this.activityList.concat();
         }
       },
       // 删除轮播图/专题
@@ -508,6 +500,20 @@
               this.$message.error(res.data.message);
             }
           });
+        }).catch(() => {  });
+      },
+      // 删除活动/推文
+      deleteActivity(scope) {
+        this.$confirm('此操作将删除该推文, 是否继续?', '提示',
+          {confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'}).then(() => {
+          /*axios.post(api.del_one + '?token=' + localStorage.getItem('token'), { acid: this.activityList[scope.$index].acid }).then(res=>{
+            if(res.data.status == 200){
+              this.$message({ message: "热文删除成功", type: 'success' });
+              this.activityList.splice(scope.$index, 1);    // 刷新视图
+            }else{
+              this.$message.error(res.data.message);
+            }
+          });*/
         }).catch(() => {  });
       },
       // 上移banner/专题
@@ -588,6 +594,33 @@
           })
         }
       },
+      // 添加banner
+      addBannerClick(scope) {
+        let banner = this.bannerList[scope.$index];
+        let params = {
+          BAimage: banner.baimage,
+          BAtext: banner.batext,
+          BAstarttime: banner.activityTime[0],
+          BAendtime: banner.activityTime[1],
+          BAisdisplay: banner.baisdisplay,
+          BAsort: this.bannerList[this.bannerList.length - 2].basort + 1
+        };
+        if(params.BAimage == undefined || params.BAtext == "" || params.BAstarttime == undefined || params.BAendtime == undefined) {
+          this.$message({ message: "请完整填写", type: 'warning' });
+        }else {
+          axios.post(api.create_hbact + '?token=' + localStorage.getItem('token'), params).then(res=>{
+            if(res.data.status == 200){
+              this.$message({ message: "保存成功", type: 'success' });
+              this.getBanner();       // 获取专题
+              this.addBannerBtn = true;
+              // this.bannerList[scope.$index].disabled = true;
+              // this.bannerList[scope.$index].addSaveEdit = "3";
+            }else{
+              this.$message.error(res.data.message);
+            }
+          });
+        }
+      },
       // 添加热文
       addHotMessage () {
         if(this.hotValue == "" || this.hotTime.length != 2 || this.hotJumpValue == "" || this.jumpToValue == "") {
@@ -639,7 +672,13 @@
           { params: { lasting: true, start: start || 0, count: count || this.count, tnid: this.tnid }}).then(res => {
           if(res.data.status == 200) {
             this.activityList = res.data.data;
-            // console.log(res.data.data);
+
+            for(let i = 0; i < this.activityList.length; i ++) {
+
+              this.activityList[i].activityTime = [this.activityList[i].acstarttime, this.activityList[i].acendtime];
+              this.activityList[i].disabled = true;
+              this.activityList[i].editSave = "1";
+            }
           }else{
             this.$message.error(res.data.message);
           }
@@ -738,7 +777,7 @@
   .num-list {
     display: flex;
     .num-box {
-      margin-right: 0.5rem;
+      margin-right: 0.45rem;
     }
   }
 </style>

@@ -21,12 +21,14 @@ const api={
   create_dbact: title + 'bigactivity/create_dbact',  // 添加发现页专题（轮播图）
   update_bact: title + 'bigactivity/update_bact',//修改专题/删除轮播图（测试）
 
-  upload_task_img: title + 'task/upload_task_img',  // 上传任务图标-上传图片
-
   get_home: title + 'topnav/get_home',  // 获取上部导航 - 首页
   get_dp: title + 'topnav/get_dp',  // 获取上部导航 - 发现页
   get_all_activity: title + 'activity/get_all',  // 获取首页/发现页活动/推文内容列表
   add_one_activity: title + 'activity/add_one',  // 添加首页活动/推文（测试）
+  del_one: title + 'activity/del_one',  // 删除活动/推文 - 首页/发现页
+
+
+  upload_task_img: title + 'task/upload_task_img',  // 上传任务图标-上传图片
 
 
 
