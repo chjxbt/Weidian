@@ -9,7 +9,7 @@ from WeiDian import logger
 from WeiDian.common.divide import Partner
 from WeiDian.common.import_status import import_status
 from WeiDian.common.params_require import parameter_required
-from WeiDian.common.token_required import verify_token_decorator, is_tourist, is_partner
+from WeiDian.common.token_required import verify_token_decorator, is_tourist, is_partner, is_admin
 from WeiDian.config.enums import BANK_MAP
 from WeiDian.config.response import AUTHORITY_ERROR, SYSTEM_ERROR, TOKEN_ERROR, PARAMS_ERROR, TIME_ERROR, PARAMS_MISS
 from WeiDian.control.BaseControl import BaseMyCenterControl
@@ -39,6 +39,7 @@ class CMyCenter(BaseMyCenterControl):
     @verify_token_decorator
     def get_info(self):
         """个人中心需要的数据"""
+        # todo 保级差额
         if is_tourist():
             return AUTHORITY_ERROR(u"未登录")
         try:
@@ -49,10 +50,9 @@ class CMyCenter(BaseMyCenterControl):
             my_info = self.smycenter.get_my_info_by_usid(usid)
             logger.debug("get my info by usid")
             self.fill_user_info(my_info)
-            if is_partner() and Partner().get_item('show', 'schedule'):
-                # todo celery
+            if is_partner() and str(Partner().get_item('show', 'schedule')) != '0':
                 # 成功超过vip数量
-                mysell = self.sorder.get_partner_sellmount_by_usid()
+                mysell = self.sorder.get_partner_sellmount_by_usid(usid)
                 my_sell_mount =  mysell.sellmount if mysell else 0  # 我的销售总额
                 gt_my_sell_count = self.sorder.get_parter_sellmount_gt(my_sell_mount)  # 营业额比我多的
                 partner_num = self.suser.get_partner_count()  # vip总数
@@ -62,11 +62,7 @@ class CMyCenter(BaseMyCenterControl):
                 my_info.fill(percents, 'overpercents')  # 超过%的vip
                 # 保级差额
 
-
-
-
-                import ipdb
-                ipdb.set_trace()
+                my_info.fill('15000', 'next')
             # 保级差别
             data = import_status("get_my_info_success", "OK")
             data["data"] = my_info
@@ -74,6 +70,19 @@ class CMyCenter(BaseMyCenterControl):
         except:
             logger.exception("get myinfo error")
             return SYSTEM_ERROR
+
+    @verify_token_decorator
+    def set_schedual_show(self):
+        if not is_admin():
+            raise TOKEN_ERROR(u'请使用管理员登录')
+        data = parameter_required(u'show')
+        show = '1' if str(data.get('show')) == '1' else '0'
+        Partner().set_item('show', 'schedule', show)
+        msg = 'set_schedual_hide_success' if show == '0' else 'set_schedual_show_success'
+        data = import_status(msg, "OK")
+        return data
+
+
 
     @verify_token_decorator
     def get_levelrules(self):

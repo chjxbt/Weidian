@@ -37,7 +37,8 @@ class AMyCenter(Resource):
             "del_bankcard": "self.control_mycenter.del_bankcard()",
             "update_bankcard": "self.control_mycenter.update_bankcard()",
             "get_inforcode": "self.control_mycenter.get_inforcode()",
-            "verify_inforcode": "self.control_mycenter.verify_inforcode()"
+            "verify_inforcode": "self.control_mycenter.verify_inforcode()",
+            "set_schedual_show": "self.control_mycenter.set_schedual_show()",
         }
         res = eval(apis[myinfo])
         return jsonify(res)
