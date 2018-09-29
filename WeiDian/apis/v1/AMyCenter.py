@@ -14,7 +14,7 @@ class AMyCenter(Resource):
     def get(self, myinfo):
         print (myinfo)
         apis = {
-            "get_info": "self.control_mycenter.get_info()",
+            "get_info": "self.control_mycenter.get_info_top()",
             "get_rule": "self.control_mycenter.get_levelrules()",
             "get_account_info": "self.control_mycenter.get_accountinfo()",
             "get_address": "self.control_mycenter.get_useraddress()",
@@ -22,7 +22,8 @@ class AMyCenter(Resource):
             "get_mybankcard": "self.control_mycenter.get_bankcard()",
             "get_province": "self.control_mycenter.get_province()",
             "get_city": "self.control_mycenter.get_city_by_provincenum()",
-            "get_area": "self.control_mycenter.get_area_by_citynum()"
+            "get_area": "self.control_mycenter.get_area_by_citynum()",
+            'get_today_total': 'self.control_mycenter.get_today_total()',
         }
         res = eval(apis[myinfo])
         return jsonify(res)
@@ -37,7 +38,8 @@ class AMyCenter(Resource):
             "del_bankcard": "self.control_mycenter.del_bankcard()",
             "update_bankcard": "self.control_mycenter.update_bankcard()",
             "get_inforcode": "self.control_mycenter.get_inforcode()",
-            "verify_inforcode": "self.control_mycenter.verify_inforcode()"
+            "verify_inforcode": "self.control_mycenter.verify_inforcode()",
+            "set_schedual_show": "self.control_mycenter.set_schedual_show()",
         }
         res = eval(apis[myinfo])
         return jsonify(res)

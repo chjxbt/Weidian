@@ -45,3 +45,9 @@ class SUser(SBase):
     def get_user_login_time(self, usid):
         return self.session.query(UserLoginTime).filter(UserLoginTime.USid == usid).order_by(
             UserLoginTime.USTcreatetime.desc()).first()
+
+    @close_session
+    def get_partner_count(self):
+        """合伙人数量"""
+        return self.session.query(User).filter(User.USlevel > 0).count()
+

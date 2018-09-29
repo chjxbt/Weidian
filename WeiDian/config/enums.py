@@ -93,4 +93,7 @@ icon = {
            "active_icon": 'https://daaiti.cn/imgs/WeiDian/icon/me2.png',
            "url": 'personal'
        }
+
+finished_pay_status = ['2', '4', '5', '7', '9', '10', '11']
+
 HMSkipType = {'0': '无跳转类型', '1': '专题', '2': '商品', '3': '教程', '4': '公告'}

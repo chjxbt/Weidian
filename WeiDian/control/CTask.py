@@ -310,7 +310,6 @@ class CTask(BaseTask):
             raise SYSTEM_ERROR(u"服务器繁忙")
         return response
 
-
     @verify_token_decorator
     def upload_task_img(self):
         if not is_admin():
