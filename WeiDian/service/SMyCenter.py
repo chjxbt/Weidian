@@ -4,17 +4,17 @@ import os
 import uuid
 
 from SBase import SBase, close_session
-from WeiDian.models.model import MyCenter, IdentifyingCode
+from WeiDian.models.model import IdentifyingCode
 
 sys.path.append(os.path.dirname(os.getcwd()))
 
 
 class SMyCenter(SBase):
 
-    @close_session
-    def get_my_info_by_usid(self, usid):
-        """返回我的基本数据"""
-        return self.session.query(MyCenter).filter_by(USid=usid).first()
+    # @close_session
+    # def get_my_info_by_usid(self, usid):
+    #     """返回我的基本数据"""
+    #     return self.session.query(MyCenter).filter_by(USid=usid).first()
 
     @close_session
     def get_uptime_by_utel(self, utel):

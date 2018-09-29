@@ -16,6 +16,7 @@ from WeiDian.control.BaseControl import BaseMyCenterControl
 from flask import request
 
 from WeiDian.service.SOrder import SOrder
+from WeiDian.service.SPartnerSellOrInviteMatch import SPartnerSellOrInviteMatch
 from WeiDian.service.SRaward import SRaward
 
 sys.path.append(os.path.dirname(os.getcwd()))
@@ -37,44 +38,69 @@ class CMyCenter(BaseMyCenterControl):
         self.sbankcard = SBankCard()
         self.sorder = SOrder()
         self.sraward = SRaward()
+        self.spartnermatch = SPartnerSellOrInviteMatch()
 
     @verify_token_decorator
-    def get_info(self):
+    def get_info_top(self):
         """个人中心需要的数据"""
-        # todo 保级差额
-        if is_tourist():
-            return AUTHORITY_ERROR(u"未登录")
         try:
-            user = request.user
-            usid = user.id
-            print (user.USname).encode('utf8')
-            print (user.USid).encode('utf8')
-            my_info = self.smycenter.get_my_info_by_usid(usid)
+            if is_tourist():
+                return AUTHORITY_ERROR(u"未登录")
+            data = dict()
+            my_info = request.user
+            data.setdefault('user', my_info)
+            usid = my_info.id
+            print (my_info.USname).encode('utf8')
+            print (my_info.USid).encode('utf8')
             logger.debug("get my info by usid")
-            self.fill_user_info(my_info)
-            if is_partner() and str(Partner().get_item('show', 'schedule')) != '0':
+            # 正在进行中的合伙人活动
+            partner_match = self.spartnermatch.get_lasting_partner_match()
+            # 如果是合伙人, 且活动进行中
+            if is_partner() and partner_match:
+                data.setdefault('match_type', partner_match.PSIMtype)
                 # 成功超过vip数量
-                mysell = self.sorder.get_partner_sellmount_by_usid(usid)
-                my_sell_mount =  mysell.sellmount if mysell else 0  # 我的销售总额
-                gt_my_sell_count = self.sorder.get_parter_sellmount_gt(my_sell_mount)  # 营业额比我多的
+                psimid = partner_match.PSIMid
+                my_achev = self.spartnermatch.get_partner_match_mount_by_usidpsmid(usid, psimid)
+                my_achev_value = my_achev.sellorinvitemount if my_achev else 0  # 我的销售总额(人数)
+
+                gt_my_sell_count = self.spartnermatch.get_partner_match_mount_gt_value(psimid, my_achev_value)  # 营业额(人数)比我多的
                 partner_num = self.suser.get_partner_count()  # vip总数
-                lt_my_sell_count = partner_num - gt_my_sell_count  # 比我销售少的
+                lt_my_sell_count = partner_num - gt_my_sell_count  # 比我销售(人数)少的
+
                 partner_num = partner_num or 1
                 percents = int(float(lt_my_sell_count) / partner_num * 100)
                 my_info.fill(percents, 'overpercents')  # 超过%的vip
-                # 保级差额
+                data.setdefault('myranking', percents)
+                # 保级差额(人)
+                try:
+                    partner_match.PSIMrule = match_rule = json.loads(partner_match.PSIMrule)
+                    achev_level_value = {k: int(v) - my_achev_value for k, v in match_rule.items() if int(v) > my_achev_value}
+                    if achev_level_value:  # 是否有下一级
+                        next_level = sorted(achev_level_value.keys())[0]
+                        # 当前等级(未用到)
+                        current_level = int(next_level) - 1
+                        to_next = achev_level_value[next_level]
+                        my_info.fill(to_next, 'next')
+                        data.setdefault('next', to_next)
+                    else:
+                        my_info.fill(0, 'next')
+                        current_level = sorted(achev_level_value.keys())[-1]
 
-                my_info.fill('15000', 'next')
-            # 保级差别
-            data = import_status("get_my_info_success", "OK")
-            data["data"] = my_info
-            return data
+                except ValueError as e:
+                    print('保级错误')
+                    my_info.fill('0', 'next')
+                #     pass
+                # 保级差别
+            response = import_status("get_my_info_success", "OK")
+            response["data"] = data
+            return response
         except:
             logger.exception("get myinfo error")
             return SYSTEM_ERROR
 
     @verify_token_decorator
     def set_schedual_show(self):
+        # 不再使用
         """设置个人主页升级进度显示"""
         if not is_admin():
             raise TOKEN_ERROR(u'请使用管理员登录')
