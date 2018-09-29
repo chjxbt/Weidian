@@ -1,21 +1,26 @@
 <template>
   <div @touchmove="touchMove">
-    <img class="activity-img" :src="banner">
+    <div v-if="!show_big_img">
+      <img class="activity-img" :src="banner">
 
-    <mt-loadmore :top-method="loadTop" ref="loadmore">
-      <div class="m-index-section">
-        <template v-for="(item,index) in activity_list">
-          <ctx :icon="icon_list" :list="item" :index="index" @iconClick="iconClick" @showMoreText="showMoreText"></ctx>
-        </template>
+      <mt-loadmore :top-method="loadTop" ref="loadmore">
+        <div class="m-index-section">
+          <template v-for="(item,index) in activity_list">
+            <ctx :icon="icon_list" :list="item" :index="index" @iconClick="iconClick" @showMoreText="showMoreText"></ctx>
+          </template>
+        </div>
+      </mt-loadmore>
+
+      <!--<share v-if="show_fixed" @fixedClick="fixedClick"></share>-->
+      <attention v-if="show_fixed" @closeModal="closeModal('show_fixed')"></attention>
+      <div class="bottom-prompt" v-if="bottom_show">
+        <div class="bottom-line"></div>
+        <div class="m-grey-color">我是有底线的</div>
+        <div class="bottom-line"></div>
       </div>
-    </mt-loadmore>
-
-    <!--<share v-if="show_fixed" @fixedClick="fixedClick"></share>-->
-    <attention v-if="show_fixed" @closeModal="closeModal('show_fixed')"></attention>
-    <div class="bottom-prompt" v-if="bottom_show">
-      <div class="bottom-line"></div>
-      <div class="m-grey-color">我是有底线的</div>
-      <div class="bottom-line"></div>
+    </div>
+    <div class="m-big-img" v-else>
+      <img class="activity-img" :src="bigImg">
     </div>
     <!--<m-footer></m-footer>-->
   </div>
@@ -61,6 +66,14 @@
         total_count: 0,
         count: 5,
         bottom_show:false,
+        code_src:'',
+        components_src:'',
+        shareParams: {
+          media:[],
+          product:{}
+        },
+        bigImg:'',
+        show_big_img:false
       }
     },
     components: { mFooter, ctx, share, attention },
@@ -150,13 +163,73 @@
           case 0:
             this.changeLike(list);
             break;
-          /*case 1:
-            this.copyText(list);
-            break;*/
           case 1:
             this.show_fixed = true;
             break;
         }
+      },
+      // 处理合成图片要的参数
+      shareDone(list) {
+        this.getEr(this.activity_list[list].acskiptype,list);
+      },
+      changeRoute(type,list,name){
+        let _url = '';
+        if(name){
+          switch (type){
+            case 0:
+              return false;
+              break;
+            case 1:
+              _url = this.title +'activityContent?openid=' + localStorage.getItem('openid') + '&baid=' + (name?this.activity_list[list].baid : list);
+              break;
+            case 3:
+              _url = this.title + 'productDetail?openid=' + localStorage.getItem('openid')+ '&prid=' + (name?this.activity_list[list].prid : list);
+              break;
+            case 2:
+              _url = this.title + 'discover/index?openid=' + localStorage.getItem('openid') + '&acid=' + (name?this.activity_list[list].acid : list)+'&name=赚钱学院';
+              break;
+            case 4:
+              _url = this.title + 'discover/index/index?openid=' + localStorage.getItem('openid')+ '&acid=' + (name?this.activity_list[list].acid : list) +'&name=公告';
+              break;
+          }
+          return _url;
+        }else{
+          switch (type){
+            case 0:
+              return false;
+              break;
+            case 1:
+              this.$router.push({path: '/activityContent', query: { openid :localStorage.getItem('openid'), baid: list}});
+              break;
+            case 2:
+              this.$router.push({path: '/productDetail', query: { openid :localStorage.getItem('openid'), prid: list}});
+              break;
+            case 3:
+              this.$router.push({path: '/discover', query: { openid :localStorage.getItem('openid'), acid: list,name: '赚钱学院'}});
+              break;
+            case 4:
+              this.$router.push({path: '/discover', query: { openid :localStorage.getItem('openid'), acid: list,name: '公告'}});
+              break;
+          }
+        }
+
+
+      },
+      /*获取分享的二维码**/
+      getEr(id,list){
+        let _url = '';
+        _url = this.changeRoute(id,list,'活动');
+        axios.post(api.share_qrcode +'?token=' + localStorage.getItem('token'),{
+          dataurl:_url
+        }).then(res => {
+          if(res.data.status == 200){
+            this.code_src = res.data.qrcodeurl;
+            this.components_src = res.data.components;
+            this.shareParams.product = this.activity_list[list].product;
+            this.shareParams.media = this.activity_list[list].media;
+            this.show_fixed = true;
+          }
+        })
       },
       // 活动点赞
       changeLike(index) {
@@ -181,17 +254,10 @@
           }
         });
       },
-      /*分享按钮点击*/
-      fixedClick(){
-        this.show_fixed = false;
-      },
-      // 复制链接
-      copyText(list) {
-        let link = window.location.href + this.activity_list[list].prid;
-        this.$copyText(link).then(function (e) {
-          Toast({ message: "复制成功", className: 'm-toast-success' });
-        })
-      },
+      // /*分享按钮点击*/
+      // fixedClick(){
+      //   this.show_fixed = false;
+      // },
       // 展开全文、收齐全文
       showMoreText(bool,v){
         let arr = [].concat(this.activity_list);
@@ -202,6 +268,9 @@
     mounted() {
       this.baid = this.$route.query.baid;
       this.getActivity();
+      if(this.$route.query.baimage){
+        this.bigImg = this.$route.query.baimage;
+      }
     }
   }
 </script>
@@ -213,5 +282,12 @@
     width: 750px;
     height: 280px;
     margin-bottom: 40px;
+  }
+  .m-big-img{
+    width: 100%;
+    img{
+      display: block;
+      width: 100%;
+    }
   }
 </style>

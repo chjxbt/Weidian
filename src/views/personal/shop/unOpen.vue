@@ -224,6 +224,7 @@
       width: 100%;
       height: 400px;
      background-color: #fff;
+      margin-top: 20px;
       .m-high-img{
         display: block;
         width: 100%;

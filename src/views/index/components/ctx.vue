@@ -1,5 +1,5 @@
 <template>
-  <div class="m-section-one">
+  <div class="m-section-one" @click="ctxClick(list)">
     <img v-if="list.suuser && list.suuser.suheader" :src="list.suuser.suheader" class="m-section-img"/>
     <div class="m-section-content">
       <div class="m-section-title">
@@ -8,12 +8,12 @@
       </div>
       <div class="m-section-text">
         <p  class="textP" :class="!list.show_text ? 'active':''">  {{list.actext}}</p>
-        <span class="m-section-more" v-if="list.show_text" @click="showMoreText(false)">展开全文</span>
-        <span class="m-section-more" v-if="list.actext.length >92 && !list.show_text" @click="showMoreText(true)">收起全文</span>
+        <span class="m-section-more" v-if="list.show_text" @click.stop="showMoreText(false)">展开全文</span>
+        <span class="m-section-more" v-if="list.actext.length >92 && !list.show_text" @click.stop="showMoreText(true)">收起全文</span>
         <ul class="m-img-list">
           <template v-for="(item,index) in list.media">
             <li>
-              <img v-if="item.amimage" :src="item.amimage" class="m-section-text-imgs" :class="list.media.length == 4?'active':''" @click="bigImg(index, list.media)">
+              <img v-if="item.amimage" :src="item.amimage" class="m-section-text-imgs" :class="list.media.length == 4?'active':''" @click.stop="bigImg(index, list.media)">
               <!--<video v-if="item.amvideo" :src="item.amvideo"></video>-->
             </li>
           </template>
@@ -30,7 +30,7 @@
           <div>
             <!--<icon-list :list="list.icon" :index="index" @iconClick="iconClick"></icon-list>-->
             <ul class="m-icon-list">
-              <li v-for="(item,index) in list.icon" @click="iconClick(index)">
+              <li v-for="(item,index) in list.icon" @click.stop="iconClick(index)">
                 <img v-if="!item.alreadylike" :src="'/static/images/' + item.src +'.png'" class="m-icon" alt="">
                 <img v-else  :src="'/static/images/' + item.src +'-active.png'" class="m-icon" alt="">
                 {{item.name}}
@@ -113,6 +113,20 @@
             arr[2] = m;
 
             this.list.remaintime = [].concat(arr);
+          }
+        },
+        ctxClick(i){
+          switch (i.acskiptype){
+            case 1:
+              if(i.bigactivity.type == 0){
+                this.$router.push({path: '/activityContent', query: { baid: i.aclinkvalue,baimage:bigactivity.baimage}});
+              }else{
+                this.$router.push({path: '/activityContent', query: { baid: i.aclinkvalue}});
+              }
+              break;
+            case 2:
+              this.$router.push({path: '/productDetail', query: {  prid: i.aclinkvalue}});
+              break;
           }
         }
       }
