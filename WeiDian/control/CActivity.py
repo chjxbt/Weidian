@@ -195,12 +195,13 @@ class CActivity(BaseActivityControl):
         TopnavId = data.get('TopnavId')       # 导航页面
         ACtext = data.get('ACtext')           # 文字内容
         ACSkipType = data.get('ACSkipType')   # 跳转类型
-        BAid = data.get('BAid', '0')          # 专题id
-        PRid = data.get('PRid', '0')          # 商品id
+        # BAid = data.get('BAid', '0')          # 专题id
+        # PRid = data.get('PRid', '0')          # 商品id
         media = data.get('media')             # 多媒体
         tags = data.get('tags')               # 右上角tag标签
         ACistop = data.get('ACistop', 0)
         ACtitle = data.get('ACtitle')
+        AClinkvalue = data.get('AClinkvalue')
 
         if str(ACistop) == 'True':
             istop = self.sactivity.get_top_activity(TopnavId)
@@ -218,8 +219,9 @@ class CActivity(BaseActivityControl):
             'ACid': ACid,
             # 'PRid': relation_product.PRid,
             'ACSkipType': ACSkipType,
-            'BAid': BAid,
-            'PRid': PRid,
+            'AClinkvalue': AClinkvalue,
+            # 'BAid': BAid,
+            # 'PRid': PRid,
             'SUid': request.user.id,
             'ACtype': data.get('ACtype'),  # 类型
             'TopnavId': TopnavId,
@@ -231,7 +233,7 @@ class CActivity(BaseActivityControl):
             'ACstarttime': ACstarttime,
             'ACendtime': ACendtime,
             'ACtitle': ACtitle,
-            'ACistop': ACistop  # TODO 判断置顶待完善
+            'ACistop': ACistop
         })
         # 创建media
         image_num = 0  # 标志用来限制图片或视频的数量
