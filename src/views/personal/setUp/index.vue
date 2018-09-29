@@ -25,7 +25,7 @@
           <span class="m-setUp-input">{{form.address}}</span>
           <span class="m-row-btn" @click="addressClick">编辑</span>
         </div>
-        <div class="m-row">
+        <div class="m-row" v-if="isOpen">
           <span class="m-form-label">银行卡</span>
           <!--<input type="text" class="m-setUp-input" placeholder="6222222222222222222">-->
           <span class="m-setUp-input">{{form.bankcard}}</span>
@@ -58,12 +58,16 @@
                   wxnum:'',
                   bankcard:'',
                   address:''
-                }
+                },
+              isOpen:false
             }
         },
         components: {},
       mounted(){
         common.changeTitle('账号设置');
+        if(localStorage.getItem('level') == 'partner'){
+          this.isOpen = true;
+        }
       },
         methods: {
           getInfo(){

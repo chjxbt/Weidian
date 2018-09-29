@@ -198,14 +198,8 @@
 
       },
       postImg(base){
-
-        console.log(base)
-        var fd=new FormData();
-        let blob = this.dataURItoBlob(base);
-        fd.append("fileData", blob);//fileData为自定义
-        fd.append("fileName", "123jpg");     
         axios.post(api.generate_poster +'?token=' +localStorage.getItem('token'),{
-          file:fd
+          baseimg:base
         }).then(res => {
 
         })

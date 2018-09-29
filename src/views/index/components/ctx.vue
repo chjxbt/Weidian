@@ -4,7 +4,7 @@
     <div class="m-section-content">
       <div class="m-section-title">
         <span class="m-title">{{list.suuser.suname}}</span>
-        <span class="m-sale">已售{{list.soldnum}}件</span>
+        <span class="m-sale" v-if="list.soldnum">已售{{list.soldnum}}件</span>
       </div>
       <div class="m-section-text">
         <p  class="textP" :class="!list.show_text ? 'active':''">  {{list.actext}}</p>
@@ -21,7 +21,7 @@
         <div class="m-section-bottom">
           <div>
             <div>
-              <span class="m-price-unit">￥</span>
+              <span class="m-price-unit"  v-if="list.product != null && list.product.prprice" >￥</span>
               <span class="m-price " v-if="list.product != null && list.product.prprice" >{{list.product.prprice}}</span>
               <span class="m-red m-ft-30" v-if="list.product != null && list.product.prsavemonty">赚{{list.product.prsavemonty}}</span>
             </div>

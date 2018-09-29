@@ -19,7 +19,7 @@
           </mt-swipe>
           <div class="m-recommend">
             <template v-for="(item,index) in hot_list" ><!---->
-              <div class="m-recommend-one" :class="index == hot_index?'active':''" :keys="item.hmid">
+              <div class="m-recommend-one" :class="index == hot_index?'active':''" :keys="item.hmid" @click="hotClick(item)">
                 <span class="m-recommend-span">
                   <span class="m-recommend-label">热文</span>
                   <span>{{item.hmtext}}</span>
@@ -58,9 +58,10 @@
           <div class="m-modal-content">
             <h3 class="m-modal-award-title">
               <span>奖励任务</span>
-              <span class="m-modal-award-info" v-if="task_list[0] && task_list[0].raward.ratype == 0">满{{task_list[0].raward.rafilter}}减{{task_list[0].raward.raamount}}</span>
-              <span class="m-modal-award-info" v-else-if="task_list[0] && task_list[0].raward.ratype == 1">佣金上浮{{task_list[0].raward.raratio}}</span>
-              <span class="m-modal-award-info" v-else-if="task_list[0]">{{task_list[0].raward.raamount}}元新衣币<span v-if="task_list[0].raward.ranumber">*{{task_list[0].raward.ranumber}}张</span></span>
+              <span class="m-modal-award-info" v-if="task_reward">{{task_reward}}</span>
+              <!--<span class="m-modal-award-info" v-if="task_reward && task_reward.ratype == 0">满{{task_reward.rafilter}}减{{task_reward.raamount}}</span>-->
+              <!--<span class="m-modal-award-info" v-if="task_reward && task_reward.ratype == 1">佣金上浮{{task_reward.raratio}}</span>-->
+              <!--<span class="m-modal-award-info" v-if="task_reward">{{task_reward.raamount}}元新衣币<span v-if="task_reward.ranumber">*{{task_reward.ranumber}}张</span></span>-->
             </h3>
             <div class="m-scroll">
               <ul class="m-modal-award-ul">
@@ -124,6 +125,7 @@
       mixins: [wxapi],
         data() {
             return {
+              title:'http:/www.daaiti.cn:8080/',
               course:1,
               count:5,
               total_count:0,
@@ -187,7 +189,8 @@
               img_src:'',
               TArole:'',
               code_src:'',
-              components_src:''
+              components_src:'',
+              task_reward:null
             }
         },
         components: {
@@ -282,20 +285,36 @@
           fenClick(){
             this.show_fen = false
           },
-          /*获取分享的二维码**/
-          getEr(id,list){
+          hotClick(item){
+            // this.changeRoute(item.hmskiptype,item.hmcontent)
+            window.location.href = this.changeRoute(item.hmskiptype,item.hmcontent);
+          },
+          changeRoute(type,list,name){
             let _url = '';
-            switch (id){
+            switch (type){
               case 0:
                 return false;
                 break;
               case 1:
-                _url = 'https://weidian.daaiti.cn/#/activityContent?openid=' + localStorage.getItem('openid');
-                break;
+              _url = this.title +'#/activityContent?openid=' + localStorage.getItem('openid') + '&baid=' + (name?this.activity_list[list].baid : list);
+              break;
               case 2:
-                _url = 'https://weidian.daaiti.cn/#/productDetail?openid=' + localStorage.getItem('openid');
+                _url = this.title + '#/productDetail?openid=' + localStorage.getItem('openid')+ '&prid=' + (name?this.activity_list[list].prid : list);
+                break;
+              case 3:
+                _url = this.title + '#/discovery?openid=' + localStorage.getItem('openid') + '&acid=' + (name?this.activity_list[list].acid : list);
+                break;
+              case 4:
+                _url = this.title + '#/discovery?openid=' + localStorage.getItem('openid')+ '&acid=' + (name?this.activity_list[list].acid : list);
                 break;
             }
+            console.log(_url,'ssss')
+            return _url;
+          },
+          /*获取分享的二维码**/
+          getEr(id,list){
+            let _url = '';
+            _url = this.changeRoute(id,list,'活动');
             axios.post(api.share_qrcode +'?token=' + localStorage.getItem('token'),{
               dataurl:_url
             }).then(res => {
@@ -318,6 +337,7 @@
               if(res.data.status == 200){
                this.task_list = res.data.data;
                this.TArole = res.data.TArole;
+               this.task_reward = res.data.raward;
                 if(localStorage.getItem('is_today_first') == 1){
                   this.show_task = true;
                   window.localStorage.setItem("is_today_first",0);

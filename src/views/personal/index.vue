@@ -15,8 +15,8 @@
                 <p>新衣币</p>
               </div>
               <div v-else>
-                <p>您已成功超过 <span class="m-ft-30">80%</span> 的VIP</p>
-                <p>离成功保级还差 <span class="m-ft-30">¥15000</span> 元</p>
+                <p>您已成功超过 <span class="m-ft-30">{{person_info.myranking}}%</span> 的VIP</p>
+                <p>离成功保级还差 <span class="m-ft-30">¥{{person_info.myrewards}}</span> 元</p>
               </div>
             </div>
           </div>
@@ -141,16 +141,16 @@
       }
     }
     .m-shop-top-box{
-      padding: 28px;
+      padding: 20px;
       .m-shop{
-        padding: 28px;
+        padding: 20px 20px 0;
         .m-shop-top-img{
           display: block;
-          width: 200px;
-          height: 200px;
+          width: 136px;
+          height: 136px;
           background-color: #a4a4a4;
           border-radius: 50%;
-          margin-right: 30px;
+          margin:0 60px;
           border: 10px solid #fff;
         }
         .m-shop-content{
@@ -163,7 +163,7 @@
           }
           h3{
             font-size: 40px;
-            margin-bottom: 43px;
+            margin-bottom: 30px;
             margin-top: 20px;
             /*color: #fff;*/
             color: #000;
@@ -176,8 +176,8 @@
       span{
         display: block;
         width: 50%;
-        height: 140px;
-        line-height: 140px;
+        height: 120px;
+        line-height: 120px;
         text-align: center;
         color: #fff;
         &.m-invite-fans{
@@ -208,7 +208,11 @@
   }
   .m-part-list{
     .flex-row(space-around);
-    padding: 46px 0;
+    padding: 20px 0;
+    &.m-new{
+      border-top: 10px solid #f3f5f8;
+      border-bottom: 10px solid #f3f5f8;
+    }
     li{
       .flex-col(center);
       .m-part-list-icon{
@@ -229,7 +233,7 @@
   .m-short-bannar{
     width: 100%;
     height: 120px;
-    margin: 16px 0;
+    border-top: 10px solid  #f3f5f8;;
     background-color: #fff;
     .m-short-img{
       display: block;

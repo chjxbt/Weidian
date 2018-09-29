@@ -80,8 +80,8 @@
       },
       /*获取活动列表*/
       getActivity(start, count){
-        axios.get(api.get_all_activity + '?token=' + localStorage.getItem('token'), {
-          params: { start: start || 0, count: count || this.count, tnid: this.tnid }}).then(res => {
+        axios.get(api.get_bigactivity + '?token=' + localStorage.getItem('token'), {
+          params: { page_num: start || 0, page_size: count || this.count, baid: this.baid }}).then(res => {
           if(res.data.status == 200){
             this.isScroll = true;
             this.total_count = res.data.count;
@@ -193,7 +193,6 @@
     },
     mounted() {
       this.baid = this.$route.query.baid;
-
       this.getActivity();
     }
   }
