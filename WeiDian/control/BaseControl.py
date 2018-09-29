@@ -76,7 +76,7 @@ class BaseActivityControl():
     def fill_product(self, act):
         """填充活动商品"""
         # 粉丝页面显示本身价格和店主价, 以及相关商品推荐(规则?)
-        prid = act.PRid
+        prid = act.AClinkvalue
         product = self.sproduct.get_product_by_prid(prid)
         if product:
             prkeeperprice = product.PRprice * (1 - Partner().one_level_divide)

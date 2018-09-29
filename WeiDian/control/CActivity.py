@@ -42,11 +42,12 @@ class CActivity(BaseActivityControl):
         self.sproduct = SProduct()
         from WeiDian.service.SUser import SUser
         self.suser = SUser()
+        from WeiDian.service.SBigActivity import SBigActivity
+        self.sbigactivity = SBigActivity()
 
     @verify_token_decorator
     def get_all(self):
         """获取条件下的所有活动
-        http://127.0.0.1:5000/activity/get_all?navid=q&lasting=true
         """
         if is_tourist():
             return AUTHORITY_ERROR(u"未登录")
@@ -90,9 +91,19 @@ class CActivity(BaseActivityControl):
                 self.fill_type(activity)
                 if activity.ACSkipType == 0:
                     self.fill_comment_two(activity)
-                if activity.ACSkipType == 2:
+                    activity.fill('none_skip', 'skip_type')
+                    activity.fill('无跳转类型', 'zh_skip_type')
+                elif activity.ACSkipType == 1:
+                    baid = activity.AClinkvalue
+                    activity.fill('bigactivity', 'skip_type')
+                    activity.fill('专题', 'zh_skip_type')
+                    bigactivity = self.sbigactivity.get_one_big_act(baid)
+                    activity.fill()
+                elif activity.ACSkipType == 2:
                     self.fill_soldnum(activity)
                     self.fill_product(activity)
+                    activity.fill('product', 'skip_type')
+                    activity.fill('商品', 'zh_skip_type')
 
             # map(self.fill_detail, activity_list)
             # map(self.fill_comment_two, activity_list)

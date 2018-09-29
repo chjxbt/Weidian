@@ -20,8 +20,8 @@ class Activity(BaseModel):
     """
     __tablename__ = 'activity'
     ACid = Column(String(64), primary_key=True)
-    PRid = Column(String(64))  # 活动商品id
-    BAid = Column(String(64))  # 二跳页id
+    # PRid = Column(String(64))  # 活动商品id
+    # BAid = Column(String(64))  # 二跳页id
     SUid = Column(String(64), nullable=False)  # 发布者(超级用户才可以发布)
     ACtype = Column(Integer, default=0)  # 活动分类, 具体分类如下
     # {0 普通动态, 1 满减, 2 满赠, 3 优惠券, 4 砍价, 5 拼团, 6 单品优惠券, 7 一元秒杀, 8 前几分钟半价, 9 限时抢, 10 X元X件}
@@ -40,7 +40,9 @@ class Activity(BaseModel):
     ACisdelete = Column(Boolean, default=False)  # 是否删除
     ACistop = Column(Boolean, default=False)  # 是否置顶
     ACtitle = Column(Text)  # 活动标题（公告、教程页）
-    ACSkipType = Column(Integer, default=0)  # 跳转类型{0:无跳转类型, 1:专题, 2:商品}
+
+    AClinkvalue = Column(String(64), default=0)
+    ACSkipType = Column(Integer, default=0)  # 跳转类型{0:无跳转类型, 1:专题, 2:商品}}
 
 
     @orm.reconstructor
@@ -493,6 +495,7 @@ class BigActivity(BaseModel):
     BAposition = Column(Integer, default=0)         # 图片展示位置{0:首页 1:发现页}
     BAisdisplay = Column(Boolean, default=True)     # 是否展示
     BAisdelete = Column(Boolean, default=False)     # 删除
+    BAtype = Column(Integer, )
 
     @orm.reconstructor
     @auto_createtime
@@ -939,7 +942,6 @@ class PartnerSellOrInviteMatch(BaseModel):
     PSIMrule = Column(Text, comment=u'奖励各个级别规则,格式{1: 122, 2: 5000, 3: 10000}')
     PSIfavor = Column(Text, comment=u'额外奖励{1: 22, 2: 5000, 3:1000}')
     PSIMfavortime = Column(String(16), comment=u'奖励发放时间')
-
     PSIMtype = Column(String(8), default=u'sell', comment=u'活动类型: sell, invite')
     PSIMisclose = Column(Boolean, default=False, comment=u'是否关闭')
     PSIMisdelete = Column(Boolean, default=False, comment=u'是否删除')

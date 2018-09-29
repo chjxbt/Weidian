@@ -100,14 +100,15 @@ class CMyCenter(BaseMyCenterControl):
 
     @verify_token_decorator
     def set_schedual_show(self):
-        # 不再使用
         """设置个人主页升级进度显示"""
         if not is_admin():
             raise TOKEN_ERROR(u'请使用管理员登录')
         data = parameter_required(u'show')
-        show = '1' if str(data.get('show')) == '1' else '0'
-        Partner().set_item('show', 'schedule', show)
-        msg = 'set_schedual_hide_success' if show == '0' else 'set_schedual_show_success'
+        close = False if str(data.get('show')) == '1' else True
+        updated = self.spartnermatch.update_partner_match(1, {
+            'PSIMisclose': close
+        })
+        msg = 'set_schedual_hide_success' if close else 'set_schedual_show_success'
         data = import_status(msg, "OK")
         return data
 
