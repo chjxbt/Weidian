@@ -19,10 +19,13 @@ class SActivity(SBase):
         return activity_list
 
     @close_session
-    def get_activity_count(self, tnid):
+    def get_activity_count(self, acfilter):
         settings = Partner()
         skiptype = settings.get_item('skip', 'skip_type')
-        return self.session.query(Activity).filter_by(ACisdelete=False, TopnavId=tnid, ACSkipType=skiptype).count()
+        acfilter.add(Activity.ACisdelete == False)
+        acfilter.add(Activity.ACSkipType == skiptype)
+
+        return self.session.query(Activity).filter(*acfilter).count()
 
     @close_session
     def get_top_activity(self, tnid):
@@ -115,7 +118,10 @@ class SActivity(SBase):
     def get_bigactivity_count_by_baid(self, baid):
         return self.session.query(Activity).filter_by(BAid=baid, ACSkipType=2, ACisdelete=False).count()
 
-
+    @close_session
+    def get_activity_by_filter(self, acfilter, tnid):
+        from sqlalchemy import or_
+        return self.session.query(Activity).filter(or_(*acfilter), Activity.TopnavId == tnid).order_by(Activity.ACistop.desc(), Activity.ACcreatetime.desc()).all()
 #
 # if __name__ == '__main__':
 #     test = SActivity()

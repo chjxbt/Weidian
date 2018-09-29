@@ -29,4 +29,6 @@ class STopNav(SBase):
     def del_topnav(self, tnid):
         return self.session.query(TopNav).filter_by(TNid=tnid).delete()
 
-
+    @close_session
+    def get_topnav_by_name(self, name):
+        return self.session.query(TopNav).filter(TopNav.TNname == name).first()

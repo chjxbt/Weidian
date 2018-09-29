@@ -23,7 +23,7 @@ class CHotMessage():
         self.s_hotmessage = SHotMessage()
         from WeiDian.service.SProduct import SProduct
         self.sproduct = SProduct()
-        self.hotmessage_type = ['0', '1', '2', '3']
+        self.hotmessage_type = ['0', '1', '2', '3', '4']
         self.empty = ['', None, [], {}]
         # self.hostmessage_update_key = ['HMtext', "HMcontent", "HMstarttime", 'HMendtime', "HMsort"]
 
@@ -108,6 +108,8 @@ class CHotMessage():
         hot = {k: v for k, v in hot.items() if v not in self.empty}
         if data.get("hmendtime"):
             hot["HMendtime"] = get_db_time_str(data.get("hmendtime"))
+        if data.get('HMisdelete'):
+            hot['HMisdelete'] = True
 
         from WeiDian.models.model import HotMessage
         filter_change = {HotMessage.HMid == hmid}
@@ -119,13 +121,15 @@ class CHotMessage():
         #     if data.get(str(key).lower()):
         #         hot[key] = data.get(str(key))
 
+        if data.get("hmsort"):
+            filter_changed = {HotMessage.HMsort == data.get("hmsort")}
+            hostmessage_changeed = self.s_hotmessage.get_hotmessage_by_filter(filter_changed)
+            if hostmessage_changeed:
+                self.s_hotmessage.update_hot_by_hmid(hostmessage_changeed.HMid, {"HMsort": hostmessage_change.HMsort})
+
         update_info = self.s_hotmessage.update_hot_by_hmid(hmid, hot)
         if not update_info:
             return SYSTEM_ERROR(u'热文不存在')
-        filter_changed = {HotMessage.HMsort == hostmessage_change.HMsort}
-        hostmessage_changeed = self.s_hotmessage.get_hotmessage_by_filter(filter_changed)
-        if hostmessage_changeed:
-            self.s_hotmessage.update_hot_by_hmid(hostmessage_changeed.HMid, {"HMsort": hostmessage_change.HMsort})
         response_update_hotmessage = import_status('update_hotmessage_success', 'OK')
         response_update_hotmessage['data'] = {'hmid': hmid}
         return response_update_hotmessage
