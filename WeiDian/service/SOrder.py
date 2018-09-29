@@ -51,7 +51,9 @@ class SOrder(SBase):
     def get_today_order_by_usid_status(self, usid, status):
         """获取某人今日指定状态订单"""
         today = datetime.now()
-        today_str = datetime.strftime(today, format_for_db)[:9]
+        today_str = datetime.strftime(today, format_for_db)[:8]
+        import ipdb
+        ipdb.set_trace()
         return self.session.query(OrderInfo).filter(or_(OrderInfo.OIpaystatus == s for s in status)).filter(
             OrderInfo.USid == usid,
             OrderInfo.OIpaytime.like(today_str + '%')

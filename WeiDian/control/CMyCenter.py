@@ -57,7 +57,7 @@ class CMyCenter(BaseMyCenterControl):
             partner_match = self.spartnermatch.get_lasting_partner_match()
             # 如果是合伙人, 且活动进行中
             if is_partner() and partner_match:
-                my_info.fill(partner_match.PSIMtype, 'match_type')
+                data.setdefault('match_type', partner_match.PSIMtype)
                 # 成功超过vip数量
                 psimid = partner_match.PSIMid
                 my_achev = self.spartnermatch.get_partner_match_mount_by_usidpsmid(usid, psimid)
