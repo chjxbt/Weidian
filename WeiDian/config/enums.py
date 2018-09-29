@@ -93,3 +93,7 @@ icon = {
            "active_icon": 'https://daaiti.cn/imgs/WeiDian/icon/me2.png',
            "url": 'personal'
        }
+
+
+
+finished_pay_status = ['2', '4', '5', '7', '9', '10', '11']

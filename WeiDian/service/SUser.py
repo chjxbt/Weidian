@@ -50,3 +50,4 @@ class SUser(SBase):
     def get_partner_count(self):
         """合伙人数量"""
         return self.session.query(User).filter(User.USlevel > 0).count()
+

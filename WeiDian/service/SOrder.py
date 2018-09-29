@@ -1,9 +1,10 @@
 # *- coding:utf8 *-
 import sys
 import os
+from datetime import datetime
 
 from WeiDian.models.model import OrderInfo, OrderProductInfo, PartnerSellMount
-from sqlalchemy import or_
+from sqlalchemy import or_, extract
 from SBase import SBase, close_session
 sys.path.append(os.path.dirname(os.getcwd()))
 
@@ -55,6 +56,14 @@ class SOrder(SBase):
         """获取比某个数额多的"""
         return self.session.query(PartnerSellMount).filter(PartnerSellMount.sellmount > mount).count()
 
+    @close_session
+    def get_today_order_by_usid_status(self, usid, status):
+        """获取某人今日指定状态订单"""
+        today = datetime.now()
+        return self.session.query(OrderInfo).filter(or_(OrderInfo.OIpaystatus == s for s in status)).filter(
+            OrderInfo.USid == usid,
+            extract('day', OrderInfo.OIpaytime) == today.day
+        ).all()
     # @close_session
     # def get_user_ordercount(self, usid, status):
     #     """获取自买订单总数"""

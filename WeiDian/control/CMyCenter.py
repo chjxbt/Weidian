@@ -10,12 +10,13 @@ from WeiDian.common.divide import Partner
 from WeiDian.common.import_status import import_status
 from WeiDian.common.params_require import parameter_required
 from WeiDian.common.token_required import verify_token_decorator, is_tourist, is_partner, is_admin
-from WeiDian.config.enums import BANK_MAP
+from WeiDian.config.enums import BANK_MAP, finished_pay_status
 from WeiDian.config.response import AUTHORITY_ERROR, SYSTEM_ERROR, TOKEN_ERROR, PARAMS_ERROR, TIME_ERROR, PARAMS_MISS
 from WeiDian.control.BaseControl import BaseMyCenterControl
 from flask import request
 
 from WeiDian.service.SOrder import SOrder
+from WeiDian.service.SRaward import SRaward
 
 sys.path.append(os.path.dirname(os.getcwd()))
 
@@ -35,6 +36,7 @@ class CMyCenter(BaseMyCenterControl):
         from WeiDian.service.SBankCard import SBankCard
         self.sbankcard = SBankCard()
         self.sorder = SOrder()
+        self.sraward = SRaward()
 
     @verify_token_decorator
     def get_info(self):
@@ -73,6 +75,7 @@ class CMyCenter(BaseMyCenterControl):
 
     @verify_token_decorator
     def set_schedual_show(self):
+        """设置个人主页升级进度显示"""
         if not is_admin():
             raise TOKEN_ERROR(u'请使用管理员登录')
         data = parameter_required(u'show')
@@ -82,6 +85,35 @@ class CMyCenter(BaseMyCenterControl):
         data = import_status(msg, "OK")
         return data
 
+    @verify_token_decorator
+    def get_today_total(self):
+        """今日"""
+        if not is_partner():
+            raise TOKEN_ERROR(u'请使用vip登录')
+        usid = request.user.id
+        # 今日营业额
+        today_orders = self.sorder.get_today_order_by_usid_status(usid, finished_pay_status)
+        sold_mount_list = [x.OImount for x in today_orders] or [0]
+        sold_mount = sum(sold_mount_list)
+        # 今日赚
+        today_earn = sold_mount * Partner().one_level_divide
+        today_earn = round(today_earn, 2)
+        # 额外赚
+        # todo
+        other_earn = 0
+        # 新衣币
+        new_cloth_bit = self.sraward.get_reward_by_usid(usid)
+        bit_num_list = [x.RAnumber for x in new_cloth_bit] or [0]
+        bit_num_mount = sum(bit_num_list)
+        response = import_status('get_today_earn_success', 'OK')
+        data = {
+            'sold_mount': sold_mount,
+            'today_earn': today_earn,
+            'other_earn': other_earn,
+            'bit_num_mount': bit_num_mount
+        }
+        response['data'] = data
+        return response
 
 
     @verify_token_decorator

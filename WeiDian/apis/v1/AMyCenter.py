@@ -22,7 +22,8 @@ class AMyCenter(Resource):
             "get_mybankcard": "self.control_mycenter.get_bankcard()",
             "get_province": "self.control_mycenter.get_province()",
             "get_city": "self.control_mycenter.get_city_by_provincenum()",
-            "get_area": "self.control_mycenter.get_area_by_citynum()"
+            "get_area": "self.control_mycenter.get_area_by_citynum()",
+            'get_today_total': 'self.control_mycenter.get_today_total()',
         }
         res = eval(apis[myinfo])
         return jsonify(res)
