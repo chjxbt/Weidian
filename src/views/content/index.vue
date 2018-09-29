@@ -122,15 +122,17 @@
       <div class="content-table">
         <el-table :data="activityList" border style="width: 100%">
           <el-table-column prop="num" label="推文时间" width="420">
-
             <template slot-scope="scope">
               <el-date-picker v-model="scope.row.activityTime" type="datetimerange" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
                               start-placeholder="开始日期" end-placeholder="结束日期" style="width: 3rem;" @blur="activityTimeClick(scope)">
               </el-date-picker>
             </template>
-
           </el-table-column>
-          <el-table-column prop="content" label="推文内容"></el-table-column>
+          <el-table-column prop="actext" label="推文内容">
+            <template slot-scope="scope">
+              <el-input type="textarea" :autosize="{ minRows: 3, maxRows: 3 }" placeholder="请输入推文内容" v-model="scope.row.actext"></el-input>
+            </template>
+          </el-table-column>
           <el-table-column fixed="right" label="管理" width="230">
             <template slot-scope="scope">
               <el-button @click="editClick(scope, 'banner1')" type="text" size="small">编辑</el-button>
@@ -144,18 +146,24 @@
       </div>
 
       <div class="m-form-item">
-        <p class="m-form-label">推文描述</p>
+        <p class="m-form-label">推文内容</p>
         <div class="m-item-content">
           <div class=" m-item-row">
-            <textarea v-model="value" class="m-textarea" placeholder="请输入内容"></textarea>
+            <el-input type="textarea" :autosize="{ minRows: 3, maxRows: 6 }" placeholder="请输入推文内容" v-model="activity_actext" style="width: 4rem"></el-input>
           </div>
         </div>
       </div>
-      <div class="m-form-item">
+      <div class="m-form-item" style="min-height: 1.7rem; max-height: 1.7rem">
         <p class="m-form-label">推文图片</p>
         <div class="m-item-content">
           <div class=" m-item-row">
-            <el-upload
+            <el-upload action="https://jsonplaceholder.typicode.com/posts/" list-type="picture-card" :on-preview="handlePictureCardPreview" :on-remove="handleRemove">
+              <i class="el-icon-plus"></i>
+            </el-upload>
+            <el-dialog :visible.sync="dialogVisible">
+              <img :src="dialogImageUrl" alt="">
+            </el-dialog>
+            <!--<el-upload
               class="avatar-uploader"
               action="https://jsonplaceholder.typicode.com/posts/"
               :show-file-list="false"
@@ -172,7 +180,7 @@
               :before-upload="beforeAvatarUpload">
               <img v-if="imageUrl" :src="imageUrl" class="avatar">
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-            </el-upload>
+            </el-upload>-->
           </div>
         </div>
       </div>
@@ -181,8 +189,7 @@
       <div class="m-item-content">
         <div class=" m-item-row">
           <el-select v-model="value4" class="m-input-l" placeholder="请选择">
-            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
+            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
           <el-input v-model="value5" placeholder="请输入内容" style="width: 4rem; margin-left: 0.5rem"></el-input>
         </div>
@@ -192,13 +199,8 @@
         <p class="m-form-label">活动选择</p>
         <div class="m-item-content">
           <div class=" m-item-row">
-            <el-select v-model="value6" class="m-input-l" placeholder="请选择">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
+            <el-select v-model="activityType" class="m-input-l" placeholder="请选择">
+              <el-option v-for="item in activityTypeList" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
           </div>
         </div>
@@ -208,32 +210,27 @@
         <p class="m-form-label">活动角标</p>
         <div class="m-item-content">
           <div class=" m-item-row">
-            <el-select v-model="value8" class="m-input-l" placeholder="请选择">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
+            <el-input v-model="activityBadge" placeholder="爆款" maxlength="2" style="width: 0.5rem; text-align: center"></el-input>
           </div>
         </div>
       </div>
 
-      <div class="m-form-item">
-        <p class="m-form-label">虚拟点赞数</p>
-        <div class="m-item-content">
-          <div class=" m-item-row">
-            <el-input v-model="value9" class="m-input-s" placeholder="请输入内容"></el-input>
+      <div class="num-list">
+        <div class="num-box">
+          <p class="m-form-label">虚拟点赞数</p>
+          <div class="m-item-content">
+            <div class=" m-item-row">
+              <el-input v-model="value9" class="m-input-s" placeholder="请输入内容"></el-input>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="m-form-item">
-        <p class="m-form-label">虚拟转发数</p>
-        <div class="m-item-content">
-          <div class=" m-item-row">
-            <el-input v-model="value10" class="m-input-s" placeholder="请输入内容"></el-input>
+        <div class="num-box">
+          <p class="m-form-label">虚拟转发数</p>
+          <div class="m-item-content">
+            <div class=" m-item-row">
+              <el-input v-model="value10" class="m-input-s" placeholder="请输入内容"></el-input>
+            </div>
           </div>
         </div>
       </div>
@@ -264,9 +261,7 @@
         name:'首页管理',
         options: [
           { value: '1', label: '商品' },
-          { value: '2', label: '专题' },
-          { value: '3', label: '公告' },
-          { value: '4', label: '教程' }
+          { value: '2', label: '专题' }
         ],
         hotJump: [
           { value: '1', label: '商品' },
@@ -298,10 +293,28 @@
         activityTime: [],
         activityTime1: [],
         hotMessageList: [],
+        dialogImageUrl: '',
+        dialogVisible: false,
         activityList: [],
-        imageUrl:'',
+        activityTypeList: [
+          { value: "0", label: "普通动态" },
+          { value: "1", label: "满减" },
+          { value: "2", label: "满赠" },
+          { value: "3", label: "优惠券" },
+          { value: "4", label: "砍价" },
+          { value: "5", label: "拼团" },
+          { value: "6", label: "单品优惠券" },
+          { value: "7", label: "一元秒杀" },
+          { value: "8", label: "前 30 分钟半价" },
+          { value: "9", label: "限时抢" },
+          { value: "10", label: "5 元 10 件" }
+        ],
+        activityType: '',
+        activityBadge: '',
+        activity_actext: '',
+        imageUrl: '',
         show_div: false,
-        tab_list:[],
+        tab_list: [],
         count: 5,
         tnid: "",
       }
@@ -311,6 +324,13 @@
       wTab
     },
     methods:{
+      handleRemove(file, fileList) {
+        console.log(file, fileList);
+      },
+      handlePictureCardPreview(file) {
+        this.dialogImageUrl = file.url;
+        this.dialogVisible = true;
+      },
       // 轮播图管理-确定点击的图片是第几行
       rowClick(index, col) {
         // console.log(col);
@@ -714,5 +734,11 @@
     margin: 0.1rem auto 0 auto;
     color: #ffffff;
     background-color: #91aeb5;
+  }
+  .num-list {
+    display: flex;
+    .num-box {
+      margin-right: 0.5rem;
+    }
   }
 </style>
