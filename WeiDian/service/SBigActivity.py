@@ -28,12 +28,18 @@ class SBigActivity(SBase):
     @close_session
     def get_big_act_list(self):
         """获取专题列表"""
-        return self.session.query(BigActivity).filter(BigActivity.BAisdelete == False).order_by(BigActivity.BAcreatetime.desc()).all()
+        return self.session.query(BigActivity).filter(BigActivity.BAisdelete == False).order_by(BigActivity.BAsort.asc()).all()
 
     @close_session
     def get_one_big_act(self, baid):
         """获取单个专题"""
         return self.session.query(BigActivity).filter(BigActivity.BAid == baid).first()
+
+    @close_session
+    def get_big_act_by_filter(self, bact_filter):
+        """根据条件获取单个"""
+        return self.session.query(BigActivity).filter(*bact_filter).first()
+
     @close_session
     def update_bigact(self, baid, bigact):
         """修改专题"""

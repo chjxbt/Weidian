@@ -64,3 +64,8 @@ class SProduct(SBase):
     @close_session
     def get_products_by_prname(self, prname):
         return self.session.query(Product).filter(Product.PRname.like("%{0}%".format(prname))).all()
+
+    @close_session
+    def get_product_relation_act(self):
+        return self.session.query()
+    # todo 商品关联的活动

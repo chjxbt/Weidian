@@ -19,10 +19,13 @@ class SActivity(SBase):
         return activity_list
 
     @close_session
-    def get_activity_count(self, tnid):
+    def get_activity_count(self, acfilter):
         settings = Partner()
         skiptype = settings.get_item('skip', 'skip_type')
-        return self.session.query(Activity).filter_by(ACisdelete=False, TopnavId=tnid, ACSkipType=skiptype).count()
+        acfilter.add(Activity.ACisdelete == False)
+        acfilter.add(Activity.ACSkipType == skiptype)
+
+        return self.session.query(Activity).filter(*acfilter).count()
 
     @close_session
     def get_top_activity(self, tnid):
@@ -34,12 +37,14 @@ class SActivity(SBase):
         return self.session.query(Activity).filter_by(ACid=acid).update(status)
 
     @close_session
-    def get_activity_by_topnavid(self, tnid, page_num, page_size):
+    def get_activity_by_topnavid(self, acfilter, page_num, page_size):
         """根据导航的id获取活动"""
         settings = Partner()
         skiptype = settings.get_item('skip', 'skip_type')
-        print (u"跳转类型为" + skiptype)
-        return self.session.query(Activity).filter_by(ACisdelete=False, TopnavId=tnid, ACSkipType=skiptype).order_by(Activity.ACistop.desc(), Activity.ACcreatetime.desc()).offset(page_size * (page_num - 1)).limit(page_size).all()
+        acfilter.add(Activity.ACisdelete == False)
+        acfilter.add(Activity.ACSkipType == skiptype)
+        return self.session.query(Activity).filter(*acfilter).order_by(Activity.ACistop.desc(), Activity.ACcreatetime.desc()).offset(page_size * (page_num - 1)).limit(page_size).all()
+        # print (u"跳转类型为" + skiptype.encode('utf8'))
 
     @close_session
     def get_activity_by_suid(self, suid, page_num, page_size):
@@ -113,7 +118,10 @@ class SActivity(SBase):
     def get_bigactivity_count_by_baid(self, baid):
         return self.session.query(Activity).filter_by(BAid=baid, ACSkipType=2, ACisdelete=False).count()
 
-
+    @close_session
+    def get_activity_by_filter(self, acfilter, tnid):
+        from sqlalchemy import or_
+        return self.session.query(Activity).filter(or_(*acfilter), Activity.TopnavId == tnid).order_by(Activity.ACistop.desc(), Activity.ACcreatetime.desc()).all()
 #
 # if __name__ == '__main__':
 #     test = SActivity()

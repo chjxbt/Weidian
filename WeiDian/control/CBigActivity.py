@@ -11,16 +11,33 @@ from WeiDian.common.params_require import parameter_required
 from WeiDian.common.timeformat import get_db_time_str, format_for_db, get_web_time_str
 from WeiDian.common.token_required import verify_token_decorator, is_admin
 from WeiDian.config.response import TOKEN_ERROR, SYSTEM_ERROR, AUTHORITY_ERROR
+from WeiDian.control.BaseControl import BaseActivityControl
 from flask import request
 sys.path.append(os.path.dirname(os.getcwd()))
 
 
-class CBigActivity():
+class CBigActivity(BaseActivityControl):
     def __init__(self):
         from WeiDian.service.SActivity import SActivity
         self.sactivity = SActivity()
         from WeiDian.service.SBigActivity import SBigActivity
         self.sbigactivity = SBigActivity()
+        from WeiDian.service.SActivityComment import SActivityComment
+        self.sacomment = SActivityComment()
+        from WeiDian.service.SActivityLike import SActivityLike
+        self.salike = SActivityLike()
+        from WeiDian.service.SSuperUser import SSuperUser
+        self.ssuperuser = SSuperUser()
+        from WeiDian.service.SActivityMedia import SActivityMedia
+        self.smedia = SActivityMedia()
+        from WeiDian.service.SActivityTag import SActivityTag
+        self.stags = SActivityTag()
+        from WeiDian.service.SActivityFoward import SActivityFoward
+        self.foward = SActivityFoward()
+        from WeiDian.service.SProduct import SProduct
+        self.sproduct = SProduct()
+        from WeiDian.service.SUser import SUser
+        self.suser = SUser()
         self.empty = ['', None, [], {}]
 
     @verify_token_decorator
@@ -36,6 +53,15 @@ class CBigActivity():
         page_size = args.get('page_size')
         try:
             activity_list = self.sactivity.get_bigactivity_by_baid(baid, int(page_num), int(page_size))
+            for activity in activity_list:
+                self.sactivity.update_view_num(activity.ACid)
+                self.fill_detail(activity)
+                self.fill_like_num(activity)
+                self.fill_type(activity)
+                if activity.ACSkipType == 2:
+                    self.fill_soldnum(activity)
+                    self.fill_product(activity)
+
             total_count = self.sactivity.get_bigactivity_count_by_baid(baid)
             banner = get_model_return_dict(self.sbigactivity.get_bigactivity_banner_by_baid(baid))['BAimage']
             response = import_status("get_bigactivity_success", "OK")
@@ -86,9 +112,11 @@ class CBigActivity():
             return SYSTEM_ERROR(u"服务器繁忙")
 
 
-    # @verify_token_decorator
+    @verify_token_decorator
     def get_home_banner(self):
         """获取首页轮播图"""
+        if not hasattr(request, 'user'):
+            raise TOKEN_ERROR(u"未登录, 或token错误")
         args = request.args.to_dict()
         lasting = args.get('lasting', 'true')
         logger.info("get home banner args is %s", args)
@@ -158,6 +186,8 @@ class CBigActivity():
                 "BAendtime": BAendtime,
                 "BAsort": data.get('BAsort', 0),
                 "BAposition": 0,
+                "BAisdisplay": data.get('BAisdisplay', 1)
+
             })
             response = import_status("create_home_bigactivity", "OK")
             response["data"] = {
@@ -192,6 +222,7 @@ class CBigActivity():
                 "BAendtime": BAendtime,
                 "BAsort": data.get('BAsort', 0),
                 "BAposition": 1,
+                "BAisdisplay": data.get('BAisdisplay', 1)
             })
 
             response = import_status("create_discover_bigactivity", "OK")
@@ -213,26 +244,37 @@ class CBigActivity():
         data = request.json
         logger.info("update big act data is %s", data)
         parameter_required('baid')
+        baid = args.get('baid')
         try:
-            update_act = self.sbigactivity.get_one_big_act(args['baid'])
-            if update_act:
-                upinfo = {
-                    "BAtext": data.get('batext'),
-                    "BAimage": data.get('baimage'),
-                    "BAstarttime": get_db_time_str(data.get("bastarttime")),
-                    "BAendtime": get_db_time_str(data.get("baendtime")),
-                    "BAsort": data.get('basort'),
-                    "BAisdisplay": data.get('baisdisplay')
-                }
-                upinfo = {k: v for k, v in upinfo.items() if v not in self.empty}
-                self.sbigactivity.update_bigact(args['baid'], upinfo)
-                response = import_status("update_bigact_success", "OK")
-                response["data"] = {
-                    "baid": args['baid']
-                }
-                return response
-            else:
-                raise SYSTEM_ERROR(u"数据错误，无此专题")
+            # update_act = self.sbigactivity.get_one_big_act(baid)
+            # if update_act:
+            upinfo = {
+                "BAtext": data.get('batext'),
+                "BAimage": data.get('baimage'),
+                "BAstarttime": get_db_time_str(data.get("bastarttime")),
+                "BAendtime": get_db_time_str(data.get("baendtime")),
+                "BAsort": data.get('basort'),
+                "BAisdisplay": data.get('baisdisplay'),
+                "BAisdelete": data.get('baisdelete')
+            }
+            upinfo = {k: v for k, v in upinfo.items() if v not in self.empty}
+            from WeiDian.models.model import BigActivity
+            bact_change = self.sbigactivity.get_big_act_by_filter({BigActivity.BAid == baid})
+            if not bact_change:
+                raise SYSTEM_ERROR(u'数据错误，无此专题')
+            if data.get('basort'):
+                bact_changed = self.sbigactivity.get_big_act_by_filter({BigActivity.BAsort == data.get('basort')})
+                if bact_changed:
+                    print str(bact_changed.BAid)
+                    print str(bact_change.BAsort)
+                    self.sbigactivity.update_bigact(bact_changed.BAid, {"BAsort": bact_change.BAsort})
+
+            self.sbigactivity.update_bigact(baid, upinfo)
+            response = import_status("update_bigact_success", "OK")
+            response["data"] = {
+                "baid": baid
+            }
+            return response
         except:
             logger.exception("update bigact error")
             return SYSTEM_ERROR(u"系统繁忙")

@@ -16,7 +16,8 @@ class AActivity(Resource):
         print activity
         apis = {
             "get_all": "self.control_activity.get_all()",
-            "get_one": "self.control_activity.get_one()"
+            "get_one": "self.control_activity.get_one()",
+            "get_activity_list_by_actitle": "self.control_activity.get_activity_list_by_actitle()"
         }
         res = eval(apis[activity])
         # res = {7777:"666"}

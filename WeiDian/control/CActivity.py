@@ -11,17 +11,18 @@ from WeiDian.config.setting import QRCODEHOSTNAME, LinuxRoot, LinuxImgs, Windows
 from flask import request
 import math
 import uuid
-from sqlalchemy.orm import Session
 from WeiDian.common.token_required import verify_token_decorator, is_admin, is_tourist
 from WeiDian.common.TransformToList import add_model
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db, get_db_time_str
 from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR
 from WeiDian.control.BaseControl import BaseActivityControl, BaseFile
+from WeiDian.models.model import Activity
 sys.path.append(os.path.dirname(os.getcwd()))
 
 
 class CActivity(BaseActivityControl):
+    hmsk_type = ['3', '4']
     def __init__(self):
         from WeiDian.service.SActivity import SActivity
         self.sactivity = SActivity()
@@ -39,7 +40,6 @@ class CActivity(BaseActivityControl):
         self.foward = SActivityFoward()
         from WeiDian.service.SProduct import SProduct
         self.sproduct = SProduct()
-        self.session = Session()
         from WeiDian.service.SUser import SUser
         self.suser = SUser()
 
@@ -56,6 +56,7 @@ class CActivity(BaseActivityControl):
         tnid = args.get('tnid')  # 导航id
         suid = args.get('suid')  # 管理员id
         lasting = args.get('lasting', True)  # 是否正在进行的活动
+        acid = args.get("acid", "")
         start = int(args.get('start', 0))  # 起始位置
         count = int(args.get('count', 5))  # 取出条数
         page = (args.get('page'))
@@ -63,17 +64,21 @@ class CActivity(BaseActivityControl):
             page = int(math.floor(start / count) + 1)
         if not (tnid or suid):
             raise PARAMS_MISS(u"参数缺失")
+
         try:
             if tnid:
-                activity_list = self.sactivity.get_activity_by_topnavid(tnid, page, count)
-                len_aclist = self.sactivity.get_activity_count(tnid)
+                acfilter = {Activity.TopnavId == tnid}
+                if acid:
+                    acfilter.add(Activity.ACid == acid)
+                activity_list = self.sactivity.get_activity_by_topnavid(acfilter, page, count)
+                len_aclist = self.sactivity.get_activity_count(acfilter)
                 logger.debug("get activity_list")
 
             if suid:
                 activity_list = self.sactivity.get_activity_by_suid(suid, page, count)
 
-            if not activity_list:
-                raise SYSTEM_ERROR(u'数据库错误')
+            # if not activity_list:
+            #     raise SYSTEM_ERROR(u'数据库错误')
 
             if lasting is True:
                 now_time = datetime.strftime(datetime.now(), format_for_db)
@@ -190,8 +195,6 @@ class CActivity(BaseActivityControl):
             istop = self.sactivity.get_top_activity(TopnavId)
             if istop:
                 self.sactivity.change_top_act_status(istop.ACid, {'ACistop': False})
-
-
 
         # if not media or not ACtext or not prid or not topnavid:
         #     return PARAMS_MISS
@@ -344,4 +347,23 @@ class CActivity(BaseActivityControl):
         url = BaseFile().upload_file(filetype)
         res = import_status("save_poster_success", "OK")
         res['data'] = url
+        return res
+
+    @verify_token_decorator
+    def get_activity_list_by_actitle(self):
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'当前非管理员权限')
+        args = request.args.to_dict()
+        logger.debug('get arsgs %s', args)
+        actitle = args.get("actitle")
+        hmtype = args.get('hmtype', 3)
+        if str(hmtype) not in self.hmsk_type:
+            raise PARAMS_MISS(u"参数错误")
+        from WeiDian.service.STopNav import STopNav
+        from WeiDian.config.enums import HMSkipType
+        topnav = STopNav().get_topnav_by_name(HMSkipType.get(str(hmtype)))
+        acfilter = {Activity.ACtitle.contains(actitle), Activity.ACtext.contains(actitle)}
+        activity_list = self.sactivity.get_activity_by_filter(acfilter, topnav.TNid)
+        res = import_status("add_activity_success", "OK")
+        res['data'] = activity_list
         return res

@@ -400,7 +400,9 @@ class BaseOrder():
 
 
 class BaseTask():
-
+    filter_str = '{0}张满{1}-{2}新衣币'
+    ratio_str = '佣金上涨{0}%'
+    amout_str = '{0}张{1}元无门槛新衣币'
     def fill_task_detail(self, task):
         if task.TUendtime:
             now = datetime.now()
@@ -410,20 +412,31 @@ class BaseTask():
         return self.fill_task_params(task)
 
     def fill_reward(self, task):
-        # todo task TAid -> TLid
+        # 转置为str
         task_raward_list = self.sraward.get_raward_by_tlid(task.TLid)
         if not task_raward_list:
             return
         rawards = []
         for task_raward in task_raward_list:
             raward = self.sraward.get_raward_by_id(task_raward.RAid)
-            raward.RAnumber = task_raward.RAnumber
-            raward.add("RAnumber")
-            rawards.append(raward)
+            if raward.RAtype == 0:
+                reward_str = self.filter_str.format(int(task_raward.RAnumber), int(raward.RAfilter), int(raward.RAamount))
+            elif raward.RAtype == 1 :
+                reward_str = self.ratio_str.format(int(raward.RAratio))
+                if task_raward.RAnumber == 1:
+                    reward_str = "售出首单" + reward_str
+            else:
+                reward_str = self.amout_str.format(int(task_raward.RAnumber), int(raward.RAamount))
+            # raward.RAnumber = task_raward.RAnumber
+            #
+            # raward.add("RAnumber")
+
+            rawards.append(reward_str)
+
         if not rawards:
             return
 
-        task.RAward = rawards
+        task.RAward = " + ".join(rawards)
         task.add("RAward")
         return task
 
