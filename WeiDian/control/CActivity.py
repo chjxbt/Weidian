@@ -5,6 +5,7 @@ import os
 import base64
 from datetime import datetime, timedelta
 from WeiDian import logger
+from WeiDian.common.loggers import generic_log
 from WeiDian.common.make_qrcode import make_qrcode
 from WeiDian.common.params_require import parameter_required
 from WeiDian.config.setting import QRCODEHOSTNAME, LinuxRoot, LinuxImgs, WindowsRoot
@@ -15,7 +16,7 @@ from WeiDian.common.token_required import verify_token_decorator, is_admin, is_t
 from WeiDian.common.TransformToList import add_model
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db, get_db_time_str
-from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR
+from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR, NOT_FOUND
 from WeiDian.control.BaseControl import BaseActivityControl, BaseFile
 from WeiDian.models.model import Activity
 sys.path.append(os.path.dirname(os.getcwd()))
@@ -98,7 +99,16 @@ class CActivity(BaseActivityControl):
                     activity.fill('bigactivity', 'skip_type')
                     activity.fill('专题', 'zh_skip_type')
                     bigactivity = self.sbigactivity.get_one_big_act(baid)
-                    activity.fill()
+                    if not bigactivity:
+                        raise NOT_FOUND()
+                    bigactivity_type = bigactivity.BAtype
+                    big_activity_content = {'type': bigactivity_type}
+                    big_activity_content.setdefault('baid', bigactivity.BAid)
+                    # 图片类型专题
+                    if bigactivity_type == 0:
+                        big_activity_content.setdefault('baimage', bigactivity.BAimage)
+                        big_activity_content.setdefault('baid', bigactivity.BAid)
+                    activity.fill(big_activity_content, 'bigactivity')
                 elif activity.ACSkipType == 2:
                     self.fill_soldnum(activity)
                     self.fill_product(activity)
@@ -117,8 +127,9 @@ class CActivity(BaseActivityControl):
             data["count"] = len_aclist
             data["data"] = activity_list
             return data
-        except:
+        except Exception as e:
             logger.exception("get activity error")
+            generic_log(e)
             return SYSTEM_ERROR(u"服务器繁忙")
 
     @verify_token_decorator
