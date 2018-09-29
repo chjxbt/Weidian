@@ -8,13 +8,26 @@ from WeiDian.service.SBase import SBase, close_session
 
 class SPartnerSellOrInviteMatch(SBase):
     @close_session
-    def get_lasting_partner_match(self):
-        """正在进行中的邀请或销售额活动"""
+    def get_lasting_partner_match(self, level, closed=False):
+        """指定等级的正在进行中的邀请或销售额活动"""
         time_now = datetime.strftime(datetime.now(), format_for_db)
         return self.session.query(PartnerSellOrInviteMatch).filter(
             PartnerSellOrInviteMatch.PSIMstarttime < time_now,
-            PartnerSellOrInviteMatch.PSIMendtime > time_now
+            PartnerSellOrInviteMatch.PSIMendtime > time_now,
+            # PartnerSellOrInviteMatch.PSIMlevel == level,
+            PartnerSellOrInviteMatch.PSIMisclose == closed
         ).first()
+
+    @close_session
+    def update_partner_match(self, level, data):
+        """指定等级的正在进行中的邀请或销售额活动"""
+        time_now = datetime.strftime(datetime.now(), format_for_db)
+        return self.session.query(PartnerSellOrInviteMatch).filter(
+            PartnerSellOrInviteMatch.PSIMstarttime < time_now,
+            PartnerSellOrInviteMatch.PSIMendtime > time_now,
+
+            # PartnerSellOrInviteMatch.PSIMlevel == level,
+        ).update(data)
 
     @close_session
     def update_partner_match_by_psmid(self, psmid, data):
