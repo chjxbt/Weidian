@@ -53,8 +53,8 @@ class CMyCenter(BaseMyCenterControl):
             print (my_info.USname).encode('utf8')
             print (my_info.USid).encode('utf8')
             logger.debug("get my info by usid")
-            # 正在进行中的合伙人活动
-            partner_match = self.spartnermatch.get_lasting_partner_match()
+            # 正在进行中的指定等级的合伙人活动
+            partner_match = self.spartnermatch.get_lasting_partner_match(level=my_info.USlevel)
             # 如果是合伙人, 且活动进行中
             if is_partner() and partner_match:
                 data.setdefault('match_type', partner_match.PSIMtype)
@@ -94,20 +94,21 @@ class CMyCenter(BaseMyCenterControl):
             response = import_status("get_my_info_success", "OK")
             response["data"] = data
             return response
-        except:
+        except Exception as e:
             logger.exception("get myinfo error")
-            return SYSTEM_ERROR
+            raise SYSTEM_ERROR()
 
     @verify_token_decorator
     def set_schedual_show(self):
-        # 不再使用
         """设置个人主页升级进度显示"""
         if not is_admin():
             raise TOKEN_ERROR(u'请使用管理员登录')
         data = parameter_required(u'show')
-        show = '1' if str(data.get('show')) == '1' else '0'
-        Partner().set_item('show', 'schedule', show)
-        msg = 'set_schedual_hide_success' if show == '0' else 'set_schedual_show_success'
+        close = False if str(data.get('show')) == '1' else True
+        updated = self.spartnermatch.update_partner_match(1, {
+            'PSIMisclose': close
+        })
+        msg = 'set_schedual_hide_success' if close else 'set_schedual_show_success'
         data = import_status(msg, "OK")
         return data
 
