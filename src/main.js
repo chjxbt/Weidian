@@ -16,6 +16,12 @@ import router from './router'
 VueClipboard.config.autoSetContainer = true // add this line
 Vue.use(VueClipboard)
 
+//视频播放
+import VideoPlayer from 'vue-video-player'
+require('video.js/dist/video-js.css')
+require('vue-video-player/src/custom-theme.css')
+Vue.use(VideoPlayer)
+
 //处理移动端click事件300毫秒延迟。
 import FastClick from 'fastclick'
 FastClick.attach(document.body);

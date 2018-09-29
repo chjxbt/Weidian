@@ -72,12 +72,12 @@
                       <div>
                         <h3>{{item.taname}}</h3>
                         <p class="m-modal-award-complete" >
-                          <span v-if="item.tatype == 0">完成 0/1</span>
-                          <span v-else>完成 0/{{item.taurl}}</span>
+                          <span v-if="item.tatype == 0">完成 {{item.tunumber}}/1</span>
+                          <span v-else>完成{{item.tunumber}}/{{item.taurl}}</span>
                           <span class="m-red" v-if="item.tamessage">{{item.tamessage}}</span></p>
                       </div>
                     </div>
-                    <span class="m-modal-award-btn" :class="item.tastatus == 1 ?'active':''" v-if="item.tastatus == 1" >完 成</span>
+                    <span class="m-modal-award-btn" :class="item.tustatus >0 ?'active':''" v-if="item.tustatus == 1" >完 成</span>
                     <span class="m-modal-award-btn" v-else-if="item.talevel == 99">额外奖励</span>
                     <span class="m-modal-award-btn"  v-else @click="makeTask(index)">做任务</span>
                   </li>
@@ -203,6 +203,7 @@
           imgModal
         },
       mounted(options){
+        common.changeTitle('首页');
         if(common.GetQueryString('UPPerd')){
           localStorage.setItem('UPPerd',common.GetQueryString('UPPerd'));
           alert(common.GetQueryString('UPPerd'))
@@ -349,7 +350,7 @@
             })
           },
           /*获取任务*/
-          getTask(){
+          getTask(v){
             axios.get(api.get_user_task,{
               params:{
                 token:localStorage.getItem('token')
@@ -364,6 +365,8 @@
                   window.localStorage.setItem("is_today_first",0);
                 }
                if(res.data.is_complate){
+                  // if(v)
+                  //   return false;
                  this.img_src = res.data.TAcomplateNotifications;
                  this.show_img = true;
                }
@@ -531,11 +534,13 @@
           /*开启模态框*/
           showModal(v){
             this[v] = true;
+            if(v == 'show_task'){
+              this.getTask('two');
+            }
           },
           /*分享按钮点击*/
           fixedClick(){
             this.show_fixed = false;
-
           },
           /*导航点击*/
           navClick(v){
