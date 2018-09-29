@@ -70,7 +70,7 @@
             if(localStorage.getItem('level') == 'partner' && this.bankcard !=''){
               this.show_modal = true;
             }else{
-              this.$router.push('/addBankCard');
+              this.$router.push('/addBankCard')
             }
           },
           clearMoney(){
