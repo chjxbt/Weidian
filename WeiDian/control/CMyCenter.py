@@ -48,6 +48,9 @@ class CMyCenter(BaseMyCenterControl):
                 return AUTHORITY_ERROR(u"未登录")
             data = dict()
             my_info = request.user
+            level = my_info.level
+            level = 'partner' if level > 0 else 'ordinary'
+            my_info.fill(level, 'level')
             data.setdefault('user', my_info)
             usid = my_info.id
             print (my_info.USname).encode('utf8')
