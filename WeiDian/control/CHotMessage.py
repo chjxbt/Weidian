@@ -52,11 +52,11 @@ class CHotMessage():
         logger.info("add hotmessage data is ", data)
         parameter_required('HMtext', 'HMsort', 'HMSkipType')
         now_time = datetime.strftime(datetime.now(), format_for_db)
-        HMstarttime = data.get('HMstarttime', now_time)  # 热文开始时间
+        HMstarttime = get_db_time_str(data.get('HMstarttime', now_time))  # 热文开始时间
         hmstarttime_str_to_time = datetime.strptime(HMstarttime, format_for_db)
         # 7天以后
         seven_days_later = datetime.strftime(hmstarttime_str_to_time + timedelta(days=7), format_for_db)
-        HMendtime = data.get('HMendtime', seven_days_later)  # 热文结束时间, 默认7天以后
+        HMendtime = get_db_time_str(data.get('HMendtime', seven_days_later))  # 热文结束时间, 默认7天以后
         # if not self.sproduct.get_product_by_prid(prid):
         #     return SYSTEM_ERROR
         HMSkipType = data.get('HMSkipType')
@@ -106,6 +106,10 @@ class CHotMessage():
         hostmessage_change = self.s_hotmessage.get_hotmessage_by_filter(filter_change)
         if not hostmessage_change:
             raise SYSTEM_ERROR(u'热文不存在')
+
+        # for key in self.hostmessage_update_key:
+        #     if data.get(str(key).lower()):
+        #         hot[key] = data.get(str(key))
 
         if 'hmtext' in data.keys():
             hot['HMtext'] = data['hmtext']

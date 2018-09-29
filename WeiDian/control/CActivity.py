@@ -85,6 +85,9 @@ class CActivity(BaseActivityControl):
                 self.fill_type(activity)
                 if activity.ACSkipType == 0:
                     self.fill_comment_two(activity)
+                if activity.ACSkipType == 2:
+                    self.fill_soldnum(activity)
+                    self.fill_product(activity)
 
             # map(self.fill_detail, activity_list)
             # map(self.fill_comment_two, activity_list)
@@ -102,21 +105,29 @@ class CActivity(BaseActivityControl):
             logger.exception("get activity error")
             return SYSTEM_ERROR(u"服务器繁忙")
 
+    @verify_token_decorator
     def get_one(self):
         """通过acid获取活动及活动下的评论
         """
+        if is_tourist():
+            return AUTHORITY_ERROR(u"未登录或token错误")
         args = request.args.to_dict()
+        logger.info("get one act args is %s", args)
+        parameter_required('acid')
         acid = args.get('acid')  # 活动id
-        if not acid:
-            return PARAMS_MISS
-        activity = self.sactivity.get_activity_by_acid(acid)
-        if not activity:
-            return SYSTEM_ERROR
-        activity = self.fill_detail(activity)
-        activity = self.fill_comment(activity)
-        data = import_status("get_activity_info_success", "OK")
-        data["data"] = activity
-        return data
+        try:
+            activity = self.sactivity.get_activity_by_acid(acid)
+            logger.debug("get one act access")
+            if not activity:
+                return SYSTEM_ERROR(u'数据错误，无此内容')
+            activity = self.fill_detail(activity)
+            activity = self.fill_comment(activity)
+            data = import_status("get_activity_info_success", "OK")
+            data["data"] = activity
+            return data
+        except:
+            logger.exception("get one act error")
+            return SYSTEM_ERROR(u"服务器繁忙")
 
     @verify_token_decorator
     def delete_one(self):
