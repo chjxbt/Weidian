@@ -53,10 +53,12 @@ class CMyCenter(BaseMyCenterControl):
             print (my_info.USname).encode('utf8')
             print (my_info.USid).encode('utf8')
             logger.debug("get my info by usid")
+            show = 0
             # 正在进行中的指定等级的合伙人活动
             partner_match = self.spartnermatch.get_lasting_partner_match(level=my_info.USlevel)
             # 如果是合伙人, 且活动进行中
             if is_partner() and partner_match:
+                show = 1
                 data.setdefault('match_type', partner_match.PSIMtype)
                 # 成功超过vip数量
                 psimid = partner_match.PSIMid
@@ -92,6 +94,7 @@ class CMyCenter(BaseMyCenterControl):
                 #     pass
                 # 保级差别
             response = import_status("get_my_info_success", "OK")
+            data.setdefault('show', show)
             response["data"] = data
             return response
         except Exception as e:

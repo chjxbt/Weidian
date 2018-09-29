@@ -54,7 +54,7 @@ class CActivity(BaseActivityControl):
             return AUTHORITY_ERROR(u"未登录")
         args = request.args.to_dict()
         logger.info("this is get all activity args %s", args)
-        parameter_required('tnid', 'start', 'count')
+        parameter_required(u'tnid')
         tnid = args.get('tnid')  # 导航id
         suid = args.get('suid')  # 管理员id
         lasting = args.get('lasting', True)  # 是否正在进行的活动
