@@ -14,7 +14,7 @@
                 <p class="m-red">￥{{person_info.myrewards}}</p>
                 <p>新衣币</p>
               </div>
-              <div v-else>
+              <div v-if="person_info.show == 1 && isOpen">
                 <p>您已成功超过 <span class="m-ft-30">{{person_info.myranking}}%</span> 的VIP</p>
                 <p>离成功保级还差 <span class="m-ft-30">¥{{person_info.myrewards}}</span> 元</p>
               </div>

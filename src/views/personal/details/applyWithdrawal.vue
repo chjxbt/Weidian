@@ -49,7 +49,8 @@
                 name: '',
               show_modal:false,
               money:'',
-              bank_status:true
+              bank_status:true,
+              bankcard:'',
             }
         },
         watch :{
@@ -66,12 +67,27 @@
             this.show_modal = false;
           },
           applyClick(){
-            this.show_modal = true;
+            if(localStorage.getItem('level') == 'partner' && this.bankcard !=''){
+              this.show_modal = true;
+            }else{
+              this.$router.push('/addBankCard');
+            }
           },
           clearMoney(){
             console.log(this.money)
             this.money = '';
-          }
+          },
+          getInfo(){
+            axios.get(api.get_account_info,{
+              params:{
+                token:localStorage.getItem('token')
+              }
+            }).then(res => {
+              if(res.data.status == 200){
+                this.bankcard = res.data.data.bankcard;
+              }
+            })
+          },
         },
         created() {
 
