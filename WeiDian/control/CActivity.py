@@ -11,7 +11,6 @@ from WeiDian.config.setting import QRCODEHOSTNAME, LinuxRoot, LinuxImgs, Windows
 from flask import request
 import math
 import uuid
-from sqlalchemy.orm import Session
 from WeiDian.common.token_required import verify_token_decorator, is_admin, is_tourist
 from WeiDian.common.TransformToList import add_model
 from WeiDian.common.import_status import import_status
@@ -39,7 +38,6 @@ class CActivity(BaseActivityControl):
         self.foward = SActivityFoward()
         from WeiDian.service.SProduct import SProduct
         self.sproduct = SProduct()
-        self.session = Session()
         from WeiDian.service.SUser import SUser
         self.suser = SUser()
 
