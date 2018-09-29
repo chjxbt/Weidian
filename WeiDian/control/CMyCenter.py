@@ -53,8 +53,8 @@ class CMyCenter(BaseMyCenterControl):
             print (my_info.USname).encode('utf8')
             print (my_info.USid).encode('utf8')
             logger.debug("get my info by usid")
-            # 正在进行中的合伙人活动
-            partner_match = self.spartnermatch.get_lasting_partner_match()
+            # 正在进行中的指定等级的合伙人活动
+            partner_match = self.spartnermatch.get_lasting_partner_match(level=my_info.USlevel)
             # 如果是合伙人, 且活动进行中
             if is_partner() and partner_match:
                 data.setdefault('match_type', partner_match.PSIMtype)
@@ -94,9 +94,9 @@ class CMyCenter(BaseMyCenterControl):
             response = import_status("get_my_info_success", "OK")
             response["data"] = data
             return response
-        except:
+        except Exception as e:
             logger.exception("get myinfo error")
-            return SYSTEM_ERROR
+            raise SYSTEM_ERROR()
 
     @verify_token_decorator
     def set_schedual_show(self):

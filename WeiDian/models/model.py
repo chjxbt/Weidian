@@ -932,14 +932,17 @@ class PartnerSellOrInviteMatch(BaseModel):
     """合伙人销售额或者邀请开店活动"""
     __tablename__ = 'PartnerSellOrInviteMatch'
     PSIMid = Column(String(64), primary_key=True)
+    PSIMname = Column(String(16), comment=u'奖励名称')
+    PSIMlevel = Column(Integer, default=1, comment=u'针对合伙人级别')
     PSIMstarttime = Column(String(16), nullable=False, comment=u'活动起始时间')
     PSIMendtime = Column(String(16), nullable=False, comment=u'活动结束时间')
     PSIMrule = Column(Text, comment=u'奖励各个级别规则,格式{1: 122, 2: 5000, 3: 10000}')
     PSIfavor = Column(Text, comment=u'额外奖励{1: 22, 2: 5000, 3:1000}')
+    PSIMfavortime = Column(String(16), comment=u'奖励发放时间')
+
+    PSIMtype = Column(String(8), default=u'sell', comment=u'活动类型: sell, invite')
     PSIMisclose = Column(Boolean, default=False, comment=u'是否关闭')
     PSIMisdelete = Column(Boolean, default=False, comment=u'是否删除')
-    PSIMtype = Column(String(8), default=u'sell', comment=u'活动类型: sell, invite')
-
     @orm.reconstructor
     def __init__(self):
         self.fields = self.all
