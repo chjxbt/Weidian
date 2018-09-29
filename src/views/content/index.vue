@@ -28,7 +28,7 @@
           <el-table-column prop="title" label="时间" width="420">
             <template slot-scope="scope">
               <el-date-picker v-model="scope.row.activityTime" type="datetimerange" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
-                              start-placeholder="开始日期" end-placeholder="结束日期" style="width: 3rem;" :disabled="scope.row.disabled" @click="clearTime(scope)">
+                              start-placeholder="开始日期" end-placeholder="结束日期" style="width: 3rem;" :disabled="scope.row.disabled" @blur="timeClick(scope)">
               </el-date-picker>
             </template>
           </el-table-column>
@@ -40,8 +40,9 @@
           </el-table-column>
           <el-table-column fixed="right" label="管理" width="230">
             <template slot-scope="scope">
-              <el-button @click="editClick(scope, 'banner')" type="text" size="small" v-if="scope.row.editSave">编辑</el-button>
-              <el-button @click="addBannerClick(scope)" type="text" size="small" v-if="!scope.row.editSave">保存</el-button>
+              <el-button @click="editClick(scope, 'banner')" type="text" size="small" v-if="scope.row.addSaveEdit== '3'">编辑</el-button>
+              <el-button @click="saveBannerClick(scope)" type="text" size="small" v-if="scope.row.addSaveEdit == '2'">保存</el-button>
+              <el-button @click="addBannerClick(scope)" type="text" size="small" v-if="scope.row.addSaveEdit == '1'">上传</el-button>
               <el-button type="text" size="small">|</el-button>
               <el-button type="text" size="small" @click="deleteBanner(scope)">删除</el-button>
               <el-button type="text" size="small">|</el-button>
@@ -320,15 +321,14 @@
       wTab
     },
     methods:{
-      // 轮播图管理-确定点击的是第几行
+      // 轮播图管理-确定点击的图片是第几行
       rowClick(index, col) {
-        console.log(col);
+        // console.log(col);
         this.rowNum = index;
       },
       // 点击编辑后-点击时间选择器时清空时间
-      clearTime(scope) {
-        alert("clearTime");
-        this.bannerList[scope.$index].activityTime = [];
+      timeClick(scope) {
+        this.bannerList = this.bannerList.concat();
       },
       // 添加banner的 + 号按钮
       addBanner() {
@@ -342,7 +342,7 @@
         this.bannerList[index].baisdisplay = true;
         this.bannerList[index].disabled = false;
         this.bannerList[index].upDisabled = false;
-        this.bannerList[index].editSave = false;
+        this.bannerList[index].addSaveEdit = "1";
         this.bannerList = this.bannerList.concat();
       },
       // 显示添加热文的div
@@ -367,7 +367,7 @@
               this.bannerList[i].activityTime = [this.bannerList[i].bastarttime, this.bannerList[i].baendtime];
               this.bannerList[i].disabled = true;
               this.bannerList[i].upDisabled = false;
-              this.bannerList[i].editSave = true;
+              this.bannerList[i].addSaveEdit = "3";
             }
             // console.log(res.data.data);
           }else{
@@ -377,11 +377,40 @@
       },
       // 列表的编辑方法
       editClick(scope, where) {
-        console.log(scope.$index, where);
+        console.log("edit", where);
+        // console.log(scope.$index, where);
         if(where == "banner") {
+          for(let i = 0; i < this.bannerList.length; i ++) {
+            this.bannerList[i].disabled = true;
+            this.bannerList[i].addSaveEdit = "3";
+          }
           this.bannerList[scope.$index].disabled = false;
-          this.bannerList[scope.$index].editSave = false;
+          this.bannerList[scope.$index].addSaveEdit = "2";
+          this.bannerList = this.bannerList.concat();
         }
+      },
+      // 保存编辑后的banner
+      saveBannerClick(scope) {
+        console.log("save");
+        let banner = this.bannerList[scope.$index];
+        let params = {
+          baimage: banner.baimage,
+          bAtext: banner.batext,
+          bastarttime: banner.activityTime[0],
+          baendtime: banner.activityTime[1],
+          baisdisplay: banner.baisdisplay
+        };
+        axios.post(api.update_bact + '?token=' + localStorage.getItem('token') + "&baid=" + banner.baid, params).then(res=>{
+          if(res.data.status == 200){
+            this.$message({ message: "保存成功", type: 'success' });
+
+            this.bannerList[scope.$index].disabled = true;
+            this.bannerList[scope.$index].addSaveEdit = "3";
+            this.bannerList = this.bannerList.concat();
+          }else{
+            this.$message.error(res.data.message);
+          }
+        });
       },
       // 添加banner
       addBannerClick(scope) {
@@ -395,13 +424,12 @@
           BAisdisplay: banner.baisdisplay,
           BAsort: scope.$index
         };
-
         axios.post(api.create_hbact + '?token=' + localStorage.getItem('token'), params).then(res=>{
           if(res.data.status == 200){
-            this.$message({ message: res.data.message, type: 'success' });
+            this.$message({ message: "保存成功", type: 'success' });
 
             this.bannerList[scope.$index].disabled = true;
-            this.bannerList[scope.$index].editSave = true;
+            this.bannerList[scope.$index].addSaveEdit = "3";
           }else{
             this.$message.error(res.data.message);
           }
@@ -483,7 +511,7 @@
           HMtext: this.hotValue,
           HMstarttime: this.hotTime[0],
           HMendtime: this.hotTime[1],
-          HMsort: this.hotMessageList.length,
+          HMsort: this.hotMessageList.length + 1,
           HMSkipType: this.hotJumpValue,
           HMcontent: this.jumpToValue
         };
@@ -567,6 +595,10 @@
         }else if(newValue == "4") {
           this.getJumpTo('4');     // 获取所有公告
         }
+      },
+      // 编辑banner时bannerList值发生变化
+      bannerList(newValue, oldValue) {
+        // console.log(newValue);
       },
     },
     mounted() {

@@ -16,11 +16,10 @@ const api={
   get_product: title + 'product/get_all',//模糊搜索商品
   get_activity_list_by_actitle: title + 'activity/get_activity_list_by_actitle',//模糊搜索公告/教程
 
-
-
   create_hbact: title + 'bigactivity/create_hbact',  // 添加首页专题（轮播图）
   create_dbact: title + 'bigactivity/create_dbact',  // 添加发现页专题（轮播图）
   update_bact: title + 'bigactivity/update_bact',//修改专题/删除轮播图（测试）
+
 
   upload_task_img: title + 'task/upload_task_img',  // 上传任务图标-上传图片
 
