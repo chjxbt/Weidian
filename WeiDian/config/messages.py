@@ -83,4 +83,7 @@ create_discover_bigactivity = '创建发现页专题成功'
 get_bigactivity_success = '获取专题页内容成功'
 save_photo_success = '上传图片成功'
 update_bigact_success = "修改专题成功"
+set_schedual_show_success = '设置进度显示成功'
+set_schedual_hide_success = '设置进度隐藏成功'
+get_today_earn_success = '获取今日数据成功'
 

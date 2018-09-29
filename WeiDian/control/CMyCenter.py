@@ -6,13 +6,17 @@ import os
 import uuid
 
 from WeiDian import logger
+from WeiDian.common.divide import Partner
 from WeiDian.common.import_status import import_status
 from WeiDian.common.params_require import parameter_required
-from WeiDian.common.token_required import verify_token_decorator, is_tourist
-from WeiDian.config.enums import BANK_MAP
+from WeiDian.common.token_required import verify_token_decorator, is_tourist, is_partner, is_admin
+from WeiDian.config.enums import BANK_MAP, finished_pay_status
 from WeiDian.config.response import AUTHORITY_ERROR, SYSTEM_ERROR, TOKEN_ERROR, PARAMS_ERROR, TIME_ERROR, PARAMS_MISS
 from WeiDian.control.BaseControl import BaseMyCenterControl
 from flask import request
+
+from WeiDian.service.SOrder import SOrder
+from WeiDian.service.SRaward import SRaward
 
 sys.path.append(os.path.dirname(os.getcwd()))
 
@@ -31,24 +35,86 @@ class CMyCenter(BaseMyCenterControl):
         self.suesraddress = SUserAddress()
         from WeiDian.service.SBankCard import SBankCard
         self.sbankcard = SBankCard()
-
+        self.sorder = SOrder()
+        self.sraward = SRaward()
 
     @verify_token_decorator
     def get_info(self):
+        """个人中心需要的数据"""
+        # todo 保级差额
         if is_tourist():
             return AUTHORITY_ERROR(u"未登录")
         try:
-            print (request.user.USname).encode('utf8')
-            print (request.user.USid).encode('utf8')
-            my_info = self.smycenter.get_my_info_by_usid(request.user.id)
+            user = request.user
+            usid = user.id
+            print (user.USname).encode('utf8')
+            print (user.USid).encode('utf8')
+            my_info = self.smycenter.get_my_info_by_usid(usid)
             logger.debug("get my info by usid")
             self.fill_user_info(my_info)
+            if is_partner() and str(Partner().get_item('show', 'schedule')) != '0':
+                # 成功超过vip数量
+                mysell = self.sorder.get_partner_sellmount_by_usid(usid)
+                my_sell_mount =  mysell.sellmount if mysell else 0  # 我的销售总额
+                gt_my_sell_count = self.sorder.get_parter_sellmount_gt(my_sell_mount)  # 营业额比我多的
+                partner_num = self.suser.get_partner_count()  # vip总数
+                lt_my_sell_count = partner_num - gt_my_sell_count  # 比我销售少的
+                partner_num = partner_num or 1
+                percents = int(float(lt_my_sell_count) / partner_num * 100)
+                my_info.fill(percents, 'overpercents')  # 超过%的vip
+                # 保级差额
+
+                my_info.fill('15000', 'next')
+            # 保级差别
             data = import_status("get_my_info_success", "OK")
             data["data"] = my_info
             return data
         except:
             logger.exception("get myinfo error")
             return SYSTEM_ERROR
+
+    @verify_token_decorator
+    def set_schedual_show(self):
+        """设置个人主页升级进度显示"""
+        if not is_admin():
+            raise TOKEN_ERROR(u'请使用管理员登录')
+        data = parameter_required(u'show')
+        show = '1' if str(data.get('show')) == '1' else '0'
+        Partner().set_item('show', 'schedule', show)
+        msg = 'set_schedual_hide_success' if show == '0' else 'set_schedual_show_success'
+        data = import_status(msg, "OK")
+        return data
+
+    @verify_token_decorator
+    def get_today_total(self):
+        """今日"""
+        if not is_partner():
+            raise TOKEN_ERROR(u'请使用vip登录')
+        usid = request.user.id
+        # 今日营业额
+        today_orders = self.sorder.get_today_order_by_usid_status(usid, finished_pay_status)
+        sold_mount_list = [x.OImount for x in today_orders] or [0]
+        sold_mount = sum(sold_mount_list)
+        # 今日赚
+        today_earn = sold_mount * Partner().one_level_divide
+        today_earn = round(today_earn, 2)
+        # 额外赚
+        # todo
+        other_earn = 0
+        # 新衣币
+        new_cloth_bit = self.sraward.get_reward_by_usid(usid)
+        bit_num_list = [x.RAnumber for x in new_cloth_bit] or [0]
+        bit_num_mount = sum(bit_num_list)
+        response = import_status('get_today_earn_success', 'OK')
+        data = {
+            'sold_mount': sold_mount,
+            'today_earn': today_earn,
+            'other_earn': other_earn,
+            'bit_num_mount': bit_num_mount
+        }
+        response['data'] = data
+        return response
+
 
     @verify_token_decorator
     def get_levelrules(self):

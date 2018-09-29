@@ -55,11 +55,11 @@ class Partner(object):
         self.cf.set("access_token", "jsapiticket", jsapiticket)
         self.cf.write(open(self.config_file_path, "w"))
 
-    def get_item(self, skip, skip_type):
-        return self.cf.get(skip, skip_type)
+    def get_item(self, section, option):
+        return self.cf.get(section, option)
 
-    def set_item(self, skip, skip_type, value):
-        self.cf.set(skip, skip_type, value.encode('utf8'))
+    def set_item(self, section, option, value):
+        self.cf.set(section, option, value.encode('utf8'))
         self.cf.write(open(self.config_file_path, "w"))
 
 

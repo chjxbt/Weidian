@@ -23,3 +23,7 @@ class SRaward(SBase):
     @close_session
     def get_all_reward(self):
         return self.session.query(Raward).all()
+
+    @close_session
+    def get_reward_by_usid(self, usid):
+        return self.session.query(UserRaward).filter(UserRaward.USid == usid).all()
