@@ -19,9 +19,10 @@ class SHotMessage(SBase):
         # now_time = datetime.strftime(datetime.now(), format_for_db)
         # hots = filter(lambda ht: ht.HMstarttime < now_time < ht.HMendtime, hots)
         # # return hots
-        settings = Partner()
-        skiptype = settings.get_item('skip', 'skip_type')
-        return self.session.query(HotMessage).filter_by(HMisdelete=False, HMSkipType=skiptype).order_by(HotMessage.HMsort.asc()).all()
+        # settings = Partner()
+        # skiptype = settings.get_item('skip', 'skip_type')
+        # return self.session.query(HotMessage).filter_by(HMisdelete=False, HMSkipType=skiptype).order_by(HotMessage.HMsort.asc()).all()
+        return self.session.query(HotMessage).filter_by(HMisdelete=False).order_by(HotMessage.HMsort.asc()).all()
 
     # @close_session
     # def get_all_hot(self):
@@ -61,9 +62,9 @@ class SHotMessage(SBase):
 
     @close_session
     def get_hotmessage_by_filter(self, hot_filter):
-        settings = Partner()
-        skiptype = settings.get_item('skip', 'skip_type')
-        hot_filter.add(HotMessage.HMisdelete == False)
-        hot_filter.add(HotMessage.HMSkipType == skiptype)
+        # settings = Partner()
+        # skiptype = settings.get_item('skip', 'skip_type')
+        # hot_filter.add(HotMessage.HMisdelete == False)
+        # hot_filter.add(HotMessage.HMSkipType == skiptype)
         return self.session.query(HotMessage).filter(*hot_filter).first()
 

@@ -21,6 +21,7 @@ class CBigActivity():
         self.sactivity = SActivity()
         from WeiDian.service.SBigActivity import SBigActivity
         self.sbigactivity = SBigActivity()
+        self.empty = ['', None, [], {}]
 
     @verify_token_decorator
     def get_bigactivity(self):
@@ -223,7 +224,7 @@ class CBigActivity():
                     "BAsort": data.get('basort'),
                     "BAisdisplay": data.get('baisdisplay')
                 }
-                upinfo = {k: v for k, v in upinfo.items() if v is not None}
+                upinfo = {k: v for k, v in upinfo.items() if v not in self.empty}
                 self.sbigactivity.update_bigact(args['baid'], upinfo)
                 response = import_status("update_bigact_success", "OK")
                 response["data"] = {
