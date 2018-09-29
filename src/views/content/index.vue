@@ -51,7 +51,7 @@
         <div style="display: flex; margin-top: 0.1rem">
           <div class="add-box" style="flex: 1;">
             <el-tooltip class="item" effect="light" content="添加专题" placement="right">
-              <span class="m-item-add" style="left: 3.5rem" @click="addBanner">+</span>
+              <span class="m-item-add" style="left: 3.5rem" @click="addBanner" v-if="addBannerBtn">+</span>
             </el-tooltip>
           </div>
           <p class="m-item-alert tr">轮播图尺寸大小750*280</p>
@@ -80,6 +80,7 @@
           </el-table-column>
         </el-table>
       </div>
+
 
       <el-tooltip class="item" effect="light" content="添加热文" placement="right">
         <span class="m-item-add tc" v-if="!show_div" @click="showDiv" style="margin-top: -0.1rem">+</span>
@@ -111,7 +112,7 @@
                           start-placeholder="开始日期" end-placeholder="结束日期" style="width: 4rem;">
           </el-date-picker>
         </div>
-        <div class="save-btn" @click="saveHotMessage">保 存</div>
+        <div class="save-btn" @click="addHotMessage">保 存</div>
       </div>
 
 
@@ -119,8 +120,16 @@
 
       <p class="m-form-label" style="margin-bottom: 0.2rem">推文管理</p>
       <div class="content-table">
-        <el-table :data="hotmessages" border style="width: 100%">
-          <el-table-column prop="num" label="推文时间" width="200"></el-table-column>
+        <el-table :data="activityList" border style="width: 100%">
+          <el-table-column prop="num" label="推文时间" width="420">
+
+            <template slot-scope="scope">
+              <el-date-picker v-model="scope.row.activityTime" type="datetimerange" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
+                              start-placeholder="开始日期" end-placeholder="结束日期" style="width: 3rem;" @blur="activityTimeClick(scope)">
+              </el-date-picker>
+            </template>
+
+          </el-table-column>
           <el-table-column prop="content" label="推文内容"></el-table-column>
           <el-table-column fixed="right" label="管理" width="230">
             <template slot-scope="scope">
@@ -284,39 +293,17 @@
         value10: '',
         // value3: '',
         bannerList: [],
+        addBannerBtn: true,
         // activityTime: ["2000-11-10 10:10:05", "2000-11-11 10:10:05"],
         activityTime: [],
         activityTime1: [],
         hotMessageList: [],
-        hotmessages: [
-          { time: "18/09/13 18:30 ", content: "推文内容" },
-          { time: "18/09/13 18:30 ", content: "推文内容" },
-          { time: "18/09/13 18:30 ", content: "推文内容" },
-        ],
+        activityList: [],
         imageUrl:'',
         show_div: false,
-        tab_list:[
-          {
-            name:'上新',
-            url:'',
-            active:true
-          },
-          {
-            name:'特卖',
-            url:'',
-            active:false
-          },
-          {
-            name:'爆款',
-            url:'',
-            active:false
-          },
-          {
-            name:'预告',
-            url:'',
-            active:false
-          }
-        ],
+        tab_list:[],
+        count: 5,
+        tnid: "",
       }
     },
     components:{
@@ -333,8 +320,13 @@
       timeClick(scope) {
         this.bannerList = this.bannerList.concat();
       },
+      // 点击编辑后-点击时间选择器时清空时间
+      activityTimeClick(scope) {
+        this.activityList = this.activityList.concat();
+      },
       // 添加banner的 + 号按钮
       addBanner() {
+        this.addBannerBtn = false;
         let index = this.bannerList.length;
         this.bannerList[index] = {};
         this.bannerList[index].batext = "";
@@ -367,7 +359,6 @@
               }
             }
             for(let i = 0; i < this.bannerList.length; i ++) {
-              console.log(this.bannerList[i].basort);
               this.bannerList[i].activityTime = [this.bannerList[i].bastarttime, this.bannerList[i].baendtime];
               this.bannerList[i].disabled = true;
               this.bannerList[i].upDisabled = false;
@@ -412,16 +403,21 @@
           BAisdisplay: banner.baisdisplay,
           BAsort: this.bannerList[this.bannerList.length - 2].basort + 1
         };
-        axios.post(api.create_hbact + '?token=' + localStorage.getItem('token'), params).then(res=>{
-          if(res.data.status == 200){
-            this.$message({ message: "保存成功", type: 'success' });
-            this.getBanner();       // 获取专题
-            // this.bannerList[scope.$index].disabled = true;
-            // this.bannerList[scope.$index].addSaveEdit = "3";
-          }else{
-            this.$message.error(res.data.message);
-          }
-        });
+        if(params.BAimage == undefined || params.BAtext == "" || params.BAstarttime == undefined || params.BAendtime == undefined) {
+          this.$message({ message: "请完整填写", type: 'warning' });
+        }else {
+          axios.post(api.create_hbact + '?token=' + localStorage.getItem('token'), params).then(res=>{
+            if(res.data.status == 200){
+              this.$message({ message: "保存成功", type: 'success' });
+              this.getBanner();       // 获取专题
+              this.addBannerBtn = true;
+              // this.bannerList[scope.$index].disabled = true;
+              // this.bannerList[scope.$index].addSaveEdit = "3";
+            }else{
+              this.$message.error(res.data.message);
+            }
+          });
+        }
       },
       // 保存编辑后的banner
       saveClick(scope, where) {
@@ -573,28 +569,61 @@
         }
       },
       // 添加热文
-      saveHotMessage () {
-        let params = {
-          HMtext: this.hotValue,
-          HMstarttime: this.hotTime[0],
-          HMendtime: this.hotTime[1],
-          HMsort: this.hotMessageList[this.hotMessageList.length - 1].hmsort + 1,
-          HMSkipType: this.hotJumpValue,
-          HMcontent: this.jumpToValue
-        };
-        axios.post(api.add_one_hot_message + '?token=' + localStorage.getItem('token'), params).then(res => {
-          if(res.data.status == 200){
-            this.$message({ type: 'success', message: res.data.message });
-            this.getHotMessage();     // 获取热文
+      addHotMessage () {
+        if(this.hotValue == "" || this.hotTime.length != 2 || this.hotJumpValue == "" || this.jumpToValue == "") {
+          this.$message({ message: "请完整填写", type: 'warning' });
+        }else {
+          let params = {
+            HMtext: this.hotValue,
+            HMstarttime: this.hotTime[0],
+            HMendtime: this.hotTime[1],
+            HMsort: this.hotMessageList[this.hotMessageList.length - 1].hmsort + 1,
+            HMSkipType: this.hotJumpValue,
+            HMcontent: this.jumpToValue
+          };
+          axios.post(api.add_one_hot_message + '?token=' + localStorage.getItem('token'), params).then(res => {
+            if(res.data.status == 200){
+              this.$message({ type: 'success', message: res.data.message });
+              this.getHotMessage();     // 获取热文
 
-            this.hotValue = "";
-            this.hotJumpValue = "";
-            this.jumpToValue = "";
-            this.hotTime = [];
+              this.hotValue = "";
+              this.hotJumpValue = "";
+              this.jumpToValue = "";
+              this.hotTime = [];
+            }else{
+              this.$message({ type: 'error', message: res.data.message });
+            }
+          });
+        }
+      },
+      // 获取首页顶部导航nav
+      getTopNav() {
+        axios.get(api.get_home).then(res => {
+          if(res.data.status == 200) {
+            for(let i = 0; i < res.data.data.length; i++) {
+              let nav = { name: res.data.data[i].tnname, url: "", active: false, tnid: res.data.data[i].tnid };
+              this.tab_list.push(nav);
+
+              this.tab_list[0].active = true;
+              this.tnid = this.tab_list[0].tnid;
+            }
+            this.getActivity(0, 5);   // 获取首页活动/推文内容列表
           }else{
-            this.$message({ type: 'error', message: res.data.message });
+            this.$message.error(res.data.message);
           }
-        });
+        })
+      },
+      // 获取首页活动/推文内容列表
+      getActivity(start, count) {
+        axios.get(api.get_all_activity + '?token=' + localStorage.getItem('token'),
+          { params: { lasting: true, start: start || 0, count: count || this.count, tnid: this.tnid }}).then(res => {
+          if(res.data.status == 200) {
+            this.activityList = res.data.data;
+            // console.log(res.data.data);
+          }else{
+            this.$message.error(res.data.message);
+          }
+        })
       },
 
 
@@ -664,14 +693,12 @@
           this.getJumpTo('4');     // 获取所有公告
         }
       },
-      // 编辑banner时bannerList值发生变化
-      bannerList(newValue, oldValue) {
-        // console.log(newValue);
-      },
     },
     mounted() {
-      this.getBanner();       // 获取首页专题
-      this.getHotMessage();   // 获取热文
+      this.getBanner();                 // 获取首页专题
+      this.getHotMessage();             // 获取热文
+      this.getTopNav();                 // 获取首页顶部导航nav
+
     }
   }
 </script>
