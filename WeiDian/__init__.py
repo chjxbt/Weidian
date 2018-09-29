@@ -3,6 +3,8 @@ from datetime import date
 
 from flask import Flask as _Flask
 from flask.json import JSONEncoder as _JSONEncoder
+from flask.wrappers import Request as _Request
+
 
 import platform
 import logging
@@ -60,8 +62,20 @@ class JSONEncoder(_JSONEncoder):
         raise Exception(o + 'is not jsonserializer')
 
 
+class Request(_Request):
+    @property
+    def detail(self):
+        return str({
+            'url': self.url,
+            'method': self.method,
+            'args': self.args.to_dict(),
+            'data': self.data,
+        })
+
+
 class Flask(_Flask):
     json_encoder = JSONEncoder
+    request_class = Request
 
 
 # def register_route(app):

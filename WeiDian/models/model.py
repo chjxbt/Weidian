@@ -50,8 +50,6 @@ class Activity(BaseModel):
     def __init__(self):
         self.fields = [
             'ACid',
-            'PRid',
-            'BAid',
             'ACtype',
             'ACtext',
             'ACbrowsenum',
@@ -495,7 +493,7 @@ class BigActivity(BaseModel):
     BAposition = Column(Integer, default=0)         # 图片展示位置{0:首页 1:发现页}
     BAisdisplay = Column(Boolean, default=True)     # 是否展示
     BAisdelete = Column(Boolean, default=False)     # 删除
-    BAtype = Column(Integer, )
+    BAtype = Column(Integer, comment=u'类型: 0 图片,1 非图片')
 
     @orm.reconstructor
     @auto_createtime

@@ -96,7 +96,7 @@ class SActivity(SBase):
         if cur_activity.ACProductsSoldFakeNum:
             return cur_activity.ACProductsSoldFakeNum
         else:
-            prid = cur_activity.PRid
+            prid = cur_activity.AClinkvalue
             product = self.session.query(Product).filter_by(PRid=prid).first()
             if product:
                 return product.PRsalesvolume
