@@ -56,7 +56,7 @@ class Partner(object):
         self.cf.write(open(self.config_file_path, "w"))
 
     def get_item(self, section, option):
-        return self.cf.get(section, option)
+        return int(self.cf.get(section, option))
 
     def set_item(self, section, option, value):
         self.cf.set(section, option, value.encode('utf8'))
