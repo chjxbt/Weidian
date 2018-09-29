@@ -28,7 +28,7 @@
               <template v-for="(item,i) in code_box">
                 <li>
                   <!--<input type="number" maxlength="1" v-model="code_box[i]">-->
-                  <input type="number" v-model="code_box[i]" oninput="if(value.length>1)value=value.slice(0,1)">
+                  <input type="number" v-model="code_box[i]" :id="i" @keyup="inputChange(i)" oninput="if(value.length>1)value=value.slice(0,1)">
                 </li>
               </template>
             </ul>
@@ -114,9 +114,22 @@
           },
           changeModal(v,s){
             this.show_modal = v;
+            if(!v){
+              this.code_box = ['','','','','',''];
+            }
             if(s === 0 || s===1){
               this.isDel = Boolean(s);
               this.sendCode();
+            }
+          },
+          inputChange(v){
+            if(this.code_box[v] != ''){
+              if(v == 5){
+                return false;
+              }
+              let pFocus = document.getElementById(v +1);
+              pFocus.focus();
+              pFocus.select();
             }
           },
           updateCard(v){
