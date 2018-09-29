@@ -81,11 +81,16 @@
       }
       .m-item-alert{
         color: @greyColor;
-        font-size: 0.14rem;
+        font-size: 0.12rem;
       }
       .add-box {
         font-size: 0.25rem;
-        padding-top: 0.1rem;
+        //padding-top: 0.1rem;
+      }
+      .avatar {
+        width: 1.6rem;
+        height: 0.6rem;
+        line-height: 0.6rem;
       }
     }
     .m-personal {
@@ -109,7 +114,7 @@
       width: 90%;
       &.m-from-border{
         border-bottom: 1px solid #707070;
-        margin-bottom: 0.65rem;
+        margin-bottom: 0.3rem;
       }
       &.m-item-m{
         width: 5.6rem;
@@ -123,6 +128,9 @@
       .m-item-row{
         .flex-row(flex-start);
         align-items: flex-start;
+        .hot-message-input {
+          width: 4rem;
+        }
       }
       .m-item-alert{
         color: @greyColor;
@@ -136,7 +144,8 @@
       }
     }
     .m-form-confirm-btn{
-      margin-top: 0.5rem;
+      margin-top: 0.3rem;
+      margin-bottom: 0.3rem;
       .flex-row(space-around);
       span{
         display: inline-block;
@@ -151,6 +160,8 @@
       }
     }
     .m-item-add{
+      z-index: 1000;
+      width: 0.2rem;
       position: absolute;
       left: 50%;
       //bottom: 0.1rem;

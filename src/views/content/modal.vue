@@ -527,9 +527,9 @@
           TAmessage: this.formIndex.memo,
           TAurl: this.formIndex.content
         };
-        if(params.TAname == "" || params.TAtype == "" || params.TAhead == "" || params.TLid == "" || params.TAurl == "") {
+        if(params.TAname == "" || String(params.TAtype) == "" || params.TAhead == "" || params.TLid == "" || params.TAurl == "") {
           this.$message({ type: 'warning', message: '请填写全部必填项' });
-          console.log(params.TAname == "", params.TAtype == "", params.TAhead == "", params.TLid == "", params.TAurl == "")
+          console.log(params.TAname == "", String(params.TAtype) == "", params.TAhead == "", params.TLid == "", params.TAurl == "")
         }else {
           axios.post(api.add_task + '?token=' + localStorage.getItem('token'), params).then(res=>{
             if(res.data.status == 200){

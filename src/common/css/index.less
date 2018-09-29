@@ -172,6 +172,7 @@ html, body {
 .el-upload {
   text-align: center;
   border: 1px dashed #000;
+  margin-right: 0!important;
 }
 .el-tabs__active-bar {
   height: 0.04rem;
@@ -265,7 +266,7 @@ html, body {
   color: #000;
 }
 .el-input--suffix .el-input__inner{
-  font-size: 12px;
+  font-size: 14px;
   padding-right: 10px;
 }
 .el-table td, .el-table th.is-leaf {
@@ -446,10 +447,43 @@ section{
 }
 
 .el-date-editor .el-range-separator {
-  line-height: 36px;
+  line-height: 32px;
 }
 
 .required {
   background: url("../../assets/images/required.png") no-repeat right center;
   background-size: 16px 16px;
 }
+
+.el-switch__label.is-active {
+  color: #000000;
+}
+.el-switch__label {
+  color: #707070;
+}
+.el-switch.is-checked .el-switch__core {
+  border-color: @mainColor;
+  background-color: @mainColor;
+}
+.el-select-dropdown__item[data-v-5e90a5aa] {
+  padding: 0 0.15rem;
+}
+.el-select-dropdown__item.selected {
+  color: @mainColor;
+}
+.el-select .el-input.is-focus .el-input__inner {
+  border-color: @mainColor;
+}
+
+/*.el-button--primary.is-active, .el-button--primary:active {
+  background: #9fd0bf;
+  border-color: #9fd0bf;
+}
+.el-button--primary:focus, .el-button--primary:hover {
+  background: #9fd0bf;
+  border-color: #9fd0bf;
+}
+.el-button--primary {
+  background: #9fd0bf;
+  border-color: #9fd0bf;
+}*/

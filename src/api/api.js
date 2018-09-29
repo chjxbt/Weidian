@@ -7,10 +7,25 @@ const api={
   get_all_task_level: title + 'task/get_all_task_level',  // 获取所有任务等级
   get_all_task_type: title + 'task/get_all_task_type',  // 获取任务类型
   get_all_task: title + 'task/get_all_task',  // 获取所有任务
-
   add_task: title + 'task/add_task',  // 添加或更新任务
 
-  upload_task_img: title + 'task/upload_task_img',  // 上传任务图标
+  get_bigactivitys: title + 'bigactivity/get_bigactivitys',//获取专题列表-后台
+  get_all_hot_message: title + 'hotmessage/get_all',//获取全部热文 - 首页
+  add_one_hot_message: title + 'hotmessage/add_one',//添加热文 - 首页
+
+  get_product: title + 'product/get_all',//模糊搜索商品
+  get_activity_list_by_actitle: title + 'activity/get_activity_list_by_actitle',//模糊搜索公告/教程
+
+
+
+  create_hbact: title + 'bigactivity/create_hbact',  // 添加首页专题（轮播图）
+  create_dbact: title + 'bigactivity/create_dbact',  // 添加发现页专题（轮播图）
+  update_bact: title + 'bigactivity/update_bact',//修改专题/删除轮播图（测试）
+
+  upload_task_img: title + 'task/upload_task_img',  // 上传任务图标-上传图片
+
+
+
 
 
 
