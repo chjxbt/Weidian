@@ -9,9 +9,7 @@
         <el-table :data="bannerList" border style="width: 100%">
           <el-table-column prop="batext" label="专题名称" width="200">
             <template slot-scope="scope">
-              <div>
-                <el-input v-model="scope.row.batext" placeholder="请输入内容" :disabled="scope.row.disabled"></el-input>
-              </div>
+              <el-input v-model="scope.row.batext" placeholder="请输入专题名称" :disabled="scope.row.disabled"></el-input>
             </template>
           </el-table-column>
           <el-table-column prop="baimage" label="内容">
@@ -41,12 +39,12 @@
           <el-table-column fixed="right" label="管理" width="230">
             <template slot-scope="scope">
               <el-button @click="editClick(scope, 'banner')" type="text" size="small" v-if="scope.row.addSaveEdit== '3'">编辑</el-button>
-              <el-button @click="saveBannerClick(scope)" type="text" size="small" v-if="scope.row.addSaveEdit == '2'">保存</el-button>
+              <el-button @click="saveClick(scope, 'banner')" type="text" size="small" v-if="scope.row.addSaveEdit == '2'">保存</el-button>
               <el-button @click="addBannerClick(scope)" type="text" size="small" v-if="scope.row.addSaveEdit == '1'">上传</el-button>
               <el-button type="text" size="small">|</el-button>
               <el-button type="text" size="small" @click="deleteBanner(scope)">删除</el-button>
               <el-button type="text" size="small">|</el-button>
-              <el-button type="text" size="small" :disabled="scope.row.upDisabled">上移</el-button>
+              <el-button type="text" size="small" @click="upBanner(scope)" :disabled="scope.row.upDisabled">上移</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -65,14 +63,19 @@
       <div class="content-table">
         <el-table :data="hotMessageList" border style="width: 100%">
           <el-table-column prop="hmsort" label="热文顺序" width="200"></el-table-column>
-          <el-table-column prop="hmtext" label="热文内容"></el-table-column>
-          <el-table-column fixed="right" label="管理" width="300">
+          <el-table-column prop="hmtext" label="热文内容">
             <template slot-scope="scope">
-              <el-button @click="editClick(scope, 'hot')" type="text" size="small">编辑</el-button>
+              <el-input v-model="scope.row.hmtext" placeholder="请输入热文内容" :disabled="scope.row.disabled" style="width: 5rem; margin: 0.05rem"></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column fixed="right" label="管理" width="230">
+            <template slot-scope="scope">
+              <el-button @click="editClick(scope, 'hot')" type="text" size="small" v-if="scope.row.editSave == '1'">编辑</el-button>
+              <el-button @click="saveClick(scope, 'hot')" type="text" size="small" v-if="scope.row.editSave == '2'">保存</el-button>
               <el-button type="text" size="small">|</el-button>
-              <el-button type="text" size="small">删除</el-button>
+              <el-button type="text" size="small" @click="deleteHotMessage(scope)">删除</el-button>
               <el-button type="text" size="small">|</el-button>
-              <el-button type="text" size="small">上移</el-button>
+              <el-button type="text" size="small" @click="upHotMessage(scope)" :disabled="scope.row.hmsort == '1'">上移</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -119,7 +122,7 @@
         <el-table :data="hotmessages" border style="width: 100%">
           <el-table-column prop="num" label="推文时间" width="200"></el-table-column>
           <el-table-column prop="content" label="推文内容"></el-table-column>
-          <el-table-column fixed="right" label="管理" width="300">
+          <el-table-column fixed="right" label="管理" width="230">
             <template slot-scope="scope">
               <el-button @click="editClick(scope, 'banner1')" type="text" size="small">编辑</el-button>
               <el-button type="text" size="small">|</el-button>
@@ -357,19 +360,19 @@
       getBanner() {
         axios.get(api.get_bigactivitys + '?lasting=true&token=' + localStorage.getItem('token')).then(res => {
           if(res.data.status == 200) {
+            this.bannerList = [];
             for(let i = 0; i < res.data.data.length; i++) {
               if(res.data.data[i].baposition == 0) {
                 this.bannerList.push(res.data.data[i]);
               }
             }
-
             for(let i = 0; i < this.bannerList.length; i ++) {
+              console.log(this.bannerList[i].basort);
               this.bannerList[i].activityTime = [this.bannerList[i].bastarttime, this.bannerList[i].baendtime];
               this.bannerList[i].disabled = true;
               this.bannerList[i].upDisabled = false;
               this.bannerList[i].addSaveEdit = "3";
             }
-            // console.log(res.data.data);
           }else{
             this.$message.error(res.data.message);
           }
@@ -378,43 +381,28 @@
       // 列表的编辑方法
       editClick(scope, where) {
         console.log("edit", where);
-        // console.log(scope.$index, where);
         if(where == "banner") {
-          for(let i = 0; i < this.bannerList.length; i ++) {
+          // 点击某一行的编辑按钮时关闭其他行的编辑按钮
+          /*for(let i = 0; i < this.bannerList.length; i ++) {
             this.bannerList[i].disabled = true;
             this.bannerList[i].addSaveEdit = "3";
-          }
+          }*/
           this.bannerList[scope.$index].disabled = false;
           this.bannerList[scope.$index].addSaveEdit = "2";
           this.bannerList = this.bannerList.concat();
+        }else if(where == "hot") {
+          // 点击某一行的编辑按钮时关闭其他行的编辑按钮
+          /*for(let i = 0; i < this.hotMessageList.length; i ++) {
+            this.hotMessageList[i].disabled = true;
+            this.hotMessageList[i].editSave = "1";
+          }*/
+          this.hotMessageList[scope.$index].disabled = false;
+          this.hotMessageList[scope.$index].editSave = "2";
+          // this.hotMessageList = this.hotMessageList.concat();
         }
-      },
-      // 保存编辑后的banner
-      saveBannerClick(scope) {
-        console.log("save");
-        let banner = this.bannerList[scope.$index];
-        let params = {
-          baimage: banner.baimage,
-          bAtext: banner.batext,
-          bastarttime: banner.activityTime[0],
-          baendtime: banner.activityTime[1],
-          baisdisplay: banner.baisdisplay
-        };
-        axios.post(api.update_bact + '?token=' + localStorage.getItem('token') + "&baid=" + banner.baid, params).then(res=>{
-          if(res.data.status == 200){
-            this.$message({ message: "保存成功", type: 'success' });
-
-            this.bannerList[scope.$index].disabled = true;
-            this.bannerList[scope.$index].addSaveEdit = "3";
-            this.bannerList = this.bannerList.concat();
-          }else{
-            this.$message.error(res.data.message);
-          }
-        });
       },
       // 添加banner
       addBannerClick(scope) {
-        // console.log(this.bannerList[scope.$index]);
         let banner = this.bannerList[scope.$index];
         let params = {
           BAimage: banner.baimage,
@@ -422,38 +410,115 @@
           BAstarttime: banner.activityTime[0],
           BAendtime: banner.activityTime[1],
           BAisdisplay: banner.baisdisplay,
-          BAsort: scope.$index
+          BAsort: this.bannerList[this.bannerList.length - 2].basort + 1
         };
         axios.post(api.create_hbact + '?token=' + localStorage.getItem('token'), params).then(res=>{
           if(res.data.status == 200){
             this.$message({ message: "保存成功", type: 'success' });
-
-            this.bannerList[scope.$index].disabled = true;
-            this.bannerList[scope.$index].addSaveEdit = "3";
+            this.getBanner();       // 获取专题
+            // this.bannerList[scope.$index].disabled = true;
+            // this.bannerList[scope.$index].addSaveEdit = "3";
           }else{
             this.$message.error(res.data.message);
           }
         });
       },
-      // 删除轮播图
-      deleteBanner(scope) {
+      // 保存编辑后的banner
+      saveClick(scope, where) {
+        console.log(scope, where);
+        if(where == "banner") {
+          let banner = this.bannerList[scope.$index];
+          let params = {
+            baimage: banner.baimage,
+            batext: banner.batext,
+            bastarttime: banner.activityTime[0],
+            baendtime: banner.activityTime[1],
+            baisdisplay: banner.baisdisplay
+          };
+          axios.post(api.update_bact + '?token=' + localStorage.getItem('token') + "&baid=" + banner.baid, params).then(res=>{
+            if(res.data.status == 200){
+              this.$message({ message: "保存成功", type: 'success' });
 
+              this.bannerList[scope.$index].disabled = true;
+              this.bannerList[scope.$index].addSaveEdit = "3";
+              this.bannerList = this.bannerList.concat();
+            }else{
+              this.$message.error(res.data.message);
+            }
+          });
+        }else if(where == "hot") {
+          let hotMessage = this.hotMessageList[scope.$index];
+          let params = {
+            hmid: hotMessage.hmid,
+            hmtext: hotMessage.hmtext
+          };
+          axios.post(api.update_one_hot_message + '?token=' + localStorage.getItem('token'), params).then(res=>{
+            if(res.data.status == 200){
+              this.$message({ message: "保存成功", type: 'success' });
+
+              this.hotMessageList[scope.$index].disabled = true;
+              this.hotMessageList[scope.$index].editSave = "1";
+              this.hotMessageList = this.hotMessageList.concat();
+            }else{
+              this.$message.error(res.data.message);
+            }
+          });
+        }
+      },
+      // 删除轮播图/专题
+      deleteBanner(scope) {
         this.$confirm('此操作将删除该专题, 是否继续?', '提示',
           {confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'}).then(() => {
           axios.post(api.update_bact + '?token=' + localStorage.getItem('token') + '&baid=' + this.bannerList[scope.$index].baid,
             { baisdelete: true }).then(res=>{
             if(res.data.status == 200){
               this.$message({ message: "专题删除成功", type: 'success' });
-              // 获取首页专题
-              // console.log(this.bannerList);
-              this.bannerList.splice(scope.$index, 1);
-              // this.getBanner();
+              this.bannerList.splice(scope.$index, 1);    // 刷新视图
             }else{
               this.$message.error(res.data.message);
             }
           });
-
         }).catch(() => {  });
+      },
+      // 删除热文
+      deleteHotMessage(scope) {
+        this.$confirm('此操作将删除该热文, 是否继续?', '提示',
+          {confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'}).then(() => {
+          axios.post(api.update_one_hot_message + '?token=' + localStorage.getItem('token'), { hmid: this.hotMessageList[scope.$index].hmid, HMisdelete: true }).then(res=>{
+            if(res.data.status == 200){
+              this.$message({ message: "热文删除成功", type: 'success' });
+              this.hotMessageList.splice(scope.$index, 1);    // 刷新视图
+            }else{
+              this.$message.error(res.data.message);
+            }
+          });
+        }).catch(() => {  });
+      },
+      // 上移banner/专题
+      upBanner(scope) {
+        axios.post(api.update_bact + '?token=' + localStorage.getItem('token') + "&baid=" + this.bannerList[scope.$index].baid,
+          { basort: this.bannerList[scope.$index - 1].basort }).then(res=>{
+          if(res.data.status == 200){
+            this.$message({ message: "专题上移成功", type: 'success' });
+            this.bannerList = [];
+            this.getBanner();     // 获取专题
+          }else{
+            this.$message.error(res.data.message);
+          }
+        });
+      },
+      // 上移热文
+      upHotMessage(scope) {
+        axios.post(api.update_one_hot_message + '?token=' + localStorage.getItem('token'),
+          { hmid: this.hotMessageList[scope.$index].hmid, hmsort: this.hotMessageList[scope.$index - 1].hmsort }).then(res=>{
+          if(res.data.status == 200){
+            this.$message({ message: "热文上移成功", type: 'success' });
+            this.hotMessageList = [];
+            this.getHotMessage();     // 获取热文
+          }else{
+            this.$message.error(res.data.message);
+          }
+        });
       },
 
       // 获取热文
@@ -461,6 +526,10 @@
         axios.get(api.get_all_hot_message + '?lasting=true&token=' + localStorage.getItem('token')).then(res => {
           if(res.data.status == 200) {
             this.hotMessageList = res.data.data;
+            for(let i = 0; i < this.hotMessageList.length; i ++) {
+              this.hotMessageList[i].disabled = true;
+              this.hotMessageList[i].editSave = "1";
+            }
             // console.log(this.hotMessageList);
           }else{
             this.$message.error(res.data.message);
@@ -505,24 +574,23 @@
       },
       // 添加热文
       saveHotMessage () {
-        // console.log(this.hotValue, this.hotJumpValue, this.jumpToValue, this.hotTime[0], this.hotTime[1]);
-
         let params = {
           HMtext: this.hotValue,
           HMstarttime: this.hotTime[0],
           HMendtime: this.hotTime[1],
-          HMsort: this.hotMessageList.length + 1,
+          HMsort: this.hotMessageList[this.hotMessageList.length - 1].hmsort + 1,
           HMSkipType: this.hotJumpValue,
           HMcontent: this.jumpToValue
         };
         axios.post(api.add_one_hot_message + '?token=' + localStorage.getItem('token'), params).then(res => {
           if(res.data.status == 200){
             this.$message({ type: 'success', message: res.data.message });
+            this.getHotMessage();     // 获取热文
+
             this.hotValue = "";
             this.hotJumpValue = "";
             this.jumpToValue = "";
             this.hotTime = [];
-
           }else{
             this.$message({ type: 'error', message: res.data.message });
           }

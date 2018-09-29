@@ -12,6 +12,7 @@ const api={
   get_bigactivitys: title + 'bigactivity/get_bigactivitys',//获取专题列表-后台
   get_all_hot_message: title + 'hotmessage/get_all',//获取全部热文 - 首页
   add_one_hot_message: title + 'hotmessage/add_one',//添加热文 - 首页
+  update_one_hot_message: title + 'hotmessage/update_one',//编辑热文 - 首页
 
   get_product: title + 'product/get_all',//模糊搜索商品
   get_activity_list_by_actitle: title + 'activity/get_activity_list_by_actitle',//模糊搜索公告/教程
