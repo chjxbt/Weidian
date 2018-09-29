@@ -43,12 +43,12 @@ class SActivity(SBase):
         skiptype = settings.get_item('skip', 'skip_type')
         acfilter.add(Activity.ACisdelete == False)
         acfilter.add(Activity.ACSkipType == skiptype)
-        return self.session.query(Activity).filter(*acfilter).order_by(Activity.ACistop.desc(), Activity.ACcreatetime.desc()).offset(page_size * (page_num - 1)).limit(page_size).all()
+        return self.session.query(Activity).filter(*acfilter).order_by(Activity.ACistop.desc(), Activity.ACcreatetime.desc()).offset(page_size * (int(page_num) - 1)).limit(page_size).all()
         # print (u"跳转类型为" + skiptype.encode('utf8'))
 
     @close_session
     def get_activity_by_suid(self, suid, page_num, page_size):
-        acvitity_list = self.session.query(Activity).filter_by(ACisdelete=False, SUid=suid).order_by(Activity.ACcreatetime.desc()).offset(page_size * (page_num - 1)).limit(page_size).all()
+        acvitity_list = self.session.query(Activity).filter_by(ACisdelete=False, SUid=suid).order_by(Activity.ACcreatetime.desc()).offset(page_size * (int(page_num) - 1)).limit(page_size).all()
         return acvitity_list
 
     # @close_session
@@ -112,11 +112,11 @@ class SActivity(SBase):
     @close_session
     def get_bigactivity_by_baid(self, baid, page_num, page_size):
         """获取专题页内容"""
-        return self.session.query(Activity).filter_by(BAid=baid, ACSkipType=2, ACisdelete=False).order_by(Activity.ACcreatetime.desc()).offset(page_size * (page_num - 1)).limit(page_size).all()
+        return self.session.query(Activity).filter_by(AClinkvalue=baid, ACSkipType=2, ACisdelete=False).order_by(Activity.ACcreatetime.desc()).offset(page_size * (page_num - 1)).limit(page_size).all()
 
     @close_session
     def get_bigactivity_count_by_baid(self, baid):
-        return self.session.query(Activity).filter_by(BAid=baid, ACSkipType=2, ACisdelete=False).count()
+        return self.session.query(Activity).filter_by(AClinkvalue=baid, ACSkipType=2, ACisdelete=False).count()
 
     @close_session
     def get_activity_by_filter(self, acfilter, tnid):

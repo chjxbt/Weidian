@@ -15,7 +15,7 @@ import uuid
 from WeiDian.common.token_required import verify_token_decorator, is_admin, is_tourist
 from WeiDian.common.TransformToList import add_model
 from WeiDian.common.import_status import import_status
-from WeiDian.common.timeformat import format_for_db, get_db_time_str
+from WeiDian.common.timeformat import format_for_db, get_db_time_str, get_web_time_str, format_for_web_second
 from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR, NOT_FOUND
 from WeiDian.control.BaseControl import BaseActivityControl, BaseFile
 from WeiDian.models.model import Activity
@@ -114,6 +114,8 @@ class CActivity(BaseActivityControl):
                     self.fill_product(activity)
                     activity.fill('product', 'skip_type')
                     activity.fill('商品', 'zh_skip_type')
+                activity.ACstarttime = get_web_time_str(activity.ACstarttime)
+                activity.ACendtime = get_web_time_str(activity.ACendtime)
 
             # map(self.fill_detail, activity_list)
             # map(self.fill_comment_two, activity_list)
@@ -198,11 +200,11 @@ class CActivity(BaseActivityControl):
         data = request.json
         logger.info("add activity data is %s", data)
         parameter_required('ACtext', 'TopnavId', 'ACSkipType')
-        now_time = datetime.strftime(datetime.now(), format_for_db)
-        ACstarttime = data.get('acstarttime', now_time)                         # 活动开始时间, 默认当前时间
+        now_time = datetime.strftime(datetime.now(), format_for_web_second)
+        ACstarttime = get_db_time_str(data.get('ACstarttime', now_time))                         # 活动开始时间, 默认当前时间
         ACstarttime_str_to_time = datetime.strptime(ACstarttime, format_for_db)
         three_days_later = datetime.strftime(ACstarttime_str_to_time + timedelta(days=3), format_for_db)
-        ACendtime = data.get('ACendtime', three_days_later)                     # 活动结束时间, 默认3天以后
+        ACendtime = get_db_time_str(data.get('ACendtime', three_days_later))                    # 活动结束时间, 默认3天以后
         TopnavId = data.get('TopnavId')       # 导航页面
         ACtext = data.get('ACtext')           # 文字内容
         ACSkipType = data.get('ACSkipType')   # 跳转类型

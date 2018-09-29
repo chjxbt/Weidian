@@ -8,7 +8,7 @@ from WeiDian import logger
 from WeiDian.common.get_model_return_list import get_model_return_dict
 from WeiDian.common.import_status import import_status
 from WeiDian.common.params_require import parameter_required
-from WeiDian.common.timeformat import get_db_time_str, format_for_db, get_web_time_str
+from WeiDian.common.timeformat import get_db_time_str, format_for_db, get_web_time_str, format_for_web_second
 from WeiDian.common.token_required import verify_token_decorator, is_admin
 from WeiDian.config.response import TOKEN_ERROR, SYSTEM_ERROR, AUTHORITY_ERROR
 from WeiDian.control.BaseControl import BaseActivityControl
@@ -172,7 +172,7 @@ class CBigActivity(BaseActivityControl):
         parameter_required('BAimage', 'BAsort', 'BAtext')
         BAid = str(uuid.uuid1())
         BAimage = data.get('BAimage')
-        now_time = datetime.strftime(datetime.now(), format_for_db)
+        now_time = datetime.strftime(datetime.now(), format_for_web_second)
         BAstarttime = get_db_time_str(data.get('BAstarttime', now_time))
         BAstarttime_str_to_time = datetime.strptime(BAstarttime, format_for_db)
         seven_days_later = datetime.strftime(BAstarttime_str_to_time + timedelta(days=365), format_for_db)  # 七天以后
