@@ -10,15 +10,15 @@ class STask(SBase):
 
     @close_session
     def get_tasklevel_by_level(self, level):
-        return self.session.query(TaskLevel).filter(TaskLevel.TAlevel == level).first()
+        return self.session.query(TaskLevel).filter(TaskLevel.TAlevel == level).order_by(TaskLevel.TAlevel.desc()).first()
 
     @close_session
     def get_task_all(self):
-        return self.session.query(Task).all()
+        return self.session.query(Task).order_by(Task.TAcreatetime).all()
 
     @close_session
     def get_user_task_by_userid(self, usid):
-        return self.session.query(TaskUser).filter(TaskUser.USid == usid).all()
+        return self.session.query(TaskUser).filter(TaskUser.USid == usid).order_by(TaskUser.TUcreatetime).all()
 
     @close_session
     def get_task_by_taid(self, taid):
@@ -54,12 +54,12 @@ class STask(SBase):
 
     @close_session
     def get_task_by_tlid(self, tlid):
-        return self.session.query(Task).filter(Task.TLid == tlid).all()
+        return self.session.query(Task).filter(Task.TLid == tlid).order_by(Task.TAcreatetime).all()
 
     @close_session
     def get_task_level_all(self):
-        return self.session.query(TaskLevel).all()
+        return self.session.query(TaskLevel).order_by(TaskLevel.TAlevel).all()
 
     @close_session
     def get_all_user_task(self):
-        return self.session.query(TaskUser).all()
+        return self.session.query(TaskUser).order_by(TaskUser.TUcreatetime).all()

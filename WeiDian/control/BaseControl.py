@@ -403,12 +403,15 @@ class BaseTask():
     filter_str = '{0}张满{1}-{2}新衣币'
     ratio_str = '佣金上涨{0}%'
     amout_str = '{0}张{1}元无门槛新衣币'
+
     def fill_task_detail(self, task):
         if task.TUendtime:
             now = datetime.now()
             endtime = datetime.strptime(task.TUendtime, "%Y%m%d%H%M%S")
             if now > endtime:
                 return
+        if task.TUstatus == 4:
+            return
         return self.fill_task_params(task)
 
     def fill_reward(self, task):

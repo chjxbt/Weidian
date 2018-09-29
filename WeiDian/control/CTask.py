@@ -70,7 +70,7 @@ class CTask(BaseTask):
         if data.get("TAendTime"):
             task['TAendTime'] = get_db_time_str(data.get("TAendTime"))
         if data.get("TAduration"):
-            task['TAduration'] = get_db_time_str(data.get("TAduration"))
+            task['TAduration'] = data.get("TAduration")
         task['TAstatus'] = data.get("TAstatus", 0)
         task['TAmessage'] = data.get("TAmessage")
         task['TAurl'] = data.get("TAurl", 1)
@@ -155,7 +155,12 @@ class CTask(BaseTask):
         if not task_list:
             return SYSTEM_ERROR(u'r当前没有任务')
 
-        map(self.fill_task_detail, task_list)
+        # task_list = self.fill_task_detail(task) for task in task_list
+        task_detail_list, task_list = task_list, []
+        for task in task_detail_list:
+            task_detail = self.fill_task_detail(task)
+            if task_detail:
+                task_list.append(task_detail)
 
         task_level = self.stask.get_task_level_by_tlid(task_list[0].TLid)
         logger.debug('get task list %s', dict(task_level))
@@ -201,7 +206,7 @@ class CTask(BaseTask):
         if str(task.TAtype) == '0':
             logger.debug('start update task')
             # self.add_user_task_raward(request.user.id, task.TLid)
-            update_result = self.stask.update_user_task(user_task.TUid, {"TUstatus": 1})
+            update_result = self.stask.update_user_task(user_task.TUid, {"TUstatus": 1, "TUnumber": 1})
             logger.debug('get update result %s', update_result)
         else:
             # todo 其他类型任务执行
@@ -236,22 +241,21 @@ class CTask(BaseTask):
             })
 
     def add_user_task(self, usid, task_level):
+        task_level = self.stask.get_tasklevel_by_level(int(task_level) + 1)
+        task_list = self.stask.get_task_by_tlid(task_level.TLid)
+        self.add_user_task_detail(usid, task_list)
+
         if int(task_level) == 1:
             tlid = self.stask.get_tasklevel_by_level(4)
             task_list = self.stask.get_task_by_tlid(tlid.TLid)
             self.add_user_task_detail(usid, task_list)
-
-        task_level = self.stask.get_tasklevel_by_level(int(task_level) + 1)
-
-        task_list = self.stask.get_task_by_tlid(task_level.TLid)
-        self.add_user_task_detail(usid, task_list)
 
     def add_user_task_detail(self, usid, task_list):
         for task in task_list:
             duration = task.TAduration
             duration_end = None
             if duration:
-                duration_end = (datetime.datetime.now() + datetime.timedelta(days=duration)).strftime(format_for_db)
+                duration_end = (datetime.datetime.now() + datetime.timedelta(days=int(duration))).strftime(format_for_db)
 
             endtime = None
             if duration_end and task.TAendTime:
