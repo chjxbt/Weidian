@@ -17,7 +17,8 @@ class ABigActivity(Resource):
             "get_home_banner": "self.cbigactivity.get_home_banner()",
             "get_discover_banner": "self.cbigactivity.get_discover_banner()",
             "get_bigactivity": "self.cbigactivity.get_bigactivity()",
-            'get_bigactivitys': "self.cbigactivity.get_bigactivity_list()",
+            "get_bigactivitys": "self.cbigactivity.get_bigactivity_list()",
+            "get_bigact": "self.cbigactivity.get_one_bigact()"
         }
         res = eval(apis[bigactivity])
         return jsonify(res)
@@ -25,7 +26,8 @@ class ABigActivity(Resource):
     def post(self, bigactivity):
         apis = {
             "create_hbact": "self.cbigactivity.create_home_bigactivity()",
-            "create_dbact": "self.cbigactivity.create_discover_bigactivity()"
+            "create_dbact": "self.cbigactivity.create_discover_bigactivity()",
+            "update_bact": "self.cbigactivity.update_bigactivity()"
         }
         res = eval(apis[bigactivity])
         return jsonify(res)

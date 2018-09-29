@@ -19,10 +19,9 @@ class CBigActivity():
     def __init__(self):
         from WeiDian.service.SActivity import SActivity
         self.sactivity = SActivity()
-        # from WeiDian.service.SBanner import SBnner
-        # self.sbanner = SBnner()
         from WeiDian.service.SBigActivity import SBigActivity
         self.sbigactivity = SBigActivity()
+        self.empty = ['', None, [], {}]
 
     @verify_token_decorator
     def get_bigactivity(self):
@@ -58,12 +57,33 @@ class CBigActivity():
         try:
             big_act_list = self.sbigactivity.get_big_act_list()
             # map(lambda x: x.clean.add('BAid', 'BAtext'), big_act_list)
+            for big_act in big_act_list:
+                big_act.BAstarttime = get_web_time_str(big_act.BAstarttime)
+                big_act.BAendtime = get_web_time_str(big_act.BAendtime)
             response = import_status("get_bigactivity_success", "OK")
             response['data'] = big_act_list
             return response
         except Exception as e:
-            logger.debug("get bigactivity list error")
+            logger.exception("get bigactivity list error")
             raise SYSTEM_ERROR(u'专题列表失败')
+
+    @verify_token_decorator
+    def get_one_bigact(self):
+        """获取单个专题内容"""
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'非管理员权限')
+        args = request.args.to_dict()
+        parameter_required('baid')
+        logger.info("args is %s", args)
+        try:
+            big_act = self.sbigactivity.get_one_big_act(args["baid"])
+            logger.debug("get one big act")
+            response = import_status("get_bigactivity_success", "OK")
+            response["data"] = big_act
+            return response
+        except:
+            logger.exception("get one big act error")
+            return SYSTEM_ERROR(u"服务器繁忙")
 
 
     # @verify_token_decorator
@@ -75,8 +95,8 @@ class CBigActivity():
         try:
             baimages = self.sbigactivity.get_home_banner_by_said()
             logger.info("get baimages is %s", baimages)
-            if not baimages:
-                raise SYSTEM_ERROR(u"系统繁忙")
+            # if not baimages:
+                # raise SYSTEM_ERROR(u"系统繁忙")
             if lasting == 'true':
                 baimages = filter(lambda img: img.BAstarttime < get_db_time_str() < img.BAendtime, baimages)
             for img in baimages:
@@ -100,8 +120,8 @@ class CBigActivity():
         try:
             baimages = self.sbigactivity.get_discover_banner_by_said()
             logger.info("get baimages is %s", baimages)
-            if not baimages:
-                raise SYSTEM_ERROR(u"系统繁忙")
+            # if not baimages:
+            #     raise SYSTEM_ERROR(u"系统繁忙")
             if lasting == 'true':
                 baimages = filter(lambda img: img.BAstarttime < get_db_time_str() < img.BAendtime, baimages)
             for img in baimages:
@@ -125,10 +145,10 @@ class CBigActivity():
         BAid = str(uuid.uuid1())
         BAimage = data.get('BAimage')
         now_time = datetime.strftime(datetime.now(), format_for_db)
-        BAstarttime = data.get('BAstarttime', now_time)
+        BAstarttime = get_db_time_str(data.get('BAstarttime', now_time))
         BAstarttime_str_to_time = datetime.strptime(BAstarttime, format_for_db)
         seven_days_later = datetime.strftime(BAstarttime_str_to_time + timedelta(days=365), format_for_db)  # 七天以后
-        BAendtime = data.get('BAendtime', seven_days_later)
+        BAendtime = get_db_time_str(data.get('BAendtime', seven_days_later))
         try:
             self.sbigactivity.add_model("BigActivity", **{
                 "BAid": BAid,
@@ -159,10 +179,10 @@ class CBigActivity():
         BAid = str(uuid.uuid1())
         BAimage = data.get('BAimage')
         now_time = datetime.strftime(datetime.now(), format_for_db)
-        BAstarttime = data.get('BAstarttime', now_time)
+        BAstarttime = get_db_time_str(data.get('BAstarttime', now_time))
         BAstarttime_str_to_time = datetime.strptime(BAstarttime, format_for_db)
         seven_days_later = datetime.strftime(BAstarttime_str_to_time + timedelta(days=365), format_for_db)  # 七天以后
-        BAendtime = data.get('BAendtime', seven_days_later)
+        BAendtime = get_db_time_str(data.get('BAendtime', seven_days_later))
         try:
             self.sbigactivity.add_model("BigActivity", **{
                 "BAid": BAid,
@@ -182,6 +202,42 @@ class CBigActivity():
         except:
             logger.exception("create bigactivity error")
             return SYSTEM_ERROR(u'数据错误')
+
+    @verify_token_decorator
+    def update_bigactivity(self):
+        """修改专题"""
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'非管理员权限')
+        args = request.args.to_dict()
+        logger.info("update big act args is %s", args)
+        data = request.json
+        logger.info("update big act data is %s", data)
+        parameter_required('baid')
+        try:
+            update_act = self.sbigactivity.get_one_big_act(args['baid'])
+            if update_act:
+                upinfo = {
+                    "BAtext": data.get('batext'),
+                    "BAimage": data.get('baimage'),
+                    "BAstarttime": get_db_time_str(data.get("bastarttime")),
+                    "BAendtime": get_db_time_str(data.get("baendtime")),
+                    "BAsort": data.get('basort'),
+                    "BAisdisplay": data.get('baisdisplay')
+                }
+                upinfo = {k: v for k, v in upinfo.items() if v not in self.empty}
+                self.sbigactivity.update_bigact(args['baid'], upinfo)
+                response = import_status("update_bigact_success", "OK")
+                response["data"] = {
+                    "baid": args['baid']
+                }
+                return response
+            else:
+                raise SYSTEM_ERROR(u"数据错误，无此专题")
+        except:
+            logger.exception("update bigact error")
+            return SYSTEM_ERROR(u"系统繁忙")
+
+
 
 
 

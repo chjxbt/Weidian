@@ -45,9 +45,15 @@ class BaseActivityControl():
             'media',
             'tags',
             'foward',
-            # 'soldnum',
             'remaintime')
         return act
+
+    def fill_soldnum(self, act):
+        acid = act.ACid
+        act.soldnum = self.sactivity.get_product_soldnum_by_acid(acid)  # 销量
+        act.add('soldnum')
+        return act
+
 
     def fill_like_num(self, activity):
         """添加点赞相关字段"""

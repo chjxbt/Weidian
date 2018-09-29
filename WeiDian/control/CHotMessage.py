@@ -24,6 +24,7 @@ class CHotMessage():
         from WeiDian.service.SProduct import SProduct
         self.sproduct = SProduct()
         self.hotmessage_type = ['0', '1', '2', '3']
+        self.empty = ['', None, [], {}]
         # self.hostmessage_update_key = ['HMtext', "HMcontent", "HMstarttime", 'HMendtime', "HMsort"]
 
     def get_all(self):
@@ -52,11 +53,11 @@ class CHotMessage():
         logger.info("add hotmessage data is ", data)
         parameter_required('HMtext', 'HMsort', 'HMSkipType')
         now_time = datetime.strftime(datetime.now(), format_for_db)
-        HMstarttime = data.get('HMstarttime', now_time)  # 热文开始时间
+        HMstarttime = get_db_time_str(data.get('HMstarttime', now_time))  # 热文开始时间
         hmstarttime_str_to_time = datetime.strptime(HMstarttime, format_for_db)
         # 7天以后
         seven_days_later = datetime.strftime(hmstarttime_str_to_time + timedelta(days=7), format_for_db)
-        HMendtime = data.get('HMendtime', seven_days_later)  # 热文结束时间, 默认7天以后
+        HMendtime = get_db_time_str(data.get('HMendtime', seven_days_later))  # 热文结束时间, 默认7天以后
         # if not self.sproduct.get_product_by_prid(prid):
         #     return SYSTEM_ERROR
         HMSkipType = data.get('HMSkipType')
@@ -91,8 +92,6 @@ class CHotMessage():
     @verify_token_decorator
     def update_hot(self):
         """修改热文"""
-        if not hasattr(request, 'user'):
-            return TOKEN_ERROR  # 未登录, 或token错误
         if not is_admin():
             return AUTHORITY_ERROR  # 权限不足
         data = request.json
@@ -106,15 +105,19 @@ class CHotMessage():
             "HMstarttime": get_db_time_str(data.get("hmstarttime")),
             "HMsort": data.get("hmsort"),
         }
-        hot = {k: v for k, v in hot.items() if v}
+        hot = {k: v for k, v in hot.items() if v not in self.empty}
         if data.get("hmendtime"):
-            hot["HMendtime"] = get_db_time_str(data.get("hmendtime")),
+            hot["HMendtime"] = get_db_time_str(data.get("hmendtime"))
 
         from WeiDian.models.model import HotMessage
         filter_change = {HotMessage.HMid == hmid}
         hostmessage_change = self.s_hotmessage.get_hotmessage_by_filter(filter_change)
         if not hostmessage_change:
             raise SYSTEM_ERROR(u'热文不存在')
+
+        # for key in self.hostmessage_update_key:
+        #     if data.get(str(key).lower()):
+        #         hot[key] = data.get(str(key))
 
         update_info = self.s_hotmessage.update_hot_by_hmid(hmid, hot)
         if not update_info:
