@@ -191,15 +191,17 @@ class CActivity(BaseActivityControl):
                 activity.fill('专题', 'zh_skip_type')
                 bigactivity = self.sbigactivity.get_one_big_act(baid)
                 if not bigactivity:
-                    raise NOT_FOUND()
-                bigactivity_type = bigactivity.BAtype
-                big_activity_content = {'type': bigactivity_type}
-                big_activity_content.setdefault('baid', bigactivity.BAid)
-                # 图片类型专题
-                if bigactivity_type == 0:
-                    big_activity_content.setdefault('baimage', bigactivity.BAlongimg)  # 返回字段不修改
+                    # raise NOT_FOUND()
+                    pass
+                else:
+                    bigactivity_type = bigactivity.BAtype
+                    big_activity_content = {'type': bigactivity_type}
                     big_activity_content.setdefault('baid', bigactivity.BAid)
-                activity.fill(big_activity_content, 'bigactivity')
+                    # 图片类型专题
+                    if bigactivity_type == 0:
+                        big_activity_content.setdefault('baimage', bigactivity.BAlongimg)  # 返回字段不修改
+                        big_activity_content.setdefault('baid', bigactivity.BAid)
+                    activity.fill(big_activity_content, 'bigactivity')
             elif activity.ACSkipType == 2:
                 self.fill_soldnum(activity)
                 self.fill_product(activity)
@@ -271,10 +273,14 @@ class CActivity(BaseActivityControl):
         ACtitle = data.get('ACtitle')
         AClinkvalue = data.get('AClinkvalue')
         ACSkipType = int(data.get('ACSkipType', 0))   # 跳转类型
-        ACProductsSoldFakeNum = data.get('ACProductsSoldFakeNum', ' ').strip() or 0
-        ACforwardFakenum = data.get('ACforwardFakenum', ' ').strip() or 0
-        ACbrowsenum = data.get('ACbrowsenum', ' ').strip() or 0
-        AClikeFakeNum = data.get('AClikeFakeNum', ' ').strip() or 0
+        ACProductsSoldFakeNum = data.get('acproductssoldfakenum')
+        ACforwardFakenum = data.get('acforwardfakenum')
+        ACbrowsenum = data.get('acbrowsenum')
+        AClikeFakeNum = data.get('aclikefakenum')
+        # ACProductsSoldFakeNum = data.get('ACProductsSoldFakeNum', ' ').strip() or 0
+        # ACforwardFakenum = data.get('ACforwardFakenum', ' ').strip() or 0
+        # ACbrowsenum = data.get('ACbrowsenum', ' ').strip() or 0
+        # AClikeFakeNum = data.get('AClikeFakeNum', ' ').strip() or 0
 
         if str(ACistop) == 'True':
             istop = self.sactivity.get_top_activity(TopnavId)
@@ -381,10 +387,10 @@ class CActivity(BaseActivityControl):
         ACtitle = data.get('actitle')
         AClinkvalue = data.get('aclinkvalue')
         ACSkipType = int(data.get('acskiptype', 0))  # 跳转类型
-        ACProductsSoldFakeNum = data.get('acproductssoldfakenum', ' ').strip() or 0
-        ACforwardFakenum = data.get('acforwardfakenum', ' ').strip() or 0
-        ACbrowsenum = data.get('acbrowsenum', ' ').strip() or 0
-        AClikeFakeNum = data.get('aclikefakenum', ' ').strip() or 0
+        ACProductsSoldFakeNum = data.get('acproductssoldfakenum')
+        ACforwardFakenum = data.get('acforwardfakenum')
+        ACbrowsenum = data.get('acbrowsenum')
+        AClikeFakeNum = data.get('aclikefakenum')
 
         if str(ACistop) == 'True':
             istop = self.sactivity.get_top_activity(TopnavId)
