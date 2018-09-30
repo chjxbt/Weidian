@@ -16,7 +16,7 @@ from WeiDian.common.token_required import verify_token_decorator, is_admin, is_t
 from WeiDian.common.TransformToList import add_model
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db, get_db_time_str, get_web_time_str, format_for_web_second
-from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR, NOT_FOUND
+from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR, NOT_FOUND, PARAMS_ERROR
 from WeiDian.control.BaseControl import BaseActivityControl, BaseFile
 from WeiDian.models.model import Activity
 sys.path.append(os.path.dirname(os.getcwd()))
@@ -24,6 +24,7 @@ sys.path.append(os.path.dirname(os.getcwd()))
 
 class CActivity(BaseActivityControl):
     hmsk_type = ['3', '4']
+
     def __init__(self):
         from WeiDian.service.SActivity import SActivity
         self.sactivity = SActivity()
@@ -45,6 +46,7 @@ class CActivity(BaseActivityControl):
         self.suser = SUser()
         from WeiDian.service.SBigActivity import SBigActivity
         self.sbigactivity = SBigActivity()
+        self.empty = ['', None, [], {}]
 
     @verify_token_decorator
     def get_all(self):
@@ -106,7 +108,7 @@ class CActivity(BaseActivityControl):
                     big_activity_content.setdefault('baid', bigactivity.BAid)
                     # 图片类型专题
                     if bigactivity_type == 0:
-                        big_activity_content.setdefault('baimage', bigactivity.BAimage)
+                        big_activity_content.setdefault('baimage', bigactivity.BAlongimg)  # 返回字段不修改
                         big_activity_content.setdefault('baid', bigactivity.BAid)
                     activity.fill(big_activity_content, 'bigactivity')
                 elif activity.ACSkipType == 2:
@@ -199,15 +201,14 @@ class CActivity(BaseActivityControl):
             raise AUTHORITY_ERROR(u'当前非管理员权限')
         data = request.json
         logger.info("add activity data is %s", data)
-        parameter_required('ACtext', 'TopnavId', 'ACSkipType')
+        parameter_required('ACtext', 'TopnavId')
         now_time = datetime.strftime(datetime.now(), format_for_web_second)
         ACstarttime = get_db_time_str(data.get('ACstarttime', now_time))                         # 活动开始时间, 默认当前时间
         ACstarttime_str_to_time = datetime.strptime(ACstarttime, format_for_db)
         three_days_later = datetime.strftime(ACstarttime_str_to_time + timedelta(days=3), format_for_db)
-        ACendtime = get_db_time_str(data.get('ACendtime', three_days_later))                    # 活动结束时间, 默认3天以后
+        ACendtime = get_db_time_str(data.get('ACendtime', get_web_time_str(three_days_later)))                    # 活动结束时间, 默认3天以后
         TopnavId = data.get('TopnavId')       # 导航页面
         ACtext = data.get('ACtext')           # 文字内容
-        ACSkipType = data.get('ACSkipType')   # 跳转类型
         # BAid = data.get('BAid', '0')          # 专题id
         # PRid = data.get('PRid', '0')          # 商品id
         media = data.get('media')             # 多媒体
@@ -215,6 +216,7 @@ class CActivity(BaseActivityControl):
         ACistop = data.get('ACistop', 0)
         ACtitle = data.get('ACtitle')
         AClinkvalue = data.get('AClinkvalue')
+        ACSkipType = int(data.get('ACSkipType', 0))   # 跳转类型
 
         if str(ACistop) == 'True':
             istop = self.sactivity.get_top_activity(TopnavId)
@@ -228,52 +230,33 @@ class CActivity(BaseActivityControl):
         #     return SYSTEM_ERROR("prid错误，没有该商品")
         # 创建活动
         ACid = str(uuid.uuid1())
-        self.sactivity.add_model('Activity', **{
-            'ACid': ACid,
-            # 'PRid': relation_product.PRid,
-            'ACSkipType': ACSkipType,
-            'AClinkvalue': AClinkvalue,
-            # 'BAid': BAid,
-            # 'PRid': PRid,
-            'SUid': request.user.id,
-            'ACtype': data.get('ACtype'),  # 类型
-            'TopnavId': TopnavId,
-            'ACtext': ACtext,
-            'AClikeFakeNum': data.get('likenum', 0),  # 喜欢数
-            'ACbrowsenum': data.get('browsenum', 0),  # 浏览数
-            'ACforwardFakenum': data.get('fowardnum', 0),  # 转发数量
-            'ACProductsSoldFakeNum': data.get('soldnum', 0),   # 商品的销售量
-            'ACstarttime': ACstarttime,
-            'ACendtime': ACendtime,
-            'ACtitle': ACtitle,
-            'ACistop': ACistop
-        })
         # 创建media
         image_num = 0  # 标志用来限制图片或视频的数量
-        for img_or_video in media:
-            img_or_video_keys = img_or_video.keys()
-            if 'AMimage' in img_or_video_keys and 'AMvideo' not in img_or_video_keys:
-                """图片"""
-                self.smedia.add_model('ActivityMedia', **{
-                    'AMid': str(uuid.uuid1()),
-                    'ACid': ACid,
-                    'AMimage': img_or_video.get('AMimage'),
-                    'AMsort': img_or_video.get('AMsort', 1)
-                })
-                image_num += 1
-                if image_num >= 9:
-                    raise SYSTEM_ERROR(u"图片超出数量限制")
-            elif 'AMimage' not in img_or_video_keys and 'AMvideo' in img_or_video_keys:
-                """视频"""
-                if image_num < 1:
-                    # 只有在无图片的状况下才会添加视频
+        if media:
+            for img_or_video in media:
+                img_or_video_keys = img_or_video.keys()
+                if 'AMimage' in img_or_video_keys and 'AMvideo' not in img_or_video_keys:
+                    """图片"""
                     self.smedia.add_model('ActivityMedia', **{
                         'AMid': str(uuid.uuid1()),
                         'ACid': ACid,
-                        'AMvideo': img_or_video.get('AMvideo')
+                        'AMimage': img_or_video.get('AMimage'),
+                        'AMsort': img_or_video.get('AMsort', 1)
                     })
-                    # 只可以添加一个视频, 且不可以再添加图片
-                    break
+                    image_num += 1
+                    if image_num >= 9:
+                        raise SYSTEM_ERROR(u"图片超出数量限制")
+                elif 'AMimage' not in img_or_video_keys and 'AMvideo' in img_or_video_keys:
+                    """视频"""
+                    if image_num < 1:
+                        # 只有在无图片的状况下才会添加视频
+                        self.smedia.add_model('ActivityMedia', **{
+                            'AMid': str(uuid.uuid1()),
+                            'ACid': ACid,
+                            'AMvideo': img_or_video.get('AMvideo')
+                        })
+                        # 只可以添加一个视频, 且不可以再添加图片
+                        break
         # 创建tag
         if tags:
             for tag in tags:
@@ -286,6 +269,33 @@ class CActivity(BaseActivityControl):
         response_make_activity['data'] = {
             'ACid': ACid
         }
+        # 是否添加进入专题
+        baid = data.get('BAid')
+        model_dict = {
+            'ACid': ACid,
+            # 'PRid': relation_product.PRid,
+            'ACSkipType': ACSkipType,
+            'AClinkvalue': AClinkvalue,
+            # 'BAid': BAid,
+            # 'PRid': PRid,
+            'SUid': request.user.id,
+            'ACtype': data.get('ACtype'),  # 类型
+            'TopnavId': TopnavId,
+            'ACtext': ACtext,
+            'AClikeFakeNum': data.get('AClikeFakeNum', 0),  # 喜欢数
+            'ACbrowsenum': data.get('ACbrowsenum', 0),  # 浏览数
+            'ACforwardFakenum': data.get('ACforwardFakenum', 0),  # 转发数量
+            'ACProductsSoldFakeNum': data.get('ACProductsSoldFakeNum', 0),   # 商品的销售量
+            'ACstarttime': ACstarttime,
+            'ACendtime': ACendtime,
+            'ACtitle': ACtitle,
+            'ACistop': ACistop
+        }
+        if baid:
+            if ACSkipType != 2:
+                raise PARAMS_ERROR(u'参数不合理, 仅跳转到商品的推文可以加入专题')
+            model_dict['BAid'] = baid
+        self.sactivity.add_model('Activity', **model_dict)
         return response_make_activity
 
     @verify_token_decorator
@@ -297,10 +307,36 @@ class CActivity(BaseActivityControl):
         data = request.json
         logger.info("this is update activity data %s", data)
         # parameter_required("acid", "ACtype", "TopnavId", "ACtext", "AClikeFakeNum", "ACforwardFakenum", "ACProductsSoldFakeNum", "ACstarttime", "ACendtime", "ACistop")
-        parameter_required("acid", "ACtype", "TopnavId", "ACtext", "AClikeFakeNum", "ACforwardFakenum", "ACProductsSoldFakeNum", "ACstarttime", "ACendtime", "ACistop")
-        now_time = datetime.strftime(datetime.now(), format_for_db)
+        parameter_required("acid")
+        now_time = datetime.strftime(datetime.now(), format_for_web_second)
         data['ACupdatetime'] = now_time
-        act_info = self.sactivity.update_activity_by_acid(args["acid"], data)
+        ACstarttime = get_db_time_str(data.get('ACstarttime', now_time))  # 活动开始时间, 默认当前时间
+        ACstarttime_str_to_time = datetime.strptime(ACstarttime, format_for_db)
+        three_days_later = datetime.strftime(ACstarttime_str_to_time + timedelta(days=3), format_for_db)
+        ACendtime = get_db_time_str(data.get('ACendtime', three_days_later))
+        media = data.get('media')  # 多媒体
+        tags = data.get('tags')  # 右上角tag标签
+
+        upact_info = {
+                # 'PRid': relation_product.PRid,
+                'ACSkipType': data.get('acskiptype'),
+                'AClinkvalue': data.get('aclinkvalue'),
+                'BAid': data.get('baid'),
+                'ACtype': data.get('actype'),  # 类型
+                'ACtext': data.get('actext'),
+                'AClikeFakeNum': data.get('aclikefakenum', 0),  # 喜欢数
+                'ACbrowsenum': data.get('acbrowsenum', 0),  # 浏览数
+                'ACforwardFakenum': data.get('acforwardfakenum', 0),  # 转发数量
+                'ACProductsSoldFakeNum': data.get('acproductssoldfakenum', 0),  # 商品的销售量
+                'ACstarttime': ACstarttime,
+                'ACendtime': ACendtime,
+                'ACtitle': data.get('actitle'),
+                'ACistop': data.get('acistop')
+
+            }
+        upact_info = {k: v for k, v in upact_info.items() if v not in self.empty}
+
+        act_info = self.sactivity.update_activity_by_acid(args["acid"], upact_info)
         if not act_info:
             return SYSTEM_ERROR
         response = import_status('update_activity_success', 'OK')

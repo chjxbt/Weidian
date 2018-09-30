@@ -376,6 +376,7 @@ class CMyCenter(BaseMyCenterControl):
                 "BCbankname": data.get("BCbankname"),
                 "BCaddress": data.get("BCaddress")
             })
+
             response = import_status("add_bank_card_success", "OK")
             response['data'] = {"BCid": bcid}
             return response
