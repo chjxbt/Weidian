@@ -6,7 +6,7 @@
 
       <p class="m-form-label" style="margin-bottom: 0.2rem">专题管理</p>
       <div class="content-table">
-        <el-table :data="bannerList" border style="width: 100%">
+        <el-table :data="bannerList" border style="width: 100%" v-loading="bannerLoading">
           <el-table-column prop="batext" label="专题名称" width="200">
             <template slot-scope="scope">
               <el-input v-model="scope.row.batext" placeholder="请输入专题名称" :disabled="scope.row.disabled"></el-input>
@@ -23,28 +23,29 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="title" label="时间" width="420">
+          <el-table-column prop="title" label="时间" width="490">
             <template slot-scope="scope">
               <el-date-picker v-model="scope.row.activityTime" type="datetimerange" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
                               start-placeholder="开始日期" end-placeholder="结束日期" style="width: 3.5rem;" :disabled="scope.row.disabled" @blur="timeClick(scope)">
               </el-date-picker>
             </template>
           </el-table-column>
-          <el-table-column prop="product" label="展示" width="200">
+          <el-table-column prop="product" label="展示" width="150">
             <template slot-scope="scope">
               <el-switch v-model="scope.row.baisdisplay" active-text="展示" inactive-text="关闭" @click="rowClick(scope.$index, 'show')" :disabled="scope.row.disabled">
               </el-switch>
             </template>
           </el-table-column>
-          <el-table-column fixed="right" label="管理" width="230">
+          <el-table-column fixed="right" label="管理" width="180">
             <template slot-scope="scope">
               <el-button @click="editClick(scope, 'banner')" type="text" size="small" v-if="scope.row.addSaveEdit== '3'">编辑</el-button>
               <el-button @click="saveClick(scope, 'banner')" type="text" size="small" v-if="scope.row.addSaveEdit == '2'">保存</el-button>
               <el-button @click="addBannerClick(scope)" type="text" size="small" v-if="scope.row.addSaveEdit == '1'">上传</el-button>
               <el-button type="text" size="small">|</el-button>
-              <el-button type="text" size="small" @click="deleteBanner(scope)">删除</el-button>
-              <el-button type="text" size="small">|</el-button>
-              <el-button type="text" size="small" @click="upBanner(scope)" :disabled="scope.row.upDisabled">上移</el-button>
+              <el-button type="text" size="small" @click="deleteBanner(scope)" v-if="scope.row.addSaveEdit != '1'">删除</el-button>
+              <el-button type="text" size="small" @click="cancelAdd(scope)" v-if="scope.row.addSaveEdit == '1'">取消</el-button>
+              <el-button type="text" size="small" v-if="scope.row.addSaveEdit != '1'">|</el-button>
+              <el-button type="text" size="small" @click="upBanner(scope)" v-if="scope.row.addSaveEdit != '1'" :disabled="scope.row.upDisabled">上移</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -61,14 +62,14 @@
 
       <p class="m-form-label" style="margin-bottom: 0.2rem">热文管理</p>
       <div class="content-table">
-        <el-table :data="hotMessageList" border style="width: 100%">
+        <el-table :data="hotMessageList" border style="width: 100%" v-loading="hotLoading">
           <el-table-column prop="hmsort" label="热文顺序" width="200"></el-table-column>
           <el-table-column prop="hmtext" label="热文内容">
             <template slot-scope="scope">
               <el-input v-model="scope.row.hmtext" placeholder="请输入热文内容" :disabled="scope.row.disabled" style="width: 5rem; margin: 0.05rem"></el-input>
             </template>
           </el-table-column>
-          <el-table-column fixed="right" label="管理" width="230">
+          <el-table-column fixed="right" label="管理" width="180">
             <template slot-scope="scope">
               <el-button @click="editClick(scope, 'hot')" type="text" size="small" v-if="scope.row.editSave == '1'">编辑</el-button>
               <el-button @click="saveClick(scope, 'hot')" type="text" size="small" v-if="scope.row.editSave == '2'">保存</el-button>
@@ -120,8 +121,8 @@
 
       <p class="m-form-label" style="margin-bottom: 0.2rem">推文管理</p>
       <div class="content-table">
-        <el-table :data="activityList" border style="width: 100%">
-          <el-table-column prop="num" label="推文时间" width="420">
+        <el-table :data="activityList" border style="width: 100%" v-loading="activityLoading">
+          <el-table-column prop="num" label="推文时间" width="490">
             <template slot-scope="scope">
               <el-date-picker v-model="scope.row.activityTime" type="datetimerange" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
                               start-placeholder="开始日期" end-placeholder="结束日期" style="width: 3.5rem;" @blur="activityTimeClick(scope)" :disabled="scope.row.disabled">
@@ -133,24 +134,23 @@
               <el-input type="textarea" :autosize="{ minRows: 3, maxRows: 3 }" placeholder="请输入推文内容" v-model="scope.row.actext" :disabled="scope.row.disabled"></el-input>
             </template>
           </el-table-column>
-          <el-table-column fixed="right" label="管理" width="230">
+          <el-table-column fixed="right" label="管理" width="180">
             <template slot-scope="scope">
               <el-button @click="editClick(scope, 'activity')" type="text" size="small" v-if="scope.row.editSave == '1'">编辑</el-button>
               <el-button @click="saveClick(scope, 'activity')" type="text" size="small" v-if="scope.row.editSave == '2'">保存</el-button>
               <el-button type="text" size="small">|</el-button>
               <el-button type="text" size="small" @click="deleteActivity(scope)">删除</el-button>
-              <el-button type="text" size="small">|</el-button>
-              <el-button type="text" size="small">上移</el-button>
             </template>
           </el-table-column>
         </el-table>
       </div>
 
+
       <div class="m-form-item">
         <p class="m-form-label">推文内容</p>
         <div class="m-item-content">
           <div class=" m-item-row">
-            <el-input type="textarea" :autosize="{ minRows: 3, maxRows: 6 }" placeholder="请输入推文内容" v-model="activity_actext" style="width: 4rem"></el-input>
+            <el-input type="textarea" :autosize="{ minRows: 3, maxRows: 6 }" placeholder="请输入推文内容" v-model="activityACtext" style="width: 4rem"></el-input>
           </div>
         </div>
       </div>
@@ -158,46 +158,35 @@
         <p class="m-form-label">推文图片</p>
         <div class="m-item-content">
           <div class=" m-item-row">
-            <el-upload action="https://jsonplaceholder.typicode.com/posts/" list-type="picture-card" :on-preview="handlePictureCardPreview" :on-remove="handleRemove">
+            <el-upload action="https://weidian.daaiti.cn/task/upload_task_img" list-type="picture-card" :on-preview="handlePictureCardPreview" :on-remove="handleRemove">
               <i class="el-icon-plus"></i>
             </el-upload>
             <el-dialog :visible.sync="dialogVisible">
               <img :src="dialogImageUrl" alt="">
             </el-dialog>
-            <!--<el-upload
-              class="avatar-uploader"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload">
-              <img v-if="imageUrl" :src="imageUrl" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-            </el-upload>
-            <el-upload
-              class="avatar-uploader"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload">
-              <img v-if="imageUrl" :src="imageUrl" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-            </el-upload>-->
           </div>
         </div>
       </div>
-
       <p class="m-form-label">跳转类型</p>
       <div class="m-item-content">
         <div class=" m-item-row">
-          <el-select v-model="value4" class="m-input-l" placeholder="请选择">
-            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+          <el-select v-model="activityJumpValue" class="m-input-l" placeholder="请选择" style="width: 1.75rem">
+            <el-option v-for="item in activityJumpList" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
-          <el-input v-model="value5" placeholder="请输入内容" style="width: 4rem; margin-left: 0.5rem"></el-input>
+          <el-select v-if="activityJumpValue == '1'" v-model="activityJumpToValue" filterable placeholder="请输入关键词搜索商品" style="width: 4rem; margin-left: 0.5rem">
+            <el-option v-for="item in activityJumpToList" :key="item.value" :label="item.value" :value="item.id"></el-option>
+          </el-select>
+          <div v-if="activityJumpValue == '1'" style="margin-left: 0.5rem">
+            <span>虚拟销量：</span>
+            <el-input v-model="activityProductSales" style="width: 1rem; text-align: center"></el-input>
+          </div>
+          <el-select v-if="activityJumpValue == '2'" v-model="activityJumpToValue" class="m-input-l" placeholder="请选择专题" style="width: 4rem; margin-left: 0.5rem">
+            <el-option v-for="item in activityJumpToList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+          </el-select>
         </div>
       </div>
-
       <div class="m-form-item">
-        <p class="m-form-label">活动选择</p>
+        <p class="m-form-label">活动类型</p>
         <div class="m-item-content">
           <div class=" m-item-row">
             <el-select v-model="activityType" class="m-input-l" placeholder="请选择">
@@ -206,55 +195,34 @@
           </div>
         </div>
       </div>
-
       <p class="m-form-label">活动时间</p>
       <div class="m-item-content">
-        <el-date-picker v-model="activityTime1" type="datetimerange" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
+        <el-date-picker v-model="activityActivityTime" type="datetimerange" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
                         start-placeholder="开始日期" end-placeholder="结束日期" style="width: 4rem;">
         </el-date-picker>
       </div>
-
-    <!--  <div class="m-form-item">
-        <p class="m-form-label">活动角标</p>
-        <div class="m-item-content">
-          <div class=" m-item-row">
-            <el-input v-model="activityBadge" placeholder="爆款" maxlength="2" style="width: 0.5rem; text-align: center"></el-input>
-          </div>
-        </div>
-      </div>-->
-
       <div class="num-list">
-        <div class="num-box">
-          <p class="m-form-label">活动角标</p>
-          <div class="m-item-content">
-            <div class=" m-item-row">
-              <el-input v-model="activityBadge" placeholder="限两个字" maxlength="2" class="m-input-s"></el-input>
-            </div>
-          </div>
-        </div>
-
         <div class="num-box">
           <p class="m-form-label">虚拟点赞数</p>
           <div class="m-item-content">
             <div class=" m-item-row">
-              <el-input v-model="value9" class="m-input-s" placeholder="请输入内容"></el-input>
+              <el-input v-model="likeNum" class="m-input-s" placeholder="请输入"></el-input>
             </div>
           </div>
         </div>
-
         <div class="num-box">
-          <p class="m-form-label">虚拟转发数</p>
+          <p class="m-form-label">活动角标</p>
           <div class="m-item-content">
             <div class=" m-item-row">
-              <el-input v-model="value10" class="m-input-s" placeholder="请输入内容"></el-input>
+              <el-input v-model="activityBadge" class="m-input-s" placeholder="限两个字" maxlength="2"></el-input>
             </div>
           </div>
         </div>
       </div>
-
       <div class="m-form-confirm-btn">
-        <span>确定</span>
+        <span @click="addActivity">保 存</span>
       </div>
+
     </div>
   </div>
 </template>
@@ -298,10 +266,12 @@
         value10: '',
         // value3: '',
         bannerList: [],
+        bannerLoading: true,
+        hotLoading: true,
+        activityLoading: true,
         addBannerBtn: true,
         // activityTime: ["2000-11-10 10:10:05", "2000-11-11 10:10:05"],
         activityTime: [],
-        activityTime1: [],
         hotMessageList: [],
         dialogImageUrl: '',
         dialogVisible: false,
@@ -319,9 +289,23 @@
           { value: "9", label: "限时抢" },
           { value: "10", label: "5 元 10 件" }
         ],
+        likeNum: '',
         activityType: '',
         activityBadge: '',
-        activity_actext: '',
+        activityACtext: '',
+        activityJumpValue: '',
+        activityJumpToValue: '',
+        activityJumpToList: [],
+        activityActivityTime: [],
+        activityJumpToBannerList: [
+          { value: '1', label: '商品' },
+          { value: '2', label: '专题' }
+        ],
+        activityJumpList: [
+          { value: '1', label: '商品' },
+          { value: '2', label: '专题' }
+        ],
+        activityProductSales: '',
         imageUrl: '',
         show_div: false,
         tab_list: [],
@@ -382,9 +366,11 @@
       getBanner() {
         axios.get(api.get_bigactivitys + '?lasting=true&token=' + localStorage.getItem('token')).then(res => {
           if(res.data.status == 200) {
+            this.bannerLoading = false;
+
             this.bannerList = [];
             for(let i = 0; i < res.data.data.length; i++) {
-              if(res.data.data[i].baposition == 0) {
+              if(res.data.data[i].baposition == "0") {
                 this.bannerList.push(res.data.data[i]);
               }
             }
@@ -403,27 +389,16 @@
       editClick(scope, where) {
         console.log("edit", where);
         if(where == "banner") {
-          // 点击某一行的编辑按钮时关闭其他行的编辑按钮
-          /*for(let i = 0; i < this.bannerList.length; i ++) {
-            this.bannerList[i].disabled = true;
-            this.bannerList[i].addSaveEdit = "3";
-          }*/
           this.bannerList[scope.$index].disabled = false;
           this.bannerList[scope.$index].addSaveEdit = "2";
           this.bannerList = this.bannerList.concat();
         }else if(where == "hot") {
-          // 点击某一行的编辑按钮时关闭其他行的编辑按钮
-          /*for(let i = 0; i < this.hotMessageList.length; i ++) {
-            this.hotMessageList[i].disabled = true;
-            this.hotMessageList[i].editSave = "1";
-          }*/
           this.hotMessageList[scope.$index].disabled = false;
           this.hotMessageList[scope.$index].editSave = "2";
-          // this.hotMessageList = this.hotMessageList.concat();
         }else if(where == "activity") {
           this.activityList[scope.$index].disabled = false;
           this.activityList[scope.$index].editSave = "2";
-          this.bannerList = this.bannerList.concat();
+          this.activityList = this.activityList.concat();
         }
       },
       // 保存编辑后的banner
@@ -472,6 +447,11 @@
           this.activityList[scope.$index].editSave = "1";
           this.activityList = this.activityList.concat();
         }
+      },
+      // 取消添加banner
+      cancelAdd(scope) {
+        this.addBannerBtn = true;
+        this.bannerList.splice(scope.$index, 1);    // 刷新视图
       },
       // 删除轮播图/专题
       deleteBanner(scope) {
@@ -542,11 +522,12 @@
           }
         });
       },
-
       // 获取热文
       getHotMessage() {
         axios.get(api.get_all_hot_message + '?lasting=true&token=' + localStorage.getItem('token')).then(res => {
           if(res.data.status == 200) {
+            this.hotLoading = false;
+
             this.hotMessageList = res.data.data;
             for(let i = 0; i < this.hotMessageList.length; i ++) {
               this.hotMessageList[i].disabled = true;
@@ -559,14 +540,18 @@
         })
       },
       // 模糊搜索-获取所有可选项
-      getJumpTo(to) {
+      getJumpTo(to, where) {
         if(to == 'product') {
           axios.get(api.get_product + '?kw=').then(res => {
             if(res.data.status == 200) {
               let product = {};
               for(let i = 0; i < res.data.data.length; i ++) {
                 product = { value: res.data.data[i].prtitle, id: res.data.data[i].prid };
-                this.jumpToList.push(product);
+                if(where == "activity") {
+                  this.activityJumpToList.push(product);
+                }else if(where == "hot") {
+                  this.jumpToList.push(product);
+                }
               }
               // console.log(this.jumpToList);
             }else{
@@ -577,7 +562,11 @@
           let banner = {};
           for(let i = 0; i < this.bannerList.length; i ++) {
             banner = { value: this.bannerList[i].batext, id: this.bannerList[i].baid };
-            this.jumpToList.push(banner);
+            if(where == "activity") {
+              this.activityJumpToList.push(banner);
+            }else if(where == "hot") {
+              this.jumpToList.push(banner);
+            }
           }
         }else if(to == '3' || to == '4') {
           axios.get(api.get_activity_list_by_actitle + "?token=" + localStorage.getItem("token") + "&hmtype=" + to + "&actitle=").then(res => {
@@ -613,8 +602,6 @@
               this.$message({ message: "保存成功", type: 'success' });
               this.getBanner();       // 获取专题
               this.addBannerBtn = true;
-              // this.bannerList[scope.$index].disabled = true;
-              // this.bannerList[scope.$index].addSaveEdit = "3";
             }else{
               this.$message.error(res.data.message);
             }
@@ -649,6 +636,44 @@
           });
         }
       },
+      // 添加推文/活动
+      addActivity () {
+        console.log("activityJumpValue:", this.activityJumpValue);
+        console.log("activityJumpToValue:", this.activityJumpToValue);
+        console.log("activityType:", this.activityType);
+        console.log("tnid:", this.tnid);
+        console.log("activityBadge:", this.activityBadge);
+        console.log("likeNum:", this.likeNum);
+        console.log("activityProductSales:", this.activityProductSales);
+        console.log("activityActivityTime:", this.activityActivityTime);
+
+        if(this.activityJumpValue == "" || this.activityJumpToValue == "" || this.activityType == "" || this.tnid == "" || this.activityBadge == "" || this.likeNum == ""
+               || this.activityActivityTime.length != 2) {
+          this.$message({ message: "请完整填写", type: 'warning' });
+        }else {
+          let params = {
+            ACSkipType: this.activityJumpValue,
+            AClinkvalue: this.activityJumpToValue,
+            ACtype: this.activityType,
+            TopnavId: this.tnid,
+            media: [{ AMimage: "", AMsort: "" }],
+            tags: [{ ATname: this.activityBadge }],
+            AClikeFakeNum: this.likeNum,
+            ACProductsSoldFakeNum: this.activityProductSales,
+            ACstarttime: this.activityActivityTime[0],
+            ACendtime: this.activityActivityTime[1]
+          };
+          console.log(params);
+          axios.post(api.add_one_activity + '?token=' + localStorage.getItem('token'), params).then(res => {
+            if(res.data.status == 200){
+              this.$message({ type: 'success', message: res.data.message });
+              this.getActivity();     // 获取推文/内容
+            }else{
+              this.$message({ type: 'error', message: res.data.message });
+            }
+          });
+        }
+      },
       // 获取首页顶部导航nav
       getTopNav() {
         axios.get(api.get_home).then(res => {
@@ -671,6 +696,7 @@
         axios.get(api.get_all_activity + '?token=' + localStorage.getItem('token'),
           { params: { lasting: true, start: start || 0, count: count || this.count, tnid: this.tnid }}).then(res => {
           if(res.data.status == 200) {
+            this.activityLoading = false;
             this.activityList = res.data.data;
 
             for(let i = 0; i < this.activityList.length; i ++) {
@@ -695,6 +721,10 @@
         }
         arr[i].active = true;
         this.tab_list = [].concat(arr);
+
+        this.tnid = this.tab_list[i].tnid;
+        this.getActivity(0, 5);   // 获取首页活动/推文内容列表
+        // console.log(this.tnid);
       },
 
       // 上传标题图片
@@ -743,13 +773,24 @@
         this.jumpToList = [];
         this.jumpToValue = "";
         if(newValue == "1") {
-          this.getJumpTo('product');     // 获取所有商品
+          this.getJumpTo("product", "hot");     // 获取所有商品
         }else if(newValue == "2") {
-          this.getJumpTo('banner');     // 获取所有专题
+          this.getJumpTo("banner", "hot");     // 获取所有专题
         }else if(newValue == "3") {
-          this.getJumpTo('3');     // 获取所有教程
+          this.getJumpTo("3", "hot");     // 获取所有教程
         }else if(newValue == "4") {
-          this.getJumpTo('4');     // 获取所有公告
+          this.getJumpTo("4", "hot");     // 获取所有公告
+        }
+      },
+      // 推文/活动跳转类型的值发生变化
+      activityJumpValue(newValue, oldValue) {
+        // console.log(newValue);
+        this.activityJumpToList = [];
+        this.activityJumpToValue = "";
+        if(newValue == "1") {
+          this.getJumpTo("product", "activity");     // 获取所有商品
+        }else if(newValue == "2") {
+          this.getJumpTo("banner", "activity");     // 获取所有专题
         }
       },
     },
@@ -777,7 +818,7 @@
   .num-list {
     display: flex;
     .num-box {
-      margin-right: 0.45rem;
+      margin-right: 0.5rem;
     }
   }
 </style>
