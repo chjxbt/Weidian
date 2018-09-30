@@ -7,12 +7,12 @@
       <p class="m-form-label" style="margin-bottom: 0.2rem">专题管理</p>
       <div class="content-table">
         <el-table :data="bannerList" border style="width: 100%" v-loading="bannerLoading">
-          <el-table-column prop="batext" label="专题名称" width="200">
+          <el-table-column prop="batext" label="专题名称">
             <template slot-scope="scope">
               <el-input v-model="scope.row.batext" placeholder="请输入专题名称" :disabled="scope.row.disabled"></el-input>
             </template>
           </el-table-column>
-          <el-table-column prop="baimage" label="内容">
+          <el-table-column prop="baimage" label="内容" width="240">
             <template slot-scope="scope">
               <div @click="rowClick(scope.$index, 'img')">
                 <el-upload class="avatar-uploader" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false"
@@ -119,9 +119,19 @@
 
       <w-tab :list="tab_list"  @wTabClick="wTabClick" style="margin-top: 0.3rem"></w-tab>
 
-      <p class="m-form-label" style="margin-bottom: 0.2rem">推文管理</p>
+      <div class="m-form-label choose-banner" style="margin-bottom: 0.2rem">
+        <div class="title">推文管理</div>
+        <div class="choose-box tr">
+          <el-select v-model="toBanner" class="m-input-l" placeholder="请选择专题" style="width: 3rem;margin-right: 0.4rem">
+            <el-option v-for="item in toBannerList" :key="item.value" :label="item.value" :value="item.id"></el-option>
+          </el-select>
+        </div>
+        <div class="banner-btn" @click="toBannerClick('1')" v-if="!activityToBanner">筛选推文</div>
+        <div class="banner-btn" @click="toBannerClick('2')" v-if="activityToBanner">绑定专题</div>
+      </div>
       <div class="content-table">
         <el-table :data="activityList" border style="width: 100%" v-loading="activityLoading">
+          <el-table-column fixed="left" type="selection" width="55"></el-table-column>
           <el-table-column prop="num" label="推文时间" width="490">
             <template slot-scope="scope">
               <el-date-picker v-model="scope.row.activityTime" type="datetimerange" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
@@ -182,7 +192,7 @@
               <el-input v-model="activityProductSales" style="width: 1rem; text-align: center"></el-input>
             </div>
             <el-select v-if="activityJumpValue == '2'" v-model="activityJumpToValue" class="m-input-l" placeholder="请选择专题" style="width: 4rem; margin-left: 0.5rem">
-              <el-option v-for="item in activityJumpToList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+              <el-option v-for="item in activityJumpToList" :key="item.value" :label="item.value" :value="item.id"></el-option>
             </el-select>
           </div>
         </div>
@@ -268,6 +278,9 @@
         value10: '',
         // value3: '',
         bannerList: [],
+        toBanner: "",
+        activityToBanner: false,
+        toBannerList: [],
         bannerLoading: true,
         hotLoading: true,
         activityLoading: true,
@@ -388,6 +401,13 @@
               this.bannerList[i].upDisabled = false;
               this.bannerList[i].addSaveEdit = "3";
             }
+
+            // 绑定专题并筛选推文
+            let toBanner = {};
+            for(let i = 0; i < this.bannerList.length; i ++) {
+              toBanner = { value: this.bannerList[i].batext, id: this.bannerList[i].baid };
+              this.toBannerList.push(toBanner);
+            }
           }else{
             this.$message.error(res.data.message);
           }
@@ -395,7 +415,6 @@
       },
       // 列表的编辑方法
       editClick(scope, where) {
-        console.log("edit", where);
         if(where == "banner") {
           this.bannerList[scope.$index].disabled = false;
           this.bannerList[scope.$index].addSaveEdit = "2";
@@ -404,9 +423,22 @@
           this.hotMessageList[scope.$index].disabled = false;
           this.hotMessageList[scope.$index].editSave = "2";
         }else if(where == "activity") {
-          this.activityList[scope.$index].disabled = false;
-          this.activityList[scope.$index].editSave = "2";
-          this.activityList = this.activityList.concat();
+          let activity = this.activityList[scope.$index];
+
+          console.log(activity);
+
+          // this.activityJumpValue = activity.activityList;
+          // this.activityJumpToValue = activity.activityList;
+          // this.activityType = activity.activityList;
+          // this.activityBadge = activity.activityList;
+          // this.likeNum = activity.activityList;
+          // this.activityProductSales = activity.activityList;
+          // this.activityActivityTime = activity.activityList;
+
+
+          // this.activityList[scope.$index].disabled = false;
+          // this.activityList[scope.$index].editSave = "2";
+          // this.activityList = this.activityList.concat();
         }
       },
       // 保存编辑后的banner
@@ -652,15 +684,6 @@
       },
       // 添加推文/活动
       addActivity () {
-        console.log("activityJumpValue:", this.activityJumpValue);
-        console.log("activityJumpToValue:", this.activityJumpToValue);
-        console.log("activityType:", this.activityType);
-        console.log("tnid:", this.tnid);
-        console.log("activityBadge:", this.activityBadge);
-        console.log("likeNum:", this.likeNum);
-        console.log("activityProductSales:", this.activityProductSales);
-        console.log("activityActivityTime:", this.activityActivityTime);
-
         if(this.activityACtext == "" || this.activityJumpValue == "" || this.activityJumpToValue == "" || this.activityType == "" || this.activityBadge == "" || this.likeNum == ""
                || this.activityActivityTime.length != 2) {
           this.$message({ message: "请完整填写", type: 'warning' });
@@ -735,6 +758,17 @@
 
 
 
+      // 绑定专题并筛选推文
+      toBannerClick(v) {
+        if(v == "1") {
+          this.activityToBanner = true;
+          console.log(this.activityList)
+        }else if(v == "2") {
+          console.log(this.bannerList)
+
+        }
+
+      },
       wTabClick(i){
         let arr = [].concat(this.tab_list);
         for(let a =0;a<arr.length;a++){
@@ -840,6 +874,25 @@
     display: flex;
     .num-box {
       margin-right: 0.5rem;
+    }
+  }
+  .choose-banner {
+    display: flex;
+    justify-content: space-between;
+    .title {
+      white-space: nowrap;
+    }
+    .choose-box {
+      flex: 1;
+    }
+    .banner-btn {
+      color: #ffffff;
+      height: 0.15rem;
+      white-space: nowrap;
+      font-size: 0.12rem;
+      border-radius: 0.1rem;
+      padding: 0.05rem 0.2rem;
+      background-color: @mainColor;
     }
   }
 </style>

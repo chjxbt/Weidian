@@ -34,6 +34,7 @@ axios.defaults.timeout = 60000
 var loadinginstace
 
 loadinginstace = Loading.service({ fullscreen: true });
+loadinginstace.close()
 
 /*axios.interceptors.request.use(config => {
   // element ui Loading方法

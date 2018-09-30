@@ -603,16 +603,16 @@
     height: 0.85rem;
   }
 
-  /* 设置滚动条的样式 */
+/*  !* 设置滚动条的样式 *!
   ::-webkit-scrollbar {
     width: 10px;
   }
-  /* 滚动槽 */
+  !* 滚动槽 *!
   ::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
     border-radius: 10px;
   }
-  /* 滚动条滑块 */
+  !* 滚动条滑块 *!
   ::-webkit-scrollbar-thumb {
     border-radius: 10px;
     background: #bbb;
@@ -620,5 +620,5 @@
   }
   ::-webkit-scrollbar-thumb:window-inactive {
     background: #bbb;
-  }
+  }*/
 </style>

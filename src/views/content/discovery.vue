@@ -9,12 +9,12 @@
         <p class="m-form-label">轮播图管理</p>
         <div class="content-table">
           <el-table :data="bannerList" border style="width: 100%" v-loading="bannerLoading">
-            <el-table-column prop="batext" label="专题名称" width="200">
+            <el-table-column prop="batext" label="专题名称">
               <template slot-scope="scope">
                 <el-input v-model="scope.row.batext" placeholder="请输入专题名称" :disabled="scope.row.disabled"></el-input>
               </template>
             </el-table-column>
-            <el-table-column prop="baimage" label="内容">
+            <el-table-column prop="baimage" label="内容" width="240">
               <template slot-scope="scope">
                 <div @click="rowClick(scope.$index, 'img')">
                   <el-upload class="avatar-uploader" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false"
