@@ -5,6 +5,7 @@ import os
 import base64
 from datetime import datetime, timedelta
 from WeiDian import logger
+from WeiDian.common.divide import Partner
 from WeiDian.common.loggers import generic_log
 from WeiDian.common.make_qrcode import make_qrcode
 from WeiDian.common.params_require import parameter_required
@@ -64,6 +65,14 @@ class CActivity(BaseActivityControl):
         start = int(args.get('start', 0))  # 起始位置
         count = int(args.get('count', 5))  # 取出条数
         page = (args.get('page'))
+        # 过滤跳转类型
+        skiptype = args.get('skiptype')
+        if skiptype is None:
+            settings = Partner()
+            skiptype = settings.get_item('skip', 'skip_type')  # 配置文件中的过滤条件(默认)
+        if skiptype == 'all':
+            skiptype = None
+        # 分页
         if not page:
             page = int(math.floor(start / count) + 1)
         if not (tnid or suid):
@@ -74,7 +83,7 @@ class CActivity(BaseActivityControl):
                 acfilter = {Activity.TopnavId == tnid}
                 if acid:
                     acfilter.add(Activity.ACid == acid)
-                activity_list = self.sactivity.get_activity_by_topnavid(acfilter, page, count)
+                activity_list = self.sactivity.get_activity_by_topnavid(acfilter, page, count, skiptype)
                 len_aclist = self.sactivity.get_activity_count(acfilter)
                 logger.debug("get activity_list")
 
@@ -102,15 +111,17 @@ class CActivity(BaseActivityControl):
                     activity.fill('专题', 'zh_skip_type')
                     bigactivity = self.sbigactivity.get_one_big_act(baid)
                     if not bigactivity:
-                        raise NOT_FOUND()
-                    bigactivity_type = bigactivity.BAtype
-                    big_activity_content = {'type': bigactivity_type}
-                    big_activity_content.setdefault('baid', bigactivity.BAid)
-                    # 图片类型专题
-                    if bigactivity_type == 0:
-                        big_activity_content.setdefault('baimage', bigactivity.BAlongimg)  # 返回字段不修改
+                        # raise NOT_FOUND()
+                        pass
+                    else:
+                        bigactivity_type = bigactivity.BAtype
+                        big_activity_content = {'type': bigactivity_type}
                         big_activity_content.setdefault('baid', bigactivity.BAid)
-                    activity.fill(big_activity_content, 'bigactivity')
+                        # 图片类型专题
+                        if bigactivity_type == 0:
+                            big_activity_content.setdefault('baimage', bigactivity.BAlongimg)  # 返回字段不修改
+                            big_activity_content.setdefault('baid', bigactivity.BAid)
+                        activity.fill(big_activity_content, 'bigactivity')
                 elif activity.ACSkipType == 2:
                     self.fill_soldnum(activity)
                     self.fill_product(activity)
@@ -134,7 +145,7 @@ class CActivity(BaseActivityControl):
         except Exception as e:
             logger.exception("get activity error")
             generic_log(e)
-            return SYSTEM_ERROR(u"服务器繁忙")
+            return e
 
     @verify_token_decorator
     def get_one(self):
