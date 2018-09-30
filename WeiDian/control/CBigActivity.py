@@ -10,7 +10,7 @@ from WeiDian.common.import_status import import_status
 from WeiDian.common.params_require import parameter_required
 from WeiDian.common.timeformat import get_db_time_str, format_for_db, get_web_time_str, format_for_web_second
 from WeiDian.common.token_required import verify_token_decorator, is_admin
-from WeiDian.config.response import TOKEN_ERROR, SYSTEM_ERROR, AUTHORITY_ERROR
+from WeiDian.config.response import TOKEN_ERROR, SYSTEM_ERROR, AUTHORITY_ERROR, PARAMS_ERROR
 from WeiDian.control.BaseControl import BaseActivityControl
 from flask import request
 sys.path.append(os.path.dirname(os.getcwd()))
@@ -178,7 +178,10 @@ class CBigActivity(BaseActivityControl):
         seven_days_later = datetime.strftime(BAstarttime_str_to_time + timedelta(days=365), format_for_db)  # 七天以后
         BAendtime = get_db_time_str(data.get('BAendtime', seven_days_later))
         try:
-            self.sbigactivity.add_model("BigActivity", **{
+            batype = int(data.get('BAtype', 1)),  #  0 图片,1 非图片
+        except TypeError as e:
+            raise PARAMS_ERROR(u'batype参数错误')
+        model_dict = {
                 "BAid": BAid,
                 "BAtext": data.get('BAtext'),
                 "BAimage": BAimage,
@@ -186,9 +189,13 @@ class CBigActivity(BaseActivityControl):
                 "BAendtime": BAendtime,
                 "BAsort": data.get('BAsort', 0),
                 "BAposition": 0,
-                "BAisdisplay": data.get('BAisdisplay', 1)
-
-            })
+            }
+        if batype == 0 or batype == 1:
+            model_dict['BAisdisplay'] = batype
+        else:
+            raise PARAMS_ERROR(u'batype参数错误')
+        try:
+            self.sbigactivity.add_model("BigActivity", **model_dict)
             response = import_status("create_home_bigactivity", "OK")
             response["data"] = {
                 "BAid": BAid
