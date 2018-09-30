@@ -42,7 +42,7 @@ class SProduct(SBase):
     def get_product_list_by_reid(self, reid):
         return self.session.query(Product).join(
             RecommendProduct, Product.PRid == RecommendProduct.PRid).filter(
-            RecommendProduct.REid == reid).all()
+            RecommendProduct.REid == reid).order_by(RecommendProduct.RPsort.asc()).all()
 
     @close_session
     def update_view_num(self, prid):

@@ -262,8 +262,8 @@ class CActivity(BaseActivityControl):
         now_time = datetime.strftime(datetime.now(), format_for_web_second)
         ACstarttime = get_db_time_str(data.get('ACstarttime', now_time))                         # 活动开始时间, 默认当前时间
         ACstarttime_str_to_time = datetime.strptime(ACstarttime, format_for_db)
-        three_days_later = datetime.strftime(ACstarttime_str_to_time + timedelta(days=3), format_for_db)
-        ACendtime = get_db_time_str(data.get('ACendtime', get_web_time_str(three_days_later)))                    # 活动结束时间, 默认3天以后
+        three_days_later = datetime.strftime(ACstarttime_str_to_time + timedelta(days=3), format_for_web_second)
+        ACendtime = get_db_time_str(data.get('ACendtime', three_days_later))                    # 活动结束时间, 默认3天以后
         TopnavId = data.get('TopnavId')       # 导航页面
         ACtext = data.get('ACtext')           # 文字内容
         # BAid = data.get('BAid', '0')          # 专题id
