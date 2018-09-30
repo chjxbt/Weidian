@@ -4,6 +4,8 @@ import os
 import uuid
 from flask import request
 from datetime import datetime, timedelta
+
+from WeiDian.common.params_require import parameter_required
 from WeiDian.config.messages import delete_activity_success, stop_activity_success
 from sqlalchemy.orm import Session
 from WeiDian.common.token_required import verify_token_decorator, is_admin, is_tourist
@@ -33,7 +35,7 @@ class CActivityComment(BaseActivityCommentControl):
             return AUTHORITY_ERROR('未登录')
         comment['usid'] = request.user.id
         comment['acoid'] = str(uuid.uuid4())
-        if 'acoid' not in comment and not 'acoparentid' not in comment:
+        if 'acoid' not in comment and 'acoparentid' not in comment:
             return PARAMS_MISS('请指定回复或评论')
         if 'acid' not in comment:  # 如果传来的数据不存在acid, 存数据库的使用要填充上
             comment['acid'] = self.sactivitycomment.get_comment_by_acoid(comment['acoparentid']).ACid
@@ -43,6 +45,12 @@ class CActivityComment(BaseActivityCommentControl):
             'acoid': comment['acoid']
         }
         return data
+
+    @verify_token_decorator
+    def reply_comment(self):
+        if not is_admin():
+            raise TOKEN_ERROR(u'请使用管理员登陆')
+        data = parameter_required(u'')
 
     def get_comment_list(self):
         """获取评论列表"""

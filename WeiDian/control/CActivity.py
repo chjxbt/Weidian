@@ -64,7 +64,6 @@ class CActivity(BaseActivityControl):
         response = import_status('set_success', 'OK')
         return response
 
-
     @verify_token_decorator
     def get_all(self):
         """获取条件下的所有活动
@@ -95,13 +94,12 @@ class CActivity(BaseActivityControl):
             raise PARAMS_MISS(u"参数缺失")
 
         try:
-            if tnid:
-                acfilter = {Activity.TopnavId == tnid}
-                if acid:
-                    acfilter.add(Activity.ACid == acid)
-                activity_list = self.sactivity.get_activity_by_topnavid(acfilter, page, count, skiptype)
-                len_aclist = self.sactivity.get_activity_count(acfilter)
-                logger.debug("get activity_list")
+            # if tnid:
+                # acfilter = {Activity.TopnavId == tnid}
+                # if acid:
+                #     acfilter.add(Activity.ACid == acid)
+            activity_list = self.sactivity.get_activity_by_topnavid(tnid, page, count, skiptype)
+            logger.debug("get activity_list")
 
             if suid:
                 activity_list = self.sactivity.get_activity_by_suid(suid, page, count)
@@ -155,7 +153,8 @@ class CActivity(BaseActivityControl):
             # e5 = time.time()
             # print "fill_product %s" %(e5 - s5)
             data = import_status("get_activity_list_success", "OK")
-            data["count"] = len_aclist
+            data["count"] = request.all_count
+            data["page_count"] = request.page_count
             data["data"] = activity_list
             return data
         except Exception as e:
