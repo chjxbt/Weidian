@@ -1,7 +1,7 @@
 <template>
     <div class="m-modal m-video-modal">
       <div class="m-video-box">
-        <video :src="src" autoplay="true" x5-playsinline="true" x5-video-player-type="h5" x5-video-player-fullscreen="false"></video>
+        <video :src="src" controls="controls" autoplay="true" x5-playsinline="true" x5-video-player-type="h5" x5-video-player-fullscreen="false"></video>
         <!--<video-player  class="video-player vjs-custom-skin"-->
                        <!--ref="videoPlayer"-->
                        <!--:playsinline="true"-->
