@@ -16,7 +16,7 @@ from WeiDian.common.token_required import verify_token_decorator, is_admin, is_t
 from WeiDian.common.TransformToList import add_model
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db, get_db_time_str, get_web_time_str, format_for_web_second
-from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR, NOT_FOUND
+from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR, NOT_FOUND, PARAMS_ERROR
 from WeiDian.control.BaseControl import BaseActivityControl, BaseFile
 from WeiDian.models.model import Activity
 sys.path.append(os.path.dirname(os.getcwd()))
@@ -24,6 +24,7 @@ sys.path.append(os.path.dirname(os.getcwd()))
 
 class CActivity(BaseActivityControl):
     hmsk_type = ['3', '4']
+
     def __init__(self):
         from WeiDian.service.SActivity import SActivity
         self.sactivity = SActivity()
@@ -207,7 +208,6 @@ class CActivity(BaseActivityControl):
         ACendtime = get_db_time_str(data.get('ACendtime', three_days_later))                    # 活动结束时间, 默认3天以后
         TopnavId = data.get('TopnavId')       # 导航页面
         ACtext = data.get('ACtext')           # 文字内容
-        ACSkipType = data.get('ACSkipType')   # 跳转类型
         # BAid = data.get('BAid', '0')          # 专题id
         # PRid = data.get('PRid', '0')          # 商品id
         media = data.get('media')             # 多媒体
@@ -215,6 +215,7 @@ class CActivity(BaseActivityControl):
         ACistop = data.get('ACistop', 0)
         ACtitle = data.get('ACtitle')
         AClinkvalue = data.get('AClinkvalue')
+        ACSkipType = int(data.get('ACSkipType'))   # 跳转类型
 
         if str(ACistop) == 'True':
             istop = self.sactivity.get_top_activity(TopnavId)
@@ -228,26 +229,6 @@ class CActivity(BaseActivityControl):
         #     return SYSTEM_ERROR("prid错误，没有该商品")
         # 创建活动
         ACid = str(uuid.uuid1())
-        self.sactivity.add_model('Activity', **{
-            'ACid': ACid,
-            # 'PRid': relation_product.PRid,
-            'ACSkipType': ACSkipType,
-            'AClinkvalue': AClinkvalue,
-            # 'BAid': BAid,
-            # 'PRid': PRid,
-            'SUid': request.user.id,
-            'ACtype': data.get('ACtype'),  # 类型
-            'TopnavId': TopnavId,
-            'ACtext': ACtext,
-            'AClikeFakeNum': data.get('likenum', 0),  # 喜欢数
-            'ACbrowsenum': data.get('browsenum', 0),  # 浏览数
-            'ACforwardFakenum': data.get('fowardnum', 0),  # 转发数量
-            'ACProductsSoldFakeNum': data.get('soldnum', 0),   # 商品的销售量
-            'ACstarttime': ACstarttime,
-            'ACendtime': ACendtime,
-            'ACtitle': ACtitle,
-            'ACistop': ACistop
-        })
         # 创建media
         image_num = 0  # 标志用来限制图片或视频的数量
         for img_or_video in media:
@@ -286,6 +267,33 @@ class CActivity(BaseActivityControl):
         response_make_activity['data'] = {
             'ACid': ACid
         }
+        # 是否添加进入专题
+        baid = data.get('baid')
+        model_dict = {
+            'ACid': ACid,
+            # 'PRid': relation_product.PRid,
+            'ACSkipType': ACSkipType,
+            'AClinkvalue': AClinkvalue,
+            # 'BAid': BAid,
+            # 'PRid': PRid,
+            'SUid': request.user.id,
+            'ACtype': data.get('ACtype'),  # 类型
+            'TopnavId': TopnavId,
+            'ACtext': ACtext,
+            'AClikeFakeNum': data.get('likenum', 0),  # 喜欢数
+            'ACbrowsenum': data.get('browsenum', 0),  # 浏览数
+            'ACforwardFakenum': data.get('fowardnum', 0),  # 转发数量
+            'ACProductsSoldFakeNum': data.get('soldnum', 0),   # 商品的销售量
+            'ACstarttime': ACstarttime,
+            'ACendtime': ACendtime,
+            'ACtitle': ACtitle,
+            'ACistop': ACistop,
+        }
+        if baid:
+            if ACSkipType != 2:
+                raise PARAMS_ERROR(u'参数不合理, 仅跳转到商品的推文可以加入专题')
+            model_dict['baid'] = baid
+        self.sactivity.add_model('Activity', **model_dict)
         return response_make_activity
 
     @verify_token_decorator
