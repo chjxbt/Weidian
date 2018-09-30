@@ -25,7 +25,7 @@ def parameter_required(*required):
         if missed:
             missed_params = '/'.join(missed)
             if isinstance(missed_params, str):
-                missed_params = missed_params.encode("unicode")
+                missed_params = missed_params.decode("utf8")
             logger.debug('missed params is %s', missed_params)
             raise PARAMS_MISS(u'必要参数缺失: ' + missed_params)
     return body_data
