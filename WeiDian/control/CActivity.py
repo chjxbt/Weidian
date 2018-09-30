@@ -5,6 +5,7 @@ import os
 import base64
 from datetime import datetime, timedelta
 from WeiDian import logger
+from WeiDian.common.loggers import generic_log
 from WeiDian.common.make_qrcode import make_qrcode
 from WeiDian.common.params_require import parameter_required
 from WeiDian.config.setting import QRCODEHOSTNAME, LinuxRoot, LinuxImgs, WindowsRoot
@@ -14,8 +15,8 @@ import uuid
 from WeiDian.common.token_required import verify_token_decorator, is_admin, is_tourist
 from WeiDian.common.TransformToList import add_model
 from WeiDian.common.import_status import import_status
-from WeiDian.common.timeformat import format_for_db, get_db_time_str
-from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR
+from WeiDian.common.timeformat import format_for_db, get_db_time_str, get_web_time_str, format_for_web_second
+from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR, NOT_FOUND
 from WeiDian.control.BaseControl import BaseActivityControl, BaseFile
 from WeiDian.models.model import Activity
 sys.path.append(os.path.dirname(os.getcwd()))
@@ -53,7 +54,7 @@ class CActivity(BaseActivityControl):
             return AUTHORITY_ERROR(u"未登录")
         args = request.args.to_dict()
         logger.info("this is get all activity args %s", args)
-        parameter_required('tnid', 'start', 'count')
+        parameter_required(u'tnid')
         tnid = args.get('tnid')  # 导航id
         suid = args.get('suid')  # 管理员id
         lasting = args.get('lasting', True)  # 是否正在进行的活动
@@ -98,12 +99,23 @@ class CActivity(BaseActivityControl):
                     activity.fill('bigactivity', 'skip_type')
                     activity.fill('专题', 'zh_skip_type')
                     bigactivity = self.sbigactivity.get_one_big_act(baid)
-                    activity.fill()
+                    if not bigactivity:
+                        raise NOT_FOUND()
+                    bigactivity_type = bigactivity.BAtype
+                    big_activity_content = {'type': bigactivity_type}
+                    big_activity_content.setdefault('baid', bigactivity.BAid)
+                    # 图片类型专题
+                    if bigactivity_type == 0:
+                        big_activity_content.setdefault('baimage', bigactivity.BAimage)
+                        big_activity_content.setdefault('baid', bigactivity.BAid)
+                    activity.fill(big_activity_content, 'bigactivity')
                 elif activity.ACSkipType == 2:
                     self.fill_soldnum(activity)
                     self.fill_product(activity)
                     activity.fill('product', 'skip_type')
                     activity.fill('商品', 'zh_skip_type')
+                activity.ACstarttime = get_web_time_str(activity.ACstarttime)
+                activity.ACendtime = get_web_time_str(activity.ACendtime)
 
             # map(self.fill_detail, activity_list)
             # map(self.fill_comment_two, activity_list)
@@ -117,8 +129,9 @@ class CActivity(BaseActivityControl):
             data["count"] = len_aclist
             data["data"] = activity_list
             return data
-        except:
+        except Exception as e:
             logger.exception("get activity error")
+            generic_log(e)
             return SYSTEM_ERROR(u"服务器繁忙")
 
     @verify_token_decorator
@@ -187,20 +200,21 @@ class CActivity(BaseActivityControl):
         data = request.json
         logger.info("add activity data is %s", data)
         parameter_required('ACtext', 'TopnavId', 'ACSkipType')
-        now_time = datetime.strftime(datetime.now(), format_for_db)
-        ACstarttime = data.get('acstarttime', now_time)                         # 活动开始时间, 默认当前时间
+        now_time = datetime.strftime(datetime.now(), format_for_web_second)
+        ACstarttime = get_db_time_str(data.get('ACstarttime', now_time))                         # 活动开始时间, 默认当前时间
         ACstarttime_str_to_time = datetime.strptime(ACstarttime, format_for_db)
         three_days_later = datetime.strftime(ACstarttime_str_to_time + timedelta(days=3), format_for_db)
-        ACendtime = data.get('ACendtime', three_days_later)                     # 活动结束时间, 默认3天以后
+        ACendtime = get_db_time_str(data.get('ACendtime', three_days_later))                    # 活动结束时间, 默认3天以后
         TopnavId = data.get('TopnavId')       # 导航页面
         ACtext = data.get('ACtext')           # 文字内容
         ACSkipType = data.get('ACSkipType')   # 跳转类型
-        BAid = data.get('BAid', '0')          # 专题id
-        PRid = data.get('PRid', '0')          # 商品id
+        # BAid = data.get('BAid', '0')          # 专题id
+        # PRid = data.get('PRid', '0')          # 商品id
         media = data.get('media')             # 多媒体
         tags = data.get('tags')               # 右上角tag标签
         ACistop = data.get('ACistop', 0)
         ACtitle = data.get('ACtitle')
+        AClinkvalue = data.get('AClinkvalue')
 
         if str(ACistop) == 'True':
             istop = self.sactivity.get_top_activity(TopnavId)
@@ -218,8 +232,9 @@ class CActivity(BaseActivityControl):
             'ACid': ACid,
             # 'PRid': relation_product.PRid,
             'ACSkipType': ACSkipType,
-            'BAid': BAid,
-            'PRid': PRid,
+            'AClinkvalue': AClinkvalue,
+            # 'BAid': BAid,
+            # 'PRid': PRid,
             'SUid': request.user.id,
             'ACtype': data.get('ACtype'),  # 类型
             'TopnavId': TopnavId,
@@ -231,7 +246,7 @@ class CActivity(BaseActivityControl):
             'ACstarttime': ACstarttime,
             'ACendtime': ACendtime,
             'ACtitle': ACtitle,
-            'ACistop': ACistop  # TODO 判断置顶待完善
+            'ACistop': ACistop
         })
         # 创建media
         image_num = 0  # 标志用来限制图片或视频的数量
@@ -281,7 +296,8 @@ class CActivity(BaseActivityControl):
         logger.info("this is update activity args %s", args)
         data = request.json
         logger.info("this is update activity data %s", data)
-        parameter_required("acid", "PRid", "ACtype", "TopnavId", "ACtext", "AClikeFakeNum", "ACforwardFakenum", "ACProductsSoldFakeNum", "ACstarttime", "ACendtime", "ACistop")
+        # parameter_required("acid", "ACtype", "TopnavId", "ACtext", "AClikeFakeNum", "ACforwardFakenum", "ACProductsSoldFakeNum", "ACstarttime", "ACendtime", "ACistop")
+        parameter_required("acid", "ACtype", "TopnavId", "ACtext", "AClikeFakeNum", "ACforwardFakenum", "ACProductsSoldFakeNum", "ACstarttime", "ACendtime", "ACistop")
         now_time = datetime.strftime(datetime.now(), format_for_db)
         data['ACupdatetime'] = now_time
         act_info = self.sactivity.update_activity_by_acid(args["acid"], data)

@@ -2,11 +2,13 @@
 import sys
 import os
 from sqlalchemy.orm import sessionmaker
+
+from WeiDian.common.query_session import Session
 from WeiDian.models import model
 sys.path.append(os.path.dirname(os.getcwd()))
 
 
-db_session = sessionmaker(bind=model.mysql_engine)
+db_session = sessionmaker(bind=model.mysql_engine, class_=Session)
 
 
 def get_session():
