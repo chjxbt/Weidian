@@ -2,7 +2,6 @@
 import sys
 import os
 import ConfigParser
-from WeiDian.common.single import singleton
 sys.path.append(os.path.dirname(os.getcwd()))
 
 

@@ -6,12 +6,13 @@ from flask import request
 from datetime import datetime, timedelta
 
 from WeiDian.common.params_require import parameter_required
+from WeiDian.common.timeformat import format_for_db
 from WeiDian.config.messages import delete_activity_success, stop_activity_success
 from sqlalchemy.orm import Session
 from WeiDian.common.token_required import verify_token_decorator, is_admin, is_tourist
 from WeiDian.common.TransformToList import dict_add_models
 from WeiDian.common.import_status import import_status
-from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR
+from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR, NOT_FOUND
 from WeiDian.control.BaseControl import BaseActivityCommentControl
 sys.path.append(os.path.dirname(os.getcwd()))
 
@@ -28,50 +29,75 @@ class CActivityComment(BaseActivityCommentControl):
     @verify_token_decorator
     def add_comment(self):
         """添加评论数据"""
-        comment = request.json
-        if not comment:
-            return PARAMS_MISS
         if is_tourist():
-            return AUTHORITY_ERROR('未登录')
-        comment['usid'] = request.user.id
-        comment['acoid'] = str(uuid.uuid4())
-        if 'acoid' not in comment and 'acoparentid' not in comment:
-            return PARAMS_MISS('请指定回复或评论')
-        if 'acid' not in comment:  # 如果传来的数据不存在acid, 存数据库的使用要填充上
-            comment['acid'] = self.sactivitycomment.get_comment_by_acoid(comment['acoparentid']).ACid
-        dict_add_models('ActivityComment', comment)
+            return AUTHORITY_ERROR(u'未登录')
+        data = parameter_required(u'ACtext')
+        acid = data.get('acid')
+        acoid = data.get('acoid')
+        usid = request.user.id
+        actext = data.get('ACtext')
+        # 添加评论
+        if acid:
+            activity = self.sactivity.get_activity_by_acid(acid)
+            if not activity:
+                raise NOT_FOUND(u'推文不存在')
+            model_data = {
+                'ACOid': str(uuid.uuid4()),
+                'ACid': acid,
+                'USid': usid,
+                'ACtext': actext,
+                'ACOcreatetime': datetime.strftime(datetime.now(), format_for_db)
+            }
+        # 如果是添加回复
+        elif acoid:
+            if not is_admin():
+                raise TOKEN_ERROR(u'请使用管理员回复')
+            comment = self.sactivitycomment.get_comment_by_acoid(acoid)
+            if not comment:
+                raise NOT_FOUND(u'不存在的评论')
+            acid = comment.ACid
+            model_data = {
+                'ACOid': str(uuid.uuid4()),
+                'ACid': acid,
+                'ACOparentid': acoid,
+                'USid': request.user.id,
+                'ACtext': actext,
+                'ACOcreatetime': datetime.strftime(datetime.now(), format_for_db)
+            }
+        else:
+            raise PARAMS_MISS(u'请指定回复类型')
+        self.sactivity.add_model('ActivityComment', **model_data)
         data = import_status('add_activity_comment_success', 'OK')
         data['data'] = {
-            'acoid': comment['acoid']
+            'acoid': model_data['ACOid']
         }
         return data
 
-    @verify_token_decorator
-    def reply_comment(self):
-        if not is_admin():
-            raise TOKEN_ERROR(u'请使用管理员登陆')
-        data = parameter_required(u'')
-
     def get_comment_list(self):
         """获取评论列表"""
-        args = request.args.to_dict()
+        args = parameter_required(u'acid')
         acid = args.get('acid')
+        reply = args.get('reply', 0)  # 是否获取回复
         if not acid:
             return PARAMS_MISS
         page = int(args.get('page', 1))  # 页码
-        start = int(args.get('start', 0))  # 起始位置
+        # start = int(args.get('start', 0))  # 起始位置
         count = int(args.get('count', 15))  # 取出条数
-        if not start:
-            start = (page -1) * count
-        comment_list = self.sactivitycomment.get_comment_by_activity_id(acid)
-        end = start + count
-        len_comment_list = len(comment_list)
-        if end > len_comment_list:
-            end = len_comment_list
-        comment_list = comment_list[start: end]
+        # if not start:
+        #     start = (page -1) * count
+        comment_list = self.sactivitycomment.get_comment_by_activity_id(acid, page, count)
+        # end = start + count
+        # len_comment_list = len(comment_list)
+        # if end > len_comment_list:
+        #     end = len_comment_list
+        # comment_list = comment_list[start: end]
         map(self.fill_user, comment_list)
-        map(self.fill_comment_apply_for, comment_list)
+        if reply:
+            map(self.fill_comment_apply_for, comment_list)
         data = import_status('get_acvity_comment_list_success', 'OK')
         data['data'] = comment_list
         return data
+
+    def get_commen_reply(self):
+        pass
 

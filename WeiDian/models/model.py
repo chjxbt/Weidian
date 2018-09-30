@@ -72,7 +72,7 @@ class ActivityComment(BaseModel):
     ACOid = Column(String(64), primary_key=True)
     ACid = Column(String(64), nullable=False)  # 评论对应的活动)
     ACOparentid = Column(String(64))  # 所回复的评论(可以为空, 为空代表是评论)
-    USid = Column(String(64), nullable=False)  # 发布评论的用户
+    USid = Column(String(64), nullable=False)  # 发布评论(回复)的用户(管理员)
     ACtext = Column(String(255), nullable=False)  # 评论内容
     ACOcreatetime = Column(String(14))  # 时间
     ACisdelete = Column(Boolean, default=False)  # 是否删除
