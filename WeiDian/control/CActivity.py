@@ -50,6 +50,22 @@ class CActivity(BaseActivityControl):
         self.empty = ['', None, [], {}]
 
     @verify_token_decorator
+    def set_show_type(self):
+        if not is_admin():
+            raise TOKEN_ERROR(u'请使用管理员登录')
+        data = parameter_required('skip_type')
+        try:
+            skip_type = str(data.get('skip_type'))
+            if skip_type not in ['0', '1', '2']:
+                raise TypeError()
+        except TypeError as e:
+            raise PARAMS_ERROR(u'参数skip_type错误')
+        Partner().set_item('skip', 'skip_type', skip_type)
+        response = import_status('set_success', 'OK')
+        return response
+
+
+    @verify_token_decorator
     def get_all(self):
         """获取条件下的所有活动
         """

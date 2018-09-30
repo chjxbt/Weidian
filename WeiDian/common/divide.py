@@ -61,6 +61,7 @@ class Partner(object):
     def set_item(self, section, option, value):
         self.cf.set(section, option, value.encode('utf8'))
         self.cf.write(open(self.config_file_path, "w"))
+        return 'ok'
 
 
 if __name__ == '__main__':

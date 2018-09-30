@@ -32,7 +32,8 @@ class AActivity(Resource):
             "stop_one": "self.control_activity.stop_one()",
             "update_act": "self.control_activity.update_activity()",
             "share_qrcode": "self.control_activity.share_activity()",
-            "generate_poster": "self.control_activity.generate_poster()"
+            "generate_poster": "self.control_activity.generate_poster()",
+            "set_show_type": "self.control_activity.set_show_type()",
         }
         res = eval(apis[activity])
         return jsonify(res)
