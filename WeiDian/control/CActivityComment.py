@@ -5,6 +5,7 @@ import uuid
 from flask import request
 from datetime import datetime, timedelta
 
+from WeiDian.common.loggers import generic_log
 from WeiDian.common.params_require import parameter_required
 from WeiDian.common.timeformat import format_for_db
 from WeiDian.config.messages import delete_activity_success, stop_activity_success
@@ -75,28 +76,31 @@ class CActivityComment(BaseActivityCommentControl):
 
     def get_comment_list(self):
         """获取评论列表"""
-        args = parameter_required(u'acid')
-        acid = args.get('acid')
-        reply = args.get('reply', 0)  # 是否获取回复
-        if not acid:
-            return PARAMS_MISS
-        page = int(args.get('page', 1))  # 页码
-        # start = int(args.get('start', 0))  # 起始位置
-        count = int(args.get('count', 15))  # 取出条数
-        # if not start:
-        #     start = (page -1) * count
-        comment_list = self.sactivitycomment.get_comment_by_activity_id(acid, page, count)
-        # end = start + count
-        # len_comment_list = len(comment_list)
-        # if end > len_comment_list:
-        #     end = len_comment_list
-        # comment_list = comment_list[start: end]
-        map(self.fill_user, comment_list)
-        if reply:
+        try:
+            args = request.args.to_dict()
+            acid = args.get('acid')
+            if not acid:
+                raise PARAMS_MISS(u'必要的参数缺失: acid;')
+            reply = True if args.get('reply') else False
+            page = int(args.get('page', 1))  # 页码
+            # start = int(args.get('start', 0))  # 起始位置
+            count = int(args.get('count', 15))  # 取出条数
+            # if not start:
+            #     start = (page -1) * count
+            comment_list = self.sactivitycomment.get_comment_by_activity_id(acid, page, count, reply)
+            # end = start + count
+            # len_comment_list = len(comment_list)
+            # if end > len_comment_list:
+            #     end = len_comment_list
+            # comment_list = comment_list[start: end]
+            map(self.fill_user, comment_list)
             map(self.fill_comment_apply_for, comment_list)
-        data = import_status('get_acvity_comment_list_success', 'OK')
-        data['data'] = comment_list
-        return data
+            data = import_status('get_acvity_comment_list_success', 'OK')
+            data['data'] = comment_list
+            return data
+        except Exception as e:
+            generic_log(e)
+            raise e
 
     def get_commen_reply(self):
         pass

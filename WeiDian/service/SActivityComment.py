@@ -10,11 +10,14 @@ sys.path.append(os.path.dirname(os.getcwd()))
 class SActivityComment(SBase):
 
     @close_session
-    def get_comment_by_activity_id(self, acid, reply=None):
+    def get_comment_by_activity_id(self, acid, page=None, count=None, reply=False):
         """通过活动id获取下面的评论和回复"""
-        return self.session.query(ActivityComment).filter_by(ACid=acid, ACisdelete=False)\
-            .filter_without_none(ActivityComment.ACOparentid is None)\
-            .order_by(ActivityComment.ACOcreatetime.desc()).all_with_page()
+        if reply:
+            return self.session.query(ActivityComment).filter_by(ACid=acid, ACisdelete=False) \
+                .filter().order_by(ActivityComment.ACOcreatetime.desc()).all_with_page(page, count)
+        else:
+            return self.session.query(ActivityComment).filter_by(ACid=acid, ACisdelete=False) \
+                .filter(ActivityComment.ACOparentid == None).order_by(ActivityComment.ACOcreatetime.desc()).all_with_page(page, count)
 
     @close_session
     def get_comment_by_acid_two(self, acid):
