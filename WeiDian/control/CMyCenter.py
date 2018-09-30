@@ -368,7 +368,9 @@ class CMyCenter(BaseMyCenterControl):
         self._verify_cardnum(banknumber, error='raise')
         usid = request.user.id
         try:
-            bankcard = self.sbankcard.del_bankcard(usid)
+            bankcard = self.sbankcard.update_bankcard_by_usid(usid, {
+                'BCisdelete': True
+            })
             logger.debug("bankcard count is %s", bankcard)
             bcid = str(uuid.uuid1())
             self.sbankcard.add_model("BankCard", **{
