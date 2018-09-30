@@ -24,7 +24,7 @@ def close_session(fn):
             logger.exception("DBERROR")
             self.session.rollback()
             # raise e
-            raise dberror(message=e.message)
+            raise dberror()
         finally:
             self.session.close()
     return inner
