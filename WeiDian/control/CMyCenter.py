@@ -392,6 +392,10 @@ class CMyCenter(BaseMyCenterControl):
         try:
             logger.debug("get bankcard")
             my_bankcard = self.sbankcard.get_bankcard_by_usid(request.user.id)
+
+            if not my_bankcard or not my_bankcard.BCnumber or not my_bankcard.BCusername:
+                my_bankcard = None
+
             response = import_status("get_bankcard_success", "OK")
             response['data'] = my_bankcard
             return response

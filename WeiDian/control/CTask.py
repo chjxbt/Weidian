@@ -241,8 +241,8 @@ class CTask(BaseTask):
             })
 
     def add_user_task(self, usid, task_level):
-        task_level = self.stask.get_tasklevel_by_level(int(task_level) + 1)
-        task_list = self.stask.get_task_by_tlid(task_level.TLid)
+        task_level_after = self.stask.get_tasklevel_by_level(int(task_level) + 1)
+        task_list = self.stask.get_task_by_tlid(task_level_after.TLid)
         self.add_user_task_detail(usid, task_list)
 
         if int(task_level) == 1:

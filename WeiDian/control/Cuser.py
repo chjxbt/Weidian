@@ -115,12 +115,12 @@ class CUser():
                 "accesstoken": access_token,
                 "subscribe": subscribe,
             })
-            self.smycenter.add_model("MyCenter", **{
-                "MYid": str(uuid.uuid1()),
-                "USid": usid,
-                "MYranking": '0',
-                "MYrewards": '0'
-            })
+            # self.smycenter.add_model("MyCenter", **{
+            #     "MYid": str(uuid.uuid1()),
+            #     "USid": usid,
+            #     "MYranking": '0',
+            #     "MYrewards": '0'
+            # })
 
             tasl_level = self.stask.get_tasklevel_by_level(1)
             task_list = self.stask.get_task_by_tlid(tasl_level.TLid)
