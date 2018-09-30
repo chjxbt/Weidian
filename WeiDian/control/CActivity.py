@@ -45,6 +45,7 @@ class CActivity(BaseActivityControl):
         self.suser = SUser()
         from WeiDian.service.SBigActivity import SBigActivity
         self.sbigactivity = SBigActivity()
+        self.empty = ['', None, [], {}]
 
     @verify_token_decorator
     def get_all(self):
@@ -239,10 +240,10 @@ class CActivity(BaseActivityControl):
             'ACtype': data.get('ACtype'),  # 类型
             'TopnavId': TopnavId,
             'ACtext': ACtext,
-            'AClikeFakeNum': data.get('likenum', 0),  # 喜欢数
-            'ACbrowsenum': data.get('browsenum', 0),  # 浏览数
-            'ACforwardFakenum': data.get('fowardnum', 0),  # 转发数量
-            'ACProductsSoldFakeNum': data.get('soldnum', 0),   # 商品的销售量
+            'AClikeFakeNum': data.get('AClikeFakeNum', 0),  # 喜欢数
+            'ACbrowsenum': data.get('ACbrowsenum', 0),  # 浏览数
+            'ACforwardFakenum': data.get('ACforwardFakenum', 0),  # 转发数量
+            'ACProductsSoldFakeNum': data.get('ACProductsSoldFakeNum', 0),   # 商品的销售量
             'ACstarttime': ACstarttime,
             'ACendtime': ACendtime,
             'ACtitle': ACtitle,
@@ -297,10 +298,36 @@ class CActivity(BaseActivityControl):
         data = request.json
         logger.info("this is update activity data %s", data)
         # parameter_required("acid", "ACtype", "TopnavId", "ACtext", "AClikeFakeNum", "ACforwardFakenum", "ACProductsSoldFakeNum", "ACstarttime", "ACendtime", "ACistop")
-        parameter_required("acid", "ACtype", "TopnavId", "ACtext", "AClikeFakeNum", "ACforwardFakenum", "ACProductsSoldFakeNum", "ACstarttime", "ACendtime", "ACistop")
-        now_time = datetime.strftime(datetime.now(), format_for_db)
+        parameter_required("acid")
+        now_time = datetime.strftime(datetime.now(), format_for_web_second)
         data['ACupdatetime'] = now_time
-        act_info = self.sactivity.update_activity_by_acid(args["acid"], data)
+        ACstarttime = get_db_time_str(data.get('ACstarttime', now_time))  # 活动开始时间, 默认当前时间
+        ACstarttime_str_to_time = datetime.strptime(ACstarttime, format_for_db)
+        three_days_later = datetime.strftime(ACstarttime_str_to_time + timedelta(days=3), format_for_db)
+        ACendtime = get_db_time_str(data.get('ACendtime', three_days_later))
+        media = data.get('media')  # 多媒体
+        tags = data.get('tags')  # 右上角tag标签
+
+        upact_info = {
+                # 'PRid': relation_product.PRid,
+                'ACSkipType': data.get('acskiptype'),
+                'AClinkvalue': data.get('aclinkvalue'),
+                'BAid': data.get('baid'),
+                'ACtype': data.get('actype'),  # 类型
+                'ACtext': data.get('actext'),
+                'AClikeFakeNum': data.get('aclikefakenum', 0),  # 喜欢数
+                'ACbrowsenum': data.get('acbrowsenum', 0),  # 浏览数
+                'ACforwardFakenum': data.get('acforwardfakenum', 0),  # 转发数量
+                'ACProductsSoldFakeNum': data.get('acproductssoldfakenum', 0),  # 商品的销售量
+                'ACstarttime': ACstarttime,
+                'ACendtime': ACendtime,
+                'ACtitle': data.get('actitle'),
+                'ACistop': data.get('acistop')
+
+            }
+        upact_info = {k: v for k, v in upact_info.items() if v not in self.empty}
+
+        act_info = self.sactivity.update_activity_by_acid(args["acid"], upact_info)
         if not act_info:
             return SYSTEM_ERROR
         response = import_status('update_activity_success', 'OK')
