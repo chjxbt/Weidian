@@ -9,7 +9,7 @@ from WeiDian import logger
 from WeiDian.common.TransformToList import add_model
 from WeiDian.common.import_status import import_status
 from WeiDian.common.params_require import parameter_required
-from WeiDian.common.timeformat import format_for_db
+from WeiDian.common.timeformat import format_for_db, format_for_web_second, get_db_time_str
 from WeiDian.common.token_required import verify_token_decorator, is_partner, is_admin
 from WeiDian.config.response import AUTHORITY_ERROR, TOKEN_ERROR, PARAMS_MISS, SYSTEM_ERROR
 from WeiDian.control.BaseControl import BaseProductControl
@@ -32,8 +32,7 @@ class CRecommend(BaseProductControl):
     def get_one(self):
         # args = request.args.to_dict()
         if not is_partner():
-            return AUTHORITY_ERROR
-        print '是合伙人'
+            raise AUTHORITY_ERROR(u'当前非合伙人权限')
         recommend = self.srecommend.get_one_recommend()
         self.srecommend.update_view_num(recommend.REid)
         recommend_list = [recommend]
@@ -47,23 +46,17 @@ class CRecommend(BaseProductControl):
     @verify_token_decorator
     def add_one(self):
         """添加推荐"""
-        # todo 此处无需添加图片, 关联商品id即可
-        if not hasattr(request, 'user'):
-            return TOKEN_ERROR  # 未登录, 或token错误
+        # 此处无需添加图片, 关联商品id即可
         if not is_admin():
             return AUTHORITY_ERROR  # 权限不足
-        data = parameter_required('REstarttime', 'REendtime', 'RElikenum', 'REviewnum', 'PRid_list')
-        # data = request.json
-        now_time = datetime.strftime(datetime.now(), format_for_db)
-        restarttime = data.get('REstarttime', now_time)  # 上线时间, 默认当前时间
+        data = request.json
+        logger.debug("data is %s", data)
+        parameter_required('PRid_list')
+        now_time = datetime.strftime(datetime.now(), format_for_web_second)
+        restarttime = get_db_time_str(data.get('REstarttime', now_time))  # 上线时间, 默认当前时间
         restarttime_str_to_time = datetime.strptime(restarttime, format_for_db)
-        # 7天以后
-        one_days_later = datetime.strftime(
-            restarttime_str_to_time +
-            timedelta(
-                days=7),
-            format_for_db)
-        reendtime = data.get('REendtime', one_days_later)  # 推荐下线时间, 默认1天以后
+        days_later = datetime.strftime(restarttime_str_to_time + timedelta(days=7), format_for_web_second)
+        reendtime = get_db_time_str(data.get('REendtime', days_later))  # 推荐下线时间, 默认7天以后
         relikefakenum = data.get('RElikenum', 0)  # 喜欢数
         refakeviewnum = data.get('REviewnum', 0)  # 浏览数
         prid_list = data.get('PRid_list')
@@ -94,8 +87,9 @@ class CRecommend(BaseProductControl):
             logger.debug("add recommondproduct list error")
             raise SYSTEM_ERROR(u'添加每日推荐商品RecommendProduct内容出错')
         response_make_recommend = import_status('add_recommend_success', 'OK')
-        response_make_recommend['data'] = {}
-        response_make_recommend['data']['reid'] = reid
+        response_make_recommend['data'] = {
+            'reid': reid,
+        }
         return response_make_recommend
 
     # @verify_token_decorator
@@ -126,45 +120,48 @@ class CRecommend(BaseProductControl):
 
     @verify_token_decorator
     def update_recommend_by_reid(self):
-        if not hasattr(request, 'user'):
-            return TOKEN_ERROR  # 未登录, 或token错误
         if not is_admin():
-            return AUTHORITY_ERROR  # 权限不足
-        data = parameter_required(u'REid')
-        reid = data.get('REid')
+            raise AUTHORITY_ERROR(u'当前非管理员权限')  # 权限不足
+        args = request.args.to_dict()
+        logger.debug("update args is %s", args)
+        data = request.json
+        parameter_required(u'reid')
+        logger.debug("update data is %s", data)
+        reid = args.get('reid')
         recommend = {
-            'REstarttime': data.get('REstarttime'),
-            'REendtime': data.get('REendtime'),
+            'REstarttime': get_db_time_str(data.get('REstarttime')),
+            'REendtime': get_db_time_str(data.get('REendtime')),
             'REfakeviewnum': data.get('REfakeviewnum'),
-            'RElikefakenum': data.get('RElikefakenum')
+            'RElikefakenum': data.get('RElikefakenum'),
+            'REisdelete': data.get('REisdelete')
         }
         recommend = {k: v for k, v in recommend.items() if v is not None}
         res = self.srecommend.update_recommend_by_reid(reid, recommend)
         if not res:
             return SYSTEM_ERROR(u"REid错误，要修改的内容不存在")
         prid_list = data.get('PRid_list')
-        for item in prid_list:
-            add_model('RecommendProduct', **{
-                'REid': reid,
-                'PRid': item.get('PRid'),
-                'RPid': str(uuid.uuid4()),
-                'RPsort': item.get('RPsort')
-            })
-        response_update_recommend = import_status(
-            'update_recommend_success', 'OK')
+        if prid_list:
+            for item in prid_list:
+                add_model('RecommendProduct', **{
+                    'REid': reid,
+                    'PRid': item.get('PRid'),
+                    'RPid': str(uuid.uuid4()),
+                    'RPsort': item.get('RPsort')
+                })
+        response_update_recommend = import_status('update_recommend_success', 'OK')
         response_update_recommend['data'] = {'reid': reid}
         return response_update_recommend
 
-    @verify_token_decorator
-    def del_one(self):
-        if not hasattr(request, 'user'):
-            return TOKEN_ERROR  # 未登录, 或token错误
-        if not is_admin():
-            return AUTHORITY_ERROR  # 权限不足
-        data = parameter_required(u'REid')
-        reid = data.get('REid')
-        self.srecommend.del_recommend(reid)
-        response_del_recommend = import_status('del_recommend_success', 'OK')
-        response_del_recommend['data'] = {}
-        response_del_recommend['data']['reid'] = reid
-        return response_del_recommend
+    # @verify_token_decorator
+    # def del_one(self):
+    #     if not hasattr(request, 'user'):
+    #         return TOKEN_ERROR  # 未登录, 或token错误
+    #     if not is_admin():
+    #         return AUTHORITY_ERROR  # 权限不足
+    #     data = parameter_required(u'REid')
+    #     reid = data.get('REid')
+    #     self.srecommend.del_recommend(reid)
+    #     response_del_recommend = import_status('del_recommend_success', 'OK')
+    #     response_del_recommend['data'] = {}
+    #     response_del_recommend['data']['reid'] = reid
+    #     return response_del_recommend
