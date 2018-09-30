@@ -27,7 +27,8 @@ class ABigActivity(Resource):
         apis = {
             "create_hbact": "self.cbigactivity.create_home_bigactivity()",
             "create_dbact": "self.cbigactivity.create_discover_bigactivity()",
-            "update_bact": "self.cbigactivity.update_bigactivity()"
+            "update_bact": "self.cbigactivity.update_bigactivity()",
+            "add_to_bigact": "self.cbigactivity.add_activities_to_bigact()",
         }
         res = eval(apis[bigactivity])
         return jsonify(res)
