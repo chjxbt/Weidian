@@ -26,13 +26,14 @@ class SBigActivity(SBase):
         return self.session.query(BigActivity.BAimage).filter_by(BAid=baid).first()
 
     @close_session
-    def get_big_act_list(self):
+    def get_big_act_list(self, filter_type=None):
         """获取专题列表"""
-        return self.session.query(BigActivity).filter(BigActivity.BAisdelete == False).order_by(BigActivity.BAsort.asc()).all()
+        return self.session.query(BigActivity).filter(BigActivity.BAisdelete == False). \
+            filter_without_none(BigActivity.BAtype == filter_type).order_by(BigActivity.BAsort.asc()).all()
 
     @close_session
     def get_one_big_act(self, baid):
-        """获取单个专题"""
+        """获取单个专题内容"""
         return self.session.query(BigActivity).filter(BigActivity.BAid == baid).first()
 
     @close_session

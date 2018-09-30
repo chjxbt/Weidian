@@ -86,4 +86,4 @@ update_bigact_success = "修改专题成功"
 set_schedual_show_success = '设置进度显示成功'
 set_schedual_hide_success = '设置进度隐藏成功'
 get_today_earn_success = '获取今日数据成功'
-
+add_to_bigactivity_success = '成功{}条'

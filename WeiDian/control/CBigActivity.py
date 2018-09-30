@@ -10,7 +10,7 @@ from WeiDian.common.import_status import import_status
 from WeiDian.common.params_require import parameter_required
 from WeiDian.common.timeformat import get_db_time_str, format_for_db, get_web_time_str, format_for_web_second
 from WeiDian.common.token_required import verify_token_decorator, is_admin
-from WeiDian.config.response import TOKEN_ERROR, SYSTEM_ERROR, AUTHORITY_ERROR, PARAMS_ERROR
+from WeiDian.config.response import TOKEN_ERROR, SYSTEM_ERROR, AUTHORITY_ERROR, PARAMS_ERROR, NOT_FOUND
 from WeiDian.control.BaseControl import BaseActivityControl
 from flask import request
 sys.path.append(os.path.dirname(os.getcwd()))
@@ -80,8 +80,10 @@ class CBigActivity(BaseActivityControl):
         """获取专题列表"""
         if not hasattr(request, 'user'):
             raise TOKEN_ERROR(u"未登录/token错误")
+        args = request.args.to_dict()
+        BAtype = args.get('type')  # 0 图片, 1 非图片
         try:
-            big_act_list = self.sbigactivity.get_big_act_list()
+            big_act_list = self.sbigactivity.get_big_act_list(BAtype)
             # map(lambda x: x.clean.add('BAid', 'BAtext'), big_act_list)
             for big_act in big_act_list:
                 big_act.BAstarttime = get_web_time_str(big_act.BAstarttime)
@@ -111,6 +113,29 @@ class CBigActivity(BaseActivityControl):
             logger.exception("get one big act error")
             return SYSTEM_ERROR(u"服务器繁忙")
 
+    @verify_token_decorator
+    def add_activities_to_bigact(self):
+        if not is_admin():
+            raise TOKEN_ERROR(u'请使用管理员登陆')
+        args = parameter_required(u'ACid_list', u'BAid')
+        acid_list = args.get('ACid_list')
+        baid = args.get('BAid')
+        success_acvity = []  # 不是跳转到商品的推文将会忽略
+        for acid in acid_list:
+            activity = self.sactivity.get_activity_by_acid(acid)
+            if not activity or activity.ACSkipType != 2:
+                continue
+            self.sactivity.update_activity_by_acid(acid, {
+                'BAid': baid
+            })
+            success_acvity.append(acid)
+        big_activity = self.sbigactivity.get_one_big_act(baid)
+        if not big_activity:
+            raise NOT_FOUND(u'该专题不存在')
+        if big_activity.BAtype == 0:
+            raise NOT_FOUND(u'该专题为大图')
+        msg = u'成功{}条'.format(len(success_acvity))
+        return {"message": msg, "status": 200}
 
     @verify_token_decorator
     def get_home_banner(self):
@@ -177,23 +202,31 @@ class CBigActivity(BaseActivityControl):
         BAstarttime_str_to_time = datetime.strptime(BAstarttime, format_for_db)
         seven_days_later = datetime.strftime(BAstarttime_str_to_time + timedelta(days=365), format_for_db)  # 七天以后
         BAendtime = get_db_time_str(data.get('BAendtime', seven_days_later))
+        BAisdisplay = True if data.get('BAisdisplay') == 1 else False
+        model_dict = {
+            "BAid": BAid,
+            "BAtext": data.get('BAtext'),
+            "BAimage": BAimage,
+            "BAstarttime": BAstarttime,
+            "BAendtime": BAendtime,
+            "BAsort": data.get('BAsort', 0),
+            "BAposition": 0,
+        }
         try:
-            batype = int(data.get('BAtype', 1)),  #  0 图片,1 非图片
+            batype = int(data.get('BAtype', 1))  #  0 图片,1 非图片
+            if batype not in [0, 1]:
+                raise TypeError()
+            model_dict['BAtype'] = batype
         except TypeError as e:
             raise PARAMS_ERROR(u'batype参数错误')
-        model_dict = {
-                "BAid": BAid,
-                "BAtext": data.get('BAtext'),
-                "BAimage": BAimage,
-                "BAstarttime": BAstarttime,
-                "BAendtime": BAendtime,
-                "BAsort": data.get('BAsort', 0),
-                "BAposition": 0,
-            }
-        if batype == 0 or batype == 1:
-            model_dict['BAisdisplay'] = batype
+        if batype == 0:   # 0 图片
+            BAlongimg = data.get('BAlongimg')
+            if not BAlongimg:
+                raise PARAMS_ERROR(u'缺少参数BAlongimg')
+            model_dict['BAlongimg'] = BAlongimg
+            model_dict['BAisdisplay'] = False
         else:
-            raise PARAMS_ERROR(u'batype参数错误')
+            model_dict['BAisdisplay'] = BAisdisplay
         try:
             self.sbigactivity.add_model("BigActivity", **model_dict)
             response = import_status("create_home_bigactivity", "OK")

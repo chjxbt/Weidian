@@ -499,7 +499,7 @@ class BigActivity(BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['BAid', 'BAtext', 'BAimage', 'BAposition', 'BAisdisplay', 'BAstarttime', 'BAendtime', 'BAsort']
+        self.fields = ['BAid', 'BAtext', 'BAimage', 'BAposition', 'BAisdisplay', 'BAstarttime', 'BAendtime', 'BAsort', 'BAtype', 'BAlongimg']
 
 #
 # class RecommendBanner(BaseModel):

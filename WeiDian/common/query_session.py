@@ -33,7 +33,7 @@ class Query(_Query):
     def _no_statement_condition(self, meth):
         super(Query, self)._no_statement_condition(meth)
 
-    def filter_ignore_none_args(self, *criterion):
+    def filter_without_none(self, *criterion):
         """等同于filter查询, 但是会无视双等号后为None的值
         例子: session.query(Admin).filter_ignore_none_args(Admin.ADisfreeze == freeze)
                 如果freeze是None则不执行过滤
