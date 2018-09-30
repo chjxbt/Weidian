@@ -17,3 +17,6 @@ class SActivityTag(SBase):
         """该活动的显示状态的角标"""
         return self.session.query(ActivityTag).filter_by(ACid=acid, ATstate=1).all()
 
+    def del_tags_by_acid(self, acid):
+        return self.session.query(ActivityTag).filter(ActivityTag.ACid == acid).delete()
+
