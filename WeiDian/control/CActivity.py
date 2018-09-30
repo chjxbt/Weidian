@@ -296,7 +296,8 @@ class CActivity(BaseActivityControl):
         logger.info("this is update activity args %s", args)
         data = request.json
         logger.info("this is update activity data %s", data)
-        parameter_required("acid", "PRid", "ACtype", "TopnavId", "ACtext", "AClikeFakeNum", "ACforwardFakenum", "ACProductsSoldFakeNum", "ACstarttime", "ACendtime", "ACistop")
+        # parameter_required("acid", "ACtype", "TopnavId", "ACtext", "AClikeFakeNum", "ACforwardFakenum", "ACProductsSoldFakeNum", "ACstarttime", "ACendtime", "ACistop")
+        parameter_required("acid", "ACtype", "TopnavId", "ACtext", "AClikeFakeNum", "ACforwardFakenum", "ACProductsSoldFakeNum", "ACstarttime", "ACendtime", "ACistop")
         now_time = datetime.strftime(datetime.now(), format_for_db)
         data['ACupdatetime'] = now_time
         act_info = self.sactivity.update_activity_by_acid(args["acid"], data)
