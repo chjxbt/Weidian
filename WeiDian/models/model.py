@@ -494,6 +494,7 @@ class BigActivity(BaseModel):
     BAisdisplay = Column(Boolean, default=True)     # 是否展示
     BAisdelete = Column(Boolean, default=False)     # 删除
     BAtype = Column(Integer, comment=u'类型: 0 图片,1 非图片')
+    BAlongimg = Column(String(255), comment=u'长图')
 
     @orm.reconstructor
     @auto_createtime

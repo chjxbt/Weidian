@@ -107,7 +107,7 @@ class CActivity(BaseActivityControl):
                     big_activity_content.setdefault('baid', bigactivity.BAid)
                     # 图片类型专题
                     if bigactivity_type == 0:
-                        big_activity_content.setdefault('baimage', bigactivity.BAimage)
+                        big_activity_content.setdefault('baimage', bigactivity.BAlongimg)  # 返回字段不修改
                         big_activity_content.setdefault('baid', bigactivity.BAid)
                     activity.fill(big_activity_content, 'bigactivity')
                 elif activity.ACSkipType == 2:

@@ -112,7 +112,7 @@ class SActivity(SBase):
     @close_session
     def get_bigactivity_by_baid(self, baid, page_num, page_size):
         """获取专题页内容"""
-        return self.session.query(Activity).filter_by(AClinkvalue=baid, ACSkipType=2, ACisdelete=False).order_by(Activity.ACcreatetime.desc()).offset(page_size * (page_num - 1)).limit(page_size).all()
+        return self.session.query(Activity).filter_by(BAid=baid, ACSkipType=2, ACisdelete=False).order_by(Activity.ACcreatetime.desc()).offset(page_size * (page_num - 1)).limit(page_size).all()
 
     @close_session
     def get_bigactivity_count_by_baid(self, baid):
