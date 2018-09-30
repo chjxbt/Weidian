@@ -201,12 +201,12 @@ class CActivity(BaseActivityControl):
             raise AUTHORITY_ERROR(u'当前非管理员权限')
         data = request.json
         logger.info("add activity data is %s", data)
-        parameter_required('ACtext', 'TopnavId', 'ACSkipType')
+        parameter_required('ACtext', 'TopnavId')
         now_time = datetime.strftime(datetime.now(), format_for_web_second)
         ACstarttime = get_db_time_str(data.get('ACstarttime', now_time))                         # 活动开始时间, 默认当前时间
         ACstarttime_str_to_time = datetime.strptime(ACstarttime, format_for_db)
         three_days_later = datetime.strftime(ACstarttime_str_to_time + timedelta(days=3), format_for_db)
-        ACendtime = get_db_time_str(data.get('ACendtime', three_days_later))                    # 活动结束时间, 默认3天以后
+        ACendtime = get_db_time_str(data.get('ACendtime', get_web_time_str(three_days_later)))                    # 活动结束时间, 默认3天以后
         TopnavId = data.get('TopnavId')       # 导航页面
         ACtext = data.get('ACtext')           # 文字内容
         # BAid = data.get('BAid', '0')          # 专题id
@@ -216,7 +216,7 @@ class CActivity(BaseActivityControl):
         ACistop = data.get('ACistop', 0)
         ACtitle = data.get('ACtitle')
         AClinkvalue = data.get('AClinkvalue')
-        ACSkipType = int(data.get('ACSkipType'))   # 跳转类型
+        ACSkipType = int(data.get('ACSkipType', 0))   # 跳转类型
 
         if str(ACistop) == 'True':
             istop = self.sactivity.get_top_activity(TopnavId)
@@ -232,30 +232,31 @@ class CActivity(BaseActivityControl):
         ACid = str(uuid.uuid1())
         # 创建media
         image_num = 0  # 标志用来限制图片或视频的数量
-        for img_or_video in media:
-            img_or_video_keys = img_or_video.keys()
-            if 'AMimage' in img_or_video_keys and 'AMvideo' not in img_or_video_keys:
-                """图片"""
-                self.smedia.add_model('ActivityMedia', **{
-                    'AMid': str(uuid.uuid1()),
-                    'ACid': ACid,
-                    'AMimage': img_or_video.get('AMimage'),
-                    'AMsort': img_or_video.get('AMsort', 1)
-                })
-                image_num += 1
-                if image_num >= 9:
-                    raise SYSTEM_ERROR(u"图片超出数量限制")
-            elif 'AMimage' not in img_or_video_keys and 'AMvideo' in img_or_video_keys:
-                """视频"""
-                if image_num < 1:
-                    # 只有在无图片的状况下才会添加视频
+        if media:
+            for img_or_video in media:
+                img_or_video_keys = img_or_video.keys()
+                if 'AMimage' in img_or_video_keys and 'AMvideo' not in img_or_video_keys:
+                    """图片"""
                     self.smedia.add_model('ActivityMedia', **{
                         'AMid': str(uuid.uuid1()),
                         'ACid': ACid,
-                        'AMvideo': img_or_video.get('AMvideo')
+                        'AMimage': img_or_video.get('AMimage'),
+                        'AMsort': img_or_video.get('AMsort', 1)
                     })
-                    # 只可以添加一个视频, 且不可以再添加图片
-                    break
+                    image_num += 1
+                    if image_num >= 9:
+                        raise SYSTEM_ERROR(u"图片超出数量限制")
+                elif 'AMimage' not in img_or_video_keys and 'AMvideo' in img_or_video_keys:
+                    """视频"""
+                    if image_num < 1:
+                        # 只有在无图片的状况下才会添加视频
+                        self.smedia.add_model('ActivityMedia', **{
+                            'AMid': str(uuid.uuid1()),
+                            'ACid': ACid,
+                            'AMvideo': img_or_video.get('AMvideo')
+                        })
+                        # 只可以添加一个视频, 且不可以再添加图片
+                        break
         # 创建tag
         if tags:
             for tag in tags:
@@ -293,7 +294,7 @@ class CActivity(BaseActivityControl):
         if baid:
             if ACSkipType != 2:
                 raise PARAMS_ERROR(u'参数不合理, 仅跳转到商品的推文可以加入专题')
-            model_dict['baid'] = baid
+            model_dict['BAid'] = baid
         self.sactivity.add_model('Activity', **model_dict)
         return response_make_activity
 
