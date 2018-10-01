@@ -268,14 +268,14 @@ class CActivity(BaseActivityControl):
         ACtitle = data.get('ACtitle')
         AClinkvalue = data.get('AClinkvalue')
         ACSkipType = int(data.get('ACSkipType', 0))   # 跳转类型
-        ACProductsSoldFakeNum = data.get('acproductssoldfakenum')
-        ACforwardFakenum = data.get('acforwardfakenum')
-        ACbrowsenum = data.get('acbrowsenum')
-        AClikeFakeNum = data.get('aclikefakenum')
-        # ACProductsSoldFakeNum = data.get('ACProductsSoldFakeNum', ' ').strip() or 0
-        # ACforwardFakenum = data.get('ACforwardFakenum', ' ').strip() or 0
-        # ACbrowsenum = data.get('ACbrowsenum', ' ').strip() or 0
-        # AClikeFakeNum = data.get('AClikeFakeNum', ' ').strip() or 0
+        # ACProductsSoldFakeNum = data.get('acproductssoldfakenum')
+        # ACforwardFakenum = data.get('acforwardfakenum')
+        # ACbrowsenum = data.get('acbrowsenum')
+        # AClikeFakeNum = data.get('AClikeFakeNum')
+        ACProductsSoldFakeNum = str(data.get('ACProductsSoldFakeNum', '')).strip() or 0
+        ACforwardFakenum = str(data.get('ACforwardFakenum', '')).strip() or 0
+        ACbrowsenum = str(data.get('ACbrowsenum', '')).strip() or 0
+        AClikeFakeNum = str(data.get('AClikeFakeNum', '')).strip() or 0
 
         if str(ACistop) == 'True':
             istop = self.sactivity.get_top_activity(TopnavId)
