@@ -28,7 +28,7 @@ class CActivityLike():
     def like_or_cancel(self):
         if is_tourist():
             raise AUTHORITY_ERROR(u"未登录")
-        print (request.user.USname)
+        print (request.user.USname.encode('utf8'))
         json_data = request.json
         logger.debug("act like data is %s", json_data)
         parameter_required('acid')
