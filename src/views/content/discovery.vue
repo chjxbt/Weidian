@@ -165,10 +165,10 @@
           <p class="m-form-label">跳转类型</p>
           <div class="m-item-content">
             <div class=" m-item-row">
-              <el-select v-model="activityJumpValue" class="m-input-l" placeholder="请选择" style="width: 1.75rem">
+              <el-select v-model="activityJumpValue" class="m-input-l" placeholder="请选择" :disabled="editActivity" style="width: 1.75rem">
                 <el-option v-for="item in activityJumpList" :key="item.value" :label="item.label" :value="item.value"></el-option>
               </el-select>
-              <el-select v-if="activityJumpValue == '1'" v-model="activityJumpToValue" filterable placeholder="请输入关键词搜索商品" style="width: 4rem; margin-left: 0.5rem">
+              <el-select v-if="activityJumpValue == '1'" v-model="activityJumpToValue" filterable placeholder="请输入关键词搜索商品" :disabled="editActivity" style="width: 4rem; margin-left: 0.5rem">
                 <el-option v-for="item in activityJumpToList" :key="item.value" :label="item.value" :value="item.id"></el-option>
               </el-select>
               <div v-if="activityJumpValue == '1'" style="margin-left: 0.5rem">
@@ -331,6 +331,7 @@
         likeNum: '',
         activityType: '',
         activityBadge: '',
+        editActivity: false,
 
 
         activityTime: [],

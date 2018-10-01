@@ -83,8 +83,6 @@
                 // this.$store.state.side = res.data.data.side;
                 // this.$store.state.role = res.data.data.MAidentity;
                 // this.$store.state.token = res.data.data.token;
-
-                this.$message({ message: "登录中", type: 'warning' });
                 localStorage.setItem('token', res.data.data.token);
                 this.$router.push({ path: '/content/index' });
               }else{

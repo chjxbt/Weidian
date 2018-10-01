@@ -25,7 +25,8 @@ const api={
   get_dp: title + 'topnav/get_dp',  // 获取上部导航 - 发现页
   get_all_activity: title + 'activity/get_all',  // 获取首页/发现页活动/推文内容列表
   add_one_activity: title + 'activity/add_one',  // 添加首页活动/推文（测试）
-  del_one: title + 'activity/del_one',  // 删除活动/推文 - 首页/发现页
+
+  update_act: title + 'activity/update_act',  // 修改/删除活动/推文 - 首页/发现页
 
 
   upload_task_img: title + 'task/upload_task_img',  // 上传任务图标-上传图片

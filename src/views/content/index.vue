@@ -7,12 +7,12 @@
       <p class="m-form-label" style="margin-bottom: 0.2rem">专题管理</p>
       <div class="content-table">
         <el-table :data="bannerList" border style="width: 100%" v-loading="bannerLoading">
-          <el-table-column prop="batext" label="专题名称">
+          <el-table-column prop="batext" label="专题名称" width="150">
             <template slot-scope="scope">
               <el-input v-model="scope.row.batext" placeholder="请输入专题名称" :disabled="scope.row.disabled"></el-input>
             </template>
           </el-table-column>
-          <el-table-column prop="baimage" label="内容" width="240">
+          <el-table-column prop="baimage" label="内容" width="220">
             <template slot-scope="scope">
               <div @click="rowClick(scope.$index, 'img')">
                 <el-upload class="avatar-uploader" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false"
@@ -30,6 +30,13 @@
               </el-date-picker>
             </template>
           </el-table-column>
+          <el-table-column prop="title" label="跳转" width="150">
+            <template slot-scope="scope">
+            <el-select v-model="bannerToValue" class="m-input-l" placeholder="请选择" style="width: 0.7rem">
+              <el-option v-for="item in bannerToList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+            </el-select>
+            </template>
+          </el-table-column>
           <el-table-column prop="product" label="展示" width="150">
             <template slot-scope="scope">
               <el-switch v-model="scope.row.baisdisplay" active-text="展示" inactive-text="关闭" @click="rowClick(scope.$index, 'show')" :disabled="scope.row.disabled">
@@ -45,7 +52,7 @@
               <el-button type="text" size="small" @click="deleteBanner(scope)" v-if="scope.row.addSaveEdit != '1'">删除</el-button>
               <el-button type="text" size="small" @click="cancelAdd(scope)" v-if="scope.row.addSaveEdit == '1'">取消</el-button>
               <el-button type="text" size="small" v-if="scope.row.addSaveEdit != '1'">|</el-button>
-              <el-button type="text" size="small" @click="upBanner(scope)" v-if="scope.row.addSaveEdit != '1'" :disabled="scope.row.upDisabled">上移</el-button>
+              <el-button type="text" size="small" @click="upBanner(scope)" v-if="scope.row.addSaveEdit != '1'" :disabled="scope.$index == '0'">上移</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -76,7 +83,7 @@
               <el-button type="text" size="small">|</el-button>
               <el-button type="text" size="small" @click="deleteHotMessage(scope)">删除</el-button>
               <el-button type="text" size="small">|</el-button>
-              <el-button type="text" size="small" @click="upHotMessage(scope)" :disabled="scope.row.hmsort == '1'">上移</el-button>
+              <el-button type="text" size="small" @click="upHotMessage(scope)" :disabled="scope.$index == '0'">上移</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -146,10 +153,9 @@
           </el-table-column>
           <el-table-column fixed="right" label="管理" width="180">
             <template slot-scope="scope">
-              <el-button @click="editClick(scope, 'activity')" type="text" size="small" v-if="scope.row.editSave == '1'">编辑</el-button>
-              <el-button @click="saveClick(scope, 'activity')" type="text" size="small" v-if="scope.row.editSave == '2'">保存</el-button>
+              <el-button @click="editClick(scope, 'activity')" type="text" size="small">编辑</el-button>
               <el-button type="text" size="small">|</el-button>
-              <el-button type="text" size="small" @click="deleteActivity(scope)">删除</el-button>
+              <el-button type="text" size="small" @click="deleteActivityClick(scope)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -161,15 +167,16 @@
           <p class="m-form-label">推文内容</p>
           <div class="m-item-content">
             <div class=" m-item-row">
-              <el-input type="textarea" :autosize="{ minRows: 3, maxRows: 6 }" placeholder="请输入推文内容" v-model="activityACtext" style="width: 4rem"></el-input>
+              <el-input type="textarea" :autosize="{ minRows: 3, maxRows: 6 }" placeholder="请输入推文内容" v-model="activityACtext" style="width: 4rem" ref="actext"></el-input>
             </div>
           </div>
         </div>
         <div class="m-form-item" style="min-height: 1.8rem; max-height: 1.8rem">
           <p class="m-form-label">推文图片</p>
-          <div class="m-item-content">
+          <div class="m-item-content" style="width: 3.6rem" :class="activityMediaSort > 2 && activityMediaSort < 6 ? 'three':'' || activityMediaSort > 5 && activityMediaSort < 10 ? 'six':''" >
             <div class=" m-item-row">
-              <el-upload action="https://weidian.daaiti.cn/task/upload_task_img" list-type="picture-card" :on-preview="handlePictureCardPreview" :on-remove="handleRemove">
+              <el-upload action="string" :http-request="uploadActivityPicture" list-type="picture-card" :on-preview="handlePictureCardPreview"
+                         :limit="9" :on-remove="pictureRemove" id="activityPicture">
                 <i class="el-icon-plus"></i>
               </el-upload>
               <el-dialog :visible.sync="dialogVisible">
@@ -181,19 +188,19 @@
         <p class="m-form-label">跳转类型</p>
         <div class="m-item-content">
           <div class=" m-item-row">
-            <el-select v-model="activityJumpValue" class="m-input-l" placeholder="请选择" style="width: 1.75rem">
+            <el-select v-model="activityJumpValue" class="m-input-l" placeholder="请选择" :disabled="editActivity" style="width: 1.75rem">
               <el-option v-for="item in activityJumpList" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
-            <el-select v-if="activityJumpValue == '1'" v-model="activityJumpToValue" filterable placeholder="请输入关键词搜索商品" style="width: 4rem; margin-left: 0.5rem">
+            <el-select v-if="activityJumpValue == '1'" v-model="activityJumpToValue" class="m-input-l" placeholder="请选择专题" :disabled="editActivity" style="width: 4rem; margin-left: 0.5rem">
               <el-option v-for="item in activityJumpToList" :key="item.value" :label="item.value" :value="item.id"></el-option>
             </el-select>
-            <div v-if="activityJumpValue == '1'" style="margin-left: 0.5rem">
+            <el-select v-if="activityJumpValue == '2'" v-model="activityJumpToValue" filterable placeholder="请输入关键词搜索商品" :disabled="editActivity" style="width: 4rem; margin-left: 0.5rem">
+              <el-option v-for="item in activityJumpToList" :key="item.value" :label="item.value" :value="item.id"></el-option>
+            </el-select>
+            <div v-if="activityJumpValue == '2'" style="margin-left: 0.5rem">
               <span>虚拟销量：</span>
               <el-input v-model="activityProductSales" style="width: 1rem; text-align: center"></el-input>
             </div>
-            <el-select v-if="activityJumpValue == '2'" v-model="activityJumpToValue" class="m-input-l" placeholder="请选择专题" style="width: 4rem; margin-left: 0.5rem">
-              <el-option v-for="item in activityJumpToList" :key="item.value" :label="item.value" :value="item.id"></el-option>
-            </el-select>
           </div>
         </div>
         <div class="m-form-item">
@@ -231,7 +238,9 @@
           </div>
         </div>
         <div class="m-form-confirm-btn">
-          <span @click="addActivity">保 存</span>
+          <span @click="addActivity" v-if="!editActivity">保 存</span>
+          <span v-if="editActivity">取 消</span>
+          <span @click="saveClick('', 'activity')" v-if="editActivity">保 存</span>
         </div>
       </div>
 
@@ -287,9 +296,12 @@
         addBannerBtn: true,
         // activityTime: ["2000-11-10 10:10:05", "2000-11-11 10:10:05"],
         activityTime: [],
+        activityMedia: [],
+        activityMediaSort: 0,
         hotMessageList: [],
         dialogImageUrl: '',
         dialogVisible: false,
+        editActivity: false,
         activityList: [],
         activityTypeList: [
           { value: "0", label: "普通动态" },
@@ -317,8 +329,14 @@
           { value: '2', label: '专题' }
         ],
         activityJumpList: [
-          { value: '1', label: '商品' },
-          { value: '2', label: '专题' }
+          { value: '1', label: '专题' },
+          { value: '2', label: '商品' }
+        ],
+        acidTemp: "",
+        bannerToValue: "",
+        bannerToList: [
+          { value: '1', label: '长图' },
+          { value: '2', label: '专题页' }
         ],
         activityProductSales: '',
         imageUrl: '',
@@ -328,18 +346,54 @@
         tnid: "",
       }
     },
-    components:{
-      pageTitle,
-      wTab
-    },
+    components:{ pageTitle, wTab },
     methods:{
-      handleRemove(file, fileList) {
-        console.log(file, fileList);
+
+      // 上传推文图片
+      uploadActivityPicture(item) {
+        let media = {};
+        this.activityMediaSort = this.activityMediaSort + 1;
+        let form = new FormData();
+        form.append("file", item.file);
+        form.append("FileType", 'NewsPic');
+        form.append("index", 1);
+        axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token'), form).then(res => {
+          if(res.data.status == 200){
+            // this.$message({ type: 'success', message: res.data.message });
+            media = { AMimage: res.data.data, AMsort: this.activityMediaSort };
+            this.activityMedia.push(media);
+
+            // 当上传的图片为9张时，去除上传按钮
+            if(this.activityMediaSort == 1) {
+              let childList = document.getElementById("activityPicture").childNodes;
+              document.getElementById('activityPicture').removeChild(childList[1]);
+              // console.log(childList)
+              // document.getElementById('activityPicture').childNodes[2] = childList[1]
+              // 建议hidden
+            }
+          }else{
+            this.$message({ type: 'error', message: res.data.message });
+          }
+        });
       },
-      handlePictureCardPreview(file) {
+      // 点击推文图片时执行的方法 - 预览
+      handlePictureCardPreview(file, fileList) {
         this.dialogImageUrl = file.url;
         this.dialogVisible = true;
       },
+      // 移除推文图片时执行的方法
+      pictureRemove(file, fileList) {
+        console.log(file, fileList);
+
+        this.activityMediaSort = this.activityMediaSort - 1;
+      },
+
+
+
+
+
+
+
       // 轮播图管理-确定点击的图片是第几行
       rowClick(index, col) {
         // console.log(col);
@@ -365,7 +419,7 @@
         this.bannerList[index].activityTime = "";
         this.bannerList[index].baisdisplay = true;
         this.bannerList[index].disabled = false;
-        this.bannerList[index].upDisabled = false;
+        // this.bannerList[index].upDisabled = false;
         this.bannerList[index].addSaveEdit = "1";
         this.bannerList = this.bannerList.concat();
       },
@@ -383,36 +437,6 @@
           this.show_div = true;
         }
       },
-      // 获取banner滚动图
-      getBanner() {
-        axios.get(api.get_bigactivitys + '?lasting=true&token=' + localStorage.getItem('token')).then(res => {
-          if(res.data.status == 200) {
-            this.bannerLoading = false;
-
-            this.bannerList = [];
-            for(let i = 0; i < res.data.data.length; i++) {
-              if(res.data.data[i].baposition == "0") {
-                this.bannerList.push(res.data.data[i]);
-              }
-            }
-            for(let i = 0; i < this.bannerList.length; i ++) {
-              this.bannerList[i].activityTime = [this.bannerList[i].bastarttime, this.bannerList[i].baendtime];
-              this.bannerList[i].disabled = true;
-              this.bannerList[i].upDisabled = false;
-              this.bannerList[i].addSaveEdit = "3";
-            }
-
-            // 绑定专题并筛选推文
-            let toBanner = {};
-            for(let i = 0; i < this.bannerList.length; i ++) {
-              toBanner = { value: this.bannerList[i].batext, id: this.bannerList[i].baid };
-              this.toBannerList.push(toBanner);
-            }
-          }else{
-            this.$message.error(res.data.message);
-          }
-        })
-      },
       // 列表的编辑方法
       editClick(scope, where) {
         if(where == "banner") {
@@ -423,22 +447,33 @@
           this.hotMessageList[scope.$index].disabled = false;
           this.hotMessageList[scope.$index].editSave = "2";
         }else if(where == "activity") {
+          this.editActivity = true;
+          this.acidTemp = this.activityList[scope.$index].acid;   // 暂存acid
+          this.$refs.actext.focus();    // 推文内容输入框获得焦点
+
           let activity = this.activityList[scope.$index];
+          // console.log(activity);
 
-          console.log(activity);
-
-          // this.activityJumpValue = activity.activityList;
-          // this.activityJumpToValue = activity.activityList;
-          // this.activityType = activity.activityList;
-          // this.activityBadge = activity.activityList;
-          // this.likeNum = activity.activityList;
-          // this.activityProductSales = activity.activityList;
-          // this.activityActivityTime = activity.activityList;
+          this.activityACtext = activity.actext;
 
 
-          // this.activityList[scope.$index].disabled = false;
-          // this.activityList[scope.$index].editSave = "2";
-          // this.activityList = this.activityList.concat();
+          if(activity.acskiptype == "2") {
+            this.activityJumpValue = 2;
+            this.activityJumpToValue = "12345";
+            this.activityProductSales = activity.soldnum;
+          }else if(activity.acskiptype == "1") {
+            this.activityJumpValue = 1;
+            this.activityJumpToValue = "654321";
+          }
+
+          // console.log(this.activityJumpToList);
+
+
+
+          this.activityType = activity.actype;
+          this.activityActivityTime = [activity.acstarttime, activity.acendtime];
+          this.likeNum = activity.likenum;
+          this.activityBadge = activity.tags[0].atname;
         }
       },
       // 保存编辑后的banner
@@ -482,10 +517,34 @@
             }
           });
         }else if(where == "activity") {
-          console.log("activity-save");
-          this.activityList[scope.$index].disabled = true;
-          this.activityList[scope.$index].editSave = "1";
-          this.activityList = this.activityList.concat();
+          let actype = "";
+          for(let i = 0; i < this.activityTypeList.length; i ++) {
+            if(this.activityTypeList[i].label == this.activityType) {
+              actype = this.activityTypeList[i].value;
+            }
+          }
+
+          let params = {
+            actype: actype,
+            topnavid: this.tnid,
+            actext: this.activityACtext,
+            // media: [{ AMimage: "", AMsort: "" }],
+            tags: [{ atname: this.activityBadge }],
+            aclikeFakeNum: this.likeNum,
+            acstarttime: this.activityActivityTime[0],
+            acendtime: this.activityActivityTime[1]
+          };
+          if(this.activityProductSales != "") {
+            params.acproductssoldfakenum = this.activityProductSales;
+          }
+          console.log(params)
+          axios.post(api.update_act + '?token=' + localStorage.getItem('token') + "&acid=" + this.acidTemp, params).then(res=>{
+            if(res.data.status == 200){
+              this.$message({ message: res.data.message, type: 'success' });
+            }else{
+              this.$message.error(res.data.message);
+            }
+          });
         }
       },
       // 取消添加banner
@@ -522,18 +581,20 @@
           });
         }).catch(() => {  });
       },
-      // 删除活动/推文
-      deleteActivity(scope) {
+      // 编辑/删除活动/推文
+      deleteActivityClick(scope) {
         this.$confirm('此操作将删除该推文, 是否继续?', '提示',
-          {confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'}).then(() => {
-          /*axios.post(api.del_one + '?token=' + localStorage.getItem('token'), { acid: this.activityList[scope.$index].acid }).then(res=>{
+        {confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'}).then(() => {
+          this.activityLoading = true;
+          axios.post(api.update_act + '?token=' + localStorage.getItem('token') + "&acid=" + this.activityList[scope.$index].acid, { acisdelete: true }).then(res=>{
             if(res.data.status == 200){
               this.$message({ message: "热文删除成功", type: 'success' });
               this.activityList.splice(scope.$index, 1);    // 刷新视图
+              this.activityLoading = false;
             }else{
               this.$message.error(res.data.message);
             }
-          });*/
+          });
         }).catch(() => {  });
       },
       // 上移banner/专题
@@ -551,6 +612,7 @@
       },
       // 上移热文
       upHotMessage(scope) {
+        this.hotLoading = true;
         axios.post(api.update_one_hot_message + '?token=' + localStorage.getItem('token'),
           { hmid: this.hotMessageList[scope.$index].hmid, hmsort: this.hotMessageList[scope.$index - 1].hmsort }).then(res=>{
           if(res.data.status == 200){
@@ -561,6 +623,36 @@
             this.$message.error(res.data.message);
           }
         });
+      },
+      // 获取banner滚动图
+      getBanner() {
+        axios.get(api.get_bigactivitys + '?lasting=true&token=' + localStorage.getItem('token')).then(res => {
+          if(res.data.status == 200) {
+            this.bannerLoading = false;
+
+            this.bannerList = [];
+            for(let i = 0; i < res.data.data.length; i++) {
+              if(res.data.data[i].baposition == "0") {
+                this.bannerList.push(res.data.data[i]);
+              }
+            }
+            for(let i = 0; i < this.bannerList.length; i ++) {
+              this.bannerList[i].activityTime = [this.bannerList[i].bastarttime, this.bannerList[i].baendtime];
+              this.bannerList[i].disabled = true;
+              // this.bannerList[i].upDisabled = false;
+              this.bannerList[i].addSaveEdit = "3";
+            }
+
+            // 绑定专题并筛选推文
+            let toBanner = {};
+            for(let i = 0; i < this.bannerList.length; i ++) {
+              toBanner = { value: this.bannerList[i].batext, id: this.bannerList[i].baid };
+              this.toBannerList.push(toBanner);
+            }
+          }else{
+            this.$message.error(res.data.message);
+          }
+        })
       },
       // 获取热文
       getHotMessage() {
@@ -573,7 +665,6 @@
               this.hotMessageList[i].disabled = true;
               this.hotMessageList[i].editSave = "1";
             }
-            // console.log(this.hotMessageList);
           }else{
             this.$message.error(res.data.message);
           }
@@ -697,10 +788,9 @@
             ACtype: this.activityType,
             TopnavId: this.tnid,
             ACtext: this.activityACtext,
-            // media: [{ AMimage: "", AMsort: "" }],
+            media: this.activityMedia,
             tags: [{ ATname: this.activityBadge }],
             AClikeFakeNum: this.likeNum,
-            // ACProductsSoldFakeNum: this.activityProductSales,
             ACstarttime: this.activityActivityTime[0],
             ACendtime: this.activityActivityTime[1]
           };
@@ -708,10 +798,11 @@
             params.ACProductsSoldFakeNum = this.activityProductSales;
           }
           console.log(params);
+          this.activityLoading = true;
           axios.post(api.add_one_activity + '?token=' + localStorage.getItem('token'), params).then(res => {
             if(res.data.status == 200){
               this.$message({ type: 'success', message: res.data.message });
-              this.getActivity();     // 获取推文/内容
+              this.getActivity(0, this.count);     // 获取推文/内容
             }else{
               this.$message({ type: 'error', message: res.data.message });
             }
@@ -729,7 +820,7 @@
               this.tab_list[0].active = true;
               this.tnid = this.tab_list[0].tnid;
             }
-            this.getActivity(0, 5);   // 获取首页活动/推文内容列表
+            this.getActivity(0, this.count);   // 获取首页活动/推文内容列表
           }else{
             this.$message.error(res.data.message);
           }
@@ -738,7 +829,7 @@
       // 获取首页活动/推文内容列表
       getActivity(start, count) {
         axios.get(api.get_all_activity + '?token=' + localStorage.getItem('token'),
-          { params: { lasting: true, start: start || 0, count: count || this.count, tnid: this.tnid }}).then(res => {
+          { params: { lasting: true, start: start || 0, count: count || this.count, tnid: this.tnid, skiptype: "all" }}).then(res => {
           if(res.data.status == 200) {
             this.activityLoading = false;
             this.activityList = res.data.data;
@@ -747,7 +838,6 @@
 
               this.activityList[i].activityTime = [this.activityList[i].acstarttime, this.activityList[i].acendtime];
               this.activityList[i].disabled = true;
-              this.activityList[i].editSave = "1";
             }
           }else{
             this.$message.error(res.data.message);
@@ -764,7 +854,8 @@
           this.activityToBanner = true;
           console.log(this.activityList)
         }else if(v == "2") {
-          console.log(this.bannerList)
+          console.log(this.bannerList);
+          this.activityToBanner = false;
 
         }
 
@@ -779,7 +870,7 @@
 
         this.activityLoading = true;
         this.tnid = this.tab_list[i].tnid;
-        this.getActivity(0, 5);   // 获取首页活动/推文内容列表
+        this.getActivity(0, this.count);   // 获取首页活动/推文内容列表
       },
 
       // 上传标题图片
@@ -790,6 +881,7 @@
         form.append("index", 1);
         axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token'), form).then(res => {
           if(res.data.status == 200){
+            // console.log(res, file);
             this.$message({ type: 'success', message: res.data.message });
           }else{
             this.$message({ type: 'error', message: res.data.message });
@@ -842,9 +934,9 @@
         // console.log(newValue);
         this.activityJumpToList = [];
         this.activityJumpToValue = "";
-        if(newValue == "1") {
+        if(newValue == "2") {
           this.getJumpTo("product", "activity");     // 获取所有商品
-        }else if(newValue == "2") {
+        }else if(newValue == "1") {
           this.getJumpTo("banner", "activity");     // 获取所有专题
         }
       },
@@ -887,7 +979,8 @@
     }
     .banner-btn {
       color: #ffffff;
-      height: 0.15rem;
+      height: 0.2rem;
+      line-height: 0.2rem;
       white-space: nowrap;
       font-size: 0.12rem;
       border-radius: 0.1rem;
