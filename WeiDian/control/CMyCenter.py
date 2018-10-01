@@ -5,6 +5,8 @@ import sys
 import os
 import uuid
 
+import requests
+
 from WeiDian import logger
 from WeiDian.common.divide import Partner
 from WeiDian.common.import_status import import_status
@@ -362,21 +364,23 @@ class CMyCenter(BaseMyCenterControl):
         data = request.json
         logger.info("this add bankcard info %s", data)
         parameter_required('BCusername', 'BCnumber', 'BCbankname', 'BCaddress')
+        banknumber = str(data.get('BCnumber')).strip()
+        self._verify_cardnum(banknumber, error='raise')
+        usid = request.user.id
         try:
-            bankcardcount = self.sbankcard.get_bankcard_count(request.user.id)
-            logger.debug("bankcard count is %s", bankcardcount)
-            if bankcardcount >= 1:
-                return SYSTEM_ERROR(u'已有绑定银行卡')
+            bankcard = self.sbankcard.update_bankcard_by_usid(usid, {
+                'BCisdelete': True
+            })
+            logger.debug("bankcard count is %s", bankcard)
             bcid = str(uuid.uuid1())
             self.sbankcard.add_model("BankCard", **{
                 "BCid": bcid,
-                "USid": request.user.id,
+                "USid": usid,
                 "BCusername": data.get("BCusername"),
-                "BCnumber": data.get("BCnumber"),
+                "BCnumber": banknumber,
                 "BCbankname": data.get("BCbankname"),
                 "BCaddress": data.get("BCaddress")
             })
-
             response = import_status("add_bank_card_success", "OK")
             response['data'] = {"BCid": bcid}
             return response
@@ -532,11 +536,15 @@ class CMyCenter(BaseMyCenterControl):
                             }
         return response
 
-
-
-
-
-
+    def _verify_cardnum(self, num, error='ignore'):
+        """获取所属行"""
+        bank_url = 'https://ccdcapi.alipay.com/validateAndCacheCardInfo.json?cardNo={}&cardBinCheck=true'
+        url = bank_url.format(num)
+        response = requests.get(url).json()
+        bank = response.get('bank')
+        if not bank and error != 'ignore':
+            raise SYSTEM_ERROR(u'卡号无效')
+        return bank
 
 
 

@@ -5,6 +5,7 @@ import os
 import base64
 from datetime import datetime, timedelta
 from WeiDian import logger
+from WeiDian.common.divide import Partner
 from WeiDian.common.loggers import generic_log
 from WeiDian.common.make_qrcode import make_qrcode
 from WeiDian.common.params_require import parameter_required
@@ -49,6 +50,21 @@ class CActivity(BaseActivityControl):
         self.empty = ['', None, [], {}]
 
     @verify_token_decorator
+    def set_show_type(self):
+        if not is_admin():
+            raise TOKEN_ERROR(u'请使用管理员登录')
+        data = parameter_required('skip_type')
+        try:
+            skip_type = str(data.get('skip_type'))
+            if skip_type not in ['0', '1', '2']:
+                raise TypeError()
+        except TypeError as e:
+            raise PARAMS_ERROR(u'参数skip_type错误')
+        Partner().set_item('skip', 'skip_type', skip_type)
+        response = import_status('set_success', 'OK')
+        return response
+
+    @verify_token_decorator
     def get_all(self):
         """获取条件下的所有活动
         """
@@ -60,23 +76,25 @@ class CActivity(BaseActivityControl):
         tnid = args.get('tnid')  # 导航id
         suid = args.get('suid')  # 管理员id
         lasting = args.get('lasting', True)  # 是否正在进行的活动
-        acid = args.get("acid", "")
+        acid = args.get("acid")
         start = int(args.get('start', 0))  # 起始位置
         count = int(args.get('count', 5))  # 取出条数
         page = (args.get('page'))
+        # 过滤跳转类型
+        skiptype = args.get('skiptype')
+        if skiptype is None:
+            settings = Partner()
+            skiptype = settings.get_item('skip', 'skip_type')  # 配置文件中的过滤条件(默认)
+        if skiptype == 'all':
+            skiptype = None
+        # 分页
         if not page:
             page = int(math.floor(start / count) + 1)
         if not (tnid or suid):
             raise PARAMS_MISS(u"参数缺失")
-
         try:
-            if tnid:
-                acfilter = {Activity.TopnavId == tnid}
-                if acid:
-                    acfilter.add(Activity.ACid == acid)
-                activity_list = self.sactivity.get_activity_by_topnavid(acfilter, page, count)
-                len_aclist = self.sactivity.get_activity_count(acfilter)
-                logger.debug("get activity_list")
+            activity_list = self.sactivity.get_activity_by_topnavid(tnid, page, count, skiptype, acid)
+            logger.debug("get activity_list")
 
             if suid:
                 activity_list = self.sactivity.get_activity_by_suid(suid, page, count)
@@ -102,15 +120,17 @@ class CActivity(BaseActivityControl):
                     activity.fill('专题', 'zh_skip_type')
                     bigactivity = self.sbigactivity.get_one_big_act(baid)
                     if not bigactivity:
-                        raise NOT_FOUND()
-                    bigactivity_type = bigactivity.BAtype
-                    big_activity_content = {'type': bigactivity_type}
-                    big_activity_content.setdefault('baid', bigactivity.BAid)
-                    # 图片类型专题
-                    if bigactivity_type == 0:
-                        big_activity_content.setdefault('baimage', bigactivity.BAlongimg)  # 返回字段不修改
+                        # raise NOT_FOUND()
+                        pass
+                    else:
+                        bigactivity_type = bigactivity.BAtype
+                        big_activity_content = {'type': bigactivity_type}
                         big_activity_content.setdefault('baid', bigactivity.BAid)
-                    activity.fill(big_activity_content, 'bigactivity')
+                        # 图片类型专题
+                        if bigactivity_type == 0:
+                            big_activity_content.setdefault('baimage', bigactivity.BAlongimg)  # 返回字段不修改
+                            big_activity_content.setdefault('baid', bigactivity.BAid)
+                        activity.fill(big_activity_content, 'bigactivity')
                 elif activity.ACSkipType == 2:
                     self.fill_soldnum(activity)
                     self.fill_product(activity)
@@ -128,13 +148,14 @@ class CActivity(BaseActivityControl):
             # e5 = time.time()
             # print "fill_product %s" %(e5 - s5)
             data = import_status("get_activity_list_success", "OK")
-            data["count"] = len_aclist
+            data["count"] = request.all_count
+            data["page_count"] = request.page_count
             data["data"] = activity_list
             return data
         except Exception as e:
             logger.exception("get activity error")
             generic_log(e)
-            return SYSTEM_ERROR(u"服务器繁忙")
+            return e
 
     @verify_token_decorator
     def get_one(self):
@@ -150,9 +171,39 @@ class CActivity(BaseActivityControl):
             activity = self.sactivity.get_activity_by_acid(acid)
             logger.debug("get one act access")
             if not activity:
-                return SYSTEM_ERROR(u'数据错误，无此内容')
-            activity = self.fill_detail(activity)
-            activity = self.fill_comment(activity)
+                raise SYSTEM_ERROR(u'数据错误，无此内容')
+            self.sactivity.update_view_num(activity.ACid)
+            self.fill_detail(activity)
+            self.fill_like_num(activity)
+            self.fill_type(activity)
+            if activity.ACSkipType == 0:
+                self.fill_comment_two(activity)
+                activity.fill('none_skip', 'skip_type')
+                activity.fill('无跳转类型', 'zh_skip_type')
+            elif activity.ACSkipType == 1:
+                baid = activity.AClinkvalue
+                activity.fill('bigactivity', 'skip_type')
+                activity.fill('专题', 'zh_skip_type')
+                bigactivity = self.sbigactivity.get_one_big_act(baid)
+                if not bigactivity:
+                    # raise NOT_FOUND()
+                    pass
+                else:
+                    bigactivity_type = bigactivity.BAtype
+                    big_activity_content = {'type': bigactivity_type}
+                    big_activity_content.setdefault('baid', bigactivity.BAid)
+                    # 图片类型专题
+                    if bigactivity_type == 0:
+                        big_activity_content.setdefault('baimage', bigactivity.BAlongimg)  # 返回字段不修改
+                        big_activity_content.setdefault('baid', bigactivity.BAid)
+                    activity.fill(big_activity_content, 'bigactivity')
+            elif activity.ACSkipType == 2:
+                self.fill_soldnum(activity)
+                self.fill_product(activity)
+                activity.fill('product', 'skip_type')
+                activity.fill('商品', 'zh_skip_type')
+            activity.ACstarttime = get_web_time_str(activity.ACstarttime)
+            activity.ACendtime = get_web_time_str(activity.ACendtime)
             data = import_status("get_activity_info_success", "OK")
             data["data"] = activity
             return data
@@ -160,22 +211,22 @@ class CActivity(BaseActivityControl):
             logger.exception("get one act error")
             return SYSTEM_ERROR(u"服务器繁忙")
 
-    @verify_token_decorator
-    def delete_one(self):
-        """删除一个活动, 需要管理员的登录状态"""
-        if not hasattr(request, 'user'):
-            return TOKEN_ERROR  # 未登录, 或token错误
-        if not is_admin():
-            return AUTHORITY_ERROR  # 权限不足
-        data = request.json
-        acid = data.get('acid')
-        if not acid:
-            return PARAMS_MISS
-        self.sactivity.delete_activity(acid)
-        response_del_activity = import_status('delete_activity_success', 'OK')
-        response_del_activity['data'] = {}
-        response_del_activity['data']['acid'] = acid
-        return response_del_activity
+    # @verify_token_decorator
+    # def delete_one(self):
+    #     """删除一个活动, 需要管理员的登录状态"""
+    #     if not hasattr(request, 'user'):
+    #         return TOKEN_ERROR  # 未登录, 或token错误
+    #     if not is_admin():
+    #         return AUTHORITY_ERROR  # 权限不足
+    #     data = request.json
+    #     acid = data.get('acid')
+    #     if not acid:
+    #         return PARAMS_MISS
+    #     self.sactivity.delete_activity(acid)
+    #     response_del_activity = import_status('delete_activity_success', 'OK')
+    #     response_del_activity['data'] = {}
+    #     response_del_activity['data']['acid'] = acid
+    #     return response_del_activity
 
     @verify_token_decorator
     def stop_one(self):
@@ -201,12 +252,12 @@ class CActivity(BaseActivityControl):
             raise AUTHORITY_ERROR(u'当前非管理员权限')
         data = request.json
         logger.info("add activity data is %s", data)
-        parameter_required('ACtext', 'TopnavId')
+        parameter_required(u'ACtext', u'TopnavId')
         now_time = datetime.strftime(datetime.now(), format_for_web_second)
         ACstarttime = get_db_time_str(data.get('ACstarttime', now_time))                         # 活动开始时间, 默认当前时间
         ACstarttime_str_to_time = datetime.strptime(ACstarttime, format_for_db)
-        three_days_later = datetime.strftime(ACstarttime_str_to_time + timedelta(days=3), format_for_db)
-        ACendtime = get_db_time_str(data.get('ACendtime', get_web_time_str(three_days_later)))                    # 活动结束时间, 默认3天以后
+        three_days_later = datetime.strftime(ACstarttime_str_to_time + timedelta(days=3), format_for_web_second)
+        ACendtime = get_db_time_str(data.get('ACendtime', three_days_later))                    # 活动结束时间, 默认3天以后
         TopnavId = data.get('TopnavId')       # 导航页面
         ACtext = data.get('ACtext')           # 文字内容
         # BAid = data.get('BAid', '0')          # 专题id
@@ -217,6 +268,14 @@ class CActivity(BaseActivityControl):
         ACtitle = data.get('ACtitle')
         AClinkvalue = data.get('AClinkvalue')
         ACSkipType = int(data.get('ACSkipType', 0))   # 跳转类型
+        ACProductsSoldFakeNum = data.get('acproductssoldfakenum')
+        ACforwardFakenum = data.get('acforwardfakenum')
+        ACbrowsenum = data.get('acbrowsenum')
+        AClikeFakeNum = data.get('aclikefakenum')
+        # ACProductsSoldFakeNum = data.get('ACProductsSoldFakeNum', ' ').strip() or 0
+        # ACforwardFakenum = data.get('ACforwardFakenum', ' ').strip() or 0
+        # ACbrowsenum = data.get('ACbrowsenum', ' ').strip() or 0
+        # AClikeFakeNum = data.get('AClikeFakeNum', ' ').strip() or 0
 
         if str(ACistop) == 'True':
             istop = self.sactivity.get_top_activity(TopnavId)
@@ -260,15 +319,12 @@ class CActivity(BaseActivityControl):
         # 创建tag
         if tags:
             for tag in tags:
-                add_model('ActivityTag', **{
+                self.stags.add_model('ActivityTag', **{
                     'ATid': str(uuid.uuid1()),
                     'ACid': ACid,
                     'ATname': tag.get('ATname'),
                 })
-        response_make_activity = import_status('add_activity_success', 'OK')
-        response_make_activity['data'] = {
-            'ACid': ACid
-        }
+
         # 是否添加进入专题
         baid = data.get('BAid')
         model_dict = {
@@ -282,10 +338,10 @@ class CActivity(BaseActivityControl):
             'ACtype': data.get('ACtype'),  # 类型
             'TopnavId': TopnavId,
             'ACtext': ACtext,
-            'AClikeFakeNum': data.get('AClikeFakeNum', 0),  # 喜欢数
-            'ACbrowsenum': data.get('ACbrowsenum', 0),  # 浏览数
-            'ACforwardFakenum': data.get('ACforwardFakenum', 0),  # 转发数量
-            'ACProductsSoldFakeNum': data.get('ACProductsSoldFakeNum', 0),   # 商品的销售量
+            'AClikeFakeNum': AClikeFakeNum,  # 喜欢数
+            'ACbrowsenum': ACbrowsenum,  # 浏览数
+            'ACforwardFakenum': ACforwardFakenum,  # 转发数量
+            'ACProductsSoldFakeNum': ACProductsSoldFakeNum,   # 商品的销售量
             'ACstarttime': ACstarttime,
             'ACendtime': ACendtime,
             'ACtitle': ACtitle,
@@ -296,6 +352,11 @@ class CActivity(BaseActivityControl):
                 raise PARAMS_ERROR(u'参数不合理, 仅跳转到商品的推文可以加入专题')
             model_dict['BAid'] = baid
         self.sactivity.add_model('Activity', **model_dict)
+
+        response_make_activity = import_status('add_activity_success', 'OK')
+        response_make_activity['data'] = {
+            'ACid': ACid
+        }
         return response_make_activity
 
     @verify_token_decorator
@@ -303,44 +364,102 @@ class CActivity(BaseActivityControl):
         if not is_admin():
             raise AUTHORITY_ERROR(u'当前非管理员权限')
         args = request.args.to_dict()
-        logger.info("this is update activity args %s", args)
+        logger.debug("this is update activity args %s", args)
         data = request.json
-        logger.info("this is update activity data %s", data)
-        # parameter_required("acid", "ACtype", "TopnavId", "ACtext", "AClikeFakeNum", "ACforwardFakenum", "ACProductsSoldFakeNum", "ACstarttime", "ACendtime", "ACistop")
+        logger.debug("this is update activity data %s", data)
         parameter_required("acid")
         now_time = datetime.strftime(datetime.now(), format_for_web_second)
-        data['ACupdatetime'] = now_time
-        ACstarttime = get_db_time_str(data.get('ACstarttime', now_time))  # 活动开始时间, 默认当前时间
+        acid = args.get('acid')
+        ACstarttime = get_db_time_str(data.get('acstarttime', now_time))  # 活动开始时间, 默认当前时间
         ACstarttime_str_to_time = datetime.strptime(ACstarttime, format_for_db)
         three_days_later = datetime.strftime(ACstarttime_str_to_time + timedelta(days=3), format_for_db)
-        ACendtime = get_db_time_str(data.get('ACendtime', three_days_later))
+        ACendtime = get_db_time_str(data.get('acendtime', get_web_time_str(three_days_later)))  # 活动结束时间, 默认3天以后
+        TopnavId = data.get('topnavid')  # 导航页面
+        ACtext = data.get('actext')  # 文字内容
         media = data.get('media')  # 多媒体
         tags = data.get('tags')  # 右上角tag标签
+        ACistop = data.get('acistop', 0)
+        ACtitle = data.get('actitle')
+        AClinkvalue = data.get('aclinkvalue')
+        ACSkipType = int(data.get('acskiptype', 0))  # 跳转类型
+        ACProductsSoldFakeNum = data.get('acproductssoldfakenum')
+        ACforwardFakenum = data.get('acforwardfakenum')
+        ACbrowsenum = data.get('acbrowsenum')
+        AClikeFakeNum = data.get('aclikefakenum')
 
-        upact_info = {
-                # 'PRid': relation_product.PRid,
-                'ACSkipType': data.get('acskiptype'),
-                'AClinkvalue': data.get('aclinkvalue'),
-                'BAid': data.get('baid'),
-                'ACtype': data.get('actype'),  # 类型
-                'ACtext': data.get('actext'),
-                'AClikeFakeNum': data.get('aclikefakenum', 0),  # 喜欢数
-                'ACbrowsenum': data.get('acbrowsenum', 0),  # 浏览数
-                'ACforwardFakenum': data.get('acforwardfakenum', 0),  # 转发数量
-                'ACProductsSoldFakeNum': data.get('acproductssoldfakenum', 0),  # 商品的销售量
-                'ACstarttime': ACstarttime,
-                'ACendtime': ACendtime,
-                'ACtitle': data.get('actitle'),
-                'ACistop': data.get('acistop')
+        if str(ACistop) == 'True':
+            istop = self.sactivity.get_top_activity(TopnavId)
+            if istop:
+                self.sactivity.change_top_act_status(istop.ACid, {'ACistop': False})
 
-            }
-        upact_info = {k: v for k, v in upact_info.items() if v not in self.empty}
+        image_num = 0  # 标志用来限制图片或视频的数量
+        if media:
+            for img_or_video in media:
+                img_or_video_keys = img_or_video.keys()
+                if 'amimage' in img_or_video_keys and 'amvideo' not in img_or_video_keys:
+                    """图片"""
+                    self.smedia.del_media_by_acid(acid)
+                    self.smedia.add_model('ActivityMedia', **{
+                        'AMid': str(uuid.uuid1()),
+                        'ACid': acid,
+                        'AMimage': img_or_video.get('amimage'),
+                        'AMsort': img_or_video.get('amsort', 1)
+                    })
 
-        act_info = self.sactivity.update_activity_by_acid(args["acid"], upact_info)
+                    image_num += 1
+                    if image_num >= 9:
+                        raise SYSTEM_ERROR(u"图片超出数量限制")
+                elif 'amimage' not in img_or_video_keys and 'amvideo' in img_or_video_keys:
+                    """视频"""
+                    if image_num < 1:
+                        # 只有在无图片的状况下才会添加视频
+                        self.smedia.del_media_by_acid(acid)
+                        self.smedia.add_model('ActivityMedia', **{
+                            'AMid': str(uuid.uuid1()),
+                            'ACid': acid,
+                            'AMvideo': img_or_video.get('amvideo')
+                        })
+                        # 只可以添加一个视频, 且不可以再添加图片
+                        break
+        # 创建tag
+        if tags:
+            for tag in tags:
+                self.stags.del_tags_by_acid(acid)
+                self.stags.add_model('ActivityTag', **{
+                    'ATid': str(uuid.uuid1()),
+                    'ACid': acid,
+                    'ATname': tag.get('atname'),
+                })
+
+        # 是否添加进入专题
+        baid = data.get('baid')
+        model_dict = {
+            'ACSkipType': ACSkipType,
+            'AClinkvalue': AClinkvalue,
+            'ACtype': data.get('actype'),  # 类型
+            'ACtext': ACtext,
+            'AClikeFakeNum': AClikeFakeNum,  # 喜欢数
+            'ACbrowsenum': ACbrowsenum,  # 浏览数
+            'ACforwardFakenum': ACforwardFakenum,  # 转发数量
+            'ACProductsSoldFakeNum': ACProductsSoldFakeNum,  # 商品的销售量
+            'ACstarttime': ACstarttime,
+            'ACendtime': ACendtime,
+            'ACtitle': ACtitle,
+            'ACistop': ACistop,
+            'BAid': baid,
+            'ACisdelete': data.get('acisdelete')
+        }
+
+        if baid:
+            if ACSkipType != 2:
+                raise PARAMS_ERROR(u'参数不合理, 仅跳转到商品的推文可以加入专题')
+            model_dict['BAid'] = baid
+        model_dict = {k: v for k, v in model_dict.items() if v not in self.empty}
+        act_info = self.sactivity.update_activity_by_acid(acid, model_dict)
         if not act_info:
-            return SYSTEM_ERROR
+            raise SYSTEM_ERROR(u'数据错误')
         response = import_status('update_activity_success', 'OK')
-        response['data'] = {'acid': args["acid"]}
+        response['data'] = {'acid': acid}
         return response
 
     @verify_token_decorator

@@ -354,16 +354,15 @@ class BaseActivityCommentControl():
         return comment
 
     def fill_comment_apply_for(self, comment):
-        """"如果既是评论又是回复则添加一个'所回复用户'属性"""
+        """"如果既是评论又是回复则添加一个'所回复用户(这里的用户是管理员)'属性"""
         acoid = comment.ACOid
         comment.add('type')
         if not comment.ACOparentid:
             comment.type = 'comment'
             return comment  # 如果ACOid没有值, 说明这不是回复的内容
-        comment.parent_apply_user = self.sactivitycomment.get_apply_for_by_acoid(
-            acoid)
+        comment.parent_apply_user = self.sactivitycomment.get_apply_for_by_acoid(acoid)
         comment.type = 'apply'
-        comment.add('parent_apply_user')
+        comment.add('parent_apply_user', 'USid')
         return comment
 
 

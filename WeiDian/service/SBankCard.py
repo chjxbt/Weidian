@@ -15,6 +15,11 @@ class SBankCard(SBase):
         return self.session.query(BankCard).filter_by(USid=usid, BCisdelete=False).first()
 
     @close_session
+    def update_bankcard_by_usid(self, usid, data):
+        """更新绑定银行卡信息"""
+        return self.session.query(BankCard).filter_by(USid=usid, BCisdelete=False).update(data)
+
+    @close_session
     def get_bankcard_count(self, usid):
         """获取绑定银行卡数量"""
         return self.session.query(BankCard).filter_by(USid=usid, BCisdelete=False).count()

@@ -24,3 +24,7 @@ class SActivityMedia(SBase):
             return cur_medias
         return []
 
+    @close_session
+    def del_media_by_acid(self, acid):
+        return self.session.query(ActivityMedia).filter(ActivityMedia.ACid == acid).delete()
+
