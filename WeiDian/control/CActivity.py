@@ -303,7 +303,7 @@ class CActivity(BaseActivityControl):
                         'AMsort': img_or_video.get('AMsort', 1)
                     })
                     image_num += 1
-                    if image_num >= 9:
+                    if image_num > 9:
                         raise SYSTEM_ERROR(u"图片超出数量限制")
                 elif 'AMimage' not in img_or_video_keys and 'AMvideo' in img_or_video_keys:
                     """视频"""
@@ -407,7 +407,7 @@ class CActivity(BaseActivityControl):
                     })
 
                     image_num += 1
-                    if image_num >= 9:
+                    if image_num > 9:
                         raise SYSTEM_ERROR(u"图片超出数量限制")
                 elif 'amimage' not in img_or_video_keys and 'amvideo' in img_or_video_keys:
                     """视频"""
