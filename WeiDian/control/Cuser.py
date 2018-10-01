@@ -177,72 +177,72 @@ class CUser():
         return response
 
     # @verify_token_decorator
-    # def get_wx_config(self):
-    #     from WeiDian.config.urlconfig import get_jsapi, get_server_access_token, signature_str
-    #     from WeiDian.config.setting import APP_ID
-    #     import random
-    #     import string
-    #     import time
-    #     import hashlib
-    #     # if not hasattr(request, 'user'):
-    #     #     return TOKEN_ERROR  # 未登录, 或token错误
-    #     url = request.args.to_dict().get("url")
-    #     # user = self.suser.get_user_by_user_id(request.user.id)
-    #     # logger.info('get user accesstoken: %s', user.accesstoken)
-    #     # logger.info('get user id : %s', request.user.id)
-    #     # if not user:
-    #     #     return SYSTEM_ERROR
-    #     # todo 刷新accesstoken和jsapi
-    #     from WeiDian.common.divide import Partner
-    #     pt = Partner()
-    #     access_token_server, ticket, access_time = pt.access_token
-    #     access_time = datetime.datetime.strptime(access_time, format_for_db) if access_time else datetime.datetime.now()
-    #     now = datetime.datetime.now()
-    #     delta_time = (now - access_time).seconds
-    #     if not ticket or delta_time > 60 * 60 * 2:
-    #         access_token_server_res = self.get_wx_response(get_server_access_token, "get server access token")
-    #         if "access_token" not in access_token_server_res:
-    #             logger.error("get access token server error : %s", access_token_server_res)
-    #             return NETWORK_ERROR
-    #         access_token_server = access_token_server_res.get("access_token")
-    #
-    #         jsapiticket = self.get_wx_response(get_jsapi.format(access_token_server), "get jsapi_ticket")
-    #
-    #         if jsapiticket.get("errcode") == 0 and jsapiticket.get("errmsg") == "ok":
-    #             ticket = jsapiticket.get("ticket")
-    #         else:
-    #             logger.error("get jsapi error :  %s", jsapiticket)
-    #             return import_status("get_jsapi_error", "WD_ERROR", "error_get_jsapi")
-    #
-    #         pt.access_token = (access_token_server, ticket, now.strftime(format_for_db))
-    #     # update_result = self.suser.update_user(user.USid, {"jsapiticket": ticket})
-    #     # if not update_result:
-    #     #     return SYSTEM_ERROR
-    #
-    #     noncestr = ''.join(random.sample(string.ascii_letters + string.digits, 8))
-    #     data = {
-    #         "url": url,
-    #         "jsapi_ticket": ticket,
-    #         'timestamp': int(time.time()),
-    #         "noncestr": noncestr,
-    #
-    #         # "secret": APP_SECRET_KEY
-    #     }
-    #     logger.info("get wx config %s", data)
-    #     try:
-    #         # response_str = "&".join([str(k)+'='+str(v) for k, v in data.items()])
-    #         response_str = signature_str.format(**data)
-    #         logger.debug("get response: %s", response_str)
-    #         signature = hashlib.sha1(response_str).hexdigest()
-    #         logger.debug('get signature: %s', signature)
-    #         data['signature'] = signature
-    #         data['appid'] = APP_ID
-    #     except:
-    #         logger.exception("Get wx config error")
-    #         return SYSTEM_ERROR
-    #     response = import_status("SUCCESS_GET_CONFIG", "OK")
-    #     response['data'] = data
-    #     return response
+    def get_wx_config_accesstoken(self):
+        from WeiDian.config.urlconfig import get_jsapi, get_server_access_token, signature_str
+        from WeiDian.config.setting import APP_ID
+        import random
+        import string
+        import time
+        import hashlib
+        # if not hasattr(request, 'user'):
+        #     return TOKEN_ERROR  # 未登录, 或token错误
+        url = request.args.to_dict().get("url")
+        # user = self.suser.get_user_by_user_id(request.user.id)
+        # logger.info('get user accesstoken: %s', user.accesstoken)
+        # logger.info('get user id : %s', request.user.id)
+        # if not user:
+        #     return SYSTEM_ERROR
+        # todo 刷新accesstoken和jsapi
+        from WeiDian.common.divide import Partner
+        pt = Partner()
+        access_token_server, ticket, access_time = pt.access_token
+        access_time = datetime.datetime.strptime(access_time, format_for_db) if access_time else datetime.datetime.now()
+        now = datetime.datetime.now()
+        delta_time = (now - access_time).seconds
+        if not ticket or delta_time > 60 * 60 * 2:
+            access_token_server_res = self.get_wx_response(get_server_access_token, "get server access token")
+            if "access_token" not in access_token_server_res:
+                logger.error("get access token server error : %s", access_token_server_res)
+                return NETWORK_ERROR
+            access_token_server = access_token_server_res.get("access_token")
+
+            jsapiticket = self.get_wx_response(get_jsapi.format(access_token_server), "get jsapi_ticket")
+
+            if jsapiticket.get("errcode") == 0 and jsapiticket.get("errmsg") == "ok":
+                ticket = jsapiticket.get("ticket")
+            else:
+                logger.error("get jsapi error :  %s", jsapiticket)
+                return import_status("get_jsapi_error", "WD_ERROR", "error_get_jsapi")
+
+            pt.access_token = (access_token_server, ticket, now.strftime(format_for_db))
+        # update_result = self.suser.update_user(user.USid, {"jsapiticket": ticket})
+        # if not update_result:
+        #     return SYSTEM_ERROR
+
+        noncestr = ''.join(random.sample(string.ascii_letters + string.digits, 8))
+        data = {
+            "url": url,
+            "jsapi_ticket": ticket,
+            'timestamp': int(time.time()),
+            "noncestr": noncestr,
+
+            # "secret": APP_SECRET_KEY
+        }
+        logger.info("get wx config %s", data)
+        try:
+            # response_str = "&".join([str(k)+'='+str(v) for k, v in data.items()])
+            response_str = signature_str.format(**data)
+            logger.debug("get response: %s", response_str)
+            signature = hashlib.sha1(response_str).hexdigest()
+            logger.debug('get signature: %s', signature)
+            data['signature'] = signature
+            data['appid'] = APP_ID
+        except:
+            logger.exception("Get wx config error")
+            return SYSTEM_ERROR
+        response = import_status("SUCCESS_GET_CONFIG", "OK")
+        response['data'] = data
+        return response
 
     def get_wx_config(self):
 

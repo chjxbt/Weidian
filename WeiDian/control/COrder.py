@@ -183,7 +183,7 @@ class COrder():
                     'count': self.sorder.get_user_ordercount_by_status(request.user.id, '1')
                 },
                 {
-                    'status': u'待发货',
+                    'status': u'待收货',
                     'statusnum': u'5',
                     'count': self.sorder.get_user_ordercount_by_status(request.user.id, '5')
                 },

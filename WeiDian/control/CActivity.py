@@ -363,7 +363,7 @@ class CActivity(BaseActivityControl):
             response["components"] = QRCODEHOSTNAME + '/' + LinuxImgs + '/components.png'
             return response
         except:
-            logger.debug("make qrcode error")
+            logger.exception("make qrcode error")
             return SYSTEM_ERROR
 
     @verify_token_decorator
