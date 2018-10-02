@@ -129,16 +129,18 @@
       <div class="m-form-label choose-banner" style="margin-bottom: 0.2rem">
         <div class="title">推文管理</div>
         <div class="choose-box tr">
-          <el-select v-model="toBanner" class="m-input-l" placeholder="请选择专题" style="width: 3rem;margin-right: 0.4rem">
+          <el-select v-model="toBanner" class="m-input-l" placeholder="请选择专题内容页所对应的专题" style="width: 3rem;margin-right: 0.4rem">
             <el-option v-for="item in toBannerList" :key="item.value" :label="item.value" :value="item.id"></el-option>
           </el-select>
         </div>
-        <div class="banner-btn" @click="toBannerClick('1')" v-if="!activityToBanner">筛选推文</div>
-        <div class="banner-btn" @click="toBannerClick('2')" v-if="activityToBanner">绑定专题</div>
+        <el-tooltip class="item" effect="light" content="筛选出能跳转到专题内容页的推文" placement="top-start" v-if="!activityToBanner">
+          <div class="banner-btn" @click="toBannerClick('1')">筛选推文</div>
+        </el-tooltip>
+        <div class="banner-btn" @click="toBannerClick('2')" v-if="activityToBanner" :disabled="true">绑定专题</div>
       </div>
       <div class="content-table">
-        <el-table :data="activityList" border style="width: 100%" v-loading="activityLoading">
-          <el-table-column fixed="left" type="selection" width="55"></el-table-column>
+        <el-table :data="activityList" border style="width: 100%" v-loading="activityLoading" @selection-change="selectionChange">
+          <el-table-column fixed="left" type="selection" width="55" v-if="activityToBanner"></el-table-column>
           <el-table-column prop="num" label="推文时间" width="490">
             <template slot-scope="scope">
               <el-date-picker v-model="scope.row.activityTime" type="datetimerange" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
@@ -164,7 +166,7 @@
 
       <div>
         <div class="m-form-item">
-          <p class="m-form-label">推文内容</p>
+          <p class="m-form-label required" style="width: 0.8rem;">推文内容</p>
           <div class="m-item-content">
             <div class=" m-item-row">
               <el-input type="textarea" :autosize="{ minRows: 3, maxRows: 6 }" placeholder="请输入推文内容" v-model="activityACtext" style="width: 4rem" ref="actext"></el-input>
@@ -173,10 +175,10 @@
         </div>
         <div class="m-form-item" style="min-height: 1.8rem; max-height: 1.8rem">
           <p class="m-form-label">推文图片</p>
-          <div class="m-item-content" style="width: 3.6rem" :class="activityMediaSort > 2 && activityMediaSort < 6 ? 'three':'' || activityMediaSort > 5 && activityMediaSort < 10 ? 'six':''" >
+          <div class="m-item-content" style="width: 6rem;" :class="activityMediaSort > 4 ? 'five':''" id="abcd">
             <div class=" m-item-row">
               <el-upload action="string" :http-request="uploadActivityPicture" list-type="picture-card" :on-preview="handlePictureCardPreview"
-                         :limit="9" :on-remove="pictureRemove" id="activityPicture">
+                         :limit="9" :on-remove="pictureRemove" id="activityPicture" :on-exceed="onExceed">
                 <i class="el-icon-plus"></i>
               </el-upload>
               <el-dialog :visible.sync="dialogVisible">
@@ -185,7 +187,7 @@
             </div>
           </div>
         </div>
-        <p class="m-form-label">跳转类型</p>
+        <p class="m-form-label required" style="width: 0.8rem;">跳转类型</p>
         <div class="m-item-content">
           <div class=" m-item-row">
             <el-select v-model="activityJumpValue" class="m-input-l" placeholder="请选择" :disabled="editActivity" style="width: 1.75rem">
@@ -204,7 +206,7 @@
           </div>
         </div>
         <div class="m-form-item">
-          <p class="m-form-label">活动类型</p>
+          <p class="m-form-label required" style="width: 0.8rem;">活动类型</p>
           <div class="m-item-content">
             <div class=" m-item-row">
               <el-select v-model="activityType" class="m-input-l" placeholder="请选择">
@@ -213,7 +215,7 @@
             </div>
           </div>
         </div>
-        <p class="m-form-label">活动时间</p>
+        <p class="m-form-label required" style="width: 0.8rem;">活动时间</p>
         <div class="m-item-content">
           <el-date-picker v-model="activityActivityTime" type="datetimerange" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
                           start-placeholder="开始日期" end-placeholder="结束日期" style="width: 4rem;">
@@ -221,7 +223,7 @@
         </div>
         <div class="num-list">
           <div class="num-box">
-            <p class="m-form-label">虚拟点赞数</p>
+            <p class="m-form-label required" style="width: 0.9rem;">虚拟点赞数</p>
             <div class="m-item-content">
               <div class=" m-item-row">
                 <el-input v-model="likeNum" class="m-input-s" placeholder="请输入"></el-input>
@@ -229,7 +231,7 @@
             </div>
           </div>
           <div class="num-box">
-            <p class="m-form-label">活动角标</p>
+            <p class="m-form-label required" style="width: 0.8rem;">活动角标</p>
             <div class="m-item-content">
               <div class=" m-item-row">
                 <el-input v-model="activityBadge" class="m-input-s" placeholder="限两个字" maxlength="2"></el-input>
@@ -287,6 +289,7 @@
         value10: '',
         // value3: '',
         bannerList: [],
+        selectionList: [],
         toBanner: "",
         activityToBanner: false,
         toBannerList: [],
@@ -363,14 +366,17 @@
             media = { AMimage: res.data.data, AMsort: this.activityMediaSort };
             this.activityMedia.push(media);
 
-            // 当上传的图片为9张时，去除上传按钮
-            if(this.activityMediaSort == 1) {
-              let childList = document.getElementById("activityPicture").childNodes;
-              document.getElementById('activityPicture').removeChild(childList[1]);
-              // console.log(childList)
-              // document.getElementById('activityPicture').childNodes[2] = childList[1]
-              // 建议hidden
-            }
+            console.log(this.activityMediaSort);
+            console.log(document.getElementById("abcd"));
+
+            // 当上传的图片为9张时，disabled上传按钮
+            /*if(this.activityMediaSort == 9) {
+              this.$message({ type: 'warning', message: "最多上传9张推文图片" });
+
+              // 当上传的图片为9张时，去除上传按钮
+              // let childList = document.getElementById("activityPicture").childNodes;
+              // document.getElementById('activityPicture').removeChild(childList[1]);
+            }*/
           }else{
             this.$message({ type: 'error', message: res.data.message });
           }
@@ -387,6 +393,10 @@
 
         this.activityMediaSort = this.activityMediaSort - 1;
       },
+      // 超过文件数量限制时执行的方法
+      onExceed(file, fileList) {
+        this.$message({ type: 'warning', message: "最多上传9张图片" });
+      },
 
 
 
@@ -402,6 +412,14 @@
       // 点击编辑后-点击时间选择器时清空时间
       timeClick(scope) {
         this.bannerList = this.bannerList.concat();
+      },
+      // 当选择项发生变化时会触发该事件
+      selectionChange(selection) {
+        this.selectionList = [];
+        // 将所选中推文的acid push到list中
+        for(let i = 0; i < selection.length; i ++) {
+          this.selectionList.push(selection[i].acid);
+        }
       },
       // 点击编辑后-点击时间选择器时清空时间
       activityTimeClick(scope) {
@@ -452,8 +470,6 @@
           this.$refs.actext.focus();    // 推文内容输入框获得焦点
 
           let activity = this.activityList[scope.$index];
-          // console.log(activity);
-
           this.activityACtext = activity.actext;
 
 
@@ -599,6 +615,7 @@
       },
       // 上移banner/专题
       upBanner(scope) {
+        this.bannerLoading = true;
         axios.post(api.update_bact + '?token=' + localStorage.getItem('token') + "&baid=" + this.bannerList[scope.$index].baid,
           { basort: this.bannerList[scope.$index - 1].basort }).then(res=>{
           if(res.data.status == 200){
@@ -643,11 +660,13 @@
               this.bannerList[i].addSaveEdit = "3";
             }
 
-            // 绑定专题并筛选推文
+            // 将专题内容页对应的专题筛选出来
             let toBanner = {};
             for(let i = 0; i < this.bannerList.length; i ++) {
-              toBanner = { value: this.bannerList[i].batext, id: this.bannerList[i].baid };
-              this.toBannerList.push(toBanner);
+              if(this.bannerList[i].batype == "1") {
+                toBanner = { value: this.bannerList[i].batext, id: this.bannerList[i].baid };
+                this.toBannerList.push(toBanner);
+              }
             }
           }else{
             this.$message.error(res.data.message);
@@ -672,6 +691,7 @@
       },
       // 模糊搜索-获取所有可选项
       getJumpTo(to, where) {
+        // 搜索商品
         if(to == 'product') {
           axios.get(api.get_product + '?kw=').then(res => {
             if(res.data.status == 200) {
@@ -689,6 +709,7 @@
               this.$message.error(res.data.message);
             }
           })
+          // 搜索专题
         }else if(to == 'banner') {
           let banner = {};
           for(let i = 0; i < this.bannerList.length; i ++) {
@@ -705,6 +726,7 @@
               this.jumpToList.push(banner);
             }
           }
+          // 搜索公告、教程
         }else if(to == '3' || to == '4') {
           axios.get(api.get_activity_list_by_actitle + "?token=" + localStorage.getItem("token") + "&hmtype=" + to + "&actitle=").then(res => {
             if(res.data.status == 200) {
@@ -775,38 +797,52 @@
       },
       // 添加推文/活动
       addActivity () {
-        if(this.activityACtext == "" || this.activityJumpValue == "" || this.activityJumpToValue == "" || this.activityType == "" || this.activityBadge == "" || this.likeNum == ""
-               || this.activityActivityTime.length != 2) {
-          this.$message({ message: "请完整填写", type: 'warning' });
-          if(this.tnid == "") {
-            this.$message({ message: "请刷新页面后重试", type: 'warning' });
-          }
+        // 推文图片的数量需为0、4、6、9
+        if(this.activityMediaSort != 0 && this.activityMediaSort != 4 && this.activityMediaSort != 6 && this.activityMediaSort != 9) {
+          this.$message({ message: "上传推文图片时，数量需为4张、6张或9张", type: 'warning' });
         }else {
-          let params = {
-            ACSkipType: this.activityJumpValue,
-            AClinkvalue: this.activityJumpToValue,
-            ACtype: this.activityType,
-            TopnavId: this.tnid,
-            ACtext: this.activityACtext,
-            media: this.activityMedia,
-            tags: [{ ATname: this.activityBadge }],
-            AClikeFakeNum: this.likeNum,
-            ACstarttime: this.activityActivityTime[0],
-            ACendtime: this.activityActivityTime[1]
-          };
-          if(this.activityProductSales != "") {
-            params.ACProductsSoldFakeNum = this.activityProductSales;
-          }
-          console.log(params);
-          this.activityLoading = true;
-          axios.post(api.add_one_activity + '?token=' + localStorage.getItem('token'), params).then(res => {
-            if(res.data.status == 200){
-              this.$message({ type: 'success', message: res.data.message });
-              this.getActivity(0, this.count);     // 获取推文/内容
-            }else{
-              this.$message({ type: 'error', message: res.data.message });
+          if(this.activityACtext == "" || this.activityJumpValue == "" || this.activityJumpToValue == "" || this.activityType == "" || this.activityBadge == "" || this.likeNum == ""
+            || this.activityActivityTime.length != 2) {
+            this.$message({ message: "请完整填写", type: 'warning' });
+            if(this.tnid == "") {
+              this.$message({ message: "请刷新页面后重试", type: 'warning' });
             }
-          });
+          }else {
+            let params = {
+              ACSkipType: this.activityJumpValue,
+              AClinkvalue: this.activityJumpToValue,
+              ACtype: this.activityType,
+              TopnavId: this.tnid,
+              ACtext: this.activityACtext,
+              media: this.activityMedia,
+              tags: [{ ATname: this.activityBadge }],
+              AClikeFakeNum: this.likeNum,
+              ACstarttime: this.activityActivityTime[0],
+              ACendtime: this.activityActivityTime[1]
+            };
+            if(this.activityProductSales != "") {
+              params.ACProductsSoldFakeNum = this.activityProductSales;
+            }
+            this.activityLoading = true;
+            axios.post(api.add_one_activity + '?token=' + localStorage.getItem('token'), params).then(res => {
+              if(res.data.status == 200){
+                this.$message({ type: 'success', message: res.data.message });
+                this.getActivity(0, this.count);     // 获取推文/内容
+
+                // 保存成功后将input等置空
+                this.activityACtext = "";
+                this.activityJumpValue = "";
+                this.activityJumpToValue = "";
+                this.activityProductSales = "";
+                this.activityType = "";
+                this.activityActivityTime = "";
+                this.likeNum = "";
+                this.activityBadge = "";
+              }else{
+                this.$message({ type: 'error', message: res.data.message });
+              }
+            });
+          }
         }
       },
       // 获取首页顶部导航nav
@@ -827,15 +863,14 @@
         })
       },
       // 获取首页活动/推文内容列表
-      getActivity(start, count) {
+      getActivity(start, count, skiptype) {
         axios.get(api.get_all_activity + '?token=' + localStorage.getItem('token'),
-          { params: { lasting: true, start: start || 0, count: count || this.count, tnid: this.tnid, skiptype: "all" }}).then(res => {
+          { params: { lasting: true, start: start || 0, count: count || this.count, tnid: this.tnid, skiptype: skiptype || "all" }}).then(res => {
           if(res.data.status == 200) {
             this.activityLoading = false;
             this.activityList = res.data.data;
 
             for(let i = 0; i < this.activityList.length; i ++) {
-
               this.activityList[i].activityTime = [this.activityList[i].acstarttime, this.activityList[i].acendtime];
               this.activityList[i].disabled = true;
             }
@@ -851,14 +886,38 @@
       // 绑定专题并筛选推文
       toBannerClick(v) {
         if(v == "1") {
+          // 只获取能跳转商品的推文，即acskiptype=2
+          this.activityLoading = true;
+          this.getActivity(0, this.count, "2");
+
           this.activityToBanner = true;
-          console.log(this.activityList)
         }else if(v == "2") {
-          console.log(this.bannerList);
-          this.activityToBanner = false;
-
+          if(this.selectionList.length == 0 || this.toBanner == "") {
+            if(this.selectionList.length == 0) {
+              this.$message({ type: 'warning', message: "请勾选推文" });
+            }
+            if(this.toBanner == "") {
+              this.$message({ type: 'warning', message: "请选择专题" });
+            }
+            if(this.selectionList.length == 0 && this.toBanner == "") {
+              this.$message({ type: 'warning', message: "请选择专题和推文" });
+            }
+          }
+          else {
+            let params = {
+              ACid_list: this.selectionList,
+              BAid: this.toBanner,
+            };
+            axios.post(api.add_to_bigact + '?token=' + localStorage.getItem('token'), params).then(res=>{
+              if(res.data.status == 200){
+                this.$message({ message: res.data.message, type: 'success' });
+                this.activityToBanner = false;
+              }else{
+                this.$message.error(res.data.message);
+              }
+            });
+          }
         }
-
       },
       wTabClick(i){
         let arr = [].concat(this.tab_list);
@@ -931,13 +990,14 @@
       },
       // 推文/活动跳转类型的值发生变化
       activityJumpValue(newValue, oldValue) {
-        // console.log(newValue);
         this.activityJumpToList = [];
         this.activityJumpToValue = "";
         if(newValue == "2") {
           this.getJumpTo("product", "activity");     // 获取所有商品
         }else if(newValue == "1") {
           this.getJumpTo("banner", "activity");     // 获取所有专题
+        }else if(newValue == "") {
+
         }
       },
     },

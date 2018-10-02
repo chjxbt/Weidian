@@ -85,6 +85,7 @@
                 // this.$store.state.token = res.data.data.token;
                 localStorage.setItem('token', res.data.data.token);
                 this.$router.push({ path: '/content/index' });
+                this.$notify({ title: '登录成功', type: 'success' });
               }else{
                 this.$message.error(res.data.message);
               }
