@@ -464,26 +464,27 @@ class CActivity(BaseActivityControl):
 
     @verify_token_decorator
     def share_activity(self):
-        if not hasattr(request, 'user'):
-            return TOKEN_ERROR  # 未登录, 或token错误
+        if is_tourist():
+            raise TOKEN_ERROR(u'未登录')
         data = request.json
-        logger.info("share qrcode data is %s", data)
+        logger.debug("share qrcode data is %s", data)
         data_url = data.get("dataurl")
         now_time = datetime.strftime(datetime.now(), '%Y%m%d%H%M%S')
-        logger.debug("get user info")
         try:
+            logger.info("get user info")
             user = self.suser.get_user_by_user_id(request.user.id)
             if not user:
-                return SYSTEM_ERROR(u'找不到该用户')
+                raise SYSTEM_ERROR(u'找不到该用户')
             save_path = LinuxRoot + LinuxImgs + "/qrcode/" + user.openid + now_time + '.png' if platform.system() == "Linux" else WindowsRoot + "qrcode/" + user.openid + now_time + '.png'
             make_qrcode(user.USheader, data_url, save_path)
             response = import_status("make_qrcode_success", "OK")
             response["qrcodeurl"] = QRCODEHOSTNAME + '/' + LinuxImgs + '/qrcode/' + user.openid + now_time + '.png'
             response["components"] = QRCODEHOSTNAME + '/' + LinuxImgs + '/components.png'
+            logger.debug('response url is %s', response["qrcodeurl"])
             return response
         except:
-            logger.debug("make qrcode error")
-            return SYSTEM_ERROR
+            logger.exception("make qrcode error")
+            return SYSTEM_ERROR(u'服务器繁忙')
 
     @verify_token_decorator
     def generate_poster(self):
