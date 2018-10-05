@@ -32,9 +32,23 @@
           </el-table-column>
           <el-table-column prop="title" label="跳转" width="150">
             <template slot-scope="scope">
-            <el-select v-model="bannerToValue" class="m-input-l" placeholder="请选择" style="width: 0.7rem">
-              <el-option v-for="item in bannerToList" :key="item.value" :label="item.label" :value="item.value"></el-option>
-            </el-select>
+              <!--<el-input v-if="addBannerBtn" v-model="scope.row.bannerToValue" :disabled="scope.row.disabled"></el-input>-->
+              <el-select v-model="scope.row.bannerToValue" class="m-input-l" placeholder="请选择" :disabled="scope.row.disabled"
+                         style="width: 0.8rem" @change="bannerToValueChange">
+                <el-option v-for="item in bannerToList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+              </el-select>
+            </template>
+          </el-table-column>
+          <el-table-column prop="product" label="图片" width="165">
+            <template slot-scope="scope">
+              <!--<img v-if="scope.row.bannerToValue == '长图'" :src="scope.row.balongimg" class="long-picture">-->
+              <div @click="rowClick(scope.$index, 'img')" v-if="scope.row.showPicture">
+                <el-upload class="avatar-uploader" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false"
+                           :on-success="uploadPicture1" :disabled="scope.row.disabled">
+                  <img v-if="scope.row.balongimg" :src="scope.row.balongimg" class="long-picture">
+                  <i v-else class="long-picture"></i>
+                </el-upload>
+              </div>
             </template>
           </el-table-column>
           <el-table-column prop="product" label="展示" width="150">
@@ -177,8 +191,8 @@
           <p class="m-form-label">推文图片</p>
           <div class="m-item-content" style="width: 6rem;" :class="activityMediaSort > 4 ? 'five':''" id="abcd">
             <div class=" m-item-row">
-              <el-upload action="string" :http-request="uploadActivityPicture" list-type="picture-card" :on-preview="handlePictureCardPreview"
-                         :limit="9" :on-remove="pictureRemove" id="activityPicture" :on-exceed="onExceed">
+              <el-upload action="string" :http-request="uploadActivityPicture" list-type="picture-card" :file-list="activityPictureList"
+                         :on-preview="handlePictureCardPreview" :limit="9" :on-remove="pictureRemove" id="activityPicture" :on-exceed="onExceed">
                 <i class="el-icon-plus"></i>
               </el-upload>
               <el-dialog :visible.sync="dialogVisible">
@@ -193,13 +207,13 @@
             <el-select v-model="activityJumpValue" class="m-input-l" placeholder="请选择" :disabled="editActivity" style="width: 1.75rem">
               <el-option v-for="item in activityJumpList" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
-            <el-select v-if="activityJumpValue == '1'" v-model="activityJumpToValue" class="m-input-l" placeholder="请选择专题" :disabled="editActivity" style="width: 4rem; margin-left: 0.5rem">
-              <el-option v-for="item in activityJumpToList" :key="item.value" :label="item.value" :value="item.id"></el-option>
+            <el-select v-if="activityJumpValue == '1' || activityJumpValue == '专题'" v-model="activityJumpToValue" @focus="focusselect('banner')" class="m-input-l" :placeholder="activityJumpToValue" style="width: 4rem; margin-left: 0.5rem">
+              <el-option v-for="item in activityJumpToList" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
-            <el-select v-if="activityJumpValue == '2'" v-model="activityJumpToValue" filterable placeholder="请输入关键词搜索商品" :disabled="editActivity" style="width: 4rem; margin-left: 0.5rem">
-              <el-option v-for="item in activityJumpToList" :key="item.value" :label="item.value" :value="item.id"></el-option>
+            <el-select v-if="activityJumpValue == '2' || activityJumpValue == '商品'" v-model="activityJumpToValue" @focus="focusselect('product')" filterable :placeholder="activityJumpToValue" style="width: 4rem; margin-left: 0.5rem">
+              <el-option v-for="item in activityJumpToList" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
-            <div v-if="activityJumpValue == '2'" style="margin-left: 0.5rem">
+            <div v-if="activityJumpValue == '2' || activityJumpValue == '商品'" style="margin-left: 0.5rem">
               <span>虚拟销量：</span>
               <el-input v-model="activityProductSales" style="width: 1rem; text-align: center"></el-input>
             </div>
@@ -241,7 +255,7 @@
         </div>
         <div class="m-form-confirm-btn">
           <span @click="addActivity" v-if="!editActivity">保 存</span>
-          <span v-if="editActivity">取 消</span>
+          <span @click="cancelActivity" v-if="editActivity">取 消</span>
           <span @click="saveClick('', 'activity')" v-if="editActivity">保 存</span>
         </div>
       </div>
@@ -301,6 +315,7 @@
         activityTime: [],
         activityMedia: [],
         activityMediaSort: 0,
+        activityPictureList: [],    // 推文图片墙list
         hotMessageList: [],
         dialogImageUrl: '',
         dialogVisible: false,
@@ -323,6 +338,7 @@
         activityType: '',
         activityBadge: '',
         activityACtext: '',
+        activityEditScope: '',
         activityJumpValue: '',
         activityJumpToValue: '',
         activityJumpToList: [],
@@ -336,10 +352,9 @@
           { value: '2', label: '商品' }
         ],
         acidTemp: "",
-        bannerToValue: "",
         bannerToList: [
-          { value: '1', label: '长图' },
-          { value: '2', label: '专题页' }
+          { value: '0', label: '长图' },
+          { value: '1', label: '专题页' }
         ],
         activityProductSales: '',
         imageUrl: '',
@@ -366,9 +381,6 @@
             media = { AMimage: res.data.data, AMsort: this.activityMediaSort };
             this.activityMedia.push(media);
 
-            console.log(this.activityMediaSort);
-            console.log(document.getElementById("abcd"));
-
             // 当上传的图片为9张时，disabled上传按钮
             /*if(this.activityMediaSort == 9) {
               this.$message({ type: 'warning', message: "最多上传9张推文图片" });
@@ -391,11 +403,17 @@
       pictureRemove(file, fileList) {
         console.log(file, fileList);
 
+        console.log(this.activityPictureList);
+
         this.activityMediaSort = this.activityMediaSort - 1;
       },
       // 超过文件数量限制时执行的方法
       onExceed(file, fileList) {
         this.$message({ type: 'warning', message: "最多上传9张图片" });
+      },
+      // select选择器获得焦点时执行
+      focusselect(where) {
+        console.log(where)
       },
 
 
@@ -436,6 +454,7 @@
         this.bannerList[index].BAendtime = "";
         this.bannerList[index].activityTime = "";
         this.bannerList[index].baisdisplay = true;
+        this.bannerList[index].showPicture = true;
         this.bannerList[index].disabled = false;
         // this.bannerList[index].upDisabled = false;
         this.bannerList[index].addSaveEdit = "1";
@@ -466,25 +485,35 @@
           this.hotMessageList[scope.$index].editSave = "2";
         }else if(where == "activity") {
           this.editActivity = true;
+          this.activityEditScope = scope.$index;
           this.acidTemp = this.activityList[scope.$index].acid;   // 暂存acid
           this.$refs.actext.focus();    // 推文内容输入框获得焦点
 
+          // 把点击的那一行数据赋给activity
           let activity = this.activityList[scope.$index];
           this.activityACtext = activity.actext;
 
+          console.log(activity);
 
+
+
+          // 商品
           if(activity.acskiptype == "2") {
-            this.activityJumpValue = 2;
-            this.activityJumpToValue = "12345";
+            this.activityJumpValue = "商品";
+            this.activityJumpToValue = activity.product.prtitle;
             this.activityProductSales = activity.soldnum;
           }else if(activity.acskiptype == "1") {
-            this.activityJumpValue = 1;
-            this.activityJumpToValue = "654321";
+            // 专题
+            this.activityJumpValue = "专题";
+            this.activityJumpToValue = activity.bigactivity.baid;
           }
+          console.log(this.activityJumpToValue);
 
-          // console.log(this.activityJumpToList);
-
-
+          // 把activity的图片赋值给图片集合，同时把图片序号同步成图片数量
+          for(let i = 0; i < activity.media.length; i ++) {
+            this.activityPictureList.push({ url: activity.media[i].amimage });
+          }
+          this.activityMediaSort = activity.media.length;
 
           this.activityType = activity.actype;
           this.activityActivityTime = [activity.acstarttime, activity.acendtime];
@@ -492,7 +521,7 @@
           this.activityBadge = activity.tags[0].atname;
         }
       },
-      // 保存编辑后的banner
+      // 保存编辑后的banner、热文、推文
       saveClick(scope, where) {
         console.log(scope, where);
         if(where == "banner") {
@@ -533,34 +562,62 @@
             }
           });
         }else if(where == "activity") {
-          let actype = "";
-          for(let i = 0; i < this.activityTypeList.length; i ++) {
-            if(this.activityTypeList[i].label == this.activityType) {
-              actype = this.activityTypeList[i].value;
-            }
-          }
+          if(this.activityMediaSort != 0 && this.activityMediaSort != 4 && this.activityMediaSort != 6 && this.activityMediaSort != 9) {
+            this.$message({ message: "上传推文图片时，数量需为4张、6张或9张", type: 'warning' });
+          }else {
+            if(this.activityACtext == "" || this.activityJumpValue == "" || this.activityJumpToValue == "" || this.activityType == "" || this.activityBadge == "" || this.likeNum == ""
+              || this.activityActivityTime.length != 2) {
+              this.$message({ message: "请完整填写", type: 'warning' });
+              if(this.tnid == "") {
+                this.$message({ message: "请刷新页面后重试", type: 'warning' });
+              }
+            }else {
+              let actype = "";
+              for(let i = 0; i < this.activityTypeList.length; i ++) {
+                if(this.activityTypeList[i].label == this.activityType) {
+                  actype = this.activityTypeList[i].value;
+                }
+              }
 
-          let params = {
-            actype: actype,
-            topnavid: this.tnid,
-            actext: this.activityACtext,
-            // media: [{ AMimage: "", AMsort: "" }],
-            tags: [{ atname: this.activityBadge }],
-            aclikeFakeNum: this.likeNum,
-            acstarttime: this.activityActivityTime[0],
-            acendtime: this.activityActivityTime[1]
-          };
-          if(this.activityProductSales != "") {
-            params.acproductssoldfakenum = this.activityProductSales;
-          }
-          console.log(params)
-          axios.post(api.update_act + '?token=' + localStorage.getItem('token') + "&acid=" + this.acidTemp, params).then(res=>{
-            if(res.data.status == 200){
-              this.$message({ message: res.data.message, type: 'success' });
-            }else{
-              this.$message.error(res.data.message);
+              // 编辑推文后post的参数
+              let params = {
+                actype: actype,
+                topnavid: this.tnid,
+                actext: this.activityACtext,
+                // media: [{ AMimage: "", AMsort: "" }],
+                tags: [{ atname: this.activityBadge }],
+                aclikeFakeNum: this.likeNum,
+                acstarttime: this.activityActivityTime[0],
+                acendtime: this.activityActivityTime[1]
+              };
+
+              if(this.activityProductSales != "") {
+                params.acproductssoldfakenum = this.activityProductSales;   // 虚拟销量
+              }
+              console.log(params);
+              axios.post(api.update_act + '?token=' + localStorage.getItem('token') + "&acid=" + this.acidTemp, params).then(res=>{
+                if(res.data.status == 200){
+                  this.$message({ message: res.data.message, type: 'success' });
+
+                  // 保存后把新数据回显到表格中
+                  this.activityList[this.activityEditScope].actext = this.activityACtext;
+                  this.activityList[this.activityEditScope].activityTime = this.activityActivityTime;
+                  this.activityList = this.activityList.concat();
+
+                  // 清空推文的编辑框
+                  this.activityACtext = "";
+                  this.activityJumpValue = "";
+                  this.activityJumpToValue = "";
+                  this.activityType = "";
+                  this.activityActivityTime = "";
+                  this.likeNum = "";
+                  this.activityBadge = "";
+                }else{
+                  this.$message.error(res.data.message);
+                }
+              });
             }
-          });
+          }
         }
       },
       // 取消添加banner
@@ -572,9 +629,12 @@
       deleteBanner(scope) {
         this.$confirm('此操作将删除该专题, 是否继续?', '提示',
           {confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'}).then(() => {
+
+          this.bannerLoading = true;
           axios.post(api.update_bact + '?token=' + localStorage.getItem('token') + '&baid=' + this.bannerList[scope.$index].baid,
             { baisdelete: true }).then(res=>{
             if(res.data.status == 200){
+              this.bannerLoading = false;
               this.$message({ message: "专题删除成功", type: 'success' });
               this.bannerList.splice(scope.$index, 1);    // 刷新视图
             }else{
@@ -604,7 +664,7 @@
           this.activityLoading = true;
           axios.post(api.update_act + '?token=' + localStorage.getItem('token') + "&acid=" + this.activityList[scope.$index].acid, { acisdelete: true }).then(res=>{
             if(res.data.status == 200){
-              this.$message({ message: "热文删除成功", type: 'success' });
+              this.$message({ message: "推文删除成功", type: 'success' });
               this.activityList.splice(scope.$index, 1);    // 刷新视图
               this.activityLoading = false;
             }else{
@@ -612,6 +672,19 @@
             }
           });
         }).catch(() => {  });
+      },
+      // 编辑推文 - 取消
+      cancelActivity() {
+        // 点击取消按钮清空编辑框
+        this.activityACtext = "";
+        this.activityJumpValue = "";
+        this.activityJumpToValue = "";
+        this.activityType = "";
+        this.activityActivityTime = "";
+        this.likeNum = "";
+        this.activityBadge = "";
+
+        this.editActivity = false;      // 隐藏取消按钮
       },
       // 上移banner/专题
       upBanner(scope) {
@@ -656,8 +729,15 @@
             for(let i = 0; i < this.bannerList.length; i ++) {
               this.bannerList[i].activityTime = [this.bannerList[i].bastarttime, this.bannerList[i].baendtime];
               this.bannerList[i].disabled = true;
-              // this.bannerList[i].upDisabled = false;
               this.bannerList[i].addSaveEdit = "3";
+
+              if(this.bannerList[i].batype == "0") {
+                this.bannerList[i].bannerToValue = "长图";
+                this.bannerList[i].showPicture = true;     // 是否显示长图
+              }else if(this.bannerList[i].batype == "1") {
+                this.bannerList[i].bannerToValue = "专题页";
+                this.bannerList[i].showPicture = false;     // 是否显示长图
+              }
             }
 
             // 将专题内容页对应的专题筛选出来
@@ -697,7 +777,7 @@
             if(res.data.status == 200) {
               let product = {};
               for(let i = 0; i < res.data.data.length; i ++) {
-                product = { value: res.data.data[i].prtitle, id: res.data.data[i].prid };
+                product = { label: res.data.data[i].prtitle, value: res.data.data[i].prid };
                 if(where == "activity") {
                   this.activityJumpToList.push(product);
                 }else if(where == "hot") {
@@ -713,14 +793,13 @@
         }else if(to == 'banner') {
           let banner = {};
           for(let i = 0; i < this.bannerList.length; i ++) {
-            banner = { value: this.bannerList[i].batext, id: this.bannerList[i].baid };
+            banner = { label: this.bannerList[i].batext, value: this.bannerList[i].baid };
             if(where == "activity") {
               // 防止未添加的专题影响
               if(this.bannerList[this.bannerList.length - 1].baid == undefined) {
                 this.addBannerBtn = true;
                 this.bannerList.splice(this.bannerList.length - 1, 1);    // 刷新视图
               }
-
               this.activityJumpToList.push(banner);
             }else if(where == "hot") {
               this.jumpToList.push(banner);
@@ -751,20 +830,31 @@
           BAstarttime: banner.activityTime[0],
           BAendtime: banner.activityTime[1],
           BAisdisplay: banner.baisdisplay,
-          BAsort: this.bannerList[this.bannerList.length - 2].basort + 1
+          BAtype: banner.bannerToValue,
+          BAlongimg: banner.balongimg,
         };
-        if(params.BAimage == undefined || params.BAtext == "" || params.BAstarttime == undefined || params.BAendtime == undefined) {
+        if(this.bannerList.length == 1) {
+          params.BAsort = 0;
+        }else {
+          params.BAsort = this.bannerList[this.bannerList.length - 2].basort + 1      // -2为包含新添加的
+        }
+        console.log(params);
+        if(params.BAimage == undefined || params.BAtext == "" || params.BAstarttime == undefined || params.BAendtime == undefined || params.BAtype == undefined) {
           this.$message({ message: "请完整填写", type: 'warning' });
         }else {
-          axios.post(api.create_hbact + '?token=' + localStorage.getItem('token'), params).then(res=>{
-            if(res.data.status == 200){
-              this.$message({ message: "保存成功", type: 'success' });
-              this.getBanner();       // 获取专题
-              this.addBannerBtn = true;
-            }else{
-              this.$message.error(res.data.message);
-            }
-          });
+          if(params.BAtype == "0" && params.BAlongimg == undefined) {
+            this.$message({ message: "请完整填写", type: 'warning' });
+          }else {
+            axios.post(api.create_hbact + '?token=' + localStorage.getItem('token'), params).then(res=>{
+              if(res.data.status == 200){
+                this.$message({ message: "保存成功", type: 'success' });
+                this.getBanner();       // 获取专题
+                this.addBannerBtn = true;
+              }else{
+                this.$message.error(res.data.message);
+              }
+            });
+          }
         }
       },
       // 添加热文
@@ -824,6 +914,7 @@
               params.ACProductsSoldFakeNum = this.activityProductSales;
             }
             this.activityLoading = true;
+            console.log(params);
             axios.post(api.add_one_activity + '?token=' + localStorage.getItem('token'), params).then(res => {
               if(res.data.status == 200){
                 this.$message({ type: 'success', message: res.data.message });
@@ -838,6 +929,8 @@
                 this.activityActivityTime = "";
                 this.likeNum = "";
                 this.activityBadge = "";
+                this.activityPictureList = [];   // 上传成功后图片list置为[]
+                this.activityMediaSort = 0;   // 上传成功后图片数量置为0
               }else{
                 this.$message({ type: 'error', message: res.data.message });
               }
@@ -931,7 +1024,29 @@
         this.tnid = this.tab_list[i].tnid;
         this.getActivity(0, this.count);   // 获取首页活动/推文内容列表
       },
+      bannerToValueChange(v) {
+        console.log(v);
 
+      },
+      // 上传标题图片
+      uploadPicture1(res, file) {
+        let form = new FormData();
+        form.append("file", file.raw);
+        form.append("FileType", 'NewsPic');
+        form.append("index", 1);
+        axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token'), form).then(res => {
+          if(res.data.status == 200){
+            // console.log(res, file);
+            this.$message({ type: 'success', message: res.data.message });
+          }else{
+            this.$message({ type: 'error', message: res.data.message });
+          }
+
+          this.bannerList[this.rowNum].balongimg = res.data.data;
+          this.bannerList = this.bannerList.concat();
+          // this.imageUrl = res.data.data;
+        });
+      },
       // 上传标题图片
       uploadPicture(res, file) {
         let form = new FormData();
@@ -993,8 +1108,10 @@
         this.activityJumpToList = [];
         this.activityJumpToValue = "";
         if(newValue == "2") {
+          // this.activityJumpToValue = "请输入关键词搜索商品";
           this.getJumpTo("product", "activity");     // 获取所有商品
         }else if(newValue == "1") {
+          // this.activityJumpToValue = "请选择专题";
           this.getJumpTo("banner", "activity");     // 获取所有专题
         }else if(newValue == "") {
 
@@ -1013,6 +1130,10 @@
 <style lang="less" rel="stylesheet/less" scoped>
   @import "../../common/css/weidian";
 
+  .long-picture {
+    width: 0.3rem;
+    height: 0.5rem;
+  }
   .save-btn {
     width: 0.5rem;
     text-align: center;
