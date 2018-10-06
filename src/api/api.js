@@ -19,7 +19,7 @@ const api={
 
   create_hbact: title + 'bigactivity/create_hbact',  // 添加首页专题（轮播图）
   create_dbact: title + 'bigactivity/create_dbact',  // 添加发现页专题（轮播图）
-  update_bact: title + 'bigactivity/update_bact',//修改专题/删除轮播图（测试）
+  update_bact: title + 'bigactivity/update_bact', // 修改专题/删除轮播图（测试）
 
   get_home: title + 'topnav/get_home',  // 获取上部导航 - 首页
   get_dp: title + 'topnav/get_dp',  // 获取上部导航 - 发现页
@@ -28,7 +28,10 @@ const api={
   add_one_activity: title + 'activity/add_one',  // 添加首页活动/推文（测试）
 
   update_act: title + 'activity/update_act',  // 修改/删除活动/推文 - 首页/发现页
-  add_to_bigact: title + 'bigactivity/add_to_bigact',//将推文批量添加到专题
+  add_to_bigact: title + 'bigactivity/add_to_bigact', // 将推文批量添加到专题
+
+  get_info: title + 'recommend/get_info', // 获取每日推荐商品部分 - 发现页
+  update: title + 'recommend/update', // 修改每日推荐商品 - 发现页
 
 
   upload_task_img: title + 'task/upload_task_img',  // 上传任务图标-上传图片

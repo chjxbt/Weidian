@@ -276,18 +276,18 @@
           { value: '1', label: '商品' },
           { value: '2', label: '专题' }
         ],*/
-        hotJump: [      // 添加热文时的热文分类
+        hotJump: [          // 添加热文时的热文分类
           { value: '1', label: '商品' },
           { value: '2', label: '专题' },
           { value: '3', label: '教程' },
           { value: '4', label: '公告' }
         ],
-        rowNum: "",     // 定位专题编辑-点击图片时是哪一行
-        hotValue: '',     // 填写的热文内容
-        hotJumpValue: '',     // 热文分类选择的值
-        jumpToValue: '',      // 热文分类选择-后面选择器的值
-        jumpToList: [],       //  热文分类选择-后面选择器的选择项
-        hotTime: [],          // 热文分类的活动时间
+        rowNum: "",         // 定位专题编辑-点击图片时是哪一行
+        hotValue: '',       // 填写的热文内容
+        hotJumpValue: '',   // 热文分类选择的值
+        jumpToValue: '',    // 热文分类选择-后面选择器的值
+        jumpToList: [],     //  热文分类选择-后面选择器的选择项
+        hotTime: [],        // 热文分类的活动时间
         /*value: '',
         value1: '',
         value2: '',
@@ -299,12 +299,12 @@
         value8: '',
         value9: '',
         value10: '',*/
-        bannerList: [],     // 专题/banner的list
-        selectionList: [],  // 筛选推文时盛放acid的list
-        toBanner: "",       // 筛选推文时专题的选择值
-        toBannerList: [],   // 筛选推文时专题的可选择项
+        bannerList: [],       // 专题/banner的list
+        bannerLoading: true,  // 专题表格加载中
+        selectionList: [],    // 筛选推文时盛放acid的list
+        toBanner: "",         // 筛选推文时专题的选择值
+        toBannerList: [],     // 筛选推文时专题的可选择项
         activityToBanner: false,  // 依此判断筛选专题和绑定专题（前部勾选框）的显示情况
-        bannerLoading: true,      // 专题表格加载中
         hotLoading: true,         // 热文表格加载中
         activityLoading: true,    // 推文/活动表格加载中
         addBannerBtn: true,       // 依此判断添加banner按钮的显示情况
@@ -479,6 +479,9 @@
             // 专题
             this.activityJumpValue = "专题";
             this.activityJumpToValue = activity.bigactivity.baid;
+          }else if(activity.acskiptype == "0") {
+            this.activityJumpValue = "0";
+            // this.activityJumpToValue = activity.bigactivity.baid;
           }
           // console.log(this.activityJumpToValue);
 
@@ -538,7 +541,8 @@
           if(this.activityMediaSort != 0 && this.activityMediaSort != 4 && this.activityMediaSort != 6 && this.activityMediaSort != 9) {
             this.$message({ message: "上传推文图片时，数量需为4张、6张或9张", type: 'warning' });
           }else {
-            if(this.activityACtext == "" || this.activityJumpValue == "" || this.activityJumpToValue == "" || this.activityType == "" || this.activityBadge == "" || this.likeNum == ""
+            if(this.activityACtext == "" || this.activityJumpValue == "" || this.activityType == "" || this.activityBadge == "" || this.likeNum == ""
+            // if(this.activityACtext == "" || this.activityJumpValue == "" || this.activityJumpToValue == "" || this.activityType == "" || this.activityBadge == "" || this.likeNum == ""
               || this.activityActivityTime.length != 2) {
               this.$message({ message: "请完整填写", type: 'warning' });
               if(this.tnid == "") {
@@ -585,6 +589,7 @@
                   this.activityActivityTime = "";
                   this.likeNum = "";
                   this.activityBadge = "";
+                  this.activityPictureList = [];  // 图片list置为[]
                 }else{
                   this.$message.error(res.data.message);
                 }
@@ -656,6 +661,7 @@
         this.activityActivityTime = "";
         this.likeNum = "";
         this.activityBadge = "";
+        this.activityPictureList = [];  // 图片list置为[]
 
         this.editActivity = false;      // 隐藏取消按钮
       },
@@ -1091,7 +1097,6 @@
       this.getBanner();                 // 获取首页专题
       this.getHotMessage();             // 获取热文
       this.getTopNav();                 // 获取首页顶部导航nav
-
     }
   }
 </script>
