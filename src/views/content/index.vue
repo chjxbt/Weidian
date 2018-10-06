@@ -32,7 +32,6 @@
           </el-table-column>
           <el-table-column prop="title" label="跳转" width="150">
             <template slot-scope="scope">
-              <!--<el-input v-if="addBannerBtn" v-model="scope.row.bannerToValue" :disabled="scope.row.disabled"></el-input>-->
               <el-select v-model="scope.row.bannerToValue" class="m-input-l" placeholder="请选择" :disabled="scope.row.disabled"
                          style="width: 0.8rem" @change="bannerToValueChange">
                 <el-option v-for="item in bannerToList" :key="item.value" :label="item.label" :value="item.value"></el-option>
@@ -41,7 +40,6 @@
           </el-table-column>
           <el-table-column prop="product" label="图片" width="165">
             <template slot-scope="scope">
-              <!--<img v-if="scope.row.bannerToValue == '长图'" :src="scope.row.balongimg" class="long-picture">-->
               <div @click="rowClick(scope.$index, 'img')" v-if="scope.row.showPicture">
                 <el-upload class="avatar-uploader" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false"
                            :on-success="uploadPicture1" :disabled="scope.row.disabled">
@@ -274,23 +272,23 @@
     data(){
       return{
         name:'首页管理',
-        options: [
+        /*options: [
           { value: '1', label: '商品' },
           { value: '2', label: '专题' }
-        ],
-        hotJump: [
+        ],*/
+        hotJump: [      // 添加热文时的热文分类
           { value: '1', label: '商品' },
           { value: '2', label: '专题' },
           { value: '3', label: '教程' },
           { value: '4', label: '公告' }
         ],
-        rowNum: "",
-        hotValue: '',
-        hotJumpValue: '',
-        jumpToValue: '',
-        jumpToList: [],
-        hotTime: [],
-        value: '',
+        rowNum: "",     // 定位专题编辑-点击图片时是哪一行
+        hotValue: '',     // 填写的热文内容
+        hotJumpValue: '',     // 热文分类选择的值
+        jumpToValue: '',      // 热文分类选择-后面选择器的值
+        jumpToList: [],       //  热文分类选择-后面选择器的选择项
+        hotTime: [],          // 热文分类的活动时间
+        /*value: '',
         value1: '',
         value2: '',
         value3: '',
@@ -300,28 +298,26 @@
         value7: '',
         value8: '',
         value9: '',
-        value10: '',
-        // value3: '',
-        bannerList: [],
-        selectionList: [],
-        toBanner: "",
-        activityToBanner: false,
-        toBannerList: [],
-        bannerLoading: true,
-        hotLoading: true,
-        activityLoading: true,
-        addBannerBtn: true,
-        // activityTime: ["2000-11-10 10:10:05", "2000-11-11 10:10:05"],
-        activityTime: [],
-        activityMedia: [],
-        activityMediaSort: 0,
-        activityPictureList: [],    // 推文图片墙list
-        hotMessageList: [],
-        dialogImageUrl: '',
-        dialogVisible: false,
-        editActivity: false,
-        activityList: [],
-        activityTypeList: [
+        value10: '',*/
+        bannerList: [],     // 专题/banner的list
+        selectionList: [],  // 筛选推文时盛放acid的list
+        toBanner: "",       // 筛选推文时专题的选择值
+        toBannerList: [],   // 筛选推文时专题的可选择项
+        activityToBanner: false,  // 依此判断筛选专题和绑定专题（前部勾选框）的显示情况
+        bannerLoading: true,      // 专题表格加载中
+        hotLoading: true,         // 热文表格加载中
+        activityLoading: true,    // 推文/活动表格加载中
+        addBannerBtn: true,       // 依此判断添加banner按钮的显示情况
+        // activityTime: [],
+        activityMedia: [],        // 添加推文时盛放图片的list
+        activityMediaSort: 0,     // 添加推文时图片的顺序编号
+        activityPictureList: [],  // 推文上传/编辑时的图片墙list
+        hotMessageList: [],       // 热文集合
+        dialogImageUrl: '',       // 推文上传图片后预览的url
+        dialogVisible: false,     // 推文上传图片后预览的允许与否
+        editActivity: false,      // 是否在编辑activity
+        activityList: [],         // 推文/活动list
+        activityTypeList: [       // 添加推文/活动时的活动类型选择项
           { value: "0", label: "普通动态" },
           { value: "1", label: "满减" },
           { value: "2", label: "满赠" },
@@ -334,34 +330,34 @@
           { value: "9", label: "限时抢" },
           { value: "10", label: "5 元 10 件" }
         ],
-        likeNum: '',
-        activityType: '',
-        activityBadge: '',
-        activityACtext: '',
-        activityEditScope: '',
-        activityJumpValue: '',
-        activityJumpToValue: '',
-        activityJumpToList: [],
-        activityActivityTime: [],
-        activityJumpToBannerList: [
-          { value: '1', label: '商品' },
-          { value: '2', label: '专题' }
-        ],
-        activityJumpList: [
+        likeNum: '',                // 推文-虚拟点赞数
+        activityType: '',           // 添加推文/活动时的活动类型选择的值
+        activityBadge: '',          // 推文-活动角标
+        activityACtext: '',         // 推文-活动内容
+        activityEditScope: '',      // 确定编辑的推文行数据，便于后续存回该行
+        activityJumpValue: '',      // 推文-跳转类型选择的值
+        activityJumpList: [         // 推文-跳转类型可选择的跳转项
           { value: '1', label: '专题' },
           { value: '2', label: '商品' }
         ],
-        acidTemp: "",
-        bannerToList: [
+        activityJumpToValue: '',    // 推文-跳转类型选择后具体的跳转id
+        activityJumpToList: [],     // 推文-跳转类型选择后可选择的跳转项
+        activityActivityTime: [],   // 推文-活动时间
+        /*activityJumpToBannerList: [
+          { value: '1', label: '商品' },
+          { value: '2', label: '专题' }
+        ],*/
+        acidTemp: "",             // 用来暂存acid
+        bannerToList: [           // 专题跳转去向的可选择项
           { value: '0', label: '长图' },
           { value: '1', label: '专题页' }
         ],
-        activityProductSales: '',
-        imageUrl: '',
-        show_div: false,
-        tab_list: [],
-        count: 5,
-        tnid: "",
+        activityProductSales: '', // 虚拟销量
+        // imageUrl: '',
+        show_div: false,  // 显示添加热文的div
+        tab_list: [],     // 顶部导航的list
+        count: 5,         // 推文每页请求的数量
+        tnid: "",         // 暂存导航栏的tnid
       }
     },
     components:{ pageTitle, wTab },
@@ -377,18 +373,8 @@
         form.append("index", 1);
         axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token'), form).then(res => {
           if(res.data.status == 200){
-            // this.$message({ type: 'success', message: res.data.message });
             media = { AMimage: res.data.data, AMsort: this.activityMediaSort };
             this.activityMedia.push(media);
-
-            // 当上传的图片为9张时，disabled上传按钮
-            /*if(this.activityMediaSort == 9) {
-              this.$message({ type: 'warning', message: "最多上传9张推文图片" });
-
-              // 当上传的图片为9张时，去除上传按钮
-              // let childList = document.getElementById("activityPicture").childNodes;
-              // document.getElementById('activityPicture').removeChild(childList[1]);
-            }*/
           }else{
             this.$message({ type: 'error', message: res.data.message });
           }
@@ -401,10 +387,7 @@
       },
       // 移除推文图片时执行的方法
       pictureRemove(file, fileList) {
-        console.log(file, fileList);
-
-        console.log(this.activityPictureList);
-
+        // console.log(file, fileList);
         this.activityMediaSort = this.activityMediaSort - 1;
       },
       // 超过文件数量限制时执行的方法
@@ -415,13 +398,6 @@
       focusselect(where) {
         console.log(where)
       },
-
-
-
-
-
-
-
       // 轮播图管理-确定点击的图片是第几行
       rowClick(index, col) {
         // console.log(col);
@@ -467,7 +443,7 @@
           this.addBannerBtn = true;
           this.bannerList.splice(this.bannerList.length - 1, 1);    // 刷新视图
         }
-
+        // 显示添加热文的div
         if(this.show_div) {
           this.show_div = false;
         }else if(!this.show_div) {
@@ -492,10 +468,7 @@
           // 把点击的那一行数据赋给activity
           let activity = this.activityList[scope.$index];
           this.activityACtext = activity.actext;
-
-          console.log(activity);
-
-
+          // console.log(activity);
 
           // 商品
           if(activity.acskiptype == "2") {
@@ -507,7 +480,7 @@
             this.activityJumpValue = "专题";
             this.activityJumpToValue = activity.bigactivity.baid;
           }
-          console.log(this.activityJumpToValue);
+          // console.log(this.activityJumpToValue);
 
           // 把activity的图片赋值给图片集合，同时把图片序号同步成图片数量
           for(let i = 0; i < activity.media.length; i ++) {
@@ -523,7 +496,7 @@
       },
       // 保存编辑后的banner、热文、推文
       saveClick(scope, where) {
-        console.log(scope, where);
+        // console.log(scope, where);
         if(where == "banner") {
           let banner = this.bannerList[scope.$index];
           let params = {
@@ -838,7 +811,7 @@
         }else {
           params.BAsort = this.bannerList[this.bannerList.length - 2].basort + 1      // -2为包含新添加的
         }
-        console.log(params);
+        // console.log(params);
         if(params.BAimage == undefined || params.BAtext == "" || params.BAstarttime == undefined || params.BAendtime == undefined || params.BAtype == undefined) {
           this.$message({ message: "请完整填写", type: 'warning' });
         }else {
@@ -972,10 +945,6 @@
           }
         })
       },
-
-
-
-
       // 绑定专题并筛选推文
       toBannerClick(v) {
         if(v == "1") {
@@ -1025,7 +994,7 @@
         this.getActivity(0, this.count);   // 获取首页活动/推文内容列表
       },
       bannerToValueChange(v) {
-        console.log(v);
+        // console.log(v);
 
       },
       // 上传标题图片
