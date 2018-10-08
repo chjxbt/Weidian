@@ -40,12 +40,12 @@
         </ul>
         <span class="m-slider-index">{{slider_index +1}}/{{slider_list.length}}</span>
       </div>
-      <div class="m-poster-btn">
-        <div class="m-btn">
-          <span class="m-poster-btn-icon"></span>
-          <p>保存图片</p>
-        </div>
-      </div>
+      <!--<div class="m-poster-btn">-->
+        <!--<div class="m-btn">-->
+          <!--<span class="m-poster-btn-icon"></span>-->
+          <!--<p>保存图片</p>-->
+        <!--</div>-->
+      <!--</div>-->
     </div>
 
 </template>
