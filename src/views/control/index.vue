@@ -11,7 +11,9 @@
           <el-table-column prop="content" label="隐藏内容" width="500"></el-table-column>
           <el-table-column prop="show" label="是否显示" width="300">
             <template slot-scope="scope">
-              <el-switch v-model="scope.row.show" active-text="展示" inactive-text="隐藏"></el-switch>
+              <div @click="rowClick(scope.$index)">
+                <el-switch v-model="scope.row.show" active-text="展示" inactive-text="隐藏" @change="hiddenRow"></el-switch>
+              </div>
             </template>
           </el-table-column>
         </el-table>
@@ -24,9 +26,9 @@
           <el-table-column prop="to" label="跳转模块" width="500">
             <template slot-scope="scope">
               <el-radio-group v-model="jumpTo">
-                <el-radio :label="3">全部</el-radio>
-                <el-radio :label="6">专题</el-radio>
-                <el-radio :label="9">商品</el-radio>
+                <el-radio :label="1">全部</el-radio>
+                <el-radio :label="2">专题</el-radio>
+                <el-radio :label="3">商品</el-radio>
               </el-radio-group>
             </template>
           </el-table-column>
@@ -38,6 +40,9 @@
 
 <script>
   import pageTitle from '../../components/common/title';
+  import axios from 'axios';
+  import api from '../../api/api';
+
   export default {
     name: "index",
     data() {
@@ -51,11 +56,21 @@
         ],
         jumpLoading: false,
         jumpList: [{ name: "首页/发现页", to: "" }],
-        jumpTo: 3
+        jumpTo: 3,
+        rowNum: ""
       }
     },
     components: { pageTitle },
     methods: {
+      // 隐藏控制的变化钩子
+      hiddenRow(v) {
+        console.log(v);
+      },
+      // 保存点击的行数
+      rowClick(row) {
+        this.rowNum = row;
+        console.log("row", row);
+      },
       // 隐藏控制
       hiddenControl() {
         axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token'), form).then(res => {
@@ -90,6 +105,10 @@
     watch: {
       // 跳转模块的值发生变化
       jumpTo(newValue, oldValue) {
+        console.log(newValue)
+      },
+      // 隐藏控制的值发生变化
+      hiddenList(newValue, oldValue) {
         console.log(newValue)
       }
     },
