@@ -140,14 +140,14 @@ class COrder():
                     'count': self.sorder.get_sell_ordercount_by_status(request.user.id, all_status)
                 },
                 {
-                    'status': u'待支付',
+                    'status': u'待付款',
                     'statusnum': u'1',
-                    'count': self.sorder.get_sell_ordercount_by_status(request.user.id, '1')
+                    'count': self.sorder.get_sell_ordercount_by_item_status(request.user.id, '1')
                 },
                 {
                     'status': u'待收货',
                     'statusnum': u'5',
-                    'count': self.sorder.get_sell_ordercount_by_status(request.user.id, '5')
+                    'count': self.sorder.get_sell_ordercount_by_item_status(request.user.id, '5')
                 },
                 {
                     'status': u'已完成',
@@ -167,7 +167,7 @@ class COrder():
                 {
                     'status': u'退换货',
                     'statusnum': u'11',
-                    'count': self.sorder.get_sell_ordercount_by_status(request.user.id, '11')
+                    'count': self.sorder.get_sell_ordercount_by_item_status(request.user.id, '11')
                 }
             ]
         else:
@@ -178,14 +178,14 @@ class COrder():
                     'count': self.sorder.get_user_ordercount_by_status(request.user.id, all_status)
                 },
                 {
-                    'status': u'待支付',
+                    'status': u'待付款',
                     'statusnum': u'1',
-                    'count': self.sorder.get_user_ordercount_by_status(request.user.id, '1')
+                    'count': self.sorder.get_user_ordercount_by_item_status(request.user.id, '1')
                 },
                 {
                     'status': u'待收货',
                     'statusnum': u'5',
-                    'count': self.sorder.get_user_ordercount_by_status(request.user.id, '5')
+                    'count': self.sorder.get_user_ordercount_by_item_status(request.user.id, '5')
                 },
                 {
                     'status': u'已完成',
@@ -205,7 +205,7 @@ class COrder():
                 {
                     'status': u'退换货',
                     'statusnum': u'11',
-                    'count': self.sorder.get_user_ordercount_by_status(request.user.id, '11')
+                    'count': self.sorder.get_user_ordercount_by_item_status(request.user.id, '11')
                 }
             ]
 
