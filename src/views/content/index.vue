@@ -38,7 +38,7 @@
               </el-select>
             </template>
           </el-table-column>
-          <el-table-column prop="product" label="图片" width="165">
+          <el-table-column prop="product" label="图片" width="220">
             <template slot-scope="scope">
               <div @click="rowClick(scope.$index, 'img')" v-if="scope.row.showPicture">
                 <el-upload class="avatar-uploader" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false"
@@ -186,7 +186,7 @@
           </div>
         </div>
         <div class="m-form-item" style="min-height: 1.8rem; max-height: 1.8rem">
-          <p class="m-form-label">推文图片</p>
+          <p class="m-form-label required" style="width: 0.8rem;">推文图片</p>
           <div class="m-item-content" style="width: 6rem;" :class="activityMediaSort > 4 ? 'five':''" id="abcd">
             <div class=" m-item-row">
               <el-upload action="string" :http-request="uploadActivityPicture" list-type="picture-card" :file-list="activityPictureList"
@@ -373,7 +373,7 @@
         form.append("index", 1);
         axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token'), form).then(res => {
           if(res.data.status == 200){
-            media = { AMimage: res.data.data, AMsort: this.activityMediaSort };
+            media = { amimage: res.data.data, amsort: this.activityMediaSort };
             this.activityMedia.push(media);
           }else{
             this.$message({ type: 'error', message: res.data.message });
@@ -387,8 +387,9 @@
       },
       // 移除推文图片时执行的方法
       pictureRemove(file, fileList) {
-        // console.log(file, fileList);
+        console.log(file, fileList);
         this.activityMediaSort = this.activityMediaSort - 1;
+        // this.activityMedia = [];
       },
       // 超过文件数量限制时执行的方法
       onExceed(file, fileList) {
@@ -460,10 +461,14 @@
           this.hotMessageList[scope.$index].disabled = false;
           this.hotMessageList[scope.$index].editSave = "2";
         }else if(where == "activity") {
+          console.log(scope.row.media);
+          console.log(this.activityMedia);
+          this.activityMedia = scope.row.media;     // 把已有图片赋给activityMedia
           this.editActivity = true;
           this.activityEditScope = scope.$index;
           this.acidTemp = this.activityList[scope.$index].acid;   // 暂存acid
           this.$refs.actext.focus();    // 推文内容输入框获得焦点
+          this.activityPictureList = [];  // 图片list置为[]
 
           // 把点击的那一行数据赋给activity
           let activity = this.activityList[scope.$index];
@@ -473,7 +478,7 @@
           // 商品
           if(activity.acskiptype == "2") {
             this.activityJumpValue = "商品";
-            this.activityJumpToValue = activity.product.prtitle;
+            this.activityJumpToValue = activity.product.prname;
             this.activityProductSales = activity.soldnum;
           }else if(activity.acskiptype == "1") {
             // 专题
@@ -538,7 +543,7 @@
             }
           });
         }else if(where == "activity") {
-          if(this.activityMediaSort != 0 && this.activityMediaSort != 4 && this.activityMediaSort != 6 && this.activityMediaSort != 9) {
+          if(this.activityMediaSort != 4 && this.activityMediaSort != 6 && this.activityMediaSort != 9) {
             this.$message({ message: "上传推文图片时，数量需为4张、6张或9张", type: 'warning' });
           }else {
             if(this.activityACtext == "" || this.activityJumpValue == "" || this.activityType == "" || this.activityBadge == "" || this.likeNum == ""
@@ -561,7 +566,7 @@
                 actype: actype,
                 topnavid: this.tnid,
                 actext: this.activityACtext,
-                // media: [{ AMimage: "", AMsort: "" }],
+                media: this.activityMedia,
                 tags: [{ atname: this.activityBadge }],
                 aclikeFakeNum: this.likeNum,
                 acstarttime: this.activityActivityTime[0],
@@ -590,6 +595,7 @@
                   this.likeNum = "";
                   this.activityBadge = "";
                   this.activityPictureList = [];  // 图片list置为[]
+                  this.activityMediaSort = 0;   // 上传成功后图片数量置为0
                 }else{
                   this.$message.error(res.data.message);
                 }
@@ -756,7 +762,7 @@
             if(res.data.status == 200) {
               let product = {};
               for(let i = 0; i < res.data.data.length; i ++) {
-                product = { label: res.data.data[i].prtitle, value: res.data.data[i].prid };
+                product = { label: res.data.data[i].prname, value: res.data.data[i].prid };
                 if(where == "activity") {
                   this.activityJumpToList.push(product);
                 }else if(where == "hot") {
@@ -867,7 +873,7 @@
       // 添加推文/活动
       addActivity () {
         // 推文图片的数量需为0、4、6、9
-        if(this.activityMediaSort != 0 && this.activityMediaSort != 4 && this.activityMediaSort != 6 && this.activityMediaSort != 9) {
+        if(this.activityMediaSort != 4 && this.activityMediaSort != 6 && this.activityMediaSort != 9) {
           this.$message({ message: "上传推文图片时，数量需为4张、6张或9张", type: 'warning' });
         }else {
           if(this.activityACtext == "" || this.activityJumpValue == "" || this.activityJumpToValue == "" || this.activityType == "" || this.activityBadge == "" || this.likeNum == ""

@@ -40,7 +40,7 @@
                 </el-select>
               </template>
             </el-table-column>
-            <el-table-column prop="product" label="图片" width="165">
+            <el-table-column prop="product" label="图片" width="220">
               <template slot-scope="scope">
                 <div @click="rowClick(scope.$index, 'img')" v-if="scope.row.showPicture">
                   <el-upload class="avatar-uploader" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false"
@@ -82,33 +82,51 @@
 
 
         <div style="border-bottom: 1px #707070 solid; padding-bottom: 0.2rem; margin-bottom: 0.5rem">
-          <p class="m-form-label">商品推荐管理</p>
+          <p class="m-form-label" style="margin-bottom: 0.1rem">商品推荐管理</p>
+          <div class="num-list" style="font-size: 16px">
+            <div class="num-box">
+              <p class="m-form-label">虚拟查看数</p>
+              <div class="m-item-content">
+                <div class=" m-item-row">
+                  <el-input v-model="productViewNum" class="m-input-s" placeholder="请输入查看数" :disabled="productDisabled"></el-input>
+                </div>
+              </div>
+            </div>
+            <div class="num-box">
+              <p class="m-form-label">虚拟喜欢数</p>
+              <div class="m-item-content">
+                <div class=" m-item-row">
+                  <el-input v-model="productLikeNum" class="m-input-s" placeholder="请输入喜欢数" :disabled="productDisabled"></el-input>
+                </div>
+              </div>
+            </div>
+            <div class="product-btn" @click="editClick('product', 'product')" v-if="!productEdit">编辑</div>
+            <div class="product-btn" @click="saveClick('product', 'product')" v-if="productEdit">保存</div>
+            <div class="product-btn" @click="cancelProduct" v-if="productEdit">取消</div>
+          </div>
           <div class="content-table">
             <el-table :data="productList" border v-loading="productLoading" style="width: 100%">
               <el-table-column prop="num" label="商品图片" width="200">
                 <template slot-scope="scope">
-                  <img class="product-img" :src="scope.row.prmainpic" style="width: 0.581rem; height: 0.626rem">
+                  <img class="product-img" :src="scope.row.prmainpic" style="width: 0.5rem; height: 0.5rem">
                 </template>
               </el-table-column>
               <el-table-column prop="prname" label="商品名称">
                 <template slot-scope="scope">
-                  <el-input v-model="scope.row.prname" placeholder="请输入商品名称" :disabled="scope.row.disabled"></el-input>
-                </template>
-              </el-table-column>
-              <el-table-column prop="proldprice" label="商品价格">
-                <template slot-scope="scope">
-                  <el-input v-model="scope.row.prprice" placeholder="请输入商品价格" :disabled="scope.row.disabled"></el-input>
+                  <el-select v-model="scope.row.prname" @focus="focusselect(scope.$index, 'product')" filterable placeholder="请输入关键词搜索商品" :disabled="productDisabled" @change="productChange">
+                    <el-option v-for="item in activityJumpToList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                  </el-select>
                 </template>
               </el-table-column>
               <el-table-column fixed="right" label="管理" width="300">
                 <template slot-scope="scope">
-                  <el-button @click="editClick(scope, 'product')" type="text" size="small" v-if="scope.row.editSave== '1'">编辑</el-button>
-                  <el-button @click="saveClick(scope, 'product')" type="text" size="small" v-if="scope.row.editSave == '2'">保存</el-button>
-                  <el-button type="text" size="small">|</el-button>
                   <el-button type="text" size="small" @click="deleteProduct(scope)">删除</el-button>
                 </template>
               </el-table-column>
             </el-table>
+            <el-tooltip class="item" effect="light" content="添加推荐商品" placement="right" v-if="productEdit">
+              <span class="m-item-add" style="left: 3.5rem; margin-top: 0.1rem" @click="addProduct">+</span>
+            </el-tooltip>
           </div>
         </div>
       </div>
@@ -161,7 +179,7 @@
           </div>
         </div>
         <div class="m-form-item" style="min-height: 1.8rem; max-height: 1.8rem">
-          <p class="m-form-label">推文图片</p>
+          <p class="m-form-label required" style="width: 0.8rem;">推文图片</p>
           <div class="m-item-content" style="width: 6rem;" :class="activityMediaSort > 4 ? 'five':''" id="abcd">
             <div class=" m-item-row">
               <el-upload action="string" :http-request="uploadActivityPicture" list-type="picture-card" :file-list="activityPictureList"
@@ -178,14 +196,14 @@
           <p class="m-form-label">教程视频</p>
           <div class="m-item-content">
             <div class=" m-item-row">
-              <el-upload class="avatar-uploader" action="https://jsonplaceholder.typicode.com/posts/" :show-file-list="false" :on-success="handleAvatarSuccess">
+              <el-upload class="avatar-uploader" action="string" :show-file-list="false" :http-request="uploadActivityVideo">
                 <img v-if="imageUrl" :src="imageUrl" class="avatar">
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
             </div>
           </div>
         </div>
-        <div class="m-form-item" v-if="page != '素材圈'">
+        <div class="m-form-item" v-if="page == '每日10荐'">
           <p class="m-form-label required" style="width: 0.8rem;">跳转类型</p>
           <div class="m-item-content">
             <div class=" m-item-row">
@@ -205,7 +223,7 @@
             </div>
           </div>
         </div>
-        <div class="m-form-item" v-if="page != '素材圈'">
+        <div class="m-form-item" v-if="page == '每日10荐'">
           <p class="m-form-label required" style="width: 0.8rem;">活动类型</p>
           <div class="m-item-content">
             <div class=" m-item-row">
@@ -215,7 +233,7 @@
             </div>
           </div>
         </div>
-        <div class="m-form-item" v-if="page != '素材圈'">
+        <div class="m-form-item">
           <p class="m-form-label required" style="width: 0.8rem;">活动时间</p>
           <div class="m-item-content">
             <el-date-picker v-model="activityActivityTime" type="datetimerange" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
@@ -224,11 +242,11 @@
           </div>
         </div>
         <div class="num-list">
-          <div class="num-box" v-if="page == '公告'">
+          <div class="num-box" v-if="page == '公告' || page == '教程'">
             <p class="m-form-label">虚拟浏览量</p>
             <div class="m-item-content">
               <div class=" m-item-row">
-                <el-input v-model="views" class="m-input-s" placeholder="请输入"></el-input>
+                <el-input v-model="viewsNum" class="m-input-s" placeholder="请输入"></el-input>
               </div>
             </div>
           </div>
@@ -236,7 +254,7 @@
             <p class="m-form-label">虚拟发圈数</p>
             <div class="m-item-content">
               <div class=" m-item-row">
-                <el-input v-model="views" class="m-input-s" placeholder="请输入"></el-input>
+                <el-input v-model="hairLapsNum" class="m-input-s" placeholder="请输入"></el-input>
               </div>
             </div>
           </div>
@@ -248,7 +266,7 @@
               </div>
             </div>
           </div>
-          <div class="num-box" v-if="page != '素材圈'">
+          <div class="num-box" v-if="page == '每日10荐'">
             <p class="m-form-label">活动角标</p>
             <div class="m-item-content">
               <div class=" m-item-row">
@@ -260,7 +278,7 @@
         <div class="m-form-item" v-if="page == '公告' || page == '教程'">
           <p class="m-form-label">推文置顶</p>
           <el-switch style="margin: 0.1rem 0 0.2rem 0"
-                     v-model="value2"
+                     v-model="placedTop"
                      active-color="#91aeb5"
                      inactive-color="#DCDCDC">
           </el-switch>
@@ -336,9 +354,12 @@
         activityTitle: '',        // 推文标题
         activityList: [],         // 推文/活动list
         activityToBanner: false,  // 依此判断筛选专题和绑定专题（前部勾选框）的显示情况
+        hairLapsNum: '',          // 推文-虚拟发圈数
+        viewsNum: '',             // 推文-虚拟浏览数
         likeNum: '',              // 推文-虚拟点赞数
         activityType: '',         // 添加推文/活动时的活动类型选择的值
         activityBadge: '',        // 推文-活动角标
+        placedTop: false,         // 推文置顶
         activityACtext: '',       // 推文-活动内容
         dialogImageUrl: '',       // 推文上传图片后预览的url
         dialogVisible: false,     // 推文上传图片后预览的允许与否
@@ -355,7 +376,13 @@
         activityPictureList: [],  // 推文上传/编辑时的图片墙list
         activityProductSales: '', // 虚拟销量
         productList: [],          // 推荐商品的list
+        productReid: [],          // 暂存推荐商品的reid
         productLoading: false,    // 推荐商品表格加载中
+        productEdit: false,       // 是否在编辑推荐商品
+        productDisabled: true,    // 推荐商品disabled
+        productChoose: "",        // 编辑推荐商品-切换商品后选择的值
+        productViewNum: "",       // 虚拟查看数
+        productLikeNum: "",       // 虚拟喜欢数
         activityActivityTime: [],
         activityTypeList: [
           { value: "0", label: "普通动态" },
@@ -390,10 +417,7 @@
         tnid: "",         // 暂存导航栏的tnid
       }
     },
-    components:{
-      pageTitle,
-      wTab
-    },
+    components:{ pageTitle, wTab },
     methods:{
       // 上传推文图片
       uploadActivityPicture(item) {
@@ -405,8 +429,27 @@
         form.append("index", 1);
         axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token'), form).then(res => {
           if(res.data.status == 200){
-            media = { AMimage: res.data.data, AMsort: this.activityMediaSort };
+            console.log(form);
+            media = { amimage: res.data.data, amsort: this.activityMediaSort };
             this.activityMedia.push(media);
+          }else{
+            this.$message({ type: 'error', message: res.data.message });
+          }
+        });
+      },
+      // 上传教程视频
+      uploadActivityVideo(item) {
+        // let media = {};
+        // this.activityMediaSort = this.activityMediaSort + 1;
+        let form = new FormData();
+        form.append("file", item.file);
+        form.append("FileType", 'NewsPic');
+        form.append("index", 1);
+        axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token'), form).then(res => {
+          if(res.data.status == 200){
+            // media = { amimage: res.data.data, amsort: this.activityMediaSort };
+            // this.activityMedia.push(media);
+            this.$message({ type: 'success', message: res.data.message });
           }else{
             this.$message({ type: 'error', message: res.data.message });
           }
@@ -429,7 +472,7 @@
       handleRemove(file, fileList) {
         console.log(file, fileList);
       },
-      // 轮播图管理-确定点击的图片是第几行
+      // 轮播图管理-确定点击的是第几行
       rowClick(index, col) {
         // console.log(col);
         this.rowNum = index;
@@ -449,59 +492,95 @@
           this.bannerList[scope.$index].addSaveEdit = "2";
           this.bannerList = this.bannerList.concat();
         }else if(where == "product") {
-          this.productList[scope.$index].disabled = false;
-          this.productList[scope.$index].editSave = "2";
+          // this.productList[scope.$index].disabled = false;
+          // this.productList[scope.$index].editSave = "2";
+          this.productDisabled = false;
+          this.productEdit = true;
         }else if(where == "activity") {
           this.editActivity = true;
           this.activityEditScope = scope.$index;
           this.acidTemp = this.activityList[scope.$index].acid;   // 暂存acid
           this.$refs.actext.focus();    // 推文内容输入框获得焦点
+          this.activityPictureList = [];  // 图片list置为[]
 
           // 把点击的那一行数据赋给activity
           let activity = this.activityList[scope.$index];
           this.activityACtext = activity.actext;
           // console.log(activity);
 
-          // 商品
-          if(activity.acskiptype == "2") {
-            this.activityJumpValue = "商品";
-            // this.activityJumpToValue = activity.product.prtitle;
-            // this.activityProductSales = activity.soldnum;
-          }else if(activity.acskiptype == "1") {
-            // 专题
-            this.activityJumpValue = "专题";
-            // this.activityJumpToValue = activity.bigactivity.baid;
-          }else if(activity.acskiptype == "0") {
-            this.activityJumpValue = "0";
-            // this.activityJumpToValue = activity.bigactivity.baid;
-          }
-          // console.log(this.activityJumpToValue);
-
           // 把activity的图片赋值给图片集合，同时把图片序号同步成图片数量
           for(let i = 0; i < activity.media.length; i ++) {
             this.activityPictureList.push({ url: activity.media[i].amimage });
           }
           this.activityMediaSort = activity.media.length;
-
-          this.activityType = activity.actype;
           this.activityActivityTime = [activity.acstarttime, activity.acendtime];
-          this.likeNum = activity.likenum;
-          this.activityBadge = activity.tags[0].atname;
+
+          if(this.page == "每日10荐") {
+            // 商品
+            if(activity.acskiptype == "2") {
+              this.activityJumpValue = "商品";
+              // this.activityJumpToValue = activity.product.prname;
+              // this.activityProductSales = activity.soldnum;
+            }else if(activity.acskiptype == "1") {
+              // 专题
+              this.activityJumpValue = "专题";
+              // this.activityJumpToValue = activity.bigactivity.baid;
+            }else if(activity.acskiptype == "0") {
+              this.activityJumpValue = "0";
+              // this.activityJumpToValue = activity.bigactivity.baid;
+            }
+            // console.log(this.activityJumpToValue);
+
+            this.activityType = activity.actype;
+            this.activityMedia = activity.media;
+            this.likeNum = activity.likenum;
+            this.activityBadge = activity.tags[0].atname;
+          }else if(this.page == "素材圈") {
+            this.hairLapsNum = activity.foward;
+          }else if(this.page == "公告" || this.page == "教程") {
+            this.activityTitle = activity.actitle;
+            this.likeNum = activity.likenum;
+            this.viewsNum = activity.acbrowsenum;
+          }
         }
       },
       // 编辑推文 - 取消
       cancelActivity() {
         // 点击取消按钮清空编辑框
+        this.activityTitle = "";
         this.activityACtext = "";
         this.activityJumpValue = "";
         this.activityJumpToValue = "";
         this.activityType = "";
         this.activityActivityTime = "";
         this.likeNum = "";
+        this.viewsNum = "";
+        this.hairLapsNum = "";
         this.activityBadge = "";
+        this.placedTop = false;
         this.activityPictureList = [];  // 图片list置为[]
 
         this.editActivity = false;      // 隐藏取消按钮
+      },
+      // select选择器获得焦点时执行
+      focusselect(index, where) {
+        this.rowNum = index;      // 确定点击的是第几行
+        if(where == "product") {
+          this.getJumpTo("product", "activity");
+        }
+      },
+      // select选择器获得焦点时执行
+      productChange(value) {
+        this.productChoose = value;
+
+        // 更新选中商品的行数据
+        for(let i = 0; i < this.activityJumpToList.length; i ++) {
+          if(value == this.activityJumpToList[i].value) {
+            this.productList[this.rowNum].prid = this.activityJumpToList[i].id;
+            this.productList[this.rowNum].prmainpic = this.activityJumpToList[i].prmainpic;
+          }
+        }
+        this.productList = this.productList.concat();
       },
       // 保存编辑后的banner、热文、推文
       saveClick(scope, where) {
@@ -527,25 +606,31 @@
             }
           });
         }else if(where == "product") {
-          let product = this.productList[scope.$index];
+          console.log(this.productList[0].prid);
+          console.log(this.productList[1].prid);
+          this.productLoading = true;
+          let PRid_list = [];
+          for(let i = 0; i < this.productList.length; i ++) {
+            PRid_list.push({ PRid: this.productList[i].prid, RPsort: i });
+          }
           let params = {
-            reid: product.reid,
-            prname: product.prname,
-            prprice: product.prprice
+            REviewnum: this.productViewNum,
+            RElikenum: this.productLikeNum,
+            PRid_list: PRid_list
           };
-          /*axios.post(api.update + '?token=' + localStorage.getItem('token'), params).then(res=>{
+          axios.post(api.update + '?token=' + localStorage.getItem('token') + "&reid=" + this.productReid, params).then(res=>{
             if(res.data.status == 200){
               this.$message({ message: "保存成功", type: 'success' });
 
-              this.hotMessageList[scope.$index].disabled = true;
-              this.hotMessageList[scope.$index].editSave = "1";
-              this.hotMessageList = this.hotMessageList.concat();
+              this.productLoading = false;
+              this.productDisabled = true;
+              this.productEdit = false;
             }else{
               this.$message.error(res.data.message);
             }
-          });*/
+          });
         }else if(where == "activity") {
-          if(this.activityMediaSort != 0 && this.activityMediaSort != 4 && this.activityMediaSort != 6 && this.activityMediaSort != 9) {
+          if(this.activityMediaSort != 4 && this.activityMediaSort != 6 && this.activityMediaSort != 9) {
             this.$message({ message: "上传推文图片时，数量需为4张、6张或9张", type: 'warning' });
           }else {
             if(this.activityACtext == ""
@@ -568,7 +653,7 @@
                 actype: actype,
                 topnavid: this.tnid,
                 actext: this.activityACtext,
-                // media: [{ AMimage: "", AMsort: "" }],
+                media: this.activityMedia,
                 tags: [{ atname: this.activityBadge }],
                 aclikeFakeNum: this.likeNum,
                 acstarttime: this.activityActivityTime[0],
@@ -589,14 +674,20 @@
                   this.activityList = this.activityList.concat();
 
                   // 清空推文的编辑框
+                  this.activityTitle = "";
                   this.activityACtext = "";
                   this.activityJumpValue = "";
                   this.activityJumpToValue = "";
                   this.activityType = "";
                   this.activityActivityTime = "";
                   this.likeNum = "";
+                  this.viewsNum = "";
+                  this.hairLapsNum = "";
                   this.activityBadge = "";
+                  this.placedTop = false;
+                  this.activityTitle = "";
                   this.activityPictureList = [];  // 图片list置为[]
+                  this.activityMediaSort = 0;   // 上传成功后图片数量置为0
                 }else{
                   this.$message.error(res.data.message);
                 }
@@ -645,6 +736,13 @@
       cancelAdd(scope) {
         this.addBannerBtn = true;
         this.bannerList.splice(scope.$index, 1);    // 刷新视图
+      },
+      // 取消添加Product
+      cancelProduct() {
+        this.productEdit = false;
+        this.productDisabled = true;
+        // this.addBannerBtn = true;
+        // this.bannerList.splice(scope.$index, 1);    // 刷新视图
       },
       // 删除轮播图/专题
       deleteBanner(scope) {
@@ -711,58 +809,118 @@
         this.bannerList[index].addSaveEdit = "1";
         this.bannerList = this.bannerList.concat();
       },
-      // 添加推文/活动
+      // 推荐商品 - 添加商品
+      addProduct() {
+        let index = this.productList.length;
+        this.productList[index] = {};
+        this.productList[index].prmainpic = "";
+        this.productList[index].prname = "";
+        this.productList = this.productList.concat();
+      },
+      // 添加推文/活动 - 判空
       addActivity () {
-        // 推文图片的数量需为0、4、6、9
-        if(this.activityMediaSort != 0 && this.activityMediaSort != 4 && this.activityMediaSort != 6 && this.activityMediaSort != 9) {
-          this.$message({ message: "上传推文图片时，数量需为4张、6张或9张", type: 'warning' });
+        if(this.tnid == "") {
+          this.$message({ message: "请刷新页面后重试", type: 'warning' });
         }else {
-          if(this.activityACtext == "" || this.activityJumpValue == "" || this.activityJumpToValue == "" || this.activityType == ""
-            || this.activityActivityTime.length != 2) {
-            this.$message({ message: "请完整填写", type: 'warning' });
-            if(this.tnid == "") {
-              this.$message({ message: "请刷新页面后重试", type: 'warning' });
-            }
+          if(this.activityACtext == "") {
+            this.$message({ message: "请填写推文内容", type: 'warning' });
           }else {
-            let params = {
-              ACSkipType: this.activityJumpValue,
-              AClinkvalue: this.activityJumpToValue,
-              ACtype: this.activityType,
-              TopnavId: this.tnid,
-              ACtext: this.activityACtext,
-              media: this.activityMedia,
-              tags: [{ ATname: this.activityBadge }],
-              AClikeFakeNum: this.likeNum,
-              ACstarttime: this.activityActivityTime[0],
-              ACendtime: this.activityActivityTime[1]
-            };
-            if(this.activityProductSales != "") {
-              params.ACProductsSoldFakeNum = this.activityProductSales;
+            if(this.activityActivityTime.length != 2) {
+              this.$message({ message: "请填写推文时间", type: 'warning' });
             }
-            this.activityLoading = true;
-            console.log(params);
-            axios.post(api.add_one_activity + '?token=' + localStorage.getItem('token'), params).then(res => {
-              if(res.data.status == 200){
-                this.$message({ type: 'success', message: res.data.message });
-                this.getActivity(0, this.count);     // 获取推文/内容
+            else {
+              if(this.page == "每日10荐" || this.page == "素材圈" || this.page == "公告") {
+                // 除教程外的其他页面，推文图片的数量需为0、4、6、9
+                if(this.activityMediaSort != 4 && this.activityMediaSort != 6 && this.activityMediaSort != 9) {
+                  this.$message({ message: "上传推文图片时，数量需为4张、6张或9张", type: 'warning' });
+                }else {
+                  // 每日十荐需要选择跳转
+                  if(this.page == "每日10荐") {
+                    if(this.activityJumpValue == "" || this.activityJumpToValue == "" || this.activityType == "") {
+                      this.$message({ message: "请完整填写", type: 'warning' });
+                    }else {
+                      let params = {
+                        ACSkipType: this.activityJumpValue,
+                        AClinkvalue: this.activityJumpToValue,
+                        ACtype: this.activityType,
+                        TopnavId: this.tnid,
+                        ACtext: this.activityACtext,
+                        media: this.activityMedia,
+                        tags: [{ ATname: this.activityBadge }],
+                        AClikeFakeNum: this.likeNum,
+                        ACstarttime: this.activityActivityTime[0],
+                        ACendtime: this.activityActivityTime[1]
+                      };
+                      this.activityParams(params);
+                    }
+                  }else if(this.page == "素材圈") {
+                    let params = {
+                      TopnavId: this.tnid,
+                      ACtext: this.activityACtext,
+                      media: this.activityMedia,
+                      ACforwardFakenum: this.hairLapsNum,
+                      ACstarttime: this.activityActivityTime[0],
+                      ACendtime: this.activityActivityTime[1]
+                    };
+                    console.log(params);
+                    this.activityParams(params);
+                  }else if(this.page == "公告") {
+                    if(this.activityTitle == "") {
+                      this.$message({ message: "请填写推文标题", type: 'warning' });
+                    }else {
+                      let params = {
+                        TopnavId: this.tnid,
+                        ACtitle: this.activityTitle,
+                        ACtext: this.activityACtext,
+                        media: this.activityMedia,
+                        ACforwardFakenum: this.hairLapsNum,
+                        ACstarttime: this.activityActivityTime[0],
+                        ACendtime: this.activityActivityTime[1],
+                        ACistop: this.placedTop
+                      };
+                      console.log(params);
+                      this.activityParams(params);
+                    }
+                  }
+                }
+              }else {
 
-                // 保存成功后将input等置空
-                this.activityACtext = "";
-                this.activityJumpValue = "";
-                this.activityJumpToValue = "";
-                this.activityProductSales = "";
-                this.activityType = "";
-                this.activityActivityTime = "";
-                this.likeNum = "";
-                this.activityBadge = "";
-                this.activityPictureList = [];   // 上传成功后图片list置为[]
-                this.activityMediaSort = 0;   // 上传成功后图片数量置为0
-              }else{
-                this.$message({ type: 'error', message: res.data.message });
               }
-            });
+            }
           }
         }
+      },
+      // 拼装activity参数
+      activityParams(params) {
+        if(this.activityProductSales != "") {
+          params.ACProductsSoldFakeNum = this.activityProductSales;
+        }
+        this.activityLoading = true;
+        console.log(params);
+        axios.post(api.add_one_activity + '?token=' + localStorage.getItem('token'), params).then(res => {
+          if(res.data.status == 200){
+            this.$message({ type: 'success', message: res.data.message });
+            this.getActivity(0, this.count);     // 获取推文/内容
+
+            // 保存成功后将input等置空
+            this.activityTitle = "";
+            this.activityACtext = "";
+            this.activityJumpValue = "";
+            this.activityJumpToValue = "";
+            this.activityProductSales = "";
+            this.activityType = "";
+            this.activityActivityTime = "";
+            this.likeNum = "";
+            this.viewsNum = "";
+            this.hairLapsNum = "";
+            this.activityBadge = "";
+            this.placedTop = false;
+            this.activityPictureList = [];   // 上传成功后图片list置为[]
+            this.activityMediaSort = 0;   // 上传成功后图片数量置为0
+          }else{
+            this.$message({ type: 'error', message: res.data.message });
+          }
+        });
       },
       // 获取banner滚动图
       getBanner() {
@@ -903,12 +1061,13 @@
       },
       // 模糊搜索-获取所有可选项
       getJumpTo(to, where) {
+        this.activityJumpToList = [];     // 先将可选择项置为空
         if(to == 'product') {
           axios.get(api.get_product + '?kw=').then(res => {
             if(res.data.status == 200) {
               let product = {};
               for(let i = 0; i < res.data.data.length; i ++) {
-                product = { value: res.data.data[i].prtitle, id: res.data.data[i].prid };
+                product = { value: res.data.data[i].prname, id: res.data.data[i].prid, prmainpic: res.data.data[i].prmainpic };
                 if(where == "activity") {
                   this.activityJumpToList.push(product);
                 }
@@ -988,24 +1147,21 @@
           // this.imageUrl = res.data.data;
         });
       },
-      // select选择器获得焦点时执行
-      focusselect(where) {
-        console.log(where)
-      },
       // 获取推荐商品
       getProduct() {
         this.productLoading = true;
         axios.get(api.get_info + '?lasting=true&token=' + localStorage.getItem('token')).then(res => {
           if(res.data.status == 200) {
-            for(let i = 0; i < res.data.data.length; i ++) {
-              if(res.data.data[i].products.length > 0) {
-                let product = res.data.data[i].products[0];
-                product.disabled = true;
-                product.editSave = "1";
-                product.reid = res.data.data[i].reid;
-                this.productList.push(product);
-              }
+            this.productViewNum = res.data.data[0].reviewnum;     // 虚拟查看数
+            this.productLikeNum = res.data.data[0].relikenum;     // 虚拟喜欢数
+
+            for(let i = 0; i < res.data.data[0].products.length; i ++) {
+              let product = res.data.data[0].products[i];
+              // product.disabled = true;
+              // product.editSave = "1";
+              this.productList.push(product);
             }
+            this.productReid = res.data.data[0].reid;
             this.productLoading = false;
           }else{
             this.$message.error(res.data.message);
@@ -1014,9 +1170,9 @@
       },
       // 删除推荐商品
       deleteProduct(scope) {
-        console.log(scope.$index);
+        console.log(this.productList[scope.$index], this.productList);
 
-        this.$confirm('此操作将删除该推荐, 是否继续?', '提示',
+        /*this.$confirm('此操作将删除该推荐, 是否继续?', '提示',
           {confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'}).then(() => {
 
           this.productLoading = true;
@@ -1030,7 +1186,7 @@
               this.$message.error(res.data.message);
             }
           });
-        }).catch(() => {  });
+        }).catch(() => {  });*/
       }
     },
     watch: {
@@ -1047,6 +1203,10 @@
         }else if(newValue == "") {
 
         }
+      },
+      // productList的值发生变化
+      productList(newValue, oldValue) {
+        // console.log(newValue, oldValue);
       },
     },
     mounted() {
@@ -1077,6 +1237,9 @@
     display: flex;
     .num-box {
       margin-right: 0.5rem;
+    }
+    .product-btn {
+      margin: 0.3rem 0 0 0.3rem;
     }
   }
 </style>
