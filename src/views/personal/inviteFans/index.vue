@@ -110,7 +110,7 @@
           },
           copyText(){
             let that =this;
-            this.$copyText(window.location.href).then(function (e) {
+            this.$copyText(window.location.origin + '/#/login').then(function (e) {
               that.show_modal = true;
             }, function (e) {
 
