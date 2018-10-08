@@ -96,7 +96,7 @@ class ActivityLike(BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['ACid', 'USid', 'ALcreatetime']
+        self.fields = ['ACid', 'ALcreatetime']
 
 
 class ActivityMedia(BaseModel):

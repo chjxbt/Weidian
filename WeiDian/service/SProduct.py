@@ -56,15 +56,16 @@ class SProduct(SBase):
 
     @close_session
     def update_like_num(self, prid, num=1):
-        product = self.session.query(Product).filter_by(PRid=prid).first()
-        if product and product.PRfakelikenum:
-            product.PRfakelikenum = product.PRfakelikenum + num
-            self.session.add(product)
+        # product = self.session.query(Product).filter_by(PRid=prid).first()
+        # if product and product.PRfakelikenum:
+        #     product.PRfakelikenum = product.PRfakelikenum + num
+        #     self.session.add(product)
+        return self.session.query(Product).filter(Product.PRid == prid).update({'PRfakelikenum': Product.PRfakelikenum + num})
 
     @close_session
     def get_products_by_prname(self, prname):
         return self.session.query(Product).filter(Product.PRname.like("%{0}%".format(prname))).all()
 
-    @close_session
-    def get_product_relation_act_by_prid(self, prid):
-        return self.session.query(Activity).filter(Activity.PRid == prid, Activity.ACisdelete == False).all()
+    # @close_session
+    # def get_product_relation_act_by_prid(self, prid):
+    #     return self.session.query(Activity).filter(Activity.PRid == prid, Activity.ACisdelete == False).all()

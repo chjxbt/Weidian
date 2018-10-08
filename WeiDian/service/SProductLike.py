@@ -14,6 +14,11 @@ class SProductLike(SBase):
         return self.session.query(ProductLike).filter_by(PRid=prid).count()
 
     @close_session
+    def get_product_is_like_by_prid(self, usid, prid):
+        """判断用户对该商品是否已经收藏"""
+        return self.session.query(ProductLike).filter_by(USid=usid, PRid=prid).first()
+
+    @close_session
     def get_productlike_list_by_usid(self, usid, page_num, page_size):
         """获取用户的收藏列表"""
         return self.session.query(ProductLike).filter_by(USid=usid).order_by(ProductLike.PLcreatetime.desc()).offset(page_size * (page_num - 1)).limit(page_size).all()
@@ -37,5 +42,4 @@ class SProductLike(SBase):
     @close_session
     def del_productlike_usidprid(self, usid, prid):
         """删除单条收藏"""
-        return self.session.query(ProductLike).filter_by(
-            USid=usid, PRid=prid).delete()
+        return self.session.query(ProductLike).filter_by(USid=usid, PRid=prid).delete()
