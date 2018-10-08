@@ -3,8 +3,9 @@
       <span class="m-poster-close">X</span>
       <h3>选择海报</h3>
       <div class="m-slider-box">
-        <ul id="m-slider-ul" style="margin-left: 0px;" @touchstart='touchStart'
-            @touchend='touchEnd'>
+        <ul id="m-slider-ul" style="margin-left: 0px;" @touchstart="touchStart"
+            @touchend="touchEnd"
+          >
           <!--<li class="m-slider-left m-slider-side">-->
             <!--<img src="" class="m-slider-img" alt="">-->
           <!--</li>-->
@@ -31,7 +32,7 @@
                 <!--</div>-->
               <!--</div>-->
             <!--</li>-->
-            <li :class="(index == (slider_index -1) || (slider_index ==0 && index==slider_list.length -1) )? 'm-slider-left m-slider-side':(index == slider_index ? 'm-slider-in':((index == (slider_index +1 ) || (slider_list.length-1  == slider_index && index == 0))?'m-slider-right m-slider-side':''))">
+            <li :class="(index == (slider_index -1) || (slider_index ==0 && index==slider_list.length -1) )? 'm-slider-left m-slider-side':(index == slider_index ? 'm-slider-in':((index == (slider_index +1 ) || (slider_list.length-1  == slider_index && index == 0))?'m-slider-right m-slider-side':''))" >
               <img src="" :id="item.name" class="m-slider-img" alt="">
             </li>
 
@@ -100,7 +101,7 @@
           /**/
           touchStart:function(ev) {
             ev = ev || event;
-            ev.preventDefault();
+            // ev.preventDefault();
 //                      console.log(ev.targetTouches);
 //                      console.log(ev.changedTouches);
             if(ev.touches.length == 1) {    //tounches类数组，等于1时表示此时有只有一只手指在触摸屏幕
@@ -111,7 +112,7 @@
           },
           touchEnd:function(ev){
             ev = ev || event;
-            ev.preventDefault();
+            // ev.preventDefault();
             if(ev.changedTouches.length == 1) {    //tounches类数组，等于1时表示此时有只有一只手指在触摸屏幕
               this.endX = ev.changedTouches[0].clientX; // 记录开始位置
             }
@@ -201,6 +202,13 @@
             cxt.lineTo(radius + x, height +y);
             cxt.arc(radius + x, height - radius + y, radius, Math.PI * 1 / 2, Math.PI);
             cxt.closePath();
+          },
+          changeImg(index){
+            if(index == (this.slider_index -1) || (this.slider_index ==0 && index==this.slider_list.length -1) ){
+              this.animation(1);
+            }else if(index == (this.slider_index +1 ) || (this.slider_list.length-1  == this.slider_index && index == 0)){
+              this.animation(-1);
+            }
           }
 
         },
