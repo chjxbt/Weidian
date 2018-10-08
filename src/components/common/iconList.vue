@@ -1,12 +1,9 @@
 <template>
   <ul class="m-icon-list">
-
-
     <li v-for="(item,index) in list" @click="iconClick(index)">
       <img :src="'/static/images/' + item.src +'.png'" class="m-icon" alt="">
       {{item.name}}
     </li>
-
   </ul>
 </template>
 
