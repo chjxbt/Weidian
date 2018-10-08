@@ -35,7 +35,7 @@
         },
         methods: {
           cellClick(v){
-            if (v.nav.length > 0){
+            if (v.nav){
               let _params ='';
               for(let i=0;i<v.nav.length;i++){
                 if(v.nav[i].click){

@@ -15,22 +15,26 @@
             <!--<img src="" class="m-slider-img" alt="">-->
           <!--</li>-->
           <template v-for="(item,index) in slider_list">
+            <!--<li :class="(index == (slider_index -1) || (slider_index ==0 && index==slider_list.length -1) )? 'm-slider-left m-slider-side':(index == slider_index ? 'm-slider-in':((index == (slider_index +1 ) || (slider_list.length-1  == slider_index && index == 0))?'m-slider-right m-slider-side':''))">-->
+              <!--<img src="" class="m-slider-img" alt="">-->
+              <!--<div class="m-poster-content">-->
+                <!--<div class="m-headPortrait-name">-->
+                  <!--<span class="m-head-name">xxccccx</span>-->
+                  <!--<img src="" class="m-head-portrait" />-->
+                <!--</div>-->
+                <!--<div class="m-poster-bottom">-->
+                  <!--<div class="m-poster-code">-->
+                    <!--<span class="m-code">邀请码: 872420</span>-->
+                    <!--<img src="" class="m-poster-logo" alt="">-->
+                  <!--</div>-->
+                  <!--<img src="" class="m-poster-er" alt="">-->
+                <!--</div>-->
+              <!--</div>-->
+            <!--</li>-->
             <li :class="(index == (slider_index -1) || (slider_index ==0 && index==slider_list.length -1) )? 'm-slider-left m-slider-side':(index == slider_index ? 'm-slider-in':((index == (slider_index +1 ) || (slider_list.length-1  == slider_index && index == 0))?'m-slider-right m-slider-side':''))">
-              <img src="" class="m-slider-img" alt="">
-              <div class="m-poster-content">
-                <div class="m-headPortrait-name">
-                  <span class="m-head-name">xxccccx</span>
-                  <img src="" class="m-head-portrait" />
-                </div>
-                <div class="m-poster-bottom">
-                  <div class="m-poster-code">
-                    <span class="m-code">邀请码: 872420</span>
-                    <img src="" class="m-poster-logo" alt="">
-                  </div>
-                  <img src="" class="m-poster-er" alt="">
-                </div>
-              </div>
+              <img src="" :id="item.name" class="m-slider-img" alt="">
             </li>
+
           </template>
         </ul>
         <span class="m-slider-index">{{slider_index +1}}/{{slider_list.length}}</span>
@@ -74,11 +78,15 @@
             }
         },
         components: {},
-      mounted(){
-          let that = this;
-        this.interval = window.setInterval(that.animation,3000)
-      },
+        mounted(){
+            let that = this;
+          for(let i=0;i<this.slider_list.length;i++){
+            this.drawWay(this.slider_list[i].name)
+          }
+          this.interval = window.setInterval(that.animation,3000);
+        },
         methods: {
+          /*动画*/
           animation(v){
             v = v || 1;
             if(this.slider_index == this.slider_list.length -1){
@@ -89,6 +97,7 @@
               this.slider_index = this.slider_index + v;
             }
           },
+          /**/
           touchStart:function(ev) {
             ev = ev || event;
             ev.preventDefault();
@@ -113,7 +122,87 @@
            }
            let that =this;
             this.interval = window.setInterval(that.animation,3000)
+          },
+          /*绘制图片*/
+          drawWay(id){
+            let canvas = document.createElement("canvas");
+            let that = this;
+            // let canvas = document.getElementById("m-canvas");
+            let context = canvas.getContext("2d");
+            canvas.height = 870;
+            canvas.width = 580;
+
+            context.rect(0, 0, canvas.width, canvas.height);
+            context.fillStyle = "#efefef";
+            context.fill();
+
+
+            let bgImg = new Image();
+            bgImg.crossOrigin = 'Anonymous';
+            bgImg.src = "/static/images/poster/bg.jpg";
+
+            bgImg.onload = function () {
+              context.drawImage(bgImg, 0, 0,580,870);
+              context.fillStyle="#c3c3c3";
+              context.beginPath();
+              // context.ellipse(180,83,62,26,0,0,Math.PI*2);
+              that.drawRoundRect(context,110, 55, 140, 52, 25);
+              context.fill();
+
+              context.fillStyle = "#000";
+              context.font = "normal 26px PingFang-SC";
+              context.fillText("name", 153, 90);
+
+              context.fillStyle="#fff";
+              context.beginPath();
+              context.lineWidth=5;
+              context.arc(85,80,52,Math.PI*2,0,true);
+              context.closePath();
+              context.fill();
+              let avatarImg = new Image();
+              avatarImg.crossOrigin = 'Anonymous';
+              avatarImg.src = "/static/images/poster/fans_img.png";
+
+              avatarImg.onload = function () {
+                context.drawImage(avatarImg, 40, 35,90,90);
+
+
+                let logoImg = new Image();
+                logoImg.crossOrigin = 'Anonymous';
+                logoImg.src = "/static/images/poster/customer_service.png";
+
+                logoImg.onload = function () {
+                  context.drawImage(avatarImg, 100, 630, 200, 120);
+
+                  let codeImg = new Image();
+                  codeImg.crossOrigin = 'Anonymous';
+                  codeImg.src = "/static/images/poster/fans_img.png";
+
+                  codeImg.onload = function () {
+                    context.drawImage(avatarImg, 390, 600, 145, 145);
+                    let base64 = canvas.toDataURL("image/png");  //"image/png" 这里注意一下
+                    let img = document.getElementById(id);
+
+                    // document.getElementById('avatar').src = base64;
+                    img.setAttribute('src', base64);
+                  }
+                }
+              }
+
+            }
+          },
+          drawRoundRect(cxt, x, y, width, height, radius){
+            cxt.beginPath();
+            cxt.arc(x + radius, y + radius, radius, Math.PI, Math.PI * 3 / 2);
+            cxt.lineTo(width - radius + x, y);
+            cxt.arc(width - radius + x, radius + y, radius, Math.PI * 3 / 2, Math.PI * 2);
+            cxt.lineTo(width + x, height + y - radius);
+            cxt.arc(width - radius + x, height - radius + y, radius, 0, Math.PI * 1 / 2);
+            cxt.lineTo(radius + x, height +y);
+            cxt.arc(radius + x, height - radius + y, radius, Math.PI * 1 / 2, Math.PI);
+            cxt.closePath();
           }
+
         },
         created() {
 

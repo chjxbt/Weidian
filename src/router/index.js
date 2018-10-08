@@ -140,6 +140,8 @@ export const constantRouterMap = [
   /*二跳页*/
   // 活动内容
   { path: '/activityContent', component: () => import('../views/discover/activityContent'), hidden: true },
+  // test
+  { path: '/test', component: () => import('../views/personal/inviteFans/test'), hidden: true },
 ];
 
 export default new Router({
