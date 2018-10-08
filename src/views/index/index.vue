@@ -655,7 +655,7 @@
           // 去活动内容页
           toActivity(activity) {
             let rbimage = activity.baimage;
-            this.$router.push({path: "/activityContent", query: { rbimage }});
+            this.$router.push({path: "/activityContent", query: { rbimage:rbimage,baid:activity.baid }});
           },
         }
     }

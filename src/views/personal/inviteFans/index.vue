@@ -10,7 +10,7 @@
             <p class="m-fans-img-text">一次绑定 终生受益</p>
           </div>
           <p class="m-fans-info">每邀请1位专属粉丝预计收益 <span class="m-red m-ft-32">￥154</span> <span @click="fansClick">查看详情 ></span></p>
-          <p class="m-fans-code-box">我的邀请码：<span class="m-ft-b m-ft-40"> 230232</span> <span class="m-fans-code-copy">复制</span></p>
+          <p class="m-fans-code-box">我的邀请码：<span class="m-ft-b m-ft-40"> {{code}}</span> <span class="m-fans-code-copy" @click="copyCode">复制</span></p>
         </div>
 
       </div>
@@ -97,7 +97,8 @@
         data() {
             return {
                 name: '',
-              show_modal:false
+              show_modal:false,
+              code:'233233'
             }
         },
         components: {},
@@ -112,6 +113,14 @@
             let that =this;
             this.$copyText(window.location.origin + '/#/login').then(function (e) {
               that.show_modal = true;
+            }, function (e) {
+
+            })
+          },
+          copyCode(){
+            let that =this;
+            this.$copyText(that.code).then(function (e) {
+              // that.show_modal = true;
             }, function (e) {
 
             })

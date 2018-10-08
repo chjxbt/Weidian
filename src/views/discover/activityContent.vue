@@ -20,7 +20,7 @@
       </div>
     </div>
     <div class="m-big-img" v-else>
-      <img class="activity-img" :src="bigImg">
+      <img class="activity-img " :src="bigImg">
     </div>
     <!--<m-footer></m-footer>-->
   </div>
@@ -107,41 +107,47 @@
             this.isScroll = true;
             this.total_count = res.data.data.total_count;
             this.banner = res.data.data.banner;
-            if(start){
-              this.activity_list = this.activity_list.concat(res.data.data.activity);
-              if(this.activity_list.length == this.total_count){
-                this.isScroll = false;
-              }
-            }else{
-              this.activity_list = res.data.data.activity;
-            }
-
-            let arr = [].concat(this.activity_list);
-            for(let i=0;i<arr.length;i++) {
-              let _arr = [
-                {
-                  src: 'icon-like',
-                  name: '123123',
-                  url: 'icon-like'
-                },
-                /*{
-                  src: 'icon-lian',
-                  name: '复制链接',
-                  url: 'icon-lian'
-                },*/
-                {
-                  src: 'icon-share',
-                  name: '转发',
-                  url: 'icon-share'
+            if(res.data.data.batype ==1 ){
+              if(start){
+                this.activity_list = this.activity_list.concat(res.data.data.activity);
+                if(this.activity_list.length == this.total_count){
+                  this.isScroll = false;
                 }
-              ];
-              _arr[0].name = arr[i].likenum;
-              _arr[0].alreadylike = arr[i].alreadylike;
-              arr[i].actext.length > 92 && (arr[i].show_text = true);
-              arr[i].icon = [].concat(_arr);
-              // console.log(_arr[0].name, arr[i].likenum)
+              }else{
+                this.activity_list = res.data.data.activity;
+              }
+
+              let arr = [].concat(this.activity_list);
+              for(let i=0;i<arr.length;i++) {
+                let _arr = [
+                  {
+                    src: 'icon-like',
+                    name: '123123',
+                    url: 'icon-like'
+                  },
+                  /*{
+                    src: 'icon-lian',
+                    name: '复制链接',
+                    url: 'icon-lian'
+                  },*/
+                  {
+                    src: 'icon-share',
+                    name: '转发',
+                    url: 'icon-share'
+                  }
+                ];
+                _arr[0].name = arr[i].likenum;
+                _arr[0].alreadylike = arr[i].alreadylike;
+                arr[i].actext.length > 92 && (arr[i].show_text = true);
+                arr[i].icon = [].concat(_arr);
+                // console.log(_arr[0].name, arr[i].likenum)
+              }
+              this.activity_list = [].concat(arr);
+              this.show_big_img = false;
+            }else{
+              this.show_big_img = true;
+              this.bigImg = res.data.data.banner;
             }
-            this.activity_list = [].concat(arr);
           }else{
             Toast({ message: res.data.message, className: 'm-toast-fail' });
           }
@@ -266,11 +272,15 @@
       },
     },
     mounted() {
+
+      // if(this.$route.query.baimage){
+      //   this.show_big_img= true;
+      //   this.bigImg = this.$route.query.baimage;
+      // }
       this.baid = this.$route.query.baid;
       this.getActivity();
-      if(this.$route.query.baimage){
-        this.bigImg = this.$route.query.baimage;
-      }
+
+
     }
   }
 </script>
@@ -288,6 +298,7 @@
     img{
       display: block;
       width: 100%;
+      height: auto;
     }
   }
 </style>
