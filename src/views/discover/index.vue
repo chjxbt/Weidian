@@ -184,6 +184,7 @@
         position: absolute;
         bottom: 0;
         left: 0;
+        border-top: 1px solid @borderColor;
         .m-modal-foot-btn{
           width: 50%;
           border-right: 1px solid @borderColor;
