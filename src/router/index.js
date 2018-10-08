@@ -36,8 +36,8 @@ export const constantRouterMap = [
     children: [{
       path: 'index',
       component: () => import('../views/discover/index'),
-      name: 'index',
-      meta: { title: 'index', icon: 'index', noCache: true }
+      name: 'discover',
+      meta: { title: 'discover', icon: 'discover', noCache: true }
     }
     ],
 
