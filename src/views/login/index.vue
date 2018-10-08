@@ -84,6 +84,7 @@
                 // this.$store.state.role = res.data.data.MAidentity;
                 // this.$store.state.token = res.data.data.token;
                 localStorage.setItem('token', res.data.data.token);
+                localStorage.setItem('userImg', res.data.data.head);
                 this.$router.push({ path: '/content/index' });
                 this.$notify({ title: '登录成功', type: 'success' });
               }else{

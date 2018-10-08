@@ -33,6 +33,8 @@ const api={
   get_info: title + 'recommend/get_info', // 获取每日推荐商品部分 - 发现页
   update: title + 'recommend/update', // 修改每日推荐商品 - 发现页
 
+  update_info: title + 'super/update_info', // 修改管理员基本信息
+
 
   upload_task_img: title + 'task/upload_task_img',  // 上传任务图标-上传图片
 

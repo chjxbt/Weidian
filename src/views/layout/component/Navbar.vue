@@ -15,16 +15,35 @@
     </div>
     <div class="icon icon-message"></div>
     <el-dropdown :hide-on-click="false" trigger="click" @command="handleCommand">
-      <span>hello,{{$store.state.role}}<i class="icon-person-navbar icon"></i></span>
+      <span>hello,{{$store.state.role}}<img :src="userImg" class="icon-img"></span>
+      <!--<span>hello,{{$store.state.role}}<i class="icon-person-navbar icon"></i></span>-->
       <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item command="passward">修改密码</el-dropdown-item>
+        <el-dropdown-item command="userImg">修改头像</el-dropdown-item>
+        <el-dropdown-item command="password">修改密码</el-dropdown-item>
         <el-dropdown-item command="exit" divided>退出</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
 
+    <div class="m-modal" v-show="show_img_modal" @click="hideModal">
+      <div class="m-modal-state">
+        <div class="m-modal-content" @click="modalClick">
+          <div class="cancel-btn" @click="cancel('userImg')">X</div>
+          <h3>管理员数据管理</h3>
+          <p>--修改头像</p>
+          <div style="margin-top: 0.4rem;">
+            <el-upload class="avatar-uploader" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false"
+                       :on-success="uploadPicture">
+              <img v-if="userImg" :src="userImg" class="avatar">
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="m-modal" v-show="show_pwd_modal" @click="hideModal">
       <div class="m-modal-state">
         <div class="m-modal-content" @click="modalClick">
+          <div class="cancel-btn" @click="cancel('password')">X</div>
           <h3>管理员数据管理</h3>
           <p>--修改密码</p>
           <el-form :inline="false" :model="pwdForm" :rules="rules" ref="pwdForm"  label-width="1.2rem">
@@ -60,12 +79,14 @@ export default {
   },
   data(){
     return{
-      isActive:false,
-      show_pwd_modal:false,
-      pwdForm:{
-        MApasswordOld:'',
-        MApasswordNew:'',
-        MApasswordRepeat:''
+      isActive: false,
+      show_pwd_modal: false,
+      show_img_modal: false,
+      userImg: "",
+      pwdForm: {
+        MApasswordOld: '',
+        MApasswordNew: '',
+        MApasswordRepeat: ''
       },
       rules: {
         MApasswordOld: [
@@ -93,6 +114,41 @@ export default {
         this.isActive = false;
       }
 
+    },
+    // 关闭modal
+    cancel(where) {
+      if(where == 'password'){
+        this.show_pwd_modal = false;
+      }else if(where == "userImg") {
+        this.show_img_modal = false;
+      }
+    },
+    // 上传图片
+    uploadPicture(res, file) {
+      let form = new FormData();
+      form.append("file", file.raw);
+      form.append("FileType", 'NewsPic');
+      form.append("index", 1);
+      axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token'), form).then(res => {
+        if(res.data.status == 200){
+          // this.$message({ type: 'success', message: res.data.message });
+          this.userImg = res.data.data;
+
+          // 修改管理员头像
+          axios.post(api.update_info + '?token=' + localStorage.getItem('token') + "&baid=" + banner.baid, params).then(res=>{
+            if(res.data.status == 200){
+              this.$message({ message: "保存成功", type: 'success' });
+
+              localStorage.setItem('userImg', this.userImg);
+              this.show_img_modal = false;
+            }else{
+              this.$message.error(res.data.message);
+            }
+          });
+        }else{
+          this.$message({ type: 'error', message: res.data.message });
+        }
+      });
     },
     hideModal(){
       this.show_pwd_modal = false;
@@ -126,14 +182,19 @@ export default {
 
     },
     handleCommand(command) {
-      if(command == 'passward'){
+      if(command == 'password'){
         this.show_pwd_modal = true;
+      }else if(command == "userImg") {
+        this.show_img_modal = true;
       }
     },
     modalClick(e){
       e.stopPropagation();
       return false
     }
+  },
+  mounted() {
+    this.userImg = localStorage.getItem("userImg");
   }
 }
 </script>
@@ -141,6 +202,7 @@ export default {
 <style rel="stylesheet/less" lang="less" scoped>
   @import "../../../common/css/_variate";
   @import "../../../common/css/modal";
+  @import "../../../common/css/weidian";
 .navbar{
   /*height: 0.5rem;*/
   border: 1px solid @borderColor;
@@ -184,8 +246,14 @@ export default {
     width: 0.3rem;
     height: 0.3rem;
   }
+  .icon-img{
+    display: inline-block;
+    width: 0.3rem;
+    height: 0.3rem;
+    border-radius: 50%;
+  }
   .icon-person-navbar{
-      background: url("../../../common/images/icon-person-navbar.png");
+    background: url("../../../common/images/icon-person-navbar.png");
     background-size: 100% 100%;
     margin: 0 0.05rem;
   }
@@ -224,5 +292,8 @@ export default {
     }
   }
 }
-
+  .avatar {
+    width: 1rem;
+    height: 1rem;
+  }
 </style>
