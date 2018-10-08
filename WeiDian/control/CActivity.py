@@ -490,7 +490,7 @@ class CActivity(BaseActivityControl):
     def generate_poster(self):
         # formdata = request.form
         data = request.json
-        logger.info("data is %s", data)
+        # logger.info("data is %s", data)   # 因为base64 太大，所以注释掉
         # files = request.files.get("file")
         if platform.system() == "Windows":
             rootdir = "D:/qrcode"
