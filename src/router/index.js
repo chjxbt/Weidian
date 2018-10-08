@@ -94,68 +94,14 @@ export const constantRouterMap = [
   {
     path: '/activity',
     component: Layout,
-    redirect: 'activity/discountCoupon',
-    children: [{
-      path: 'productActivity',
-      component: () => import('../views/activity/productActivity'),
-      name: 'productActivity',
-      meta: {title: 'productActivity', icon: 'productActivity', noCache: true}
-    }, {
-      path: 'discountCoupon',
-      component: () => import('../views/activity/discountCoupon'),
-      name: 'discountCoupon',
-      meta: {title: 'discountCoupon', icon: 'discountCoupon', noCache: true}
-    }, {
-      path: 'storeActivity',
-      component: () => import('../views/activity/storeActivity'),
-      name: 'storeActivity',
-      meta: {title: 'storeActivity', icon: 'storeActivity', noCache: true}
-    }, {
-      path: 'discountStoreStepOne',
-      component: () => import('../views/activity/discountStoreStepOne'),
-      name: 'discountStoreStepOne',
-      meta: {title: 'discountStoreStepOne', icon: 'discountStoreStepOne', noCache: true}
-    }, {
-      path: 'discountProductStepOne',
-      component: () => import('../views/activity/discountProductStepOne'),
-      name: 'discountProductStepOne',
-      meta: {title: 'discountProductStepOne', icon: 'discountProductStepOne', noCache: true}
-    },{
-      path: 'storeStepResult',
-      component: () => import('../views/activity/storeStepResult'),
-      name: 'storeStepResult',
-      meta: {title: 'storeStepResult', icon: 'storeStepResult', noCache: true}
-    }, {
-      path: 'activityStoreStepOne',
-      component: () => import('../views/activity/activityStoreStepOne'),
-      name: 'activityStoreStepOne',
-      meta: {title: 'activityStoreStepOne', icon: 'activityStoreStepOne', noCache: true}
-    }, {
-      path: 'activityStoreStepTwo',
-      component: () => import('../views/activity/activityStoreStepTwo'),
-      name: 'activityStoreStepTwo',
-      meta: {title: 'activityStoreStepTwo', icon: 'activityStoreStepTwo', noCache: true}
-    }, {
-      path: 'activityStoreStepThree',
-      component: () => import('../views/activity/activityStoreStepThree'),
-      name: 'activityStoreStepThree',
-      meta: {title: 'activityStoreStepThree', icon: 'activityStoreStepThree', noCache: true}
-    }, {
-      path: 'activityProductStepOne',
-      component: () => import('../views/activity/activityProductStepOne'),
-      name: 'activityProductStepOne',
-      meta: {title: 'activityProductStepOne', icon: 'activityProductStepOne', noCache: true}
-    }, {
-      path: 'activityProductStepTwo',
-      component: () => import('../views/activity/activityProductStepTwo'),
-      name: 'activityProductStepTwo',
-      meta: {title: 'activityProductStepTwo', icon: 'activityProductStepTwo', noCache: true}
-    }, {
-      path: 'activityProductStepThree',
-      component: () => import('../views/activity/activityProductStepThree'),
-      name: 'activityProductStepThree',
-      meta: {title: 'activityProductStepThree', icon: 'activityProductStepThree', noCache: true}
-    }
+    redirect: 'activity/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('../views/activity/index'),
+        name: 'index',
+        meta: {title: 'index', icon: 'index', noCache: true}
+      }
     ]
   },
   {

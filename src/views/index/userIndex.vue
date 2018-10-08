@@ -45,7 +45,7 @@
               <ul>
                 <li>
                   <span>正在发放的优惠券：</span>
-                  <router-link to="/activity/discountCoupon" >
+                  <router-link to="/activity/index" >
                     <span class="m-red">{{index.couponse_sum}}</span>
                   </router-link>
                 </li>
