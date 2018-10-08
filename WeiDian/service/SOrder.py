@@ -29,12 +29,26 @@ class SOrder(SBase):
     @close_session
     def get_user_order_by_status(self, usid, status, page_num, page_size):
         """根据支付状态获取自买订单"""
-        return self.session.query(OrderInfo).filter(OrderInfo.USid == usid, or_(OrderInfo.OIpaystatus == s for s in (status))).offset(page_size * (page_num - 1)).limit(page_size).all()
+        filter_order = {
+            OrderInfo.USid == usid
+        }
+        if isinstance(status, list):
+            filter_order.add(OrderInfo.OIpaystatus.in_(status))
+        else:
+            filter_order.add(OrderInfo.OIpaystatus == status)
+        return self.session.query(OrderInfo).filter(*filter_order).offset(page_size * (page_num - 1)).limit(page_size).all()
 
     @close_session
     def get_sell_order_by_status(self, usid, status, page_num, page_size):
         """根据支付状态获取销售订单"""
-        return self.session.query(OrderInfo).filter(OrderInfo.Sellerid == usid, or_(OrderInfo.OIpaystatus == s for s in (status))).offset(page_size * (page_num - 1)).limit(page_size).all()
+        filter_order = {
+            OrderInfo.Sellerid == usid
+        }
+        if isinstance(status, list):
+            filter_order.add(OrderInfo.OIpaystatus.in_(status))
+        else:
+            filter_order.add(OrderInfo.OIpaystatus == status)
+        return self.session.query(OrderInfo).filter(*filter_order).offset(page_size * (page_num - 1)).limit(page_size).all()
 
     @close_session
     def get_sellorder_by_user_status(self, usid, status):
@@ -73,13 +87,22 @@ class SOrder(SBase):
     @close_session
     def get_user_ordercount_by_status(self, usid, status):
         """获取自买订单预览数"""
-        return self.session.query(OrderInfo).filter(OrderInfo.USid == usid, OrderInfo.Sellerid != OrderInfo.USid, or_(
-            OrderInfo.OIpaystatus == status for status in (status))).count()
+        return self.session.query(OrderInfo).filter(
+            OrderInfo.USid == usid, or_(OrderInfo.Sellerid != OrderInfo.USid, OrderInfo.Sellerid.in_(["", None])), OrderInfo.OIpaystatus.in_(status)).count()
+
+    @close_session
+    def get_user_ordercount_by_item_status(self, usid, staus):
+        return self.session.query(OrderInfo).filter(
+            OrderInfo.USid == usid, OrderInfo.Sellerid != usid, OrderInfo.OIpaystatus == staus).count()
 
     @close_session
     def get_sell_ordercount_by_status(self, usid, status):
         """获取销售订单预览数"""
-        return self.session.query(OrderInfo).filter(OrderInfo.Sellerid == usid, or_(OrderInfo.OIpaystatus == status for status in (status))).count()
+        return self.session.query(OrderInfo).filter(OrderInfo.Sellerid == usid, OrderInfo.OIpaystatus.in_(status)).count()
+
+    @close_session
+    def get_sell_ordercount_by_item_status(self, usid, status):
+        return self.session.query(OrderInfo).filter(OrderInfo.Sellerid == usid, OrderInfo.OIpaystatus == status).count()
 
     @close_session
     def get_order_by_oisn(self, oisn):

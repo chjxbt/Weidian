@@ -176,8 +176,8 @@ class CUser():
         logger.debug("get loggin response %s", response)
         return response
 
-    # @verify_token_decorator
-    # def get_wx_config(self):
+    # # @verify_token_decorator
+    # def get_wx_config_accesstoken(self):
     #     from WeiDian.config.urlconfig import get_jsapi, get_server_access_token, signature_str
     #     from WeiDian.config.setting import APP_ID
     #     import random
@@ -192,7 +192,6 @@ class CUser():
     #     # logger.info('get user id : %s', request.user.id)
     #     # if not user:
     #     #     return SYSTEM_ERROR
-    #     # todo 刷新accesstoken和jsapi
     #     from WeiDian.common.divide import Partner
     #     pt = Partner()
     #     access_token_server, ticket, access_time = pt.access_token
