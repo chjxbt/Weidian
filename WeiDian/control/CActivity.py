@@ -299,8 +299,8 @@ class CActivity(BaseActivityControl):
                     self.smedia.add_model('ActivityMedia', **{
                         'AMid': str(uuid.uuid1()),
                         'ACid': ACid,
-                        'AMimage': img_or_video.get('AMimage'),
-                        'AMsort': img_or_video.get('AMsort', 1)
+                        'AMimage': img_or_video.get('amimage'),
+                        'AMsort': img_or_video.get('amsort', 1)
                     })
                     image_num += 1
                     if image_num > 9:
@@ -312,7 +312,7 @@ class CActivity(BaseActivityControl):
                         self.smedia.add_model('ActivityMedia', **{
                             'AMid': str(uuid.uuid1()),
                             'ACid': ACid,
-                            'AMvideo': img_or_video.get('AMvideo')
+                            'AMvideo': img_or_video.get('amvideo')
                         })
                         # 只可以添加一个视频, 且不可以再添加图片
                         break

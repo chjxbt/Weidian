@@ -28,3 +28,8 @@ class SSuperUser(SBase):
         if super:
             if check_password_hash(super.SUpassword, supassword):
                 return super
+
+    @close_session
+    def update_info(self, suid, info):
+        """修改基本信息"""
+        return self.session.query(SuperUser).filter_by(SUid=suid).update(info)
