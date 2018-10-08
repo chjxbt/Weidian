@@ -68,6 +68,8 @@
         },
       mounted(){
           this.isOpen = localStorage.getItem('level') == 'partner'? true:false;
+        this.isSell = this.$route.query.status == '销售订单'? true:false;
+        this.getOrderNum();
         common.changeTitle('我的订单');
       },
         methods: {
@@ -81,10 +83,16 @@
             }).then(res => {
               if(res.data.status == 200){
                 this.order_num = [].concat(res.data.data);
+
                 for(let i=0;i<this.order_num.length;i++){
                   this.order_num[i].click = false;
+                  if(this.order_num[i].status == this.$route.query.name){
+                    this.order_num[i].click = true;
+                  }
                 }
-                this.order_num[0].click = true;
+                if(!this.$route.query.name){
+                  this.order_num[0].click = true;
+                }
                 this.getOrder();
               }else{
                 Toast({ message: res.data.message, className: 'm-toast-fail' });
@@ -166,7 +174,7 @@
           },        },
         created() {
 
-          this.getOrderNum();
+
         }
     }
 </script>

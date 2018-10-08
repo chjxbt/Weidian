@@ -38,10 +38,10 @@
          <cell :item="part_tilt_two"  @cellNav="cellNav" ></cell>
           <ul class="m-part-list">
             <template v-for="(item,index) in order_list">
-              <li @click="orderIcon">
+              <li @click="orderIcon(item)">
                 <img :src="item.src" class="m-part-list-icon" />
                 <span>{{item.name}}
-                  <span class="m-red">({{item.num}})</span>
+                  <span class="m-red">({{item.value}})</span>
                 </span>
               </li>
             </template>
@@ -77,12 +77,14 @@
                   {
                     name:'销售订单',
                     url:'',
-                    click:true
+                    click:true,
+                    params:'销售订单'
                   },
                   {
                     name:'自买订单',
                     url:'',
-                    click:false
+                    click:false,
+                    params:'自买订单'
                   }
                 ],
                 value:'查看更多',
@@ -90,28 +92,29 @@
               },
               order_list:[
                 {
-                  name:'待支付',
+                  name:'待付款',
                   src:'/static/images/icon-pay-personal.png',
                   value:'',
                   num:0
-                },{
-                  name:'待发货',
-                  src:'/static/images/icon-wait-send-personal.png',
-                  value:'',
-                  num:0
                 },
+                // {
+                //   name:'待发货',
+                //   src:'/static/images/icon-wait-send-personal.png',
+                //   value:'',
+                //   num:0
+                // },
                 {
                   name:'待收货',
                   src:'/static/images/icon-sent-personal.png',
                   value:'',
                   num:0
                 },
-                {
-                  name:'待评价',
-                  src:'/static/images/icon-comment-personal.png',
-                  value:'',
-                  num:0
-                },
+                // {
+                //   name:'待评价',
+                //   src:'/static/images/icon-comment-personal.png',
+                //   value:'',
+                //   num:0
+                // },
                 {
                   name:'退换货',
                   src:'/static/images/icon-change-personal.png',
@@ -169,20 +172,20 @@
                 // this.person_info = res.data.data
                 for(let i=0;i<res.data.data.length;i++){
                   switch (res.data.data[i].status){
-                    case '待支付':
+                    case '待付款':
                       this.order_list[0].value = res.data.data[i].count;
                       break;
-                    case '待发货':
+                    // case '待发货':
+                    //   this.order_list[1].value = res.data.data[i].count;
+                    //   break;
+                    case '待收货':
                       this.order_list[1].value = res.data.data[i].count;
                       break;
-                    case '待收货':
-                      this.order_list[2].value = res.data.data[i].count;
-                      break;
-                    case '待评价':
-                      this.order_list[3].value = res.data.data[i].count;
-                      break;
+                    // case '待评价':
+                    //   this.order_list[3].value = res.data.data[i].count;
+                    //   break;
                     case '退换货':
-                      this.order_list[4].value = res.data.data[i].count;
+                      this.order_list[2].value = res.data.data[i].count;
                       break;
                   }
                 }
@@ -245,8 +248,14 @@
           toPage() {
             this.$router.push("/memberCenter");
           },
-          orderIcon(){
-            this.$router.push("/order");
+          orderIcon(i){
+            let _status = '';
+            for(let a=0;a<this.part_tilt_two.nav.length;a++){
+              if(this.part_tilt_two.nav[a].click){
+                _status = this.part_tilt_two.nav[a].name;
+              }
+            }
+            this.$router.push({path:"/order",query:{name:i.name,status:_status}});
           }
         },
         created() {

@@ -35,7 +35,21 @@
         },
         methods: {
           cellClick(v){
-            if (v.url){
+            if (v.nav.length > 0){
+              let _params ='';
+              for(let i=0;i<v.nav.length;i++){
+                if(v.nav[i].click){
+                  _params = v.nav[i].params;
+                }
+              }
+              this.$router.push({
+                path: '/'+v.url,
+                query:{
+                  status:_params
+                }
+              })
+            }
+            else if (v.url){
               this.$router.push({
                 path: '/'+v.url,
                 params:{

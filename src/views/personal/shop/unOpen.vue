@@ -6,10 +6,10 @@
           <!--<order :list="order_list"></order>-->
           <ul class="m-part-list">
             <template v-for="(item,index) in order_list">
-              <li @click="orderIcon">
+              <li @click="orderIcon(item)">
                 <img :src="item.src" class="m-part-list-icon" />
                 <span>{{item.name}}
-                  <span class="m-red">({{item.num}})</span>
+                  <span class="m-red">({{item.value}})</span>
                 </span>
               </li>
             </template>
@@ -70,28 +70,29 @@
                 ],
               order_list:[
                 {
-                  name:'待支付',
+                  name:'待付款',
                   src:'/static/images/icon-pay-personal.png',
                   value:'',
                   num:0
-                },{
-                  name:'待发货',
-                  src:'/static/images/icon-wait-send-personal.png',
-                  value:'',
-                  num:0
                 },
+                // {
+                //   name:'待发货',
+                //   src:'/static/images/icon-wait-send-personal.png',
+                //   value:'',
+                //   num:0
+                // },
                 {
                   name:'待收货',
                   src:'/static/images/icon-sent-personal.png',
                   value:'',
                   num:0
                 },
-                {
-                  name:'待评价',
-                  src:'/static/images/icon-comment-personal.png',
-                  value:'',
-                  num:0
-                },
+                // {
+                //   name:'待评价',
+                //   src:'/static/images/icon-comment-personal.png',
+                //   value:'',
+                //   num:0
+                // },
                 {
                   name:'退换货',
                   src:'/static/images/icon-change-personal.png',
@@ -117,25 +118,28 @@
             }).then(res => {
               if(res.data.status == 200){
                 // this.person_info = res.data.data
+                let _arr  = [].concat(this.order_list);
                 for(let i=0;i<res.data.data.length;i++){
+
                   switch (res.data.data[i].status){
-                    case '待支付':
-                      this.order_list[0].value = res.data.data[i].count;
+                    case '待付款':
+                      _arr[0].value = res.data.data[i].count;
                       break;
-                    case '待发货':
-                      this.order_list[1].value = res.data.data[i].count;
-                      break;
+                    // case '待发货':
+                    //   this.order_list[1].value = res.data.data[i].count;
+                    //   break;
                     case '待收货':
-                      this.order_list[2].value = res.data.data[i].count;
+                      _arr[1].value = res.data.data[i].count;
                       break;
-                    case '待评价':
-                      this.order_list[3].value = res.data.data[i].count;
-                      break;
+                    // case '待评价':
+                    //   this.order_list[3].value = res.data.data[i].count;
+                    //   break;
                     case '退换货':
-                      this.order_list[4].value = res.data.data[i].count;
+                      _arr[2].value = res.data.data[i].count;
                       break;
                   }
                 }
+                this.order_list  = [].concat(_arr);
               }else{
                 Toast({ message: res.data.message, className: 'm-toast-fail' });
               }
@@ -166,8 +170,8 @@
           cellClick(v){
 
           },
-          orderIcon(){
-            this.$router.push("/order");
+          orderIcon(i){
+            this.$router.push({path:"/order",query:{name:i.name}});
           }
         },
         created() {

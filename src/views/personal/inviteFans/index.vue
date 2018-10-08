@@ -19,7 +19,7 @@
         <p class="m-fans-share-p">好 友 将 获 得 20 元 新 衣 币</p>
         <div class="m-fans-share-btn">
           <span @click="sharePoster">分享海报</span>
-          <span>分享链接</span>
+          <span @click="copyText">分享链接</span>
         </div>
         <p class="m-fans-share-info">您已成功绑定5位粉丝  <span  @click="fansClick">&nbsp;&nbsp;&nbsp;点击查看></span></p>
       </div>
@@ -73,6 +73,21 @@
           </li>
         </ul>
       </div>
+      <div class="m-modal m-copy-text" v-if="show_modal">
+        <div class="m-modal-state">
+          <div class="m-modal-head">
+            <span class="m-close" @click="closeModal('show_modal')"> x </span>
+          </div>
+          <div class="m-modal-content">
+            <h3>链接已经复制成功</h3>
+            <p>您可以去分享给好友啦！
+            </p>
+          </div>
+        <!--<div class="m-modal-foot">-->
+        <!--<span class="m-modal-foot-btn">复制文案</span>-->
+        <!--</div>-->
+        </div>
+      </div>
     </div>
 
 </template>
@@ -81,7 +96,8 @@
     export default {
         data() {
             return {
-                name: ''
+                name: '',
+              show_modal:false
             }
         },
         components: {},
@@ -91,6 +107,17 @@
           },
           sharePoster(){
             this.$router.push('/poster')
+          },
+          copyText(){
+            let that =this;
+            this.$copyText(window.location.href).then(function (e) {
+              that.show_modal = true;
+            }, function (e) {
+
+            })
+          },
+          closeModal(v){
+            this[v] = false;
           }
         },
         created() {
@@ -100,6 +127,7 @@
 </script>
 <style lang="less" rel="stylesheet/less" scoped>
   @import "../../../common/css/index";
+  @import "../../../common/css/modal";
 .m-fans{
   min-height: 100%;
   background: url("/static/images/invite_back.png") no-repeat;
