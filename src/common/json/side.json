@@ -106,6 +106,18 @@
       ]
     },
     {
+      "MNname":"控制中心",
+      "MNurl":"/control",
+      "MNicon":"icon-commission",
+      "children":[
+        {
+          "MNname":"控制中心",
+          "MNurl":"index",
+          "MNicon":"none"
+        }
+      ]
+    },
+    {
       "MNname":"佣金管理",
       "MNurl":"/commission",
       "MNicon":"icon-commission",

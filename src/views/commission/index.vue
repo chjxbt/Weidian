@@ -41,7 +41,7 @@
   export default {
     data(){
       return{
-        name:'会员管理',
+        name:'佣金管理',
         form:{
           name:''
         },
