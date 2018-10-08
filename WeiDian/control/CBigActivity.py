@@ -64,10 +64,12 @@ class CBigActivity(BaseActivityControl):
 
             total_count = self.sactivity.get_bigactivity_count_by_baid(baid)
             banner = get_model_return_dict(self.sbigactivity.get_bigactivity_banner_by_baid(baid))['BAimage']
+            batype = get_model_return_dict(self.sbigactivity.get_bigactivity_banner_by_baid(baid))['BAtype']
             response = import_status("get_bigactivity_success", "OK")
             response['data'] = {
                 'activity': activity_list,
                 'banner': banner,
+                'batype': batype,
                 'total_count': total_count
             }
             return response

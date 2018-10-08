@@ -31,8 +31,8 @@ class CRecommend(BaseProductControl):
     @verify_token_decorator
     def get_one(self):
         # args = request.args.to_dict()
-        if not is_partner():
-            raise AUTHORITY_ERROR(u'当前非合伙人权限')
+        # if not is_partner():
+        #     raise AUTHORITY_ERROR(u'当前非合伙人权限')
         recommend = self.srecommend.get_one_recommend()
         self.srecommend.update_view_num(recommend.REid)
         recommend_list = [recommend]

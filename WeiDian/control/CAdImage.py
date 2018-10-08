@@ -8,7 +8,7 @@ from WeiDian.common.timeformat import format_for_db
 from flask import request
 from WeiDian.config.response import AUTHORITY_ERROR, SYSTEM_ERROR, PARAMS_MISS
 from WeiDian.common.import_status import import_status
-from WeiDian.common.token_required import verify_token_decorator,is_tourist
+from WeiDian.common.token_required import verify_token_decorator, is_tourist
 sys.path.append(os.path.dirname(os.getcwd()))
 
 
@@ -26,9 +26,9 @@ class CAdImage():
             return AUTHORITY_ERROR(u"未登录")
         args = request.args.to_dict()
         lasting = args.get('lasting', 'true')
-        logger.info("get image args is %s", args)
+        logger.debug("get image args is %s", args)
         try:
-            logger.debug("get my image list")
+            logger.info("get my image list")
             adimage_list = self.sadimage.get_myimage()
             if lasting == 'true':
                 now_time = datetime.strftime(datetime.now(), format_for_db)
@@ -41,6 +41,7 @@ class CAdImage():
         except:
             logger.exception("get ad_image by aiid error")
             return SYSTEM_ERROR(u"无底部图片")
+
 
 
 
