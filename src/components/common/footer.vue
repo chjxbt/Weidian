@@ -66,7 +66,6 @@
           }
         },
         select: function (val) {
-          console.log((val,'asdasda'))
           this.selected = this.$store.state.tabbar_select
         }
       },

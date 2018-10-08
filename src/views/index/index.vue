@@ -87,7 +87,7 @@
             <div class="m-modal-award-rule">
               <h3>规则</h3>
               <p class="m-modal-award-rule-info">
-               <!--{{}}-->{{TArole}}
+               {{TArole}}
               </p>
             </div>
           </div>
@@ -429,7 +429,8 @@
                 lasting:true,
                 start:start || 0,
                 count:count || this.count,
-                tnid:tnid
+                tnid:tnid,
+                skiptype: 'all'
               }}).then(res => {
               if(res.data.status == 200){
                 this.isScroll = true;

@@ -1,5 +1,5 @@
 <template>
-  <div class="m-modal m-share" >
+  <div class="m-modal m-share">
     <div class="m-modal-state">
       <div class="m-modal-head">
         <span class="m-close" @click="closeModal('show_fixed')"> x </span>
@@ -25,31 +25,33 @@
   import wxapi from '../../common/js/mixins';
   import axios from 'axios';
   import api from '../../api/api';
+
   export default {
     mixins: [wxapi],
     data() {
       return {
         name: '',
-        wximg:localStorage.getItem('wximg'),
-        is_sub:localStorage.getItem('subscribe')
+        wximg: localStorage.getItem('wximg'),
+        is_sub: localStorage.getItem('subscribe'),
       }
     },
     props: {
-      src: { type: String, default: null },
-      components_src:{ type: String, default: null },
-      show_fixed: { type: Boolean, default: false },
-      shareParams: { type: Object, default: null }
+      src: {type: String, default: null},
+      components_src: {type: String, default: null},
+      show_fixed: {type: Boolean, default: false},
+      shareParams: {type: Object, default: null}
     },
     methods: {
       // 关闭modal
-      closeModal(){
+      closeModal() {
         this.$emit('closeModal');
       },
       // 合成图片
       shareImg() {
         let that = this;
         let productImgList = [];
-        for(let i = 0; i < that.shareParams.media.length; i ++) {
+
+        for (let i = 0; i < that.shareParams.media.length; i++) {
           productImgList.push(that.shareParams.media[i].amimage);
         }
         // productImgList = ["/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product2.png", "/static/images/share/product4.png"];
@@ -60,9 +62,9 @@
 
         // 小集合图、大集合图
         canvas.height = 1275;
-        if(productImgList.length == 4) {
+        if (productImgList.length == 4) {
           canvas.width = 1525;
-        }else if(productImgList.length == 6) {
+        } else if (productImgList.length == 6) {
           canvas.width = 2150;
         }
 
@@ -70,39 +72,53 @@
         context.fillStyle = "#fff";
         context.fill();
 
-        // 处理商品标题的字间距
-        context.fillStyle = "#000000";
-        context.font="30px PingFang-SC";
-        let name = this.shareParams.product.prname;
-        let col = 12;
-        if(name.length < 12 || name.length == 12) {
-          for(let i = 0; i < name.length; i ++) {
-            context.fillText(name[i], (90 + 34 * i), 970);
-            // console.log(name[i])
+
+        //  如果是跳专题推文就没有商品信息  不绘制文字
+        if (this.shareParams.product) {
+          // 原价划线图片
+          let img9 = new Image();
+          img9.crossOrigin = 'Anonymous';
+          img9.src = "/static/images/share/delete.png";
+
+          img9.onload = function () {
+            context.drawImage(img9, 175, 1180, 150, 20);
           }
-        }
-        if(name.length > 12) {
-          for(let i = col; i < (2 * col - 1); i ++) {
-            context.fillText(name[i], (90 + 34 * (i - col)), 1015);
-            if(i == (2 * col - 2)) {
-              context.fillText("...", 90 + 34 * (i - col + 1), 1015);
+          // 处理商品标题的字间距
+          context.fillStyle = "#000000";
+          context.font = "30px PingFang-SC";
+
+          let name = this.shareParams.product.prname || '商品标题';
+
+          let col = 12;
+          if (name.length < 12 || name.length == 12) {
+            for (let i = 0; i < name.length; i++) {
+              context.fillText(name[i], (90 + 34 * i), 970);
+              // console.log(name[i])
             }
           }
-        }
-        // 添加价格文字
-        let price = this.shareParams.product.prprice.split(".");
-        context.fillStyle = "#f43b51";
-        context.font="bold 30px PingFang-SC";
-        context.fillText("￥", 90, 1150);
-        context.font="bold 58px PingFang-SC";
-        context.fillText(price[0], 120, 1150);
-        context.font="bold 30px PingFang-SC";
-        context.fillText(". " + price[1], 230, 1150);
+          if (name.length > 12) {
+            for (let i = col; i < (2 * col - 1); i++) {
+              context.fillText(name[i], (90 + 34 * (i - col)), 1015);
+              if (i == (2 * col - 2)) {
+                context.fillText("...", 90 + 34 * (i - col + 1), 1015);
+              }
+            }
+          }
+          // 添加价格文字
+          let price = this.shareParams.product.prprice.split(".");
+          context.fillStyle = "#f43b51";
+          context.font = "bold 30px PingFang-SC";
+          context.fillText("￥", 90, 1150);
+          context.font = "bold 58px PingFang-SC";
+          context.fillText(price[0], 120, 1150);
+          context.font = "bold 30px PingFang-SC";
+          context.fillText(". " + price[1], 230, 1150);
 
-        // 添加原价文字
-        context.fillStyle = "#a4a4a4";
-        context.font="30px PingFang-SC";
-        context.fillText("原价：￥" + this.shareParams.product.prprice, 90, 1200);
+          // 添加原价文字
+          context.fillStyle = "#a4a4a4";
+          context.font = "30px PingFang-SC";
+          context.fillText("原价：￥" + this.shareParams.product.prprice, 90, 1200);
+        }
 
         // 创建要添加到canvas上的image对象
         let img0 = new Image();
@@ -110,84 +126,85 @@
         img0.src = "/static/images/share/bg_test.png";  // 背景图
 
         // 依次往canvas上填充
-        img0.onload = function(){
+        img0.onload = function () {
 
           let img1 = new Image();
           img1.crossOrigin = 'Anonymous';
           img1.src = "/static/images/share/sweep.png";    // 扫码下单
-          img1.onload = function(){
-            context.drawImage(img1 , 560 , 1190 , 260 , 60);
+
+          img1.onload = function () {
+            context.drawImage(img1, 560, 1190, 260, 60);
+            console.log('[扫码下单 图片绘制over]');
+
             let img2 = new Image();
             img2.crossOrigin = 'Anonymous';
             img2.src = that.src;    // 二维码
             // img2.src = '/static/images/share/Qrcode.png'
-            img2.onload = function(){
-              context.drawImage(img2 , 560 , 920 , 260 , 260);
+            img2.onload = function () {
+              context.drawImage(img2, 560, 920, 260, 260);
+              console.log('[二维码 图片绘制over]', that.src);
+
               let img3 = new Image();
               img3.crossOrigin = 'Anonymous';
               img3.src = that.components_src;   // 三个背景为红色的承诺
               // img3.src = '/static/images/share/commitment.png';
-              img3.onload = function(){
-                context.drawImage(img3 , 50 , 825 , 800 , 55);
-                console.log(img3)
+              img3.onload = function () {
+                context.drawImage(img3, 50, 825, 800, 55);
+                console.log('[三个背景为红色的承诺 图片绘制over]', that.components_src);
+
                 let img4 = new Image();
                 img4.crossOrigin = 'Anonymous';
                 img4.src = productImgList[0];
-                img4.onload = function(){
-                  context.drawImage(img4 , 50 , 25 , 800 , 800);
+                img4.onload = function () {
+                  context.drawImage(img4, 50, 25, 800, 800);
                   console.log(img4)
                   let img5 = new Image();
                   img5.crossOrigin = 'Anonymous';
                   img5.src = productImgList[1];
-                  img5.onload = function(){
-                    context.drawImage(img5 , 875 , 25 , 600 , 600);
+                  img5.onload = function () {
+                    context.drawImage(img5, 875, 25, 600, 600);
                     console.log(img5)
                     let img6 = new Image();
                     img6.crossOrigin = 'Anonymous';
                     img6.src = productImgList[2];
-                    img6.onload = function(){
-                      context.drawImage(img6 , 875 , 650 , 600 , 600);
+                    img6.onload = function () {
+                      context.drawImage(img6, 875, 650, 600, 600);
                       console.log(img6)
-                      let img9 = new Image();
-                      img9.crossOrigin = 'Anonymous';
-                      img9.src = "/static/images/share/delete.png";
-                      img9.onload = function(){
-                        context.drawImage(img9 , 175 , 1180 , 150 , 20);
-                        console.log(img9)
-                        // 大集合图
-                        if(productImgList.length == 6) {
 
-                          let img7 = new Image();
-                          img7.crossOrigin = 'Anonymous';
-                          img7.src = productImgList[3];
-                          img7.onload = function(){
-                            context.drawImage(img7 , 1500 , 25 , 600 , 600);
+                      // 大集合图
+                      if (productImgList.length == 6) {
 
-                            let img8 = new Image();
-                            img8.crossOrigin = 'Anonymous';
-                            img8.src = productImgList[4];
-                            img8.onload = function(){
-                              context.drawImage(img8 , 1500 , 650 , 600 , 600);
+                        let img7 = new Image();
+                        img7.crossOrigin = 'Anonymous';
+                        img7.src = productImgList[3];
+                        img7.onload = function () {
+                          context.drawImage(img7, 1500, 25, 600, 600);
 
-                              let base64 = canvas.toDataURL("image/png");  //"image/png" 这里注意一下
-                              let img = document.getElementById('avatar');
+                          let img8 = new Image();
+                          img8.crossOrigin = 'Anonymous';
+                          img8.src = productImgList[4];
+                          img8.onload = function () {
+                            context.drawImage(img8, 1500, 650, 600, 600);
 
-                              // document.getElementById('avatar').src = base64;
-                              img.setAttribute('src' , base64);
-                              that.postImg(base64);
-                            }
+                            let base64 = canvas.toDataURL("image/png");  //"image/png" 这里注意一下
+                            let img = document.getElementById('avatar');
+
+                            // document.getElementById('avatar').src = base64;
+                            img.setAttribute('src', base64);
+                            that.postImg(base64);
                           }
                         }
-                        // 小集合图
-                        if(productImgList.length == 4) {
-                          let base64 = canvas.toDataURL("image/png");  //"image/png" 这里注意一下
-                          let img = document.getElementById('avatar');
-
-                          // document.getElementById('avatar').src = base64;
-                          img.setAttribute('src' , base64);
-                          that.postImg(base64);
-                        }
                       }
+                      // 小集合图
+                      if (productImgList.length == 4) {
+                        let base64 = canvas.toDataURL("image/png");  //"image/png" 这里注意一下
+                        let img = document.getElementById('avatar');
+
+                        // document.getElementById('avatar').src = base64;
+                        img.setAttribute('src', base64);
+                        that.postImg(base64);
+                      }
+
                     }
                   }
                 }
@@ -197,9 +214,9 @@
         };
 
       },
-      postImg(base){
-        axios.post(api.generate_poster +'?token=' +localStorage.getItem('token'),{
-          baseimg:base
+      postImg(base) {
+        axios.post(api.generate_poster + '?token=' + localStorage.getItem('token'), {
+          baseimg: base
         }).then(res => {
 
         })
@@ -215,13 +232,14 @@
         for (var i = 0; i < byteString.length; i++) {
           ia[i] = byteString.charCodeAt(i);
         }
-        return new Blob([ia], {type: mimeString});}
+        return new Blob([ia], {type: mimeString});
+      }
     },
     mounted() {
-      // this.src = "/static/images/share/Qrcode.png";
-
-      this.shareImg();
-      // console.log(this.show_fixed);
+      // 如果关注了公众号,才执行绘制分享逻辑
+      if (localStorage.getItem('subscribe')) {
+        this.shareImg();
+      }
     },
     created() {
 
@@ -250,7 +268,7 @@
         border: 1px red solid;
       }
       .canvas-img {
-        /*width: 640px;*/
+        /*width: 380px;*/
         height: 380px;
         margin-top: 10px;
         margin-bottom: -20px;
