@@ -300,10 +300,10 @@
                 case 1:
                   _url = this.title +'activityContent?openid=' + localStorage.getItem('openid') + '&baid=' + (name?this.activity_list[list].baid : list);
                   break;
-                case 3:
+                case 2:
                   _url = this.title + 'productDetail?openid=' + localStorage.getItem('openid')+ '&prid=' + (name?this.activity_list[list].prid : list);
                   break;
-                case 2:
+                case 3:
                   _url = this.title + 'discover/index?openid=' + localStorage.getItem('openid') + '&acid=' + (name?this.activity_list[list].acid : list)+'&name=赚钱学院';
                   break;
                 case 4:
