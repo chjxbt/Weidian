@@ -94,7 +94,7 @@ class CActivity(BaseActivityControl):
             raise PARAMS_MISS(u"参数缺失")
         try:
             activity_list = self.sactivity.get_activity_by_topnavid(tnid, page, count, skiptype, acid)
-            logger.debug("get activity_list")
+            logger.info("get activity_list success")
 
             if suid:
                 activity_list = self.sactivity.get_activity_by_suid(suid, page, count)
@@ -110,6 +110,7 @@ class CActivity(BaseActivityControl):
                 self.fill_detail(activity)
                 self.fill_like_num(activity)
                 self.fill_type(activity)
+                activity.fill(activity.AClinkvalue, 'aclinkvalue')
                 if activity.ACSkipType == 0:
                     self.fill_comment_two(activity)
                     activity.fill('none_skip', 'skip_type')
@@ -251,7 +252,7 @@ class CActivity(BaseActivityControl):
         if not is_admin():
             raise AUTHORITY_ERROR(u'当前非管理员权限')
         data = request.json
-        logger.info("add activity data is %s", data)
+        logger.debug("add activity data is %s", data)
         parameter_required(u'ACtext', u'TopnavId')
         now_time = datetime.strftime(datetime.now(), format_for_web_second)
         ACstarttime = get_db_time_str(data.get('ACstarttime', now_time))                         # 活动开始时间, 默认当前时间
