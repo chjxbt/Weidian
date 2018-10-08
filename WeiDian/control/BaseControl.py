@@ -6,7 +6,7 @@ from WeiDian.config.response import SYSTEM_ERROR
 from flask import request
 from WeiDian.common.TransformToList import list_add_models, dict_add_models
 from WeiDian.common.divide import Partner
-from WeiDian.common.token_required import is_partner
+from WeiDian.common.token_required import is_partner, is_admin, is_tourist
 from WeiDian.common.timeformat import get_web_time_str
 from WeiDian.config.enums import activity_type, TASK_STATUS
 from WeiDian import logger
@@ -470,15 +470,20 @@ class BaseTask():
 class BaseFile():
 
     def upload_file(self, rootdir):
+        logger.debug('get filetype %s', rootdir)
         from WeiDian.common.timeformat import get_db_time_str
         from WeiDian.config.setting import QRCODEHOSTNAME, LinuxRoot, LinuxImgs
         files = request.files.get("file")
         filessuffix = str(files.filename).split(".")[-1]
         filedir = os.path.join(LinuxRoot, LinuxImgs, rootdir)
-        if not os.path.isdir:
+        logger.debug('get filedir is %s',filedir)
+        if not os.path.isdir(filedir):
             os.mkdir(filedir)
-
-        filename = rootdir + request.user.openid + get_db_time_str() + "." + filessuffix
+        if not is_admin():
+            filename = request.user.openid
+        else:
+            filename = request.user.id
+        filename = rootdir + filename + get_db_time_str() + "." + filessuffix
         filepath = os.path.join(filedir, filename)
         print(filepath)
         files.save(filepath)

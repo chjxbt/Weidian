@@ -34,6 +34,7 @@ class AActivity(Resource):
             "share_qrcode": "self.control_activity.share_activity()",
             "generate_poster": "self.control_activity.generate_poster()",
             "set_show_type": "self.control_activity.set_show_type()",
+            "upload_home_images": "self.control_activity.upload_home_images()",
         }
         res = eval(apis[activity])
         return jsonify(res)

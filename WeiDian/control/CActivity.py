@@ -491,7 +491,7 @@ class CActivity(BaseActivityControl):
     def generate_poster(self):
         # formdata = request.form
         data = request.json
-        logger.info("data is %s", data)
+        # logger.info("data is %s", data)   # 因为base64 太大，所以注释掉
         # files = request.files.get("file")
         if platform.system() == "Windows":
             rootdir = "D:/qrcode"
@@ -526,10 +526,11 @@ class CActivity(BaseActivityControl):
     def upload_home_images(self):
         if not is_admin():
             raise AUTHORITY_ERROR(u'权限不足')
+
         filetype = request.args.to_dict().get("filetype", 'home')
 
         url = BaseFile().upload_file(filetype)
-        res = import_status("save_poster_success", "OK")
+        res = import_status("save_photo_success", "OK")
         res['data'] = url
         return res
 
