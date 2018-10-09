@@ -77,6 +77,8 @@ class CActivity(BaseActivityControl):
         suid = args.get('suid')  # 管理员id
         lasting = args.get('lasting', True)  # 是否正在进行的活动
         acid = args.get("acid")
+        if not acid:
+            acid = None
         start = int(args.get('start', 0))  # 起始位置
         count = int(args.get('count', 5))  # 取出条数
         page = (args.get('page'))
