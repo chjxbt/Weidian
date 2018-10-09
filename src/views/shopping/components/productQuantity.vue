@@ -1,34 +1,48 @@
 <template>
   <div class="product-quantity m-ft-24">
     <div class="deduct-add" @click="deductQuantity">-</div>
-    <div class="quantity" @click="changeQuantity">{{quantity}}</div>
+    <div class="quantity" @click="changeQuantity">{{quantitys}}</div>
     <div class="deduct-add" @click="addQuantity">+</div>
   </div>
 </template>
 
 <script>
   import { MessageBox } from 'mint-ui';
-
+  import axios from 'axios';
+  import api from '../../../api/api'
   export default {
     data() {
       return {
         name: 'productQuantity',
-        quantity: 1,
+        quantitys: this.quantity,
         inputValue: 1
       }
     },
     props:{
-      /*quantity:{
+      quantity:{
         type: Number,
         default: 1
-      }*/
+      },
+      id:{
+        type:String,
+        default:null
+      }
     },
     methods: {
+      //修改购物车
+      changeQuantity(){
+        axios.post(api.update_shoppingcart + '?token=' + localStorage.getItem('token'),{
+          pskid:this.id,
+          changenum:this.quantitys
+        }).then(res => {
+
+        })
+      },
       // 产品数量减 1
       deductQuantity() {
-        if(this.quantity > 1) {
-          this.quantity -= 1;
-          console.log("数量", this.quantity);
+        if(this.quantitys > 1) {
+          this.quantitys -= 1;
+          this.changeQuantity();
         }
       },
       changeQuantity() {
@@ -43,18 +57,18 @@
           showInput:true
         }).then(({ value, action }) => {
           if(action == "confirm") {
-            console.log(value);
+            this.changeQuantity();
           }
         });
       },
       // 产品数量加 1
       addQuantity() {
-        this.quantity += 1;
-        console.log("数量", this.quantity);
+        this.quantitys += 1;
+        this.changeQuantity();
       }
     },
     created() {
-      this.inputValue = this.quantity;
+      this.inputValue = this.quantitys;
     }
   }
 </script>

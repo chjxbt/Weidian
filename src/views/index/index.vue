@@ -298,10 +298,10 @@
                   return false;
                   break;
                 case 1:
-                  _url = this.title +'activityContent?openid=' + localStorage.getItem('openid') + '&baid=' + (name?this.activity_list[list].baid : list);
+                  _url = this.title +'activityContent?openid=' + localStorage.getItem('openid') + '&baid=' + (name?this.activity_list[list].aclinkvalue : list);
                   break;
                 case 2:
-                  _url = this.title + 'productDetail?openid=' + localStorage.getItem('openid')+ '&prid=' + (name?this.activity_list[list].prid : list);
+                  _url = this.title + 'productDetail?openid=' + localStorage.getItem('openid')+ '&prid=' + (name?this.activity_list[list].product.prid : list);
                   break;
                 case 3:
                   _url = this.title + 'discover/index?openid=' + localStorage.getItem('openid') + '&acid=' + (name?this.activity_list[list].acid : list)+'&name=赚钱学院';

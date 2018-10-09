@@ -1,7 +1,7 @@
 <template>
   <div v-if="product_info != null">
     <!--/static/images/icon-more.png-->
-    <!--<img src="" class="back-img" @click="backPage">-->
+    <!--<span class="back-img" @click="backPage"></span>-->
     <!--<img src="http://s9.rr.itc.cn/r/wapChange/20167_8_22/a87n9v8965341955628.jpg" class="product-img">-->
     <img :src="product_info.prmainpic"  class="product-img">
     <div class="product-activity m-ft-26 m-bg-main-color">
@@ -33,7 +33,7 @@
       <div class="product-activity-content m-ft-28 m-grey-color m-ft-b tl">满89减5;满139减10</div>
       <img src="/static/images/icon-list-right.png" class="to-activity">
     </div>-->
-    <product-params :choose="false"></product-params>
+    <product-params :choose="false" :options="params_options"></product-params>
     <div class="rectangular"></div>
     <div class="product-evaluation">
       <div class="evaluation-title m-ft-26 m-grey-color b">商品评价（99+）</div>
@@ -113,6 +113,7 @@
   import api from '../../api/api';
   import axios from 'axios';
   import {Toast} from 'mint-ui';
+  import common from '../../common/js/common'
   export default {
     data() {
       return {
@@ -126,6 +127,7 @@
         brandList: [],
         product_info:null,
         // brandList: [{img: "http://pic1.win4000.com/wallpaper/8/599d1d60036a2.jpg"}, {img: "http://bbsfiles.vivo.com.cn/vivobbs/attachment/forum/201804/25/145712qjc3gwcbtvgoct9w.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/57eb314a3c143.jpg"}, {img: "http://pic1.win4000.com/wallpaper/8/57eb322625b50.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc06f60ecf.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc080092c6.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc07478a17.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc08474821.jpg"}]
+        params_options:null
       }
     },
     components: { productParams },
@@ -139,6 +141,7 @@
         }).then(res => {
           if(res.data.status == 200){
             this.product_info =  res.data.data;
+            this.params_options = res.data.data.sku_value.psvpropervalue;
           }
         })
       },
@@ -201,6 +204,7 @@
     mounted() {
       this.imgsDone();
       this.getInfo();
+      common.changeTitle('商品详情');
     },
     created() {
       let prid = this.$route.query.prid;
@@ -214,10 +218,12 @@
   @import "../../common/css/index";
   .back-img {
     float: left;
-    width: 18px;
-    height: 37px;
+    width: 24px;
+    height: 35px;
     margin: 30px;
     transform: rotate(180deg);
+    background: url("/static/images/icon-list-left.png") no-repeat;
+    background-size: 100% 100%;
   }
   .product-img {
     width: 640px;

@@ -1,16 +1,21 @@
 <template>
   <div class="product-params">
 
-    <div v-if="!choose" class="product-params-choose" @click="productParams">
-      <div class="product-params-text m-ft-26 m-grey tl">规格数量选择</div>
+    <div  class="product-params-choose" @click="productParams">
+      <div class="product-params-text m-ft-26 m-grey tl" v-if="!selects">{{prompt}}</div>
+      <div class="product-params-text m-ft-26 m-grey tl m-ml-0" v-if="selects">
+        <template v-for="(item,index) in selects">
+          <span class="product-params-detail  m-grey"> {{item.key}}:{{item.value}} </span>
+        </template>
+      </div>
       <img src="/static/images/icon-list-right.png" class="more-params">
     </div>
 
-    <div v-if="choose" class="product-params-show" @click="productParams">
-      <span class="product-params-detail m-ft-22 m-grey">尺寸：{{size}}</span><span class="product-params-detail">颜色：{{color}}</span>
-      <img v-if="popupVisible" src="/static/images/icon-list-down.png" class="list-right-down">
-      <img v-if="!popupVisible" src="/static/images/icon-list-right.png" class="list-right-down">
-    </div>
+    <!--<div v-if="choose" class="product-params-show" @click="productParams">-->
+      <!--<span class="product-params-detail m-ft-22 m-grey">尺寸：{{size}}</span><span class="product-params-detail">颜色：{{color}}</span>-->
+      <!--<img v-if="popupVisible" src="/static/images/icon-list-down.png" class="list-right-down">-->
+      <!--<img v-if="!popupVisible" src="/static/images/icon-list-right.png" class="list-right-down">-->
+    <!--</div>-->
 
     <mt-popup v-model="popupVisible" position="bottom">
       <div class="product-params-content">
@@ -23,13 +28,13 @@
       </div>
       <div class="line"></div>
       <div class="product-size-color" v-for="(option, index) in options">
-        <p class="product-size-color-text m-ft-30 tl">{{option.name}}</p>
-        <span :class="{select: sel[index] == ind}" v-for="(item, ind) in option.items" @click="select(index, ind)">{{item.msg}}</span>
+        <p class="product-size-color-text m-ft-30 tl">{{option.key}}</p>
+        <span :class="{select: sel[index] == ind}" v-for="(item, ind) in option.values" @click="select(index, ind)">{{item.value}}</span>
       </div>
       <div class="line"></div>
       <div class="product-quantity">
         <div class="product-quantity-text m-ft-30 tl">购买数量</div>
-        <product-quantity :quantity="quantity" class="product-quantity-edit"></product-quantity>
+        <product-quantity :quantity="quantity" class="product-quantity-edit" :id="id"></product-quantity>
       </div>
       <div class="choose-done m-ft-28 m-bg-main-color" @click="chooseDone">确定</div>
     </mt-popup>
@@ -43,11 +48,12 @@
       return {
         name: 'productParams',
         popupVisible: false,
-        prompt: "请选择颜色、尺码",
+        prompt: "请选择规格",
         sel: [],
-        colorSizeList: ['', ''],
-        options: [ {name: "颜色", items: [{id: 0, msg: "黄色"}, {id: 1, msg: "绿色"}, {id: 2, msg: "红色"}, {id:3, msg: "蓝色"}]},
-          {name: "尺寸", items: [{id: 0, msg: "S"}, {id: 1, msg: "M"}, {id: 2, msg: "L"}, {id: 3, msg: "XL"}, {id: 4, msg: "2XL"}, {id: 5, msg: "3XL"}]} ],
+        colorSizeList: new Array(this.options.length),
+        // options: [ {name: "颜色", items: [{id: 0, msg: "黄色"}, {id: 1, msg: "绿色"}, {id: 2, msg: "红色"}, {id:3, msg: "蓝色"}]},
+        //   {name: "尺寸", items: [{id: 0, msg: "S"}, {id: 1, msg: "M"}, {id: 2, msg: "L"}, {id: 3, msg: "XL"}, {id: 4, msg: "2XL"}, {id: 5, msg: "3XL"}]} ],
+       id: ''
       }
     },
     components: { productQuantity },
@@ -67,7 +73,18 @@
       quantity:{
         type: Number,
         default: 1
+      },
+      options:{
+        type:Array,
+        default:[]
+      },
+      selects:{
+        type:Array,
+        default:null
       }
+    },
+    mounted(){
+      // this.colorSizeList=new Array(this.options.length);
     },
     methods: {
       // 判断选择商品类型的下部弹框是否弹出
@@ -78,46 +95,61 @@
           this.popupVisible = true;
 
           // 从购物车中调用时选中已确定的颜色和尺寸
-          for(let i = 0; i < this.options.length; i ++) {
-            for(let j = 0; j < this.options[i].items.length; j ++) {
-              if(this.color == this.options[i].items[j].msg) {
-                this.sel[0] = this.options[i].items[j].id;
-                this.colorSizeList[0] = this.color;
-              }
-              if(this.size == this.options[i].items[j].msg) {
-                this.sel[1] = this.options[i].items[j].id;
-                this.colorSizeList[1] = this.size;
-              }
-            }
-          }
+          // for(let i = 0; i < this.options.length; i ++) {
+          //   for(let j = 0; j < this.options[i].values.length; j ++) {
+          //     if(this.color == this.options[i].values[j].value) {
+          //       this.sel[0] = this.options[i].values[j].id;
+          //       this.colorSizeList[0] = this.color;
+          //     }
+          //     if(this.size == this.options[i].values[j].value) {
+          //       this.sel[1] = this.options[i].values[j].id;
+          //       this.colorSizeList[1] = this.size;
+          //     }
+          //   }
+          // }
           this.changePrompt();
         }
       },
       select(index, ind) {
         this.sel[index] = ind;                  // 让数组sel的第index+1的元素的值等于ind
         this.sel = this.sel.concat([]);         // 因为数组是引用类型，对其中一个变量直接赋值不会影响到另一个变量（并未操作引用的对象），使用concat（操作了应用对象）
-        this.colorSizeList[index] = this.options[index].items[ind].msg;         // 获取选中的id
+        this.colorSizeList[index] = this.options[index].values[ind].value;         // 获取选中的id
         this.changePrompt();
       },
       // 根据选择的商品参数来改变提示信息
       changePrompt() {
-        if(this.colorSizeList[0] == "" && this.colorSizeList[1] != "") {
-          this.prompt = "请选择 颜色"
-        }else if(this.colorSizeList[1] == "" && this.colorSizeList[0] != "") {
-          this.prompt = "请选择 尺寸"
-        }else if(this.colorSizeList[0] != "" && this.colorSizeList[1] != "") {
-          let promptTemp = "";
-          for(let i = 0; i < this.colorSizeList.length; i ++) {
-            promptTemp = promptTemp + " " + this.colorSizeList[i];
+        for(let i=0;i<this.colorSizeList.length;i++){
+          if(!this.colorSizeList[i]){
+            this.prompt = "请选择 " + this.options[i].key;
+            return false;
           }
-          this.prompt = "已选择 " + promptTemp;
         }
+        let promptTemp = "";
+        for(let i = 0; i < this.colorSizeList.length; i ++) {
+          promptTemp = promptTemp + " " + this.options[i].key+':'+ this.colorSizeList[i];
+        }
+        this.prompt = promptTemp;
+
+        // if(this.colorSizeList[0] == "" && this.colorSizeList[1] != "") {
+        //   this.prompt = "请选择 颜色"
+        // }else if(this.colorSizeList[1] == "" && this.colorSizeList[0] != "") {
+        //   this.prompt = "请选择 尺寸"
+        // }else if(this.colorSizeList[0] != "" && this.colorSizeList[1] != "") {
+        //   let promptTemp = "";
+        //   for(let i = 0; i < this.colorSizeList.length; i ++) {
+        //     promptTemp = promptTemp + " " + this.colorSizeList[i];
+        //   }
+        //   this.prompt = "已选择 " + promptTemp;
+        // }
       },
       chooseDone() {
-        if(this.colorSizeList[0] != "" && this.colorSizeList[1] != "") {
-          console.log(this.colorSizeList);
-          this.popupVisible = false;
+        console.log(this.colorSizeList)
+        for(let i=0;i<this.colorSizeList.length;i++){
+          if(!this.colorSizeList[i] ){
+            return false;
+          }
         }
+        this.popupVisible = false;
       }
     },
     created() {
@@ -135,6 +167,9 @@
       .product-params-text {
         flex: 1;
         margin: 15px 0 25px 35px;
+        &.m-ml-0{
+          margin: 15px 0;
+        }
       }
       .more-params {
         width: 22px;

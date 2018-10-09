@@ -1,38 +1,39 @@
 <template>
     <div style="margin-bottom: 115px;">
-      <div class="m-swipe-box">
-        <mt-swipe :auto="2000">
-          <mt-swipe-item v-for="item in items" :key="item.id">
-            <a :href="item.href" rel="external nofollow">
-              <img :src="item.url" class="img"/>
-              <span class="desc"></span>
-            </a>
-          </mt-swipe-item>
-        </mt-swipe>
-      </div>
+      <!--<div class="m-swipe-box">-->
+        <!--<mt-swipe :auto="2000">-->
+          <!--<mt-swipe-item v-for="item in items" :key="item.id">-->
+            <!--<a :href="item.href" rel="external nofollow">-->
+              <!--<img :src="item.url" class="img"/>-->
+              <!--<span class="desc"></span>-->
+            <!--</a>-->
+          <!--</mt-swipe-item>-->
+        <!--</mt-swipe>-->
+      <!--</div>-->
       <div class="m-store-order" v-for="item in orderList" :key="item.id">
         <div class="m-store-name">
           <img src="/static/images/store-img.png" class="store-img">
           <div class="store-name m-ft-28 tl">{{item.storeName}}</div>
           <div class="product-send m-ft-28">{{item.productSend}}</div>
         </div>
-        <div class="m-order-discounts m-ft-20">
-          <div class="reduce-title m-bg-main-color">{{item.reduceTitle}}</div>
-          <div class="reduce-number m-grey tl">{{item.reduceNumber}}</div>
-          <div class="to-reduce m-red">{{item.toReduce}}</div>
-        </div>
+        <!--<div class="m-order-discounts m-ft-20">-->
+          <!--<div class="reduce-title m-bg-main-color">{{item.reduceTitle}}</div>-->
+          <!--<div class="reduce-number m-grey tl">{{item.reduceNumber}}</div>-->
+          <!--<div class="to-reduce m-red">{{item.toReduce}}</div>-->
+        <!--</div>-->
         <div class="m-order-product">
           <div class="one-product" v-for="product in item.productList" :key="product.id">
             <img v-if="product.choose" src="/static/images/check_box_on.png" class="check-box-img" @click="chooseProduct(product)">
             <img v-if="!product.choose" src="/static/images/check_box_un.png" class="check-box-img" @click="chooseProduct(product)">
-            <img :src="product.productImg" class="product-img" @click="toDetail(product)">
+            <img :src="product.primage" class="product-img" @click="toDetail(product)">
             <div class="one-product-three">
-              <div class="product-name m-ft-24 tl m-ft-b" @click="toDetail(product)">{{product.productName}}</div>
-              <product-params :choose="true" :size="product.size" :color="product.color" :quantity="product.quantity"></product-params>
+              <div class="product-name m-ft-24 tl m-ft-b" @click="toDetail(product)">{{product.prtitle}}</div>
+              <!-- :options="product.sku_total" -->
+              <product-params  :selects="product.sku.pskproperkey" :options="sku" :quantity="product.scnums" ></product-params>
               <product-quantity :quantity="product.quantity"></product-quantity>
             </div>
             <div class="one-product-four">
-              <p class="one-product-price m-red m-ft-20 m-ft-b">￥<span class="product-price-number">{{product.productPrice}}</span></p>
+              <p class="one-product-price m-red m-ft-20 m-ft-b">￥<span class="product-price-number">{{product.sku.pskprice}}</span></p>
               <div class="product-failure m-ft-24 m-grey"></div>
               <img src="/static/images/delete.png" class="delete-product-img" @click="deleteProduct(product)">
             </div>
@@ -41,37 +42,42 @@
         <div class="failure-product">
           <div class="one-product" v-for="failure in item.failureList" :key="failure.id">
             <img src="/static/images/check_box_disabled.png" class="check-box-img">
-            <img :src="failure.productImg" class="product-img">
+            <img :src="failure.primage" class="product-img">
             <div class="one-product-three">
-              <div class="product-name m-ft-24 tl m-ft-b">{{failure.productName}}</div>
-              <div class="tl">尺寸：{{failure.size}} 颜色：{{failure.color}}</div>
+              <div class="product-name m-ft-24 tl m-ft-b">{{failure.prtitle}}</div>
+              <!--<div class="tl">尺寸：{{failure.size}} 颜色：{{failure.color}}</div>-->
+              <div class="product-params-text m-ft-26 m-grey tl m-ml-0" >
+                <template v-for="(i,index) in failure.sku.pskproperkey">
+                  <span class="product-params-detail  m-grey">{{i.key}}:{{i.value}} </span>
+                </template>
+              </div>
               <!--<product-params :size="failure.size" :color="failure.color"></product-params>-->
               <!--<product-quantity :quantity="failure.quantity"></product-quantity>-->
             </div>
             <div class="one-product-four">
-              <p class="one-product-price m-red m-ft-20 m-ft-b">￥<span class="product-price-number">{{failure.productPrice}}</span></p>
+              <p class="one-product-price m-red m-ft-20 m-ft-b">￥<span class="product-price-number">{{failure.sku.pskprice}}</span></p>
               <div class="product-failure m-ft-24 m-grey">失效</div>
               <img src="/static/images/delete.png" class="delete-product-img">
             </div>
           </div>
         </div>
       </div>
-      <div class="guess-product">
-        <div class="guess-product-border">
-          <div class="guess-product-title">
-            <img src="/static/images/guess_product_left.png" class="guess-product-left">
-            <img src="/static/images/guess_product_center.png" class="guess-product-center">
-            <div class="guess-product-title-text m-ft-30 m-red">你可能还喜欢</div>
-            <img src="/static/images/guess_product_right.png" class="guess-product-left">
-          </div>
-          <div class="guess-product-detail" v-for="item in guessProductList" :key="item.id">
-            <img :src="item.productImg" class="guess-product-img">
-            <div class="guess-product-name m-ft-24 tl m-ft-b">{{item.productName}}</div>
-            <p class="guess-product-price m-ft-20 m-red m-ft-b">￥<span class="m-ft-34">{{item.productPrice}}</span></p>
-            <div class="guess-product-buy m-ft-24 m-red">购买</div>
-          </div>
-        </div>
-      </div>
+      <!--<div class="guess-product">-->
+        <!--<div class="guess-product-border">-->
+          <!--<div class="guess-product-title">-->
+            <!--<img src="/static/images/guess_product_left.png" class="guess-product-left">-->
+            <!--<img src="/static/images/guess_product_center.png" class="guess-product-center">-->
+            <!--<div class="guess-product-title-text m-ft-30 m-red">你可能还喜欢</div>-->
+            <!--<img src="/static/images/guess_product_right.png" class="guess-product-left">-->
+          <!--</div>-->
+          <!--<div class="guess-product-detail" v-for="item in guessProductList" :key="item.id">-->
+            <!--<img :src="item.productImg" class="guess-product-img">-->
+            <!--<div class="guess-product-name m-ft-24 tl m-ft-b">{{item.productName}}</div>-->
+            <!--<p class="guess-product-price m-ft-20 m-red m-ft-b">￥<span class="m-ft-34">{{item.productPrice}}</span></p>-->
+            <!--<div class="guess-product-buy m-ft-24 m-red">购买</div>-->
+          <!--</div>-->
+        <!--</div>-->
+      <!--</div>-->
       <div class="pay-price">
         <img v-if="ifChooseAll" src="/static/images/check_box_on.png" class="choose-all-img" @click="chooseAll()">
         <img v-if="!ifChooseAll" src="/static/images/check_box_un.png" class="choose-all-img" @click="chooseAll()">
@@ -81,7 +87,7 @@
             <span class="m-ft-20 m-red m-ft-b">￥</span>
             <span class="m-ft-34 m-red">{{totalPrice}}</span>
           </p>
-          <div class="pay-price-reduce m-grey m-ft-20">已减 30 元</div>
+          <!--<div class="pay-price-reduce m-grey m-ft-20">已减 30 元</div>-->
         </div>
         <div class="to-pay m-ft-34 m-bg-main-color" @click="toOrder">去结算</div>
       </div>
@@ -92,7 +98,8 @@
   import productParams from "../shopping/components/productParams";
   import productQuantity from "../shopping/components/productQuantity";
   import { MessageBox } from 'mint-ui';
-
+  import axios from 'axios';
+  import api from '../../api/api'
   export default {
     data() {
       return {
@@ -102,11 +109,11 @@
         orderList: [
           { storeName: "衣衣旗舰店", productSend: "已免运费", reduceTitle: "满 300 减 30", reduceNumber: "还差 30 元", toReduce: "去凑单 >",
             productList: [
-              { prid: "123", choose: false, productImg: "/static/images/product1.png", productName: "18年版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版", size: "XL", color: "黄色", quantity: 2, productPrice: "106" },
-              { prid: "1234", choose: false, productImg: "/static/images/product1.png", productName: "18年版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版",  size: "2XL", color: "蓝色", quantity: 1,productPrice: "99" }
+              // { prid: "123", choose: false, productImg: "/static/images/product1.png", productName: "18年版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版", size: "XL", color: "黄色", quantity: 2, productPrice: "106" },
+              // { prid: "1234", choose: false, productImg: "/static/images/product1.png", productName: "18年版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版",  size: "2XL", color: "蓝色", quantity: 1,productPrice: "99" }
             ],
             failureList: [
-              { productImg: "/static/images/product1.png", productName: "18年版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版", size: "M", color: "红色", quantity: 3, productPrice: "106" }
+              // { productImg: "/static/images/product1.png", productName: "18年版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版安耐晒金瓶防晒霜60ml同款温和清洁澳洲版", size: "M", color: "红色", quantity: 3, productPrice: "106" }
             ]
           }
         ],
@@ -116,11 +123,37 @@
         ],
         ifChooseAll: false,
         totalPrice: 0,
-        order: []
+        order: [],
+        sku:[ {key: "颜色", values: [{id: 0, value: "黄色"}, {id: 1, value: "绿色"}, {id: 2, value: "红色"}, {id:3, value: "蓝色"}]},
+          {key: "尺寸", values: [{id: 0, value: "S"}, {id: 1, value: "M"}, {id: 2, value: "L"}, {id: 3, value: "XL"}, {id: 4, value: "2XL"}, {id: 5, value: "3XL"}]} ]
       }
     },
     components: { productParams, productQuantity },
+    mounted(){
+      this.getShop()
+    },
     methods: {
+      /*获取购物车*/
+      getShop(){
+        axios.get(api.get_list_shoppingcart+'?token=' + localStorage.getItem('token')).then(res => {
+            if(res.data.status == 200){
+              let _arr =[];
+              let fail_arr = [];
+              for(let i=0;i<res.data.data.cart.length;i++){
+                res.data.data.cart[i].choose = false;
+                if(res.data.data.cart[i].prstatus == 1){
+                  _arr.push(res.data.data.cart[i])
+                }else{
+                  fail_arr.push(res.data.data.cart[i])
+                }
+              }
+              this.orderList[0].productList = [].concat(_arr);
+              this.orderList[0].failureList = [].concat(fail_arr);
+              this.orderList[0].storeName = res.data.name;
+              this.orderList[0].productSend = res.data.postfee;
+            }
+        })
+      },
       // 单独勾选产品
       chooseProduct(product) {
         if(product.choose) {
@@ -135,7 +168,7 @@
               if(this.orderList[i].productList[j].choose) {
                 this.order.push(this.orderList[i].productList[j]);
                 // 计算单价商品的总价
-                this.totalPrice = this.orderList[i].productList[j].productPrice * this.orderList[i].productList[j].quantity;
+                this.totalPrice = this.orderList[i].productList[j].sku.pskprice * this.orderList[i].productList[j].scnums;
               }
             }
           }
@@ -179,7 +212,11 @@
           showCancelButton: true
         }).then(action => {
           if(action == "confirm") {
-            console.log("deleteProduct", product);
+            axios.post(api.delete_shoppingcart + '?token='+localStorage.getItem('token'),{
+              scid:product.scid
+            }).then(res => {
+              console.log(res)
+            })
           }
         });
       },
