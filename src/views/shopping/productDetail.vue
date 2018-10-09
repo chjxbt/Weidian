@@ -33,7 +33,7 @@
       <div class="product-activity-content m-ft-28 m-grey-color m-ft-b tl">满89减5;满139减10</div>
       <img src="/static/images/icon-list-right.png" class="to-activity">
     </div>-->
-    <product-params :choose="false" :options="params_options"></product-params>
+    <product-params :choose="false" :options="params_options" :sku="sku"></product-params>
     <div class="rectangular"></div>
     <div class="product-evaluation">
       <div class="evaluation-title m-ft-26 m-grey-color b">商品评价（99+）</div>
@@ -127,7 +127,8 @@
         brandList: [],
         product_info:null,
         // brandList: [{img: "http://pic1.win4000.com/wallpaper/8/599d1d60036a2.jpg"}, {img: "http://bbsfiles.vivo.com.cn/vivobbs/attachment/forum/201804/25/145712qjc3gwcbtvgoct9w.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/57eb314a3c143.jpg"}, {img: "http://pic1.win4000.com/wallpaper/8/57eb322625b50.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc06f60ecf.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc080092c6.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc07478a17.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc08474821.jpg"}]
-        params_options:null
+        params_options:null,
+        sku:[]
       }
     },
     components: { productParams },
@@ -142,6 +143,7 @@
           if(res.data.status == 200){
             this.product_info =  res.data.data;
             this.params_options = res.data.data.sku_value.psvpropervalue;
+            this.sku = res.data.data.sku;
           }
         })
       },

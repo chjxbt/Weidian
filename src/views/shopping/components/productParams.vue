@@ -81,6 +81,10 @@
       selects:{
         type:Array,
         default:null
+      },
+      sku:{
+        type:Array,
+        default:null
       }
     },
     mounted(){
@@ -129,7 +133,9 @@
           promptTemp = promptTemp + " " + this.options[i].key+':'+ this.colorSizeList[i];
         }
         this.prompt = promptTemp;
-
+        // for(let a=0;a<this.sku.length;a++){
+        //
+        // }
         // if(this.colorSizeList[0] == "" && this.colorSizeList[1] != "") {
         //   this.prompt = "请选择 颜色"
         // }else if(this.colorSizeList[1] == "" && this.colorSizeList[0] != "") {
@@ -143,7 +149,6 @@
         // }
       },
       chooseDone() {
-        console.log(this.colorSizeList)
         for(let i=0;i<this.colorSizeList.length;i++){
           if(!this.colorSizeList[i] ){
             return false;
