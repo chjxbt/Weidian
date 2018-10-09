@@ -170,7 +170,8 @@
             this.changeLike(list);
             break;
           case 1:
-            this.show_fixed = true;
+            // this.show_fixed = true;
+            this.shareDone(list);
             break;
         }
       },
