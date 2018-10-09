@@ -410,4 +410,13 @@
     }
   }
 }
+  .m-fans{
+    .m-modal{
+      .m-modal-state{
+        .m-modal-content{
+          border-bottom: none!important;
+        }
+      }
+    }
+  }
 </style>

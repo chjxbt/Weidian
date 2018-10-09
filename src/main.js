@@ -29,8 +29,8 @@ FastClick.attach(document.body);
 import promise from 'es6-promise';//解决axios在ie9下不生效的方法
 promise.polyfill();
 
-// let token = "eyJhbGciOiJIUzI1NiIsImV4cCI6MTUzOTAzMzAyMiwiaWF0IjoxNTM4OTYxMDIyfQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0xMC0wOCAwOToxMDoyMiJ9.i_vnKuCHYqLontXrdLBaz6q6RL_xlY0I56CnY8OWTks";
-// localStorage.setItem('token', token);
+let token = "eyJhbGciOiJIUzI1NiIsImV4cCI6MjMzOTAzOTQzNSwiaWF0IjoxNTM5MDQ3NDM1fQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0xMC0wOSAwOToxMDozNSJ9.0DBRt2N4YJnWnjCFPMc63z_tI_5j5mljx2zCWTyxxtQ";
+localStorage.setItem('token', token);
 
 
 // 点击预览图片
