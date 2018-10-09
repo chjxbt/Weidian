@@ -26,9 +26,8 @@
           <el-table-column prop="to" label="跳转模块" width="500">
             <template slot-scope="scope">
               <el-radio-group v-model="jumpTo">
-                <el-radio :label="1">全部</el-radio>
-                <el-radio :label="2">专题</el-radio>
-                <el-radio :label="3">商品</el-radio>
+                <el-radio :label="1">专题</el-radio>
+                <el-radio :label="2">商品</el-radio>
               </el-radio-group>
             </template>
           </el-table-column>
@@ -55,8 +54,8 @@
           { name: "我的", content: "我的订单-待评价板块", show: true }
         ],
         jumpLoading: false,
-        jumpList: [{ name: "首页/发现页", to: "" }],
-        jumpTo: 3,
+        jumpList: [{ name: "首页", to: "" }],
+        jumpTo: 1,
         rowNum: ""
       }
     },
@@ -85,31 +84,24 @@
           this.bannerList = this.bannerList.concat();
           // this.imageUrl = res.data.data;
         });
-      },
-      // 跳转控制
-      jumpToWhere() {
-        axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token'), form).then(res => {
-          if(res.data.status == 200){
-            // console.log(res, file);
-            this.$message({ type: 'success', message: res.data.message });
-          }else{
-            this.$message({ type: 'error', message: res.data.message });
-          }
-
-          this.bannerList[this.rowNum].baimage = res.data.data;
-          this.bannerList = this.bannerList.concat();
-          // this.imageUrl = res.data.data;
-        });
       }
     },
     watch: {
       // 跳转模块的值发生变化
       jumpTo(newValue, oldValue) {
-        console.log(newValue)
+        this.jumpLoading = true;
+        axios.post(api.set_show_type + '?token=' + localStorage.getItem('token'), { skip_type: newValue }).then(res => {
+          if(res.data.status == 200){
+            this.$message({ type: 'success', message: res.data.message });
+            this.jumpLoading = false;
+          }else{
+            this.$message({ type: 'error', message: res.data.message });
+          }
+        });
       },
       // 隐藏控制的值发生变化
       hiddenList(newValue, oldValue) {
-        console.log(newValue)
+
       }
     },
     mounted() {
