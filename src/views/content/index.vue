@@ -71,7 +71,7 @@
         <div style="display: flex; margin-top: 0.1rem">
           <div class="add-box" style="flex: 1;">
             <el-tooltip class="item" effect="light" content="添加专题" placement="right">
-              <span class="m-item-add" style="left: 3.5rem" @click="addBanner" v-if="addBannerBtn">+</span>
+              <span class="m-item-add" @click="addBanner" v-if="addBannerBtn">+</span>
             </el-tooltip>
           </div>
           <p class="m-item-alert tr">轮播图尺寸大小750*280</p>
@@ -101,12 +101,16 @@
         </el-table>
       </div>
 
+      <div style="display: flex">
+        <div style="flex: 1">
+          <el-tooltip effect="light" content="添加热文" placement="right">
+            <span class="m-item-add" v-if="!show_div" @click="showDiv" style="margin-top: -0.1rem">+</span>
+          </el-tooltip>
+          <span class="m-item-add" v-if="show_div" @click="showDiv" style="margin-top: -0.1rem;">-</span>
+        </div>
+      </div>
 
-      <el-tooltip class="item" effect="light" content="添加热文" placement="right">
-        <span class="m-item-add tc" v-if="!show_div" @click="showDiv" style="margin-top: -0.1rem">+</span>
-      </el-tooltip>
-      <span class="m-item-add tc" v-if="show_div" @click="showDiv" style="margin-top: -0.1rem;">-</span>
-      <div class="m-form-item" v-if="show_div" style="margin-bottom: 0.3rem; margin-top: 0.1rem">
+      <div class="m-form-item" v-if="show_div" style="margin: 0.2rem 0 0.3rem 0">
         <p class="m-form-label">热文内容</p>
         <div class="m-item-content">
           <div class=" m-item-row">
@@ -1141,7 +1145,7 @@
     .banner-btn {
       color: #ffffff;
       height: 0.2rem;
-      line-height: 0.2rem;
+      line-height: 0.22rem;
       white-space: nowrap;
       font-size: 0.12rem;
       border-radius: 0.1rem;
