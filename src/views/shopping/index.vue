@@ -194,8 +194,8 @@
               this.orderList[i].productList[j].choose = true;
               // console.log(this.orderList[i].productList[j]);
               // 单价、数量
-              price = parseFloat(this.orderList[i].productList[j].productPrice);
-              quantity = parseInt(this.orderList[i].productList[j].quantity);
+              price = parseFloat(this.orderList[i].productList[j].sku.pskprice);
+              quantity = parseInt(this.orderList[i].productList[j].scnums);
               // 计算总价
               this.totalPrice = this.totalPrice + price * quantity;
               // 勾选后把该商品加入到可以结算的 list 中
