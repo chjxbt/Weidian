@@ -61,9 +61,7 @@
            </el-form-item>
            <el-form-item label="图标" class="m-s required" style="width: 2rem;">
              <el-upload class="avatar-uploader" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false"
-                        :on-success="uploadPicture"
-                        :before-upload="beforeAvatarUpload">
-               <!--:on-remove="handleRemove"-->
+                        :on-success="uploadPicture">
                <img v-if="imageUrl" :src="imageUrl" class="avatar">
                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
              </el-upload>
@@ -71,23 +69,7 @@
            <el-form-item :label="video_ratio" class="required">
              <el-input v-model="formIndex.content" class="m-input-m"></el-input>
            </el-form-item>
-           <!--<el-form-item label="完成提示" class="m-f">
-             <el-upload
-               class="avatar-uploader"
-               action="https://jsonplaceholder.typicode.com/posts/"
-               :show-file-list="false"
-               :on-success="handleAvatarSuccess"
-               :before-upload="beforeAvatarUpload">
-               <img v-if="imageUrl" :src="imageUrl" class="avatar">
-               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-             </el-upload>
-           </el-form-item>-->
          </div>
-         <!--<el-form-item label="奖励方式">
-           <el-select v-model="value" placeholder="请选择">
-             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
-           </el-select>
-         </el-form-item>-->
          <el-form-item label="备注">
            <el-input v-model="formIndex.memo" class="m-input-m"></el-input>
          </el-form-item>
@@ -103,9 +85,6 @@
            </el-input>
            <span class="m-item-add">+</span>
          </el-form-item>
-         <!--<el-form-item label="规则">
-           <textarea v-model="formIndex.rule" class="m-textarea"></textarea>
-         </el-form-item>-->
        </el-form>
      </div>
       <!--发现-->
@@ -118,8 +97,7 @@
                 class="avatar-uploader"
                 action="https://jsonplaceholder.typicode.com/posts/"
                 :show-file-list="false"
-                :on-success="handleAvatarSuccess"
-                :before-upload="beforeAvatarUpload">
+                :on-success="handleAvatarSuccess">
                 <img v-if="imageUrl" :src="imageUrl" class="avatar">
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
@@ -140,8 +118,7 @@
                     class="avatar-uploader"
                     action="https://jsonplaceholder.typicode.com/posts/"
                     :show-file-list="false"
-                    :on-success="handleAvatarSuccess"
-                    :before-upload="beforeAvatarUpload">
+                    :on-success="handleAvatarSuccess">
                     <img v-if="imageUrl" :src="imageUrl" class="avatar">
                     <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                   </el-upload>
@@ -156,8 +133,7 @@
                     class="avatar-uploader"
                     action="https://jsonplaceholder.typicode.com/posts/"
                     :show-file-list="false"
-                    :on-success="handleAvatarSuccess"
-                    :before-upload="beforeAvatarUpload">
+                    :on-success="handleAvatarSuccess">
                     <img v-if="imageUrl" :src="imageUrl" class="avatar">
                     <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                   </el-upload>
@@ -172,8 +148,7 @@
                     class="avatar-uploader"
                     action="https://jsonplaceholder.typicode.com/posts/"
                     :show-file-list="false"
-                    :on-success="handleAvatarSuccess"
-                    :before-upload="beforeAvatarUpload">
+                    :on-success="handleAvatarSuccess">
                     <img v-if="imageUrl" :src="imageUrl" class="avatar">
                     <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                   </el-upload>
@@ -188,8 +163,7 @@
                     class="avatar-uploader"
                     action="https://jsonplaceholder.typicode.com/posts/"
                     :show-file-list="false"
-                    :on-success="handleAvatarSuccess"
-                    :before-upload="beforeAvatarUpload">
+                    :on-success="handleAvatarSuccess">
                     <img v-if="imageUrl" :src="imageUrl" class="avatar">
                     <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                   </el-upload>
@@ -209,8 +183,7 @@
                     class="avatar-uploader"
                     action="https://jsonplaceholder.typicode.com/posts/"
                     :show-file-list="false"
-                    :on-success="handleAvatarSuccess"
-                    :before-upload="beforeAvatarUpload">
+                    :on-success="handleAvatarSuccess">
                     <img v-if="imageUrl" :src="imageUrl" class="avatar">
                     <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                   </el-upload>
@@ -225,8 +198,7 @@
                     class="avatar-uploader"
                     action="https://jsonplaceholder.typicode.com/posts/"
                     :show-file-list="false"
-                    :on-success="handleAvatarSuccess"
-                    :before-upload="beforeAvatarUpload">
+                    :on-success="handleAvatarSuccess">
                     <img v-if="imageUrl" :src="imageUrl" class="avatar">
                     <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                   </el-upload>
@@ -241,8 +213,7 @@
                     class="avatar-uploader"
                     action="https://jsonplaceholder.typicode.com/posts/"
                     :show-file-list="false"
-                    :on-success="handleAvatarSuccess"
-                    :before-upload="beforeAvatarUpload">
+                    :on-success="handleAvatarSuccess">
                     <img v-if="imageUrl" :src="imageUrl" class="avatar">
                     <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                   </el-upload>
@@ -257,8 +228,7 @@
                     class="avatar-uploader"
                     action="https://jsonplaceholder.typicode.com/posts/"
                     :show-file-list="false"
-                    :on-success="handleAvatarSuccess"
-                    :before-upload="beforeAvatarUpload">
+                    :on-success="handleAvatarSuccess">
                     <img v-if="imageUrl" :src="imageUrl" class="avatar">
                     <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                   </el-upload>
@@ -268,6 +238,24 @@
           </div>
         </div>
       </div>
+      <div class="m-form-item-box" v-if="page == '我的'">
+        <div class="m-form-img-item">
+          <p class="m-form-label">我的导师</p>
+          <div class="m-item-content">
+            <div class=" m-item-row m-f">
+              <el-upload
+                class="avatar-uploader"
+                action="https://jsonplaceholder.typicode.com/posts/"
+                :show-file-list="false"
+                :on-success="handleAvatarSuccess">
+                <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+              </el-upload>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="m-form-confirm-btn ">
         <span v-if="page == '首页'">暂停</span>
         <span @click="submit">发布</span>
@@ -465,39 +453,6 @@
           this.imageUrl = res.data.data;
         });
       },
-      // 上传图片前的限制方法
-      beforeAvatarUpload(file) {
-        this.$message({ type: 'warning', message: "上传中，请等待" });
-        // 上传前限制图片的宽高比
-        /*let that = this;
-        return new Promise(function(resolve, reject) {
-          let reader = new FileReader();
-          reader.onload = function(event) {
-            let image = new Image();
-            image.onload = function () {
-              if(this.width/this.height>2.7 || this.width/this.height<2.1) {
-                // _this.$message.warning('请上传宽高比为2.1~2.7的图片');
-                that.$notify({ title: '提示', message: '建议上传宽高比为2.1~2.7的图片', type: 'warning' });
-                // reject();
-              }
-              resolve();
-            };
-            image.src = event.target.result;
-          };
-          reader.readAsDataURL(file);
-        });*/
-        const isJPG = file.type === 'image/jpeg' || 'image/png';
-        const isLt2M = file.size / 1024 / 1024 < 20;
-
-        if (!isJPG) {
-          this.$message.error('上传图片只能是 JPG 或 PNG 格式!');
-        }
-        if (!isLt2M) {
-          this.$message.error('上传图片大小不能超过 2MB!');
-        }
-        return isJPG && isLt2M;
-      },
-
       // 编辑按钮
       editDone(row) {
         console.log(row);
