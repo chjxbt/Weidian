@@ -72,18 +72,14 @@
       },
       // 隐藏控制
       hiddenControl() {
-        axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token'), form).then(res => {
+        /*axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token'), form).then(res => {
           if(res.data.status == 200){
             // console.log(res, file);
             this.$message({ type: 'success', message: res.data.message });
           }else{
             this.$message({ type: 'error', message: res.data.message });
           }
-
-          this.bannerList[this.rowNum].baimage = res.data.data;
-          this.bannerList = this.bannerList.concat();
-          // this.imageUrl = res.data.data;
-        });
+        });*/
       },
       // 获取跳转控制的值
       getJumpto() {
