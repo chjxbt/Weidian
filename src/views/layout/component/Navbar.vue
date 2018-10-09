@@ -15,12 +15,18 @@
     </div>
     <div class="icon icon-message"></div>
     <el-dropdown :hide-on-click="false" trigger="click" @command="handleCommand">
-      <span>hello,{{$store.state.role}}<img :src="userImg" class="icon-img"></span>
+      <div class="name-img-box">
+        <div class="hello-text">Hello,</div>
+        <div class="role-text">{{$store.state.role}}</div>
+        <img class="icon-img" :src="userImg">
+      </div>
+      <!--<span class="hello-text">Hello,</span>-->
+      <!--<span>{{$store.state.role}}<img :src="userImg" class="icon-img"></span>-->
       <!--<span>hello,{{$store.state.role}}<i class="icon-person-navbar icon"></i></span>-->
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item command="userImg">修改头像</el-dropdown-item>
         <el-dropdown-item command="password">修改密码</el-dropdown-item>
-        <el-dropdown-item command="exit" divided>退出</el-dropdown-item>
+        <el-dropdown-item command="exit">退出</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
 
@@ -30,13 +36,14 @@
           <div class="cancel-btn" @click="cancel('userImg')">X</div>
           <h3>管理员数据管理</h3>
           <p>--修改头像</p>
-          <div style="margin-top: 0.4rem;">
+          <div class="upload-box">
             <el-upload class="avatar-uploader" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false"
                        :on-success="uploadPicture">
-              <img v-if="userImg" :src="userImg" class="avatar">
+              <img v-if="userImgTemp" :src="userImgTemp" class="avatar">
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
           </div>
+          <div class="save-btn" @click="saveImg">保 存</div>
         </div>
       </div>
     </div>
@@ -56,7 +63,7 @@
                 <el-form-item label="请确认新密码" prop="MApasswordRepeat">
                   <el-input v-model="pwdForm.MApasswordRepeat" type="password" class="m-input-pwd" placeholder=""></el-input>
                 </el-form-item>
-              <p class="m-btn-p" @click="pwdSubmit('pwdForm')">确认修改</p>
+              <p class="m-btn-p" @click="pwdSubmit('pwdForm')">保 存</p>
           </el-form>
         </div>
       </div>
@@ -82,12 +89,9 @@ export default {
       isActive: false,
       show_pwd_modal: false,
       show_img_modal: false,
-      userImg: "",
-      pwdForm: {
-        MApasswordOld: '',
-        MApasswordNew: '',
-        MApasswordRepeat: ''
-      },
+      userImg: "",          // 用户头像
+      userImgTemp: "",      // 暂存用户头像
+      pwdForm: { MApasswordOld: '', MApasswordNew: '', MApasswordRepeat: '' },      // 修改密码的表单
       rules: {
         MApasswordOld: [
           { required: true, message: '请输入旧密码', trigger: 'blur' }
@@ -118,8 +122,10 @@ export default {
     // 关闭modal
     cancel(where) {
       if(where == 'password'){
+        this.pwdForm = { MApasswordOld: '', MApasswordNew: '', MApasswordRepeat: '' };
         this.show_pwd_modal = false;
       }else if(where == "userImg") {
+        this.userImgTemp = "";
         this.show_img_modal = false;
       }
     },
@@ -131,61 +137,88 @@ export default {
       form.append("index", 1);
       axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token'), form).then(res => {
         if(res.data.status == 200){
-          // this.$message({ type: 'success', message: res.data.message });
-          this.userImg = res.data.data;
-
-          // 修改管理员头像
-          axios.post(api.update_info + '?token=' + localStorage.getItem('token') + "&baid=" + banner.baid, params).then(res=>{
-            if(res.data.status == 200){
-              this.$message({ message: "保存成功", type: 'success' });
-
-              localStorage.setItem('userImg', this.userImg);
-              this.show_img_modal = false;
-            }else{
-              this.$message.error(res.data.message);
-            }
-          });
+          this.userImgTemp = res.data.data;
         }else{
           this.$message({ type: 'error', message: res.data.message });
         }
       });
     },
-    hideModal(){
-      this.show_pwd_modal = false;
-    },
-    pwdSubmit(formName){
-      let that = this;
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          axios.post(api.changePwd + '?token=' + that.$store.state.token,that.pwdForm).
-          then(res=>{
-            if(res.data.status == 200){
-              this.$message({
-                message: res.data.message,
-                type: 'success'
-              });
-              this.show_pwd_modal = false;
-              for(let i in that.pwdForm){
-                that.pwdForm[i] = ''
-              }
-            }else{
-              this.$message.error(res.data.message);
-            }
-          }, res=>{
+    // 修改头像的保存按钮
+    saveImg() {
+      if(this.userImgTemp == "") {
+        this.$message({ type: 'warning', message: "请先上传用户头像" });
+      }else {
+        // 修改管理员头像
+        axios.post(api.update_info + '?token=' + localStorage.getItem('token'), { head: this.userImgTemp }).then(res=>{
+          if(res.data.status == 200){
+            this.$message({ message: "保存成功", type: 'success' });
+            this.userImg = this.userImgTemp;
+            localStorage.setItem('userImg', this.userImg);
+            this.show_img_modal = false;
+            this.userImgTemp = "";
+          }else{
             this.$message.error(res.data.message);
-          });
-        } else {
-          console.log('error submit!!');
-          return false;
-        }
-      });
+          }
+        });
+      }
+    },
+    // 点击modal外部则关闭modal
+    hideModal(){
+      this.show_img_modal = false;
+      this.show_pwd_modal = false;
+      this.userImgTemp = "";
+      this.pwdForm = { MApasswordOld: '', MApasswordNew: '', MApasswordRepeat: '' };
+    },
+    // 提交密码
+    pwdSubmit(formName){
+      if(this.pwdForm.MApasswordRepeat != this.pwdForm.MApasswordNew) {
+        this.$message({ type: 'warning', message: "两次输入的密码不一致" });
+      }else {
+        let that = this;
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            let params = {
+              oldpassword: that.pwdForm.MApasswordOld,
+              newpassword: that.pwdForm.MApasswordNew,
+            };
+            axios.post(api.update_info + '?token=' + localStorage.getItem('token'), params).then(res=>{
+              if(res.data.status == 200){
+                this.$message({ message: "密码修改成功，请重新登录", type: 'success' });
+                this.show_pwd_modal = false;
+                for(let i in that.pwdForm){
+                  that.pwdForm[i] = ''
+                }
 
+                localStorage.clear();                     // 清除所有localStorage
+                this.$router.push({ path: '/login' });    // 去登录页面
+              }else{
+                this.$message.error(res.data.message);
+              }
+            }, res=>{
+              this.$message.error(res.data.message);
+            });
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      }
     },
     handleCommand(command) {
       if(command == 'password'){
         this.show_pwd_modal = true;
+        this.show_img_modal = false;
+        this.userImgTemp = "";
       }else if(command == "userImg") {
         this.show_img_modal = true;
+        this.show_pwd_modal = false;
+        this.pwdForm = { MApasswordOld: '', MApasswordNew: '', MApasswordRepeat: '' };
+      }else if(command == "exit") {
+        this.$confirm('确认退出登录?', '提示',
+          {confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'}).then(() => {
+          localStorage.clear();                     // 清除所有localStorage
+          this.$router.push({ path: '/login' });    // 去登录页面
+        }).catch(() => {  });
       }
     },
     modalClick(e){
@@ -246,12 +279,6 @@ export default {
     width: 0.3rem;
     height: 0.3rem;
   }
-  .icon-img{
-    display: inline-block;
-    width: 0.3rem;
-    height: 0.3rem;
-    border-radius: 50%;
-  }
   .icon-person-navbar{
     background: url("../../../common/images/icon-person-navbar.png");
     background-size: 100% 100%;
@@ -267,6 +294,22 @@ export default {
     width: 0.4rem;
     height: 0.4rem;
     cursor: pointer;
+  }
+  .name-img-box {
+    display: flex;
+    .hello-text {
+      line-height: 0.3rem;
+    }
+    .role-text {
+
+    }
+    .icon-img{
+      display: inline-block;
+      width: 0.3rem;
+      height: 0.3rem;
+      margin-left: 0.1rem;
+      border-radius: 50%;
+    }
   }
 }
   .hamburger.is-active {
@@ -287,8 +330,15 @@ export default {
       margin-bottom: 0.2rem;
     }
     .m-btn-p{
-      font-size: 0.14rem;
-      cursor: pointer;
+      /*font-size: 0.14rem;*/
+      /*cursor: pointer;*/
+      width: 0.3rem;
+      color: #ffffff;
+      margin: 0.3rem auto;
+      border-radius: 0.1rem;
+      white-space: nowrap;
+      padding: 0.03rem 0.5rem;
+      background-color: #91aeb5;
     }
   }
 }
