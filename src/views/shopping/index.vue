@@ -30,7 +30,7 @@
               <div class="product-name m-ft-24 tl m-ft-b" @click="toDetail(product)">{{product.prtitle}}</div>
               <!-- :options="product.sku_total" -->
               <product-params  :selects="product.sku.pskproperkey" :options="sku" :quantity="product.scnums" ></product-params>
-              <product-quantity :quantity="product.quantity"></product-quantity>
+              <product-quantity :quantity="product.scnums"></product-quantity>
             </div>
             <div class="one-product-four">
               <p class="one-product-price m-red m-ft-20 m-ft-b">￥<span class="product-price-number">{{product.sku.pskprice}}</span></p>
