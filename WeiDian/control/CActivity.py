@@ -295,7 +295,7 @@ class CActivity(BaseActivityControl):
         if media:
             for img_or_video in media:
                 img_or_video_keys = img_or_video.keys()
-                if 'AMimage' in img_or_video_keys and 'AMvideo' not in img_or_video_keys:
+                if 'amimage' in img_or_video_keys and 'amvideo' not in img_or_video_keys:
                     """图片"""
                     self.smedia.add_model('ActivityMedia', **{
                         'AMid': str(uuid.uuid1()),
@@ -306,7 +306,7 @@ class CActivity(BaseActivityControl):
                     image_num += 1
                     if image_num > 9:
                         raise SYSTEM_ERROR(u"图片超出数量限制")
-                elif 'AMimage' not in img_or_video_keys and 'AMvideo' in img_or_video_keys:
+                elif 'amimage' not in img_or_video_keys and 'amvideo' in img_or_video_keys:
                     """视频"""
                     if image_num < 1:
                         # 只有在无图片的状况下才会添加视频
