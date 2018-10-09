@@ -22,8 +22,8 @@ class STopNav(SBase):
         return self.session.query(TopNav).filter_by(Tisdelete=False, TNparentid=tnparentid).order_by(TopNav.TSort).all()
 
     @close_session
-    def add_one(self, topnav):
-        self.session.add(topnav)
+    def get_topnav_by_tnid(self, tnid):
+        return self.session.query(TopNav).filter(TopNav.TNid == tnid).first()
 
     @close_session
     def del_topnav(self, tnid):

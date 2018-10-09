@@ -47,6 +47,8 @@ class CActivity(BaseActivityControl):
         self.suser = SUser()
         from WeiDian.service.SBigActivity import SBigActivity
         self.sbigactivity = SBigActivity()
+        from WeiDian.service.STopNav import STopNav
+        self.stopnav = STopNav()
         self.empty = ['', None, [], {}]
 
     @verify_token_decorator
@@ -62,6 +64,16 @@ class CActivity(BaseActivityControl):
             raise PARAMS_ERROR(u'参数skip_type错误')
         Partner().set_item('skip', 'skip_type', skip_type)
         response = import_status('set_success', 'OK')
+        return response
+
+    @verify_token_decorator
+    def get_show_type(self):
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'请使用管理员登录')
+        settings = Partner()
+        skiptype = settings.get_item('skip', 'skip_type')
+        response = import_status("messages_get_item_ok", "OK")
+        response['data'] = {'skiptype': skiptype}
         return response
 
     @verify_token_decorator
@@ -93,6 +105,10 @@ class CActivity(BaseActivityControl):
         if not (tnid or suid):
             raise PARAMS_MISS(u"参数缺失")
         try:
+            topnav = self.stopnav.get_topnav_by_tnid(tnid)
+            if topnav.TNtype == 2 and str(tnid) != '1':  # '1'为每日十荐页tnid
+                skiptype = 0
+            print (skiptype)
             activity_list = self.sactivity.get_activity_by_topnavid(tnid, page, count, skiptype, acid)
             logger.info("get activity_list success")
 
@@ -544,9 +560,9 @@ class CActivity(BaseActivityControl):
         hmtype = args.get('hmtype', 3)
         if str(hmtype) not in self.hmsk_type:
             raise PARAMS_MISS(u"参数错误")
-        from WeiDian.service.STopNav import STopNav
+
         from WeiDian.config.enums import HMSkipType
-        topnav = STopNav().get_topnav_by_name(HMSkipType.get(str(hmtype)))
+        topnav = self.stopnav.get_topnav_by_name(HMSkipType.get(str(hmtype)))
         acfilter = {Activity.ACtitle.contains(actitle), Activity.ACtext.contains(actitle)}
         activity_list = self.sactivity.get_activity_by_filter(acfilter, topnav.TNid)
         res = import_status("add_activity_success", "OK")
