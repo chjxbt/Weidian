@@ -23,10 +23,12 @@ const api={
 
   get_home: title + 'topnav/get_home',  // 获取上部导航 - 首页
   get_dp: title + 'topnav/get_dp',  // 获取上部导航 - 发现页
-  get_all_activity: title + 'activity/get_all',  // 获取首页/发现页活动/推文内容列表
-  set_show_type: title + 'activity/set_show_type',  // 设置首页专题默认的过滤类型
-  add_one_activity: title + 'activity/add_one',  // 添加首页活动/推文（测试）
 
+  set_show_type: title + 'activity/set_show_type',  // 设置首页专题默认的过滤类型
+  get_show_type: title + 'activity/get_show_type',  // 获取首页默认的过滤类型
+
+  get_all_activity: title + 'activity/get_all',  // 获取首页/发现页活动/推文内容列表
+  add_one_activity: title + 'activity/add_one',  // 添加首页活动/推文（测试）
   update_act: title + 'activity/update_act',  // 修改/删除活动/推文 - 首页/发现页
   add_to_bigact: title + 'bigactivity/add_to_bigact', // 将推文批量添加到专题
 

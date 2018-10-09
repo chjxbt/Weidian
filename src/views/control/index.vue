@@ -25,7 +25,7 @@
           <el-table-column prop="name" label="板块" width="260"></el-table-column>
           <el-table-column prop="to" label="跳转模块" width="500">
             <template slot-scope="scope">
-              <el-radio-group v-model="jumpTo">
+              <el-radio-group v-model="jumpTo" @change="jumpToChange">
                 <el-radio :label="1">专题</el-radio>
                 <el-radio :label="2">商品</el-radio>
               </el-radio-group>
@@ -55,7 +55,7 @@
         ],
         jumpLoading: false,
         jumpList: [{ name: "首页", to: "" }],
-        jumpTo: 1,
+        jumpTo: 0,
         rowNum: ""
       }
     },
@@ -84,28 +84,34 @@
           this.bannerList = this.bannerList.concat();
           // this.imageUrl = res.data.data;
         });
-      }
-    },
-    watch: {
-      // 跳转模块的值发生变化
-      jumpTo(newValue, oldValue) {
+      },
+      // 获取跳转控制的值
+      getJumpto() {
         this.jumpLoading = true;
-        axios.post(api.set_show_type + '?token=' + localStorage.getItem('token'), { skip_type: newValue }).then(res => {
+        axios.get(api.get_show_type + '?token=' + localStorage.getItem('token')).then(res => {
+          if(res.data.status == 200) {
+            this.jumpTo = res.data.data.skiptype;
+            this.jumpLoading = false;
+          }else{
+            this.$message.error(res.data.message);
+          }
+        })
+      },
+      // 跳转控制的变化钩子
+      jumpToChange(v) {
+        this.jumpLoading = true;
+        axios.post(api.set_show_type + '?token=' + localStorage.getItem('token'), { skip_type: v }).then(res => {
           if(res.data.status == 200){
-            this.$message({ type: 'success', message: res.data.message });
+            this.$message({ type: 'success', message: res.data.message, duration: 1500 });
             this.jumpLoading = false;
           }else{
             this.$message({ type: 'error', message: res.data.message });
           }
         });
-      },
-      // 隐藏控制的值发生变化
-      hiddenList(newValue, oldValue) {
-
       }
     },
     mounted() {
-
+      this.getJumpto();     // 获取跳转控制的值
     },
     created() {
 
