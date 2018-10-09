@@ -129,13 +129,13 @@ export default {
         this.show_img_modal = false;
       }
     },
-    // 上传图片
+    // 修改头像
     uploadPicture(res, file) {
       let form = new FormData();
       form.append("file", file.raw);
       form.append("FileType", 'NewsPic');
       form.append("index", 1);
-      axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token'), form).then(res => {
+      axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token') + "&filetype = userImg", form).then(res => {
         if(res.data.status == 200){
           this.userImgTemp = res.data.data;
         }else{

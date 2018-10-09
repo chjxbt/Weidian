@@ -449,13 +449,13 @@
         }
       },
 
-      // 上传标题图片
+      // 上传任务图标图片
       uploadPicture(res, file) {
         let form = new FormData();
         form.append("file", file.raw);
         form.append("FileType", 'NewsPic');
         form.append("index", 1);
-        axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token'), form).then(res => {
+        axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token') + "&filetype = task", form).then(res => {
           if(res.data.status == 200){
             this.$message({ type: 'success', message: res.data.message });
           }else{

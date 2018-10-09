@@ -44,7 +44,7 @@
               <template slot-scope="scope">
                 <div @click="rowClick(scope.$index, 'img')" v-if="scope.row.showPicture">
                   <el-upload class="avatar-uploader-long" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false"
-                             :on-success="uploadPicture1" :disabled="scope.row.disabled">
+                             :on-success="uploadLongPicture" :disabled="scope.row.disabled">
                     <img v-if="scope.row.balongimg" :src="scope.row.balongimg" class="long-picture">
                     <i v-else class="long-picture"></i>
                   </el-upload>
@@ -442,7 +442,7 @@
         form.append("file", item.file);
         form.append("FileType", 'NewsPic');
         form.append("index", 1);
-        axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token'), form).then(res => {
+        axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token') + "&filetype = activity", form).then(res => {
           if(res.data.status == 200){
             console.log(form);
             media = { amimage: res.data.data, amsort: this.activityMediaSort };
@@ -460,7 +460,7 @@
         form.append("file", item.file);
         form.append("FileType", 'NewsPic');
         form.append("index", 1);
-        axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token'), form).then(res => {
+        axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token') + "&filetype = course", form).then(res => {
           if(res.data.status == 200){
             this.longImg = res.data.data;
 
@@ -481,7 +481,7 @@
         form.append("file", item.file);
         form.append("FileType", 'NewsPic');
         form.append("index", 1);
-        axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token'), form).then(res => {
+        axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token') + "&filetype = video", form).then(res => {
           if(res.data.status == 200){
             this.videoImgUrl = "../../common/images/video-demo.jpg";
 
@@ -1089,13 +1089,13 @@
         // console.log(v);
 
       },
-      // 上传标题图片
-      uploadPicture1(res, file) {
+      // 上传banner长图
+      uploadLongPicture(res, file) {
         let form = new FormData();
         form.append("file", file.raw);
         form.append("FileType", 'NewsPic');
         form.append("index", 1);
-        axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token'), form).then(res => {
+        axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token') + "&filetype = bannerLong", form).then(res => {
           if(res.data.status == 200){
             // console.log(res, file);
             this.$message({ type: 'success', message: res.data.message });
@@ -1107,13 +1107,13 @@
           this.bannerList = this.bannerList.concat();
         });
       },
-      // 上传标题图片
+      // 上传banner图
       uploadPicture(res, file) {
         let form = new FormData();
         form.append("file", file.raw);
         form.append("FileType", 'NewsPic');
         form.append("index", 1);
-        axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token'), form).then(res => {
+        axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token') + "&filetype = banner", form).then(res => {
           if(res.data.status == 200){
             // console.log(res, file);
             this.$message({ type: 'success', message: res.data.message });
@@ -1198,23 +1198,6 @@
         this.tnid = this.tab_list2[i].tnid;
         this.clearFrom();         // 清空输入框
         this.getActivity(0, 5);   // 获取首页活动/推文内容列表
-      },
-      handleAvatarSuccess(){
-        let form = new FormData();
-        form.append("file", file.raw);
-        form.append("FileType", 'NewsPic');
-        form.append("index", 1);
-        axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token'), form).then(res => {
-          if(res.data.status == 200){
-            // console.log(res, file);
-            this.$message({ type: 'success', message: res.data.message });
-          }else{
-            this.$message({ type: 'error', message: res.data.message });
-          }
-
-          this.bannerList[this.rowNum].baimage = res.data.data;
-          this.bannerList = this.bannerList.concat();
-        });
       },
       // 获取推荐商品
       getProduct() {

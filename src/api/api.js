@@ -38,7 +38,8 @@ const api={
   update_info: title + 'super/update_info', // 修改管理员基本信息
 
 
-  upload_task_img: title + 'task/upload_task_img',  // 上传任务图标-上传图片
+  // upload_task_img: title + 'task/upload_task_img',  // 上传任务图标-上传图片
+  upload_task_img: title + 'activity/upload_home_images',  // 上传图片
 
 
 
