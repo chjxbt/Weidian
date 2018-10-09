@@ -236,7 +236,6 @@
           navClick(v){
            if(v.url){
              if(v.params){
-               this.$store.state.tabbar_select = '发现';
                this.$router.push({path: v.url, query: { name :v.params }});
              }else{
                this.$router.push(v.url);

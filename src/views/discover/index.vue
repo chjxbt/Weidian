@@ -61,6 +61,26 @@
         }
       },
       components: { navbar, fodder, every, announcement, course, iconList },
+      computed:{
+        name(){
+          return this.$route.query.name
+        }
+      },
+      watch: {
+        name: function (val) {
+          switch (this.$route.query.name){
+            case '赚钱学院':
+              this.getTopnav(3);
+              break;
+            case '素材圈':
+              this.getTopnav(1);
+              break;
+            case '公告':
+              this.getTopnav(2);
+              break;
+          }
+        },
+      },
       mounted(){
         if(localStorage.getItem('user_level') == 0){
           this.show_modal = true
