@@ -43,7 +43,7 @@
             <el-table-column prop="product" label="图片" width="220">
               <template slot-scope="scope">
                 <div @click="rowClick(scope.$index, 'img')" v-if="scope.row.showPicture">
-                  <el-upload class="avatar-uploader" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false"
+                  <el-upload class="avatar-uploader-long" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false"
                              :on-success="uploadPicture1" :disabled="scope.row.disabled">
                     <img v-if="scope.row.balongimg" :src="scope.row.balongimg" class="long-picture">
                     <i v-else class="long-picture"></i>
@@ -383,8 +383,8 @@
         productChoose: "",        // 编辑推荐商品-切换商品后选择的值
         productViewNum: "",       // 虚拟查看数
         productLikeNum: "",       // 虚拟喜欢数
-        activityActivityTime: [],
-        activityTypeList: [
+        activityActivityTime: [], // 推文-活动时间
+        activityTypeList: [       // 添加推文/活动时的活动类型选择项
           { value: "0", label: "普通动态" },
           { value: "1", label: "满减" },
           { value: "2", label: "满赠" },
@@ -397,16 +397,11 @@
           { value: "9", label: "限时抢" },
           { value: "10", label: "5 元 10 件" }
         ],
-        views: '',
-        activityTime: [],
-        hotmessages: [
-          { num: "18/09/13 18:30 ", content: "推文内容" },
-          { num: "18/09/13 18:30 ", content: "推文内容" },
-          { num: "18/09/13 18:30 ", content: "推文内容" },
-        ],
+        // views: '',
+        // activityTime: [],
         page:'每日10荐',
-        tab_list1:[],
-        tab_list2:[],
+        tab_list1:[],     // 导航栏
+        tab_list2:[],     // 素材圈的导航栏
         tableData: [
           { object: '新鲜出炉的周周奖现已发放，还不快去查收！', who: '张三', time: '2018-09-15 18:56:21', content: '评论测试评论测试评论测试评论测试评论测试评论测试评论测试' },
           { object: '新鲜出炉的周周奖现已发放，还不快去查收！', who: '张三', time: '2018-09-15 18:56:21', content: '评论测试评论测试评论测试评论测试评论测试评论测试评论测试' },
