@@ -474,16 +474,19 @@ class BaseFile():
         from WeiDian.common.timeformat import get_db_time_str
         from WeiDian.config.setting import QRCODEHOSTNAME, LinuxRoot, LinuxImgs
         files = request.files.get("file")
-        filessuffix = str(files.filename).split(".")[-1]
+        filename = files.filename
+        if not isinstance(filename, basestring):
+            filename = str(filename)
+        filessuffix = filename.split(".")[-1]
         filedir = os.path.join(LinuxRoot, LinuxImgs, rootdir)
         logger.debug('get filedir is %s',filedir)
         if not os.path.isdir(filedir):
             os.mkdir(filedir)
         if not is_admin():
-            filename = request.user.openid
+            filename_title = request.user.openid
         else:
-            filename = request.user.id
-        filename = rootdir + filename + get_db_time_str() + "." + filessuffix
+            filename_title = request.user.id
+        filename = rootdir + filename_title + get_db_time_str() + "." + filessuffix
         filepath = os.path.join(filedir, filename)
         print(filepath)
         files.save(filepath)
