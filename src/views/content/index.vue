@@ -7,6 +7,7 @@
       <p class="m-form-label" style="margin-bottom: 0.2rem">专题管理</p>
       <div class="content-table">
         <el-table :data="bannerList" border style="width: 100%" v-loading="bannerLoading">
+          <el-table-column prop="baid" label="Id" width="300"></el-table-column>
           <el-table-column prop="batext" label="专题名称" width="150">
             <template slot-scope="scope">
               <el-input v-model="scope.row.batext" placeholder="请输入专题名称" :disabled="scope.row.disabled"></el-input>
@@ -142,7 +143,7 @@
 
       <w-tab :list="tab_list"  @wTabClick="wTabClick" style="margin-top: 0.3rem"></w-tab>
 
-      <div class="m-form-label choose-banner" style="margin-bottom: 0.2rem">
+      <div class="m-form-label choose-banner" style="margin-bottom: 0.05rem">
         <div class="title">推文管理</div>
         <div class="choose-box tr">
           <el-select v-model="toBanner" class="m-input-l" placeholder="请选择专题内容页所对应的专题" style="width: 3rem;margin-right: 0.4rem">
