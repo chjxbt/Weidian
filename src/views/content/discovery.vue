@@ -18,7 +18,7 @@
               <template slot-scope="scope">
                 <div @click="rowClick(scope.$index, 'img')">
                   <el-upload class="avatar-uploader" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false"
-                             :on-success="uploadPicture" :before-upload="beforeAvatarUploads" :disabled="scope.row.disabled">
+                             :on-success="uploadPicture" :disabled="scope.row.disabled">
                     <img v-if="scope.row.baimage" :src="scope.row.baimage" class="avatar">
                     <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                   </el-upload>
@@ -40,7 +40,7 @@
                 </el-select>
               </template>
             </el-table-column>
-            <el-table-column prop="product" label="图片" width="220">
+            <el-table-column prop="product" label="长图" width="120">
               <template slot-scope="scope">
                 <div @click="rowClick(scope.$index, 'img')" v-if="scope.row.showPicture">
                   <el-upload class="avatar-uploader-long" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false"
@@ -83,7 +83,7 @@
 
         <div style="border-bottom: 1px #707070 solid; padding-bottom: 0.2rem; margin-bottom: 0.5rem">
           <p class="m-form-label" style="margin-bottom: 0.1rem">商品推荐管理</p>
-          <div class="num-list" style="font-size: 16px">
+          <div class="num-list" style="font-size: 16px; margin-bottom: -0.1rem">
             <div class="num-box">
               <p class="m-form-label">虚拟查看数</p>
               <div class="m-item-content">
@@ -178,7 +178,12 @@
             </div>
           </div>
         </div>
-        <div class="m-form-item" style="min-height: 1.8rem; max-height: 1.8rem">
+
+        <div style="margin: 0.05rem 0 0.2rem 0" v-if="page == '教程'">
+          <el-switch v-model="imgVideo" active-text="长图" inactive-text="视频" active-color="#91aeb5" inactive-color="#719aab"></el-switch>
+        </div>
+
+        <div class="m-form-item" style="min-height: 1.8rem; max-height: 1.8rem" v-if="page != '教程'">
           <p class="m-form-label required" style="width: 0.8rem;">推文图片</p>
           <div class="m-item-content" style="width: 6rem;" :class="activityMediaSort > 4 ? 'five':''" id="abcd">
             <div class=" m-item-row">
@@ -192,12 +197,24 @@
             </div>
           </div>
         </div>
-        <div class="m-form-item" v-if="page == '教程'">
-          <p class="m-form-label">教程视频</p>
+
+        <div class="m-form-item" v-if="page == '教程' && imgVideo">
+          <p class="m-form-label required" style="width: 0.8rem;">推文图片</p>
+          <div class="m-item-content" style="width: 6rem;">
+            <div class=" m-item-row">
+              <el-upload class="long-upload" action="string" :http-request="uploadActivityLong" :show-file-list="false">
+                <img v-if="longImg" class="long-img" :src="longImg">
+                <i v-else class="el-icon-plus avatar-uploader-icon" style="line-height: 1.815rem"></i>
+              </el-upload>
+            </div>
+          </div>
+        </div>
+        <div class="m-form-item" v-if="page == '教程' && !imgVideo">
+          <p class="m-form-label required" style="width: 0.8rem;">教程视频</p>
           <div class="m-item-content">
             <div class=" m-item-row">
-              <el-upload class="avatar-uploader" action="string" :show-file-list="false" :http-request="uploadActivityVideo">
-                <img v-if="imageUrl" :src="imageUrl" class="avatar">
+              <el-upload class="video-upload" action="string" :http-request="uploadActivityVideo" :show-file-list="false">
+                <img v-if="videoImgUrl" class="video-img" src="../../common/images/video-demo.jpg">
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
             </div>
@@ -300,7 +317,7 @@
             <el-table-column prop="content" label="评论内容"></el-table-column>
             <el-table-column fixed="right" label="管理">
               <template slot-scope="scope">
-                <el-button @click="handleClick(scope.row)" type="text" size="small">置顶</el-button>
+                <el-button @click="handleClick(scope.row)" type="text" size="small">回复</el-button>
                 <el-button type="text" size="small">|</el-button>
                 <el-button type="text" size="small">删除</el-button>
               </template>
@@ -339,7 +356,10 @@
         value20: '',
         value21: '',
         value22: '',
-        imageUrl:'',
+        longImg: "",              // 长图url
+        imgVideo: true,           // 选择视频或长图
+        videoUrl:'',              // 教程页的视频链接
+        videoImgUrl:'',           // 教程页的视频缩略图
         bannerList: [],           // 专题/banner的list
         bannerLoading: true,      // 专题表格加载中
         bannerToList: [           // 专题跳转去向的可选择项
@@ -432,9 +452,9 @@
           }
         });
       },
-      // 上传教程视频
-      uploadActivityVideo(item) {
-        // let media = {};
+      // 上传教程长图
+      uploadActivityLong(item) {
+        let media = {};
         // this.activityMediaSort = this.activityMediaSort + 1;
         let form = new FormData();
         form.append("file", item.file);
@@ -442,8 +462,32 @@
         form.append("index", 1);
         axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token'), form).then(res => {
           if(res.data.status == 200){
-            // media = { amimage: res.data.data, amsort: this.activityMediaSort };
-            // this.activityMedia.push(media);
+            this.longImg = res.data.data;
+
+            media = { amimage: res.data.data, amsort: 1 };
+            this.activityMedia = [];
+            this.activityMedia.push(media);
+            this.$message({ type: 'success', message: res.data.message });
+          }else{
+            this.$message({ type: 'error', message: res.data.message });
+          }
+        });
+      },
+      // 上传教程视频
+      uploadActivityVideo(item) {
+        let media = {};
+        // this.activityMediaSort = this.activityMediaSort + 1;
+        let form = new FormData();
+        form.append("file", item.file);
+        form.append("FileType", 'NewsPic');
+        form.append("index", 1);
+        axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token'), form).then(res => {
+          if(res.data.status == 200){
+            this.videoImgUrl = "../../common/images/video-demo.jpg";
+
+            media = { amvideo: res.data.data };
+            this.activityMedia = [];
+            this.activityMedia.push(media);
             this.$message({ type: 'success', message: res.data.message });
           }else{
             this.$message({ type: 'error', message: res.data.message });
@@ -536,6 +580,12 @@
             this.activityTitle = activity.actitle;
             this.likeNum = activity.likenum;
             this.viewsNum = activity.acbrowsenum;
+            this.placedTop = activity.acistop;
+            if(this.page == "教程" && this.imgVideo) {
+              this.longImg = activity.media[0].amimage;
+            }else if(this.page == "教程" && !this.imgVideo) {
+              // this.videoImgUrl = activity.media[0].amvideo;
+            }
           }
         }
       },
@@ -625,9 +675,9 @@
             }
           });
         }else if(where == "activity") {
-          if(this.activityMediaSort != 4 && this.activityMediaSort != 6 && this.activityMediaSort != 9) {
-            this.$message({ message: "上传推文图片时，数量需为4张、6张或9张", type: 'warning' });
-          }else {
+          // if(this.activityMediaSort != 4 && this.activityMediaSort != 6 && this.activityMediaSort != 9) {
+          //   this.$message({ message: "上传推文图片时，数量需为4张、6张或9张", type: 'warning' });
+          // }else {
             if(this.activityACtext == ""
             // if(this.activityACtext == "" || this.activityJumpValue == "" || this.activityJumpToValue == "" || this.activityType == "" || this.activityActivityTime.length != 2
             ) {
@@ -651,8 +701,11 @@
                 media: this.activityMedia,
                 tags: [{ atname: this.activityBadge }],
                 aclikeFakeNum: this.likeNum,
+                acbrowsenum: this.viewsNum,
+                acforwardFakenum: this.hairLapsNum,
                 acstarttime: this.activityActivityTime[0],
-                acendtime: this.activityActivityTime[1]
+                acendtime: this.activityActivityTime[1],
+                acistop: this.placedTop
               };
 
               if(this.activityProductSales != "") {
@@ -679,6 +732,7 @@
                   this.viewsNum = "";
                   this.hairLapsNum = "";
                   this.activityBadge = "";
+                  this.longImg = "";
                   this.placedTop = false;
                   this.activityTitle = "";
                   this.activityPictureList = [];  // 图片list置为[]
@@ -688,8 +742,26 @@
                 }
               });
             }
-          }
+          // }
         }
+      },
+      // 清空from的编辑框
+      clearFrom() {
+        // 清空推文的编辑框
+        this.activityTitle = "";
+        this.activityACtext = "";
+        this.activityJumpValue = "";
+        this.activityJumpToValue = "";
+        this.activityType = "";
+        this.activityActivityTime = "";
+        this.likeNum = "";
+        this.viewsNum = "";
+        this.hairLapsNum = "";
+        this.activityBadge = "";
+        this.placedTop = false;
+        this.activityTitle = "";
+        this.activityPictureList = [];  // 图片list置为[]
+        this.activityMediaSort = 0;   // 上传成功后图片数量置为0
       },
       // 添加banner
       addBannerClick(scope) {
@@ -868,7 +940,8 @@
                         ACtitle: this.activityTitle,
                         ACtext: this.activityACtext,
                         media: this.activityMedia,
-                        ACforwardFakenum: this.hairLapsNum,
+                        AClikeFakeNum: this.likeNum,
+                        ACbrowsenum: this.viewsNum,
                         ACstarttime: this.activityActivityTime[0],
                         ACendtime: this.activityActivityTime[1],
                         ACistop: this.placedTop
@@ -879,7 +952,19 @@
                   }
                 }
               }else {
-
+                let params = {
+                  TopnavId: this.tnid,
+                  ACtitle: this.activityTitle,
+                  ACtext: this.activityACtext,
+                  media: this.activityMedia,
+                  AClikeFakeNum: this.likeNum,
+                  ACbrowsenum: this.viewsNum,
+                  ACstarttime: this.activityActivityTime[0],
+                  ACendtime: this.activityActivityTime[1],
+                  ACistop: this.placedTop
+                };
+                console.log(params);
+                this.activityParams(params);
               }
             }
           }
@@ -909,6 +994,8 @@
             this.viewsNum = "";
             this.hairLapsNum = "";
             this.activityBadge = "";
+            this.longImg = "";
+            this.videoImgUrl = "";
             this.placedTop = false;
             this.activityPictureList = [];   // 上传成功后图片list置为[]
             this.activityMediaSort = 0;   // 上传成功后图片数量置为0
@@ -1018,7 +1105,6 @@
 
           this.bannerList[this.rowNum].balongimg = res.data.data;
           this.bannerList = this.bannerList.concat();
-          // this.imageUrl = res.data.data;
         });
       },
       // 上传标题图片
@@ -1037,22 +1123,7 @@
 
           this.bannerList[this.rowNum].baimage = res.data.data;
           this.bannerList = this.bannerList.concat();
-          // this.imageUrl = res.data.data;
         });
-      },
-      // 上传图片前的限制方法
-      beforeAvatarUploads(file) {
-        this.$message({ type: 'warning', message: "上传中，请等待" });
-        const isJPG = file.type === 'image/jpeg' || 'image/png';
-        const isLt2M = file.size / 1024 / 1024 < 20;
-
-        if (!isJPG) {
-          this.$message.error('上传图片只能是 JPG 或 PNG 格式!');
-        }
-        if (!isLt2M) {
-          this.$message.error('上传图片大小不能超过 20MB!');
-        }
-        return isJPG && isLt2M;
       },
       // 模糊搜索-获取所有可选项
       getJumpTo(to, where) {
@@ -1099,6 +1170,7 @@
       handleClick(row) {
         console.log(row);
       },
+      // 导航栏
       wTabClick1(i){
         let arr = [].concat(this.tab_list1);
         for(let a =0;a<arr.length;a++){
@@ -1110,8 +1182,10 @@
 
         this.activityLoading = true;
         this.tnid = this.tab_list1[i].tnid;
+        this.clearFrom();         // 清空输入框
         this.getActivity(0, 5);   // 获取首页活动/推文内容列表
       },
+      // 素材圈的导航栏
       wTabClick2(i){
         let arr = [].concat(this.tab_list2);
         for(let a =0;a<arr.length;a++){
@@ -1122,6 +1196,7 @@
 
         this.activityLoading = true;
         this.tnid = this.tab_list2[i].tnid;
+        this.clearFrom();         // 清空输入框
         this.getActivity(0, 5);   // 获取首页活动/推文内容列表
       },
       handleAvatarSuccess(){
@@ -1139,7 +1214,6 @@
 
           this.bannerList[this.rowNum].baimage = res.data.data;
           this.bannerList = this.bannerList.concat();
-          // this.imageUrl = res.data.data;
         });
       },
       // 获取推荐商品
