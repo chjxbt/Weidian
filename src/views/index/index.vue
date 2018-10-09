@@ -430,7 +430,7 @@
                 start:start || 0,
                 count:count || this.count,
                 tnid:tnid,
-                skiptype: 'all'
+                // skiptype: 'all'
               }}).then(res => {
               if(res.data.status == 200){
                 this.isScroll = true;
