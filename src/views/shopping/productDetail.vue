@@ -12,14 +12,15 @@
     <div class="product-prices">
       <span class="new-price m-ft-38 m-black m-ft-b">￥{{product_info.prprice}}</span>
       <span class="old-price m-grey m-ft-28">￥{{product_info.proldprice}}</span>
-      <span class="make-money m-ft-38 m-red m-ft-b tl">赚{{product_info.prsavemonty}}</span>
+      <span class="make-money m-ft-38 m-red m-ft-b tl" v-if="is_vip">赚{{product_info.prsavemonty}}</span>
+      <span class="make-money m-ft-38 m-red m-ft-b tl" v-else></span>
       <img v-if="collectionVisible" src="/static/images/icon-unlike.png" class="collection-share-img" @click="collection">
       <img v-if="!collectionVisible" src="/static/images/icon-like.png" class="collection-share-img" @click="collection">
       <img src="/static/images/icon-share.png" class="collection-share-img" @click="shareProduct">
     </div>
     <div class="product-name m-ft-32 tl">{{product_info.prtitle}}</div>
     <div class="product-buyer-quantity m-ft-28 m-grey tl">{{product_info.prsoldnum}}人购买</div>
-    <div v-if="ownerVisible" class="owner-price m-ft-26 m-bg-main-color">
+    <div v-if="!is_vip" class="owner-price m-ft-26 m-bg-main-color">
       <img src="/static/images/icon-radio.png" class="owner-price-img">
       <span class="owner-price-one tl">店主价￥{{product_info.prkeeperprice}}</span>
       <span class="owner-price-two tr">成为店主 ></span>
@@ -103,8 +104,15 @@
         <img src="/static/images/produc_detail_shopping_cart.png" class="to-buy-icon m-ft-20">
         <p class="to-buy-text m-ft-20">购物车</p>
       </span>
-      <span class="to-buy-btn m-ft-36 m-bg-main-color" @click="buyNow">立即购买</span>
-    </div>
+      <span class="to-buy-btn m-ft-36 m-bg-main-color" v-if="!is_vip" @click="buyNow">立即购买</span>
+      <div class="m-vip-btn m-ft-36 "  v-if="is_vip">
+        <p>买</p>
+        <p class="m-ft-24">省￥6.5</p>
+      </div>
+      <div class="m-vip-btn m-ft-36 active" v-if="is_vip" @click="buyNow">
+        <p>卖</p>
+        <p class="m-ft-24">赚￥6.5</p></div>
+      </div>
   </div>
 </template>
 
@@ -128,7 +136,8 @@
         product_info:null,
         // brandList: [{img: "http://pic1.win4000.com/wallpaper/8/599d1d60036a2.jpg"}, {img: "http://bbsfiles.vivo.com.cn/vivobbs/attachment/forum/201804/25/145712qjc3gwcbtvgoct9w.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/57eb314a3c143.jpg"}, {img: "http://pic1.win4000.com/wallpaper/8/57eb322625b50.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc06f60ecf.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc080092c6.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc07478a17.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc08474821.jpg"}]
         params_options:null,
-        sku:[]
+        sku:[],
+        is_vip:false
       }
     },
     components: { productParams },
@@ -207,6 +216,11 @@
       this.imgsDone();
       this.getInfo();
       common.changeTitle('商品详情');
+      if(localStorage.getItem('level') == 'partner'){
+        this.is_vip = true;
+      }else{
+        this.is_vip = false;
+      }
     },
     created() {
       let prid = this.$route.query.prid;
@@ -459,6 +473,21 @@
       white-space: nowrap;
       letter-spacing: 3.6px;
       background-color: @mainColor;
+    }
+    .m-vip-btn{
+      margin-left: -2px;
+      width: 230px;
+      padding: 16px 0;
+      /*height: 110px;*/
+      /*line-height: 110px;*/
+      white-space: nowrap;
+      display: inline-block;
+      letter-spacing: 3.6px;
+      background-color: #000;
+      color: #fff;
+      &.active{
+        background-color: @mainColor;
+      }
     }
   }
 </style>
