@@ -48,7 +48,7 @@ class CRecommend(BaseProductControl):
         """添加推荐"""
         # 此处无需添加图片, 关联商品id即可
         if not is_admin():
-            return AUTHORITY_ERROR  # 权限不足
+            return AUTHORITY_ERROR(u'当前非管理员权限')
         data = request.json
         logger.debug("data is %s", data)
         parameter_required('PRid_list')
@@ -61,17 +61,18 @@ class CRecommend(BaseProductControl):
         refakeviewnum = data.get('REviewnum', 0)  # 浏览数
         prid_list = data.get('PRid_list')
         if not prid_list:
-            raise PARAMS_MISS('缺失PRid_list')
-        reid = str(uuid.uuid4())
+            raise PARAMS_MISS(u'缺失PRid_list')
+        # reid = str(uuid.uuid4())
         try:
-            add_model('Recommend', **{
-                'REid': reid,
-                'SUid': request.user.id,
+            re_info = {
+                # 'REid': reid,
+                # 'SUid': request.user.id,
                 'RElikefakenum': relikefakenum,
                 'REfakeviewnum': refakeviewnum,
                 'REstarttime': restarttime,
                 'REendtime': reendtime,
-            })
+            }
+            update_info = self.srecommend.update_recommend_by_reid
         except Exception as e:
             logger.debug("add Recommend error")
             raise SYSTEM_ERROR(u'添加Recommend错误')
@@ -151,17 +152,3 @@ class CRecommend(BaseProductControl):
         response_update_recommend = import_status('update_recommend_success', 'OK')
         response_update_recommend['data'] = {'reid': reid}
         return response_update_recommend
-
-    # @verify_token_decorator
-    # def del_one(self):
-    #     if not hasattr(request, 'user'):
-    #         return TOKEN_ERROR  # 未登录, 或token错误
-    #     if not is_admin():
-    #         return AUTHORITY_ERROR  # 权限不足
-    #     data = parameter_required(u'REid')
-    #     reid = data.get('REid')
-    #     self.srecommend.del_recommend(reid)
-    #     response_del_recommend = import_status('del_recommend_success', 'OK')
-    #     response_del_recommend['data'] = {}
-    #     response_del_recommend['data']['reid'] = reid
-    #     return response_del_recommend
