@@ -100,9 +100,9 @@
                 </div>
               </div>
             </div>
-            <div class="product-btn" @click="editClick('product', 'product')" v-if="!productEdit">编辑</div>
-            <div class="product-btn" @click="saveClick('product', 'product')" v-if="productEdit">保存</div>
-            <div class="product-btn" @click="cancelProduct" v-if="productEdit">取消</div>
+            <div class="product-btn" @click="editClick('product', 'product')" v-if="!productEdit">编 辑</div>
+            <div class="product-btn" @click="saveClick('product', 'product')" v-if="productEdit">保 存</div>
+            <div class="product-btn" @click="cancelProduct" v-if="productEdit">取 消</div>
           </div>
           <div class="content-table">
             <el-table :data="productList" border v-loading="productLoading" style="width: 100%">
@@ -114,7 +114,7 @@
               <el-table-column prop="prname" label="商品名称">
                 <template slot-scope="scope">
                   <el-select v-model="scope.row.prname" @focus="focusselect(scope.$index, 'product')" filterable placeholder="请输入关键词搜索商品" :disabled="productDisabled" @change="productChange">
-                    <el-option v-for="item in activityJumpToList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                    <el-option v-for="item in activityJumpToList" :key="item.value" :label="item.label" :value="item.value" :disabled="item.disabled"></el-option>
                   </el-select>
                 </template>
               </el-table-column>
@@ -124,7 +124,7 @@
                 </template>
               </el-table-column>
             </el-table>
-            <el-tooltip class="item" effect="light" content="添加推荐商品" placement="right" v-if="productEdit">
+            <el-tooltip class="item" effect="light" content="添加推荐商品" placement="right">
               <span class="m-item-add" style="left: 3.5rem; margin-top: 0.1rem" @click="addProduct">+</span>
             </el-tooltip>
           </div>
@@ -610,8 +610,11 @@
       // select选择器获得焦点时执行
       focusselect(index, where) {
         this.rowNum = index;      // 确定点击的是第几行
+
+        console.log(this.productList);
+
         if(where == "product") {
-          this.getJumpTo("product", "activity");
+          this.getJumpTo("product", "product");
         }
       },
       // select选择器获得焦点时执行
@@ -878,6 +881,8 @@
       },
       // 推荐商品 - 添加商品
       addProduct() {
+        this.productEdit = true;
+        this.productDisabled = false;
         let index = this.productList.length;
         this.productList[index] = {};
         this.productList[index].prmainpic = "";
@@ -1137,6 +1142,26 @@
                 if(where == "activity") {
                   this.activityJumpToList.push(product);
                 }
+                if(where == "product") {
+                  this.activityJumpToList.push(product);
+
+                  // 双重循环将已选择的商品disabled
+                  for(let i = 0; i < this.activityJumpToList.length; i ++) {
+                    if(this.productList[this.productList.length - 1].prname == "") {
+                      for(let j = 0 ; j < (this.productList.length - 1); j ++) {
+                        if(this.productList[j].prid == this.activityJumpToList[i].id) {
+                          this.activityJumpToList[i].disabled = true;
+                        }
+                      }
+                    }else {
+                      for(let j = 0 ; j < this.productList.length; j ++) {
+                        if(this.productList[j].prid == this.activityJumpToList[i].id) {
+                          this.activityJumpToList[i].disabled = true;
+                        }
+                      }
+                    }
+                  }
+                }
               }
               // console.log(this.jumpToList);
             }else{
@@ -1291,6 +1316,13 @@
       margin-right: 0.5rem;
     }
     .product-btn {
+      height: 0.2rem;
+      line-height: 0.2rem;
+      white-space: nowrap;
+      color: #ffffff;
+      background-color: #9fd0bf;
+      border-radius: 0.1rem;
+      padding: 0.02rem 0.15rem;
       margin: 0.3rem 0 0 0.3rem;
     }
   }
