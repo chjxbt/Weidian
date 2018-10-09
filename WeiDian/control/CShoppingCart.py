@@ -10,6 +10,7 @@ from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, SYSTEM_ERROR
 from WeiDian.control.BaseControl import BaseShoppingCart
 sys.path.append(os.path.dirname(os.getcwd()))
 
+
 class CShoppingCart(BaseShoppingCart):
     def __init__(self):
         from WeiDian.service.SShoppingCart import SShoppingCart

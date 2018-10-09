@@ -42,7 +42,8 @@ class CSuperUser():
             token = usid_to_token(suuser.SUid, 'SuperUser')
             token_data = {
                 'token': token,
-                'level': level
+                'level': level,
+                'head': suuser.SUheader
             }
             data = import_status('generic_token_success', 'OK')
             data['data'] = token_data
