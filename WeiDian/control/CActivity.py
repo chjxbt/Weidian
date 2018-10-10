@@ -87,7 +87,7 @@ class CActivity(BaseActivityControl):
         parameter_required(u'tnid')
         tnid = args.get('tnid')  # 导航id
         suid = args.get('suid')  # 管理员id
-        lasting = args.get('lasting', True)  # 是否正在进行的活动
+        lasting = args.get('lasting', 'true')  # 是否正在进行的活动
         acid = args.get("acid")
         if not acid:
             acid = None
@@ -120,7 +120,7 @@ class CActivity(BaseActivityControl):
             # if not activity_list:
             #     raise SYSTEM_ERROR(u'数据库错误')
 
-            if lasting is True:
+            if str(lasting) == 'true':
                 now_time = datetime.strftime(datetime.now(), format_for_db)
                 activity_list = filter(lambda act: act.ACstarttime < now_time < act.ACendtime, activity_list)
             for activity in activity_list:

@@ -10,12 +10,12 @@ class SRecommend(SBase):
 
     @close_session
     def get_recommend_list(self):
-        """返回日推页商品区域信息, 列表"""
         recommend_list = self.session.query(Recommend).filter_by(REisdelete=False).order_by(Recommend.REcreatetime.desc()).all()
         return recommend_list
 
     @close_session
     def get_one_recommend(self):
+        """返回日推页商品区域"""
         return self.session.query(Recommend).filter_by(REisdelete=False).order_by(Recommend.REcreatetime.desc()).first()
 
     @close_session
@@ -45,10 +45,21 @@ class SRecommend(SBase):
     #             recommend.RElikefakenum = kwargs['relikenum']
     #         self.session.add(recommend)
     #         return True
+    @close_session
+    def get_exist_reproduct_by_filter(self, refilter):
+        return self.session.query(RecommendProduct).filter_by(**refilter).first()
+
+    @close_session
+    def update_exist_reproduct_by_filter(self, refilter, updateinfo):
+        return self.session.query(RecommendProduct).filter_by(**refilter).update(updateinfo)
+
+    @close_session
+    def del_reproduct_by_filter(self, refilter):
+        return self.session.query(RecommendProduct).filter_by(**refilter).delete()
 
     @close_session
     def update_recommend_by_reid(self, reid, recommend):
-        self.session.query(RecommendProduct).filter_by(REid=reid).delete()
+        # self.session.query(RecommendProduct).filter_by(REid=reid).delete()
         return self.session.query(Recommend).filter_by(REid=reid).update(recommend)
 
     @close_session
