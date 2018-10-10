@@ -1,5 +1,5 @@
 <template>
-    <div class="m-index" @touchmove="touchMove" @touchend="touchEnd" @touchstart="touchStart">
+    <div class="m-index" :class="show_task?'noScroll':''" @touchmove.stop="touchMove" @touchend.stop="touchEnd" @touchstart.stop="touchStart">
       <div class="m-suspend-btn " id="m-suspend-btn" :class="show_task_btn ? '':'active'" @click.stop="showModal('show_task')" >
         <span>开始转发</span>
       </div>
@@ -50,10 +50,10 @@
           <!--&lt;!&ndash;</div>&ndash;&gt;-->
         <!--</div>-->
       <!--</div>-->
-      <div class="m-modal" v-if="show_task">
+      <div class="m-modal" v-if="show_task" @click.stop="closeModal('show_task')">
         <div class="m-modal-state">
           <div class="m-modal-head">
-            <span class="m-close" @click="closeModal('show_task')"> x </span>
+            <span class="m-close" @click.stop="closeModal('show_task')"> x </span>
           </div>
           <div class="m-modal-content">
             <h3 class="m-modal-award-title">
@@ -79,7 +79,7 @@
                     </div>
                     <span class="m-modal-award-btn" :class="item.tustatus >0 ?'active':''" v-if="item.tustatus == 1" >完 成</span>
                     <span class="m-modal-award-btn" v-else-if="item.talevel == 99">额外奖励</span>
-                    <span class="m-modal-award-btn"  v-else @click="makeTask(index)">做任务</span>
+                    <span class="m-modal-award-btn"  v-else @click.stop="makeTask(index)">做任务</span>
                   </li>
                 </template>
               </ul>
@@ -225,11 +225,12 @@
       },
         methods: {
           /*手指滑动显示隐藏*/
-          touchStart(){
+          touchStart(e){
+
             // this.show_task_btn = false;
             // this.search = true;
           },
-          touchMove(){
+          touchMove(e){
             this.show_task_btn = false;
             this.search = true;
             this.show_fixed = false;
@@ -662,6 +663,9 @@
 <style lang="less" rel="stylesheet/less" scoped>
   @import "../../common/css/index";
   @import "../../common/css/modal";
+  .noScroll{
+    overflow: hidden;
+  }
 .m-top{
   margin-top: 10px;
 }

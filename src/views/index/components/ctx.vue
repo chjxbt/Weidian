@@ -1,5 +1,5 @@
 <template>
-  <div class="m-section-one" @click="ctxClick(list)">
+  <div class="m-section-one" @click.stop="ctxClick(list)">
     <img v-if="list.suuser && list.suuser.suheader" :src="list.suuser.suheader" class="m-section-img"/>
     <div class="m-section-content">
       <div class="m-section-title">
