@@ -16,7 +16,7 @@
        <div v-if="!levelTableClose" class="content-table">
          <el-table :data="levelList" border style="width: 100%" v-loading="levelLoading">
            <el-table-column prop="talevel" label="任务等级" width="120"></el-table-column>
-           <el-table-column prop="reward" label="奖励方式"></el-table-column>
+           <!--<el-table-column prop="reward" label="奖励方式"></el-table-column>-->
            <el-table-column prop="doneTip" label="完成提示" width="120"></el-table-column>
            <el-table-column prop="tarole" label="规则"></el-table-column>
            <el-table-column fixed="right" label="管理" width="150">
@@ -61,7 +61,7 @@
            </el-form-item>
            <el-form-item label="图标" class="m-s required" style="width: 2rem;">
              <el-upload class="avatar-uploader" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false"
-                        :on-success="uploadPicture">
+                        :on-success="uploadTaskPicture">
                <img v-if="imageUrl" :src="imageUrl" class="avatar">
                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
              </el-upload>
@@ -83,7 +83,7 @@
            <el-input v-model="formIndex.duration" class="m-input-m">
              <template slot="append">天</template>
            </el-input>
-           <span class="m-item-add">+</span>
+           <!--<span class="m-item-add">+</span>-->
          </el-form-item>
        </el-form>
      </div>
@@ -92,15 +92,13 @@
         <h3 class="m-title">弹框图片</h3>
         <div class="m-form-item">
           <div class="m-item-content">
-            <div class=" m-item-row m-f">
-              <el-upload
-                class="avatar-uploader"
-                action="https://jsonplaceholder.typicode.com/posts/"
-                :show-file-list="false"
-                :on-success="handleAvatarSuccess">
-                <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-              </el-upload>
+            <div class=" m-item-row">
+              <div class="upload-box" @click="setWhichImg('owner')">
+                <el-upload class="owner-upload" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false" :on-success="uploadPicture">
+                  <img v-if="ownerImg" :src="ownerImg" class="avatar">
+                  <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                </el-upload>
+              </div>
             </div>
           </div>
         </div>
@@ -113,60 +111,52 @@
             <div class="m-form-img-item">
               <p class="m-form-label">等级规则（未开店）</p>
               <div class="m-item-content">
-                <div class=" m-item-row m-f">
-                  <el-upload
-                    class="avatar-uploader"
-                    action="https://jsonplaceholder.typicode.com/posts/"
-                    :show-file-list="false"
-                    :on-success="handleAvatarSuccess">
-                    <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                  </el-upload>
+                <div class=" m-item-row">
+                  <div class="upload-box" @click="setWhichImg('unRevelRule')">
+                    <el-upload class="rule-upload" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false" :on-success="uploadPicture">
+                      <img v-if="unRevelRuleImg" :src="unRevelRuleImg" class="avatar">
+                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                  </div>
                 </div>
               </div>
             </div>
             <div class="m-form-img-item">
               <p class="m-form-label">等级规则（已开店）</p>
               <div class="m-item-content">
-                <div class=" m-item-row m-f">
-                  <el-upload
-                    class="avatar-uploader"
-                    action="https://jsonplaceholder.typicode.com/posts/"
-                    :show-file-list="false"
-                    :on-success="handleAvatarSuccess">
-                    <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                  </el-upload>
+                <div class=" m-item-row">
+                  <div class="upload-box" @click="setWhichImg('revelRule')">
+                    <el-upload class="rule-upload" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false" :on-success="uploadPicture">
+                      <img v-if="revelRuleImg" :src="revelRuleImg" class="avatar">
+                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                  </div>
                 </div>
               </div>
             </div>
             <div class="m-form-img-item">
               <p class="m-form-label">专属粉丝管理规则</p>
               <div class="m-item-content">
-                <div class=" m-item-row m-f">
-                  <el-upload
-                    class="avatar-uploader"
-                    action="https://jsonplaceholder.typicode.com/posts/"
-                    :show-file-list="false"
-                    :on-success="handleAvatarSuccess">
-                    <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                  </el-upload>
+                <div class=" m-item-row">
+                  <div class="upload-box" @click="setWhichImg('fansRule')">
+                    <el-upload class="rule-upload" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false" :on-success="uploadPicture">
+                      <img v-if="fansRuleImg" :src="fansRuleImg" class="avatar">
+                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                  </div>
                 </div>
               </div>
             </div>
             <div class="m-form-img-item">
               <p class="m-form-label">开店邀请海报规则</p>
               <div class="m-item-content">
-                <div class=" m-item-row m-f">
-                  <el-upload
-                    class="avatar-uploader"
-                    action="https://jsonplaceholder.typicode.com/posts/"
-                    :show-file-list="false"
-                    :on-success="handleAvatarSuccess">
-                    <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                  </el-upload>
+                <div class=" m-item-row">
+                  <div class="upload-box" @click="setWhichImg('invitationRule')">
+                    <el-upload class="rule-upload" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false" :on-success="uploadPicture">
+                      <img v-if="invitationRuleImg" :src="invitationRuleImg" class="avatar">
+                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                  </div>
                 </div>
               </div>
             </div>
@@ -178,87 +168,95 @@
             <div class="m-form-img-item">
               <p class="m-form-label">邀请专属粉丝海报</p>
               <div class="m-item-content">
-                <div class=" m-item-row m-f">
-                  <el-upload
-                    class="avatar-uploader"
-                    action="https://jsonplaceholder.typicode.com/posts/"
-                    :show-file-list="false"
-                    :on-success="handleAvatarSuccess">
-                    <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                  </el-upload>
+                <div class=" m-item-row">
+                  <div class="upload-box" @click="setWhichImg('invitationFans')">
+                    <el-upload class="rule-upload" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false" :on-success="uploadPicture">
+                      <img v-if="invitationFansImg" :src="invitationFansImg" class="avatar">
+                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                  </div>
                 </div>
               </div>
             </div>
             <div class="m-form-img-item">
-              <p class="m-form-label"></p>
+              <p class="m-form-label">专属粉丝分享海报</p>
               <div class="m-item-content">
-                <div class=" m-item-row m-f">
-                  <el-upload
-                    class="avatar-uploader"
-                    action="https://jsonplaceholder.typicode.com/posts/"
-                    :show-file-list="false"
-                    :on-success="handleAvatarSuccess">
-                    <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                  </el-upload>
+                <div class=" m-item-row">
+                  <div class="upload-box" @click="setWhichImg('fansShare')">
+                    <el-upload class="rule-upload" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false" :on-success="uploadPicture">
+                      <img v-if="fansShareImg" :src="fansShareImg" class="avatar">
+                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                  </div>
                 </div>
               </div>
             </div>
             <div class="m-form-img-item">
               <p class="m-form-label">邀请开店海报</p>
               <div class="m-item-content">
-                <div class=" m-item-row m-f">
-                  <el-upload
-                    class="avatar-uploader"
-                    action="https://jsonplaceholder.typicode.com/posts/"
-                    :show-file-list="false"
-                    :on-success="handleAvatarSuccess">
-                    <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                  </el-upload>
+                <div class=" m-item-row">
+                  <div class="upload-box" @click="setWhichImg('invitationStore')">
+                    <el-upload class="rule-upload" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false" :on-success="uploadPicture">
+                      <img v-if="invitationStoreImg" :src="invitationStoreImg" class="avatar">
+                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                  </div>
                 </div>
               </div>
             </div>
             <div class="m-form-img-item">
-              <p class="m-form-label"></p>
+              <p class="m-form-label">我的导师</p>
               <div class="m-item-content">
-                <div class=" m-item-row m-f">
-                  <el-upload
-                    class="avatar-uploader"
-                    action="https://jsonplaceholder.typicode.com/posts/"
-                    :show-file-list="false"
-                    :on-success="handleAvatarSuccess">
-                    <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                  </el-upload>
+                <div class=" m-item-row">
+                  <div class="upload-box" @click="setWhichImg('myTeacher')">
+                    <el-upload class="rule-upload" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false" :on-success="uploadPicture">
+                      <img v-if="myTeacherImg" :src="myTeacherImg" class="avatar">
+                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="m-form-item-box" v-if="page == '我的'">
-        <div class="m-form-img-item">
-          <p class="m-form-label">我的导师</p>
-          <div class="m-item-content">
-            <div class=" m-item-row m-f">
-              <el-upload
-                class="avatar-uploader"
-                action="https://jsonplaceholder.typicode.com/posts/"
-                :show-file-list="false"
-                :on-success="handleAvatarSuccess">
-                <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-              </el-upload>
+      <div v-if="page == '我的'">
+        <div class="m-personal-left-right">
+          <h3 class="m-title">我的静态广告</h3>
+          <div class="m-form-item-box">
+            <div class="m-form-img-item">
+              <p class="m-form-label">静态广告</p>
+              <div class="m-item-content">
+                <div class=" m-item-row">
+                  <div class="upload-box" @click="setWhichImg('smallAd')">
+                    <el-upload class="small-ad-upload" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false" :on-success="uploadPicture">
+                      <img v-if="smallAdImg" :src="smallAdImg" class="avatar">
+                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="m-form-img-item">
+              <p class="m-form-label">静态广告</p>
+              <div class="m-item-content">
+                <div class=" m-item-row">
+                  <div class="upload-box" @click="setWhichImg('bigAd')">
+                    <el-upload class="big-ad-upload" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false" :on-success="uploadPicture">
+                      <img v-if="bigAdImg" :src="bigAdImg" class="avatar">
+                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       <div class="m-form-confirm-btn ">
-        <span v-if="page == '首页'">暂停</span>
-        <span @click="submit">发布</span>
+        <span v-if="page == '首页'">暂 停</span>
+        <span @click="submit">保 存</span>
       </div>
     </div>
   </div>
@@ -287,7 +285,18 @@
         taskLoading: true,
         activityTime: [],
         video_ratio: "视频/完成度",
-
+        ownerImg: "",               // 发现页 - 弹框图片
+        unRevelRuleImg: "",         // 等级规则 - 未开店
+        revelRuleImg: "",           // 等级规则 - 已开店
+        fansRuleImg: "",            // 等级规则 - 专属粉丝管理规则
+        invitationRuleImg: "",      // 等级规则 - 开店邀请海报规则
+        invitationFansImg: "",      // 邀请专属粉丝海报
+        fansShareImg: "",      // 专属粉丝分享海报
+        invitationStoreImg: "",     // 邀请开店海报
+        myTeacherImg: "",           // 我的导师
+        smallAdImg: "",             // 小静态广告
+        bigAdImg: "",               // 大静态广告
+        whichImg: "",               // 用来暂存是哪个img
         options: [{
           value: '选项1',
           label: '黄金糕'
@@ -436,9 +445,52 @@
           this.levelTableClose = true;
         }
       },
-
-      // 上传任务图标图片
+      // 暂存是哪个img
+      setWhichImg(which) {
+        this.whichImg = which;
+      },
+      // 上传发现页/我的 - 各种图片
       uploadPicture(res, file) {
+        let form = new FormData();
+        form.append("file", file.raw);
+        form.append("FileType", 'NewsPic');
+        form.append("index", 1);
+        axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token') + "&filetype = modal", form).then(res => {
+          if(res.data.status == 200){
+            // 根据不同img，将结果赋值给不同的img
+            if(this.whichImg == "owner") {
+              this.ownerImg = res.data.data;
+            }else if(this.whichImg == "unRevelRule") {
+              this.unRevelRuleImg = res.data.data;
+            }else if(this.whichImg == "revelRule") {
+              this.revelRuleImg = res.data.data;
+            }else if(this.whichImg == "fansRule") {
+              this.fansRuleImg = res.data.data;
+            }else if(this.whichImg == "invitationRule") {
+              this.invitationRuleImg = res.data.data;
+            }else if(this.whichImg == "invitationFans") {
+              this.invitationFansImg = res.data.data;
+            }else if(this.whichImg == "fansShare") {
+              this.fansShareImg = res.data.data;
+            }else if(this.whichImg == "invitationStore") {
+              this.invitationStoreImg = res.data.data;
+            }else if(this.whichImg == "myTeacher") {
+              this.myTeacherImg = res.data.data;
+            }else if(this.whichImg == "smallAd") {
+              this.smallAdImg = res.data.data;
+            }else if(this.whichImg == "bigAd") {
+              this.bigAdImg = res.data.data;
+            }
+          }else{
+            this.$message({ type: 'error', message: res.data.message });
+          }
+
+          this.bannerList[this.rowNum].baimage = res.data.data;
+          this.bannerList = this.bannerList.concat();
+        });
+      },
+      // 上传任务图标图片
+      uploadTaskPicture(res, file) {
         let form = new FormData();
         form.append("file", file.raw);
         form.append("FileType", 'NewsPic');
@@ -471,51 +523,137 @@
       },
       // 弹框管理-首页-提交   添加任务
       submit() {
-        let params = {
-          TAname: this.formIndex.title,
-          TAtype: this.taskType,
-          TAhead: this.imageUrl,
-          TLid: this.formIndex.taskLevel,
-          TAstartTime: this.activityTime[0],
-          TAendTime: this.activityTime[1],
-          TAduration: this.formIndex.duration,
-          TAmessage: this.formIndex.memo,
-          TAurl: this.formIndex.content
-        };
-        if(params.TAname == "" || String(params.TAtype) == "" || params.TAhead == "" || params.TLid == "" || params.TAurl == "") {
-          this.$message({ type: 'warning', message: '请填写全部必填项' });
-          console.log(params.TAname == "", String(params.TAtype) == "", params.TAhead == "", params.TLid == "", params.TAurl == "")
-        }else {
-          axios.post(api.add_task + '?token=' + localStorage.getItem('token'), params).then(res=>{
+        if(this.page == "首页") {
+          let params = {
+            TAname: this.formIndex.title,
+            TAtype: this.taskType,
+            TAhead: this.imageUrl,
+            TLid: this.formIndex.taskLevel,
+            TAstartTime: this.activityTime[0],
+            TAendTime: this.activityTime[1],
+            TAduration: this.formIndex.duration,
+            TAmessage: this.formIndex.memo,
+            TAurl: this.formIndex.content
+          };
+          if(params.TAname == "" || String(params.TAtype) == "" || params.TAhead == "" || params.TLid == "" || params.TAurl == "") {
+            this.$message({ type: 'warning', message: '请填写全部必填项' });
+            console.log(params.TAname == "", String(params.TAtype) == "", params.TAhead == "", params.TLid == "", params.TAurl == "")
+          }else {
+            axios.post(api.add_task + '?token=' + localStorage.getItem('token'), params).then(res=>{
+              if(res.data.status == 200){
+                this.$message({ message: res.data.message, type: 'success' });
+                this.getAllTask();        // 获取所有任务
+
+                this.formIndex.title = "";
+                this.formIndex.taskLevel = "";
+                this.formIndex.duration = "";
+                this.formIndex.memo = "";
+                this.formIndex.content = "";
+                this.taskType = "";
+                this.imageUrl = "";
+                this.activityTime = [];
+
+              }else{
+                this.$message.error(res.data.message);
+              }
+            });
+          }
+        }else if(this.page == "发现" || this.page == "我的") {
+          let params = {};
+          if(this.page == "发现") {
+            params = {
+              adimage: [
+                { aiimage: this.ownerImg, aitype: "3"}
+              ]
+            };
+          }else if(this.page == "我的") {
+            params = {
+              adimage: [
+                { aiimage: this.unRevelRuleImg, aitype: "4"},
+                { aiimage: this.revelRuleImg, aitype: "5"},
+                { aiimage: this.fansRuleImg, aitype: "6"},
+                { aiimage: this.invitationRuleImg, aitype: "7"},
+                { aiimage: this.invitationFansImg, aitype: "9"},
+                { aiimage: this.fansShareImg, aitype: "10"},
+                { aiimage: this.invitationStoreImg, aitype: "8"},
+                { aiimage: this.myTeacherImg, aitype: "0"},
+                { aiimage: this.smallAdImg, aitype: "1"},
+                { aiimage: this.bigAdImg, aitype: "2"}
+              ]
+            };
+          }
+          axios.post(api.add_image + '?token=' + localStorage.getItem('token'), params).then(res=>{
             if(res.data.status == 200){
-              this.$message({ message: res.data.message, type: 'success' });
-              this.getAllTask();        // 获取所有任务
+              this.$message({ type: 'success', message: res.data.message });
 
-              this.formIndex.title = "";
-              this.formIndex.taskLevel = "";
-              this.formIndex.duration = "";
-              this.formIndex.memo = "";
-              this.formIndex.content = "";
-              this.taskType = "";
-              this.imageUrl = "";
-              this.activityTime = [];
-
+              // 清空图片
+              // this.ownerImg = "";
+              // this.unRevelRuleImg = "";
+              // this.revelRuleImg = "";
+              // this.fansRuleImg = "";
+              // this.invitationRuleImg = "";
+              // this.invitationFansImg = "";
+              // this.invitationStoreImg = "";
+              // this.myTeacherImg = "";
+              // this.smallAdImg = "";
+              // this.bigAdImg = "";
             }else{
               this.$message.error(res.data.message);
             }
-          }, res=>{
-            this.$message.error(res.data.message);
           });
         }
       },
       // 顶部首页、发现、我的点击切换
       wTabClick(i){
+
+        // 获取已有的各种图片
+        if(i == 1) {
+          axios.get(api.get_image_by_aitype + '?token=' + localStorage.getItem('token') + "&aitype=3").then(res => {
+            if(res.data.status == 200) {
+              this.ownerImg = res.data.data.aiimage;
+            }else{
+              this.$message.error(res.data.message);
+            }
+          });
+        }else if(i == 2) {
+          axios.get(api.get_image_by_aitype + '?token=' + localStorage.getItem('token') + "&aitype=[0, 1, 2, 4, 5, 6, 7, 8, 9, 10]").then(res => {
+            if(res.data.status == 200) {
+
+              for(let i = 0; i <res.data.data.length; i ++) {
+                if(res.data.data[i].aitype == 0) {
+                  this.myTeacherImg = res.data.data[i].aiimage;
+                }else if(res.data.data[i].aitype == 1) {
+                  this.smallAdImg = res.data.data[i].aiimage;
+                }else if(res.data.data[i].aitype == 2) {
+                  this.bigAdImg = res.data.data[i].aiimage;
+                }else if(res.data.data[i].aitype == 4) {
+                  this.unRevelRuleImg = res.data.data[i].aiimage;
+                }else if(res.data.data[i].aitype == 5) {
+                  this.revelRuleImg = res.data.data[i].aiimage;
+                }else if(res.data.data[i].aitype == 6) {
+                  this.fansRuleImg = res.data.data[i].aiimage;
+                }else if(res.data.data[i].aitype == 7) {
+                  this.invitationRuleImg = res.data.data[i].aiimage;
+                }else if(res.data.data[i].aitype == 8) {
+                  this.invitationStoreImg = res.data.data[i].aiimage;
+                }else if(res.data.data[i].aitype == 9) {
+                  this.invitationFansImg = res.data.data[i].aiimage;
+                }else if(res.data.data[i].aitype == 10) {
+                  this.fansShareImg = res.data.data[i].aiimage;
+                }
+              }
+            }else{
+              this.$message.error(res.data.message);
+            }
+          });
+        }
+
         let arr = [].concat(this.tab_list);
         for(let a =0;a<arr.length;a++){
           arr[a].active = false;
         }
         arr[i].active = true;
-        this.page = arr[i].name
+        this.page = arr[i].name;
         this.tab_list = [].concat(arr);
       },
     },
@@ -557,23 +695,4 @@
     width: 0.85rem;
     height: 0.85rem;
   }
-
-/*  !* 设置滚动条的样式 *!
-  ::-webkit-scrollbar {
-    width: 10px;
-  }
-  !* 滚动槽 *!
-  ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    border-radius: 10px;
-  }
-  !* 滚动条滑块 *!
-  ::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    background: #bbb;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
-  }
-  ::-webkit-scrollbar-thumb:window-inactive {
-    background: #bbb;
-  }*/
 </style>
