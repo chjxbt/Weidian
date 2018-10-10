@@ -126,6 +126,11 @@ class CSuperUser():
             if suser.SUlevel == 2:
                 suser.level = 'superadmin'
             suser.fill(suser.level, 'levelmeaning')
+            if suser.SUidfreeze is True:
+                suser.sustatus = 'freeze'
+            else:
+                suser.sustatus = 'normal'
+            suser.fill(suser.sustatus, 'sustatus')
         response = import_status("messages_get_item_ok", "OK")
         response['data'] = suser_list
         return response
