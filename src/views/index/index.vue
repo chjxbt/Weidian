@@ -222,7 +222,6 @@
         // this.$nextTick(function () {
           wxapi.wxRegister(this.wxRegCallback)
         // })
-
       },
         methods: {
           /*手指滑动显示隐藏*/
