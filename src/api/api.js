@@ -2,44 +2,46 @@
 const title ='https://weidian.daaiti.cn/';
 
 const api={
-  login: title + 'super/login',  // 管理员登录
+  login: title + 'super/login',       // 管理员登录
 
-  get_all_task_level: title + 'task/get_all_task_level',  // 获取所有任务等级
-  get_all_task_type: title + 'task/get_all_task_type',  // 获取任务类型
-  get_all_task: title + 'task/get_all_task',  // 获取所有任务
-  add_task: title + 'task/add_task',  // 添加或更新任务
+  get_all_task_level: title + 'task/get_all_task_level',    // 获取所有任务等级
+  get_all_task_type: title + 'task/get_all_task_type',      // 获取任务类型
+  get_all_task: title + 'task/get_all_task',                // 获取所有任务
+  add_task: title + 'task/add_task',                        // 添加或更新任务
 
-  get_bigactivitys: title + 'bigactivity/get_bigactivitys',//获取专题列表-后台
-  get_all_hot_message: title + 'hotmessage/get_all',//获取全部热文 - 首页
-  add_one_hot_message: title + 'hotmessage/add_one',//添加热文 - 首页
-  update_one_hot_message: title + 'hotmessage/update_one',//编辑热文 - 首页
+  get_bigactivitys: title + 'bigactivity/get_bigactivitys', //获取专题列表-后台
+  get_all_hot_message: title + 'hotmessage/get_all',        //获取全部热文 - 首页
+  add_one_hot_message: title + 'hotmessage/add_one',        //添加热文 - 首页
+  update_one_hot_message: title + 'hotmessage/update_one',  //编辑热文 - 首页
 
-  get_product: title + 'product/get_all',//模糊搜索商品
+  get_product: title + 'product/get_all',                   //模糊搜索商品
   get_activity_list_by_actitle: title + 'activity/get_activity_list_by_actitle',//模糊搜索公告/教程
 
-  create_hbact: title + 'bigactivity/create_hbact',  // 添加首页专题（轮播图）
-  create_dbact: title + 'bigactivity/create_dbact',  // 添加发现页专题（轮播图）
-  update_bact: title + 'bigactivity/update_bact', // 修改专题/删除轮播图（测试）
+  create_hbact: title + 'bigactivity/create_hbact',   // 添加首页专题（轮播图）
+  create_dbact: title + 'bigactivity/create_dbact',   // 添加发现页专题（轮播图）
+  update_bact: title + 'bigactivity/update_bact',     // 修改专题/删除轮播图（测试）
 
-  get_home: title + 'topnav/get_home',  // 获取上部导航 - 首页
-  get_dp: title + 'topnav/get_dp',  // 获取上部导航 - 发现页
+  get_home: title + 'topnav/get_home',                // 获取上部导航 - 首页
+  get_dp: title + 'topnav/get_dp',                    // 获取上部导航 - 发现页
 
-  set_show_type: title + 'activity/set_show_type',  // 设置首页专题默认的过滤类型
-  get_show_type: title + 'activity/get_show_type',  // 获取首页默认的过滤类型
+  set_show_type: title + 'activity/set_show_type',    // 设置首页专题默认的过滤类型
+  get_show_type: title + 'activity/get_show_type',    // 获取首页默认的过滤类型
 
-  get_all_activity: title + 'activity/get_all',  // 获取首页/发现页活动/推文内容列表
-  add_one_activity: title + 'activity/add_one',  // 添加首页活动/推文（测试）
-  update_act: title + 'activity/update_act',  // 修改/删除活动/推文 - 首页/发现页
+  get_all_activity: title + 'activity/get_all',       // 获取首页/发现页活动/推文内容列表
+  add_one_activity: title + 'activity/add_one',       // 添加首页活动/推文（测试）
+  update_act: title + 'activity/update_act',          // 修改/删除活动/推文 - 首页/发现页
   add_to_bigact: title + 'bigactivity/add_to_bigact', // 将推文批量添加到专题
 
-  get_info: title + 'recommend/get_info', // 获取每日推荐商品部分 - 发现页
-  update: title + 'recommend/update', // 修改每日推荐商品 - 发现页
+  get_info: title + 'recommend/get_info',             // 获取每日推荐商品部分 - 发现页
+  update: title + 'recommend/update',                 // 添加/修改/删除每日推荐商品 - 发现页
 
-  update_info: title + 'super/update_info', // 修改管理员基本信息
+  update_info: title + 'super/update_info',           // 修改管理员基本信息
 
 
-  // upload_task_img: title + 'task/upload_task_img',  // 上传任务图标-上传图片
-  upload_task_img: title + 'activity/upload_home_images',  // 上传图片
+  // upload_task_img: title + 'task/upload_task_img',         // 上传任务图标-上传图片
+  upload_task_img: title + 'activity/upload_home_images',     // 上传图片
+  add_image: title + 'adimage/add_image',                     // 弹框管理的添加图片
+  get_image_by_aitype: title + 'adimage/get_image_by_aitype', // 通过类型获取弹框图
 
 
 
