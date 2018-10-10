@@ -100,6 +100,10 @@ def is_admin():
     """是否是管理员(不包括客服)"""
     return (hasattr(request, 'user') and request.user.scope == 'SuperUser' and request.user.SUlevel > 0)
 
+def is_superadmin():
+    """是否为超管"""
+    return (hasattr(request, 'user') and request.user.scope == 'SuperUser' and request.user.SUlevel == 2)
+
 
 def is_customerservice():
     """客服"""

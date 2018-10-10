@@ -46,11 +46,13 @@ class CBigActivity(BaseActivityControl):
         if not hasattr(request, 'user'):
             raise TOKEN_ERROR(u"未登录/token错误")
         args = request.args.to_dict()
-        logger.info("get sac args is %s", args)
+        logger.debug("get bigactivity content args is %s", args)
         parameter_required('baid', 'page_num', 'page_size')
         baid = args.get('baid')
         page_num = args.get('page_num')
         page_size = args.get('page_size')
+        page_num = 1 if not page_num else args.get('page_num')
+        page_size = 5 if not page_size else args.get('page_size')
         try:
             activity_list = self.sactivity.get_bigactivity_by_baid(baid, int(page_num), int(page_size))
             for activity in activity_list:
@@ -58,9 +60,15 @@ class CBigActivity(BaseActivityControl):
                 self.fill_detail(activity)
                 self.fill_like_num(activity)
                 self.fill_type(activity)
+                activity.fill(activity.AClinkvalue, 'aclinkvalue')
+
                 if activity.ACSkipType == 2:
                     self.fill_soldnum(activity)
                     self.fill_product(activity)
+                    activity.fill('product', 'skip_type')
+                    activity.fill('商品', 'zh_skip_type')
+                activity.ACstarttime = get_web_time_str(activity.ACstarttime)
+                activity.ACendtime = get_web_time_str(activity.ACendtime)
 
             total_count = self.sactivity.get_bigactivity_count_by_baid(baid)
             banner = get_model_return_dict(self.sbigactivity.get_bigactivity_banner_by_baid(baid))['BAimage']
@@ -73,7 +81,7 @@ class CBigActivity(BaseActivityControl):
                 'total_count': total_count
             }
             return response
-        except:
+        except Exception as e:
             logger.exception("get bigactivity error")
             raise SYSTEM_ERROR()
 

@@ -1,11 +1,12 @@
 # -*- coding:utf8 -*-
 import sys
 import os
+import uuid
 
 from WeiDian import logger
 from WeiDian.common.params_require import parameter_required
 from flask import request
-from WeiDian.common.token_required import usid_to_token, verify_token_decorator, is_admin
+from WeiDian.common.token_required import usid_to_token, verify_token_decorator, is_admin, is_superadmin
 from WeiDian.common.import_status import import_status
 from WeiDian.service.SSuperUser import SSuperUser
 from WeiDian.config.response import PARAMS_MISS, SYSTEM_ERROR, AUTHORITY_ERROR, PARAMS_ERROR
@@ -51,6 +52,27 @@ class CSuperUser():
         except:
             logger.exception('super user login in error')
             raise SYSTEM_ERROR(u'用户名或密码错误')
+
+    @verify_token_decorator
+    def add_admin_by_superadmin(self):
+        if not is_superadmin():
+            raise AUTHORITY_ERROR(u'当前非超管权限')
+        data = request.json
+        logger.debug("add admin data is %s", data)
+        parameter_required('suname')
+        suid = str(uuid.uuid1())
+        password = data.get('password')
+
+        self.ssuperuser.add_model('SuperUser' **{
+            'SUid': suid,
+            'SUname': data.get('suname'),
+            'SUpassword': generate_password_hash(password),
+            'SUheader': data.get('suheader'),
+            'SUlevel': data.get('sulevel')
+        })
+
+
+
 
     @verify_token_decorator
     def update_suerinfo(self):

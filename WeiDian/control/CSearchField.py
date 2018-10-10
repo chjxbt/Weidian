@@ -95,11 +95,13 @@ class CSearchField():
         
         args = request.args.to_dict()
         # lasting = args.get('lasting', 'true')  # 是否正在进行的活动
-        page = int(args.get('page', 1))  # 页码
-        start = int(args.get('start', 0))  # 起始位置
-        count = int(args.get('count', 15))  # 取出条数
+        page = args.get('page')  # 页码
+        page = 1 if not page else int(page)
+        start = int(args.get('start'))  # 起始位置
+        count = args.get('count')  # 取出条数
+        count = 5 if not count else int(count)
         if not start:
-            start = (page -1) * count
+            start = int((page - 1) * count)
         from WeiDian.service.SProduct import SProduct
         from WeiDian.service.SActivity import SActivity
         from WeiDian.control.CActivity import CActivity
@@ -120,6 +122,7 @@ class CSearchField():
         cactivity = CActivity()
         activity_list = map(cactivity.fill_detail, activity_list)
         for activity in activity_list:
+            activity.fill(activity.AClinkvalue, 'aclinkvalue')
             sactivity.update_view_num(activity.ACid)
 
         activity_list = activity_list[start:end]

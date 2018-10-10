@@ -85,7 +85,7 @@ class SActivity(SBase):
 
     @close_session
     def get_activity_by_prid(self, prid):
-        return self.session.query(Activity).filter_by(PRid=prid, ACisdelete=False).all()
+        return self.session.query(Activity).filter_by(ACSkipType=2, AClinkvalue=prid, ACisdelete=False).all()
 
     @close_session
     def get_product_soldnum_by_acid(self, acid):
