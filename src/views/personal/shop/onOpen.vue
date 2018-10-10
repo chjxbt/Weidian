@@ -51,7 +51,7 @@
 
 
       <div class="m-short-bannar" v-if="short">
-        <img :src="short.aiimage" class="m-short-img" alt="">
+        <img :src="short" class="m-short-img" alt="">
       </div>
     </div>
 
@@ -198,23 +198,15 @@
           },
           /*获取底部图片*/
           getImg(){
-            axios.get(api.get_myimg_adimage,{
-              params:{
-                lasting:true,
-                token:localStorage.getItem('token')
-              }
-            }).then(res => {
+            axios.get(api.get_image_by_aitype + '?token=' + localStorage.getItem('token') + "&aitype=1").then(res => {
               if(res.data.status == 200){
-                for(let i=0;i<res.data.data.length;i++){
-                  if(res.data.data[i].aisize == 1)
-                    this.short = res.data.data[i];
-                }
+                this.short = res.data.data.aiimage;
               }else{
                 Toast({ message: res.data.message, className: 'm-toast-fail' });
               }
             },error => {
               Toast({ message: error.data.message, className: 'm-toast-fail' });
-            })
+            });
           },
           /*订单类型切换*/
           cellNav(v){

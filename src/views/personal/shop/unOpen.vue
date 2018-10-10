@@ -25,10 +25,10 @@
       </div>
 
         <div class="m-short-bannar" v-if="short">
-          <img :src="short.aiimage" class="m-short-img" alt="">
+          <img :src="short" class="m-short-img" alt="">
         </div>
         <div class="m-high-bannar"  v-if="high">
-          <img :src="high.aiimage" class="m-high-img" alt="">
+          <img :src="high" class="m-high-img" alt="">
         </div>
 
 
@@ -147,25 +147,21 @@
               Toast({ message: error.data.message, className: 'm-toast-fail' });            })
           },
           getImg(){
-            axios.get(api.get_myimg_adimage,{
-              params:{
-                lasting:true,
-                token:localStorage.getItem('token')
-              }
-            }).then(res => {
-                if(res.data.status == 200){
-                  for(let i=0;i<res.data.data.length;i++){
-                    if(res.data.data[i].aisize == 1)
-                      this.short = res.data.data[i];
-                    else if(res.data.data[i].aisize == 2)
-                      this.high = res.data.data[i];
+            axios.get(api.get_image_by_aitype + '?token=' + localStorage.getItem('token') + "&aitype=[1, 2]").then(res => {
+              if(res.data.status == 200){
+                for(let i = 0; i < res.data.data.length; i++){
+                  if(res.data.data[i].aitype == 1) {
+                    this.short = res.data.data[i].aiimage;
+                  }else if(res.data.data[i].aitype == 2) {
+                    this.high = res.data.data[i].aiimage;
                   }
-
-                }else{
-                  Toast({ message: res.data.message, className: 'm-toast-fail' });
                 }
+              }else{
+                Toast({ message: res.data.message, className: 'm-toast-fail' });
+              }
             },error => {
-              Toast({ message: error.data.message, className: 'm-toast-fail' });            })
+              Toast({ message: error.data.message, className: 'm-toast-fail' });
+            });
           },
           cellClick(v){
 

@@ -33,7 +33,7 @@ const api={
   add_one_complain: title + '/complain/add_one',//投诉
   get_prlike_productlike: title + '/productlike/get_prlike',//收藏
   batch_del_productlike:title + '/productlike/batch_del',//删除收藏
-  get_myimg_adimage: title + '/adimage/get_myimg',//获取我的底部图片
+  // get_myimg_adimage: title + '/adimage/get_myimg',//获取我的底部图片
   get_image_by_aitype: title +'/adimage/get_image_by_aitype',//获取弹框图片
 
   get_address : title +'/mycenter/get_address',//获取收获地址
