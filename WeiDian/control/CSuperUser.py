@@ -62,22 +62,28 @@ class CSuperUser():
         parameter_required('suname')
         suid = str(uuid.uuid1())
         password = data.get('password')
-
-        self.ssuperuser.add_model('SuperUser' **{
-            'SUid': suid,
-            'SUname': data.get('suname'),
-            'SUpassword': generate_password_hash(password),
-            'SUheader': data.get('suheader'),
-            'SUlevel': data.get('sulevel')
-        })
-
-
-
+        sulevel = int(data.get('sulevel'))
+        if sulevel not in [0, 1]:
+            raise PARAMS_ERROR(u'sulevel参数错误')
+        try:
+            self.ssuperuser.add_model('SuperUser', **{
+                'SUid': suid,
+                'SUname': data.get('suname'),
+                'SUpassword': generate_password_hash(password),
+                'SUheader': data.get('suheader'),
+                'SUlevel': sulevel,
+            })
+            response = import_status("add_admin_success", "OK")
+            response["data"] = {'suid': suid}
+            return response
+        except Exception as e:
+            logger.exception("add admin error")
+            raise SYSTEM_ERROR(u'添加管理员信息错误')
 
     @verify_token_decorator
     def update_suerinfo(self):
         if not is_admin():
-            raise AUTHORITY_ERROR(u'当前非管理员权限')
+            raise AUTHORITY_ERROR(u'当前非管理员账户')
         data = request.json
         suid = request.user.SUid
         old_suname = request.user.SUname

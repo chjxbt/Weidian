@@ -16,7 +16,8 @@ class ASuperUser(Resource):
         print super
         apis = {
             'login': 'self.csuperuser.login()',
-            'update_info': 'self.csuperuser.update_suerinfo()'
+            'update_info': 'self.csuperuser.update_suerinfo()',
+            'add_admin': "self.csuperuser.add_admin_by_superadmin()"
         }
         res = eval(apis[super])
         return jsonify(res)
