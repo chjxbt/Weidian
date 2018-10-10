@@ -32,7 +32,7 @@ class COrder():
         self.sproductimage = SProductImage()
         self.suser = SUser()
         self.scomplain = SComplain()
-        self.update_order_params = ['orid']
+        self.update_order_params = ['orid', 'oipaystatus']
 
     @verify_token_decorator
     def add_one(self):
@@ -219,6 +219,16 @@ class COrder():
         if is_tourist():
             return TOKEN_ERROR
         parameter_required(*self.update_order_params)
+        data = request.json
+        orid = data.get('orid')
+        oipaystatus = data.get("oipaystatus")
+        update_result = self.sorder.update_orderinfo_status(orid, {"OIpaystatus": oipaystatus})
+        if not update_result:
+            raise SYSTEM_ERROR(u'数据库连接异常')
+        if oipaystatus:
+            
+
+
 
     def fix_orderproduct_info(self, sku_list, oiid):
         """

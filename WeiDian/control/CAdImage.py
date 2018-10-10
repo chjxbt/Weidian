@@ -63,7 +63,7 @@ class CAdImage():
                 'ACid': adimage_web.get("acid"),
             }
             adimage_list = self.sadimage.get_image_by_aitype(aitype)
-            if aitype < 8:
+            if aitype < 9:
                 if adimage_list:
                     update_result = self.sadimage.update_image(adimage_list[0].AIid, adimage)
                     if not update_result:
@@ -104,7 +104,7 @@ class CAdImage():
 
         res = import_status('get_adimage_success', 'OK')
         if adimage_list:
-            if aitype < 8:
+            if aitype < 9:
                 res['data'] = adimage_list[0]
                 return res
             else:

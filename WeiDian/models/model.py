@@ -809,7 +809,7 @@ class AdImage(BaseModel):
     AIimage = Column(String(255))  # 图片地址
     AItype = Column(Integer)
     # 图片类型{0: 我的导师， 1:静态广告图, 2:弹窗背景图, 3: 发现弹框图片, 4: 等级规则图片(未开店), 5: 等级规则(已开店),
-    # 6: 专属粉丝管理规则，7：开店邀请海报规则， 8：邀请专属粉丝海报，9：邀请开店海报}
+    # 6: 专属粉丝管理规则，7：开店邀请海报规则， 8：邀请开店海报, 9：邀请专属粉丝海报，}
     AIsize = Column(Integer)  # 图片尺寸{ 1:小图 高度120px, 2:大图 高度400px}
     ACid = Column(String(64))  # 图片对应的活动
     AIcreatetime = Column(String(14))  # 创建时间
