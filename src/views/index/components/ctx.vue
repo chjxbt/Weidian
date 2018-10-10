@@ -30,7 +30,7 @@
           <div>
             <!--<icon-list :list="list.icon" :index="index" @iconClick="iconClick"></icon-list>-->
             <ul class="m-icon-list">
-              <li v-for="(item,index) in list.icon" @click.stop="iconClick(index)">
+              <li v-for="(item,index) in iconList" @click.stop="iconClick(index)">
                 <img v-if="!item.alreadylike" :src="'/static/images/' + item.src +'.png'" class="m-icon" alt="">
                 <img v-else  :src="'/static/images/' + item.src +'-active.png'" class="m-icon" alt="">
                 {{item.name}}
@@ -46,13 +46,13 @@
 
 <script>
   import mLabel from '../../../components/common/mLabel';
-  import iconList from '../../../components/common/iconList';
+  // import iconList from '../../../components/common/iconList';
   import wxapi from '../../../common/js/mixins';
     export default {
       mixins: [wxapi],
       data(){
         return{
-
+          iconList: this.list.icon
         }
       },
       props:{
@@ -67,7 +67,7 @@
       },
       components: {
         'm-label':mLabel,
-        'icon-list':iconList
+        // 'icon-list':iconList
       },
       mounted(){
         let that = this;
@@ -89,7 +89,7 @@
           wxapi.previewImage(options);
         },
         iconClick(v){
-          this.$emit('iconClick',v,this.index)
+          this.$emit('iconClick', v, this.index);
         },
         showMoreText(v){
           this.$emit('showMoreText',v,this.index)
