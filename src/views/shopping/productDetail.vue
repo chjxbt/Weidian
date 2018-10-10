@@ -158,7 +158,12 @@
       },
       // 返回上一页
       backPage() {
-        this.$router.push('/shopping/index');
+        // if(this.$route.query.last == 'activity' && this.$route.query.baid){
+        //   this.$router.push({path:'/activityContent',query:{baid:this.$route.query.baid}});
+        // }else{
+        //   this.$router.push('/shopping/index');
+        // }
+
       },
       // 收藏
       collection() {
@@ -237,7 +242,7 @@
     width: 24px;
     height: 35px;
     margin: 30px;
-    transform: rotate(180deg);
+    /*transform: rotate(180deg);*/
     background: url("/static/images/icon-list-left.png") no-repeat;
     background-size: 100% 100%;
   }
