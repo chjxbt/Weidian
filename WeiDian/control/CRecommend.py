@@ -62,7 +62,7 @@ class CRecommend(BaseProductControl):
         prid_list = data.get('PRid_list')
         if not prid_list:
             raise PARAMS_MISS(u'缺失PRid_list')
-        # reid = str(uuid.uuid4())
+        reid = str(uuid.uuid4())
         try:
             re_info = {
                 # 'REid': reid,
@@ -130,25 +130,46 @@ class CRecommend(BaseProductControl):
         logger.debug("update data is %s", data)
         reid = args.get('reid')
         recommend = {
-            'REstarttime': get_db_time_str(data.get('REstarttime')),
-            'REendtime': get_db_time_str(data.get('REendtime')),
-            'REfakeviewnum': data.get('REfakeviewnum'),
-            'RElikefakenum': data.get('RElikefakenum'),
-            'REisdelete': data.get('REisdelete')
+            'REstarttime': get_db_time_str(data.get('restarttime')),
+            'REendtime': get_db_time_str(data.get('reendtime')),
+            'REfakeviewnum': data.get('reviewnum'),
+            'RElikefakenum': data.get('relikenum'),
+            'SUid': data.get('suid')
+            # 'REisdelete': data.get('reisdelete')
         }
         recommend = {k: v for k, v in recommend.items() if v is not None}
         res = self.srecommend.update_recommend_by_reid(reid, recommend)
         if not res:
-            return SYSTEM_ERROR(u"REid错误，要修改的内容不存在")
-        prid_list = data.get('PRid_list')
+            raise SYSTEM_ERROR(u"信息修改错误")
+        prid_list = data.get('prid_list')
         if prid_list:
             for item in prid_list:
-                add_model('RecommendProduct', **{
-                    'REid': reid,
-                    'PRid': item.get('PRid'),
-                    'RPid': str(uuid.uuid4()),
-                    'RPsort': item.get('RPsort')
-                })
+                prid = item.get('prid')
+                prisdelete = item.get('prisdelete')
+                rpsort = item.get('rpsort')
+                refilter = {'REid': reid,
+                            'PRid': prid
+                            }
+                already_exist_product = self.srecommend.get_exist_reproduct_by_filter(refilter)
+                if not already_exist_product:
+                    add_model('RecommendProduct', **{
+                        'REid': reid,
+                        'PRid': prid,
+                        'RPid': str(uuid.uuid4()),
+                        'RPsort': rpsort
+                    })
+                else:
+                    if prisdelete is True:
+                        self.srecommend.del_reproduct_by_filter(refilter)
+                    elif rpsort:
+                        repr_changed = self.srecommend.get_exist_reproduct_by_filter({'RPsort': rpsort})
+                        if repr_changed:
+                            self.srecommend.update_exist_reproduct_by_filter({'RPid': repr_changed.RPid}, {'RPsort': already_exist_product.RPsort})
+                    self.srecommend.update_exist_reproduct_by_filter(refilter, {'REid': reid,
+                                                                                'PRid': prid,
+                                                                                'RPsort': rpsort
+                                                                                })
+
         response_update_recommend = import_status('update_recommend_success', 'OK')
         response_update_recommend['data'] = {'reid': reid}
         return response_update_recommend

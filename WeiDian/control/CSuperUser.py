@@ -59,12 +59,14 @@ class CSuperUser():
         data = request.json
         suid = request.user.SUid
         old_suname = request.user.SUname
-        new_suname = data.get('suname').encode('utf8')
+        new_suname = data.get('suname')
+        if new_suname:
+            new_suname = new_suname.encode('utf8')
         old_password = data.get('oldpassword')
         new_password = data.get('newpassword')
-        avatar = data.get('avatar')
+        avatar = data.get('head')
         logger.debug("update info is %s", data)
-        parameter_required('suname', 'avatar')
+        # parameter_required('suname', 'head')
         if old_password and new_password:
             suuser = self.ssuperuser.verify_super(old_suname, old_password)
             if not suuser:
@@ -88,7 +90,7 @@ class CSuperUser():
             if not update_info:
                 raise SYSTEM_ERROR(u"修改信息错误")
         response = import_status("update_superinfo_success", "OK")
-        response['data'] ={'suid': suid}
+        response['data'] = {'suid': suid}
         return response
 
 
