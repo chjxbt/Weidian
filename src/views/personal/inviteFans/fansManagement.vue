@@ -7,7 +7,7 @@
             <span class="m-red">345678</span>
             <span class="m-fans-red-border">复制</span>
           </div>
-          <p>规则</p>
+          <p @click="getRule(6)">规则</p>
         </div>
         <p class="m-fans-code-info">被邀请好友填写你的邀请码即可</p>
       </div>
@@ -78,20 +78,47 @@
           <span class="m-fans-btn done">已邀请</span>
         </div>
       </div>
+      <img-modal v-if="show_img" :src="img_src" @closeModal="closeModal"></img-modal>
     </div>
 </template>
 
 <script type="text/ecmascript-6">
+  import axios from 'axios';
+  import api from '../../../api/api';
+  import {Toast} from 'mint-ui';
+  import imgModal from '../../../components/common/imgModal';
     export default {
         data() {
             return {
-               fans_type:'exclusive'
+               fans_type:'exclusive',
+              show_img:false,
+              img_src:''
             }
         },
-        components: {},
+        components: {imgModal},
         methods: {
           fansChange(v){
             this.fans_type = v;
+          },
+          getRule(type){
+            axios.get(api.get_image_by_aitype,{
+              params:{
+                token:localStorage.getItem('token'),
+                aitype:type
+              }
+            }).then(res => {
+              if(res.data.status == 200){
+                this.show_img = true;
+                this.img_src = res.data.data.aiimage;
+              }else{
+                Toast({ message: res.data.message, className: 'm-toast-fail' });
+              }
+            },error => {
+              Toast({ message: error.data.message, className: 'm-toast-fail' });            })
+          },
+          /*关闭模态框*/
+          closeModal(v){
+            this[v]  = false;
           }
         },
         created() {

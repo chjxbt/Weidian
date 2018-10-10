@@ -4,7 +4,7 @@
         <div class="m-shop-top-box">
           <div class="m-flex-between">
             <span @click="setClick">账号设置</span>
-            <span @click="showModal(true)">等级规则</span>
+            <span @click="getRule()">等级规则</span>
           </div>
           <div class="m-flex-start m-shop">
             <img v-if="person_info.user" :src="person_info.user.usheader" class="m-shop-top-img" alt="">
@@ -26,10 +26,10 @@
           <span class="m-invite-store" @click="invite('store')">邀请购买开店大礼包</span>
         </div>
       </div>
-      <on-open v-if="isOpen"></on-open>
+      <on-open v-if="isOpen" @teacherClick="teacherClick"></on-open>
       <un-open v-else></un-open>
 
-      <rule :show_modal="show_modal" :rule="rule" @showModal="showModal"></rule>
+      <img-modal v-if="show_img" :src="rule" @closeModal="closeModal"></img-modal>
     </div>
 
 </template>
@@ -40,13 +40,13 @@
   import axios from 'axios';
   import api from '../../api/api';
   import {Toast} from 'mint-ui';
-  import rule from '../../components/common/rule';
-  import common from '../../common/js/common'
+  import common from '../../common/js/common';
+  import imgModal from '../../components/common/imgModal';
     export default {
         data() {
             return {
                 isOpen: false,
-              show_modal:false,
+              show_img:false,
               rule:'',
               person_info:[
 
@@ -56,7 +56,7 @@
         components: {
           onOpen,
           unOpen,
-          rule
+          imgModal
         },
       mounted(){
         common.changeTitle('我的');
@@ -77,35 +77,31 @@
                 }else{
                   this.isOpen = false;
                 }
-                this.getRule(this.isOpen);
               }else{
                 Toast({ message: res.data.message, className: 'm-toast-fail' });
               }
             },error => {
               Toast({ message: error.data.message, className: 'm-toast-fail' });            })
           },
-          getRule(open){
-            axios.get(api.get_rule_mycenter,{
+          getRule(type){
+            axios.get(api.get_image_by_aitype,{
               params:{
-                token:localStorage.getItem('token')
+                token:localStorage.getItem('token'),
+                aitype:type
               }
             }).then(res => {
               if(res.data.status == 200){
-                for(let i =0;i<res.data.data.length;i++){
-                    if(res.data.data[i].lrtype == 1 && open){
-                      this.rule = res.data.data[i].lrtext;
-                    }else if(res.data.data[i].lrtype == 2 && !open){
-                      this.rule = res.data.data[i].lrtext;
-                    }
-                }
+                this.show_img= true;
+                this.rule=res.data.data.aiimage;
               }else{
                 Toast({ message: res.data.message, className: 'm-toast-fail' });
               }
             },error => {
               Toast({ message: error.data.message, className: 'm-toast-fail' });            })
           },
-          showModal(v){
-            this.show_modal = v;
+          /*关闭模态框*/
+          closeModal(v){
+            this[v]  = false;
           },
           /*账号设置*/
           setClick(){
@@ -119,6 +115,9 @@
               this.$router.push('/inviteStore')
             }
           },
+          teacherClick(){
+            this.getRule(0);
+          }
         },
         created() {
           this.getInfo();

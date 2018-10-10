@@ -43,13 +43,13 @@
   .m-modal-state{
     position: absolute;
     width: 600px;
-    height: 600px;
+    height: 750px;
     top:50%;
     left: 50%;
-    transform: translate(-300px,-300px);
+    transform: translate(-300px,-375px);
     img{
       width: 600px;
-      height: 600px;
+      height: 750px;
       background-color: #fff;
     }
     .m-close{

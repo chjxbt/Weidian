@@ -240,7 +240,9 @@
              }else{
                this.$router.push(v.url);
              }
-
+           }
+           if(v.name == '我的导师'){
+             this.$emit('teacherClick')
            }
           },
           // 临时方法，去往二三级页面的会员中心

@@ -34,7 +34,7 @@ const api={
   get_prlike_productlike: title + '/productlike/get_prlike',//收藏
   batch_del_productlike:title + '/productlike/batch_del',//删除收藏
   get_myimg_adimage: title + '/adimage/get_myimg',//获取我的底部图片
-  get_rule_mycenter: title +'/mycenter/get_rule',//获取规则
+  get_image_by_aitype: title +'/adimage/get_image_by_aitype',//获取弹框图片
 
   get_address : title +'/mycenter/get_address',//获取收获地址
   add_address: title +'/mycenter/add_address',//添加地址

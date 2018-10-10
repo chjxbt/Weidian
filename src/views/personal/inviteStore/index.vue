@@ -1,7 +1,7 @@
 <template>
     <div class="m-inviteStore">
-      <span class="m-inviteStore-rule m-ft-20 m-bg-main-color tr" @click="show_rule = true" >规 则</span>
-      <rule :show_modal="show_rule" :rule="rule" @showModal="showModalRule"></rule>
+      <span class="m-inviteStore-rule m-ft-20 m-bg-main-color tr" @click="getRule(7)" >规 则</span>
+      <!--<rule :show_modal="show_rule" :rule="rule" @showModal="showModalRule"></rule>-->
 
       <div class="m-inviteStore-img-box">
         <img src="http://d6.yihaodianimg.com/N00/M00/FE/31/CgMBmVNv9WCAWLTNAAXxZghPNoo13800.jpg" class="m-inviteStore-img">
@@ -181,7 +181,7 @@
               <span class="m-check"></span>
               <span>不使用新衣币</span>
             </div>
-            <span class="m-inviteStore-modal-btn" @click="showModal('show_img',true)">确定</span>
+            <span class="m-inviteStore-modal-btn" @click="getRule(8)">确定</span>
           </div>
         </div>
       </div>
@@ -192,7 +192,6 @@
 
 <script type="text/ecmascript-6">
   import discountCoupon from '../../../components/common/discountCoupon';
-  import rule from '../../../components/common/rule';
   import axios from 'axios';
   import api from '../../../api/api';
   import {Toast} from 'mint-ui';
@@ -222,12 +221,11 @@
           show_modal:false,
           show_rule: false,
           show_img:false,
-          rule:''
+          img_src:''
         }
       },
       components: {
         discountCoupon,
-        rule,
         imgModal},
       methods: {
         navChange(v){
@@ -242,19 +240,16 @@
         showModalRule(v){
           this.show_rule =v;
         },
-        getRule(){
-          axios.get(api.get_rule_mycenter,{
+        getRule(type){
+          axios.get(api.get_image_by_aitype,{
             params:{
-              token:localStorage.getItem('token')
+              token:localStorage.getItem('token'),
+              aitype:type
             }
           }).then(res => {
             if(res.data.status == 200){
-              for(let i =0;i<res.data.data.length;i++){
-                if(res.data.data[i].lrtype == 4 ){
-                  this.rule = res.data.data[i].lrtext;
-                  return false;
-                }
-              }
+              this.show_img = true;
+              this.img_src = res.data.data.aiimage;
             }else{
               Toast({ message: res.data.message, className: 'm-toast-fail' });
             }
@@ -268,7 +263,7 @@
       },
       mounted(){
         common.changeTitle('邀请开店');
-        this.getRule();
+        // this.getRule();
       },
       created() {
 
