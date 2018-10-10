@@ -120,6 +120,8 @@
               </el-table-column>
               <el-table-column fixed="right" label="管理" width="300">
                 <template slot-scope="scope">
+                  <el-button type="text" size="small" @click="upProduct(scope)" :disabled="scope.$index == '0'">上移</el-button>
+                  <el-button type="text" size="small">|</el-button>
                   <el-button type="text" size="small" @click="deleteProduct(scope)">删除</el-button>
                 </template>
               </el-table-column>
@@ -659,12 +661,12 @@
           this.productLoading = true;
           let PRid_list = [];
           for(let i = 0; i < this.productList.length; i ++) {
-            PRid_list.push({ PRid: this.productList[i].prid, RPsort: i });
+            PRid_list.push({ prid: this.productList[i].prid, prsort: i });
           }
           let params = {
-            REviewnum: this.productViewNum,
-            RElikenum: this.productLikeNum,
-            PRid_list: PRid_list
+            reviewnum: this.productViewNum,
+            relikenum: this.productLikeNum,
+            prid_list: PRid_list
           };
           axios.post(api.update + '?token=' + localStorage.getItem('token') + "&reid=" + this.productReid, params).then(res=>{
             if(res.data.status == 200){
@@ -1141,8 +1143,7 @@
                 product = { value: res.data.data[i].prname, id: res.data.data[i].prid, prmainpic: res.data.data[i].prmainpic };
                 if(where == "activity") {
                   this.activityJumpToList.push(product);
-                }
-                if(where == "product") {
+                }else if(where == "product") {
                   this.activityJumpToList.push(product);
 
                   // 双重循环将已选择的商品disabled
@@ -1226,6 +1227,7 @@
       },
       // 获取推荐商品
       getProduct() {
+        this.productList = [];
         this.productLoading = true;
         axios.get(api.get_info + '?lasting=true&token=' + localStorage.getItem('token')).then(res => {
           if(res.data.status == 200) {
@@ -1245,25 +1247,43 @@
           }
         })
       },
+      // 上移推荐商品
+      upProduct(scope) {
+        let params = {
+          prid_list: [
+            { prid: this.productList[scope.$index].prid, rpsort: this.productList[scope.$index - 1].rpsort }
+          ]
+        };
+        this.productLoading = true;
+        axios.post(api.update + '?token=' + localStorage.getItem('token') + "&reid=" + this.productReid, params).then(res=>{
+          if(res.data.status == 200){
+            this.$message({ message: "上移成功", type: 'success' });
+            this.getProduct();    // 获取首页顶部导航nav
+          }else{
+            this.$message.error(res.data.message);
+          }
+        });
+      },
       // 删除推荐商品
       deleteProduct(scope) {
-        console.log(this.productList[scope.$index], this.productList);
-
-        /*this.$confirm('此操作将删除该推荐, 是否继续?', '提示',
+        this.$confirm('此操作将删除该推荐, 是否继续?', '提示',
           {confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'}).then(() => {
-
+          let params = {
+            prid_list: [
+              { prid: this.productList[scope.$index].prid, prisdelete: true }
+            ]
+          };
           this.productLoading = true;
-          axios.post(api.update + '?token=' + localStorage.getItem('token') + '&reid=' + this.productList[scope.$index].reid,
-            { REisdelete: true }).then(res=>{
+          axios.post(api.update + '?token=' + localStorage.getItem('token') + "&reid=" + this.productReid, params).then(res=>{
             if(res.data.status == 200){
+              this.$message({ message: "删除成功", type: 'success' });
+              this.productList.splice(scope.$index, 1);
               this.productLoading = false;
-              this.$message({ message: "推荐删除成功", type: 'success' });
-              this.productList.splice(scope.$index, 1);    // 刷新视图
             }else{
               this.$message.error(res.data.message);
             }
           });
-        }).catch(() => {  });*/
+        }).catch(() => {  });
       }
     },
     watch: {
