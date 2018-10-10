@@ -56,13 +56,17 @@ class CProductLike():
         if is_tourist():
             return TOKEN_ERROR(u'未登录')
         args = request.args.to_dict()
-        logger.info("get like list args is %s", args)
+        logger.debug("get like list args is %s", args)
         parameter_required("page_size", "page_num")
+        page_num = args.get("page_num")
+        page_size = args.get("page_size")
+        page_num = 1 if not page_num else args.get("page_num")
+        page_size = 5 if not page_size else args.get("page_size")
         try:
-            logger.debug("get product like")
-            productlike_list = self.sproductlike.get_productlike_list_by_usid(request.user.id, int(args["page_num"]), int(args["page_size"]))
+            productlike_list = self.sproductlike.get_productlike_list_by_usid(request.user.id, int(page_num), int(page_size))
+            logger.info("get product like")
             map(self.fill_productinfo, productlike_list)
-            # TODO 发圈数占位
+            # TODO 暂存的虚假发圈数
             for prlike in productlike_list:
                 prlike.forwardnum = 99
                 prlike.add("forwardnum")
@@ -71,9 +75,9 @@ class CProductLike():
             data["count"] = prlikecount
             data["data"] = productlike_list
             return data
-        except:
+        except Exception as e:
             logger.exception("get product like error")
-            return SYSTEM_ERROR
+            return SYSTEM_ERROR(u'收藏信息不存在')
 
     @verify_token_decorator
     def batch_delete_prlike(self):
@@ -97,6 +101,8 @@ class CProductLike():
     def fill_productinfo(self, prlike):
         prid = prlike.PRid
         prlike.productinfo = self.sproduct.get_product_by_prid(prid)
+        if not prlike.productinfo:
+            raise SYSTEM_ERROR(u'无此收藏商品')
         prlike.productinfo.fields = ['PRmainpic', 'PRsalestatus']
         prlike.add('productinfo')
         return prlike
