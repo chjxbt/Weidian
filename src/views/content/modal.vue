@@ -219,13 +219,68 @@
             </div>
           </div>
         </div>
-      </div>
-      <div v-if="page == '我的'">
         <div class="m-personal-left-right">
-          <h3 class="m-title">我的静态广告</h3>
+          <h3 class="m-title">杂项图片</h3>
           <div class="m-form-item-box">
             <div class="m-form-img-item">
-              <p class="m-form-label">静态广告</p>
+              <p class="m-form-label">提现帮助</p>
+              <div class="m-item-content">
+                <div class=" m-item-row">
+                  <div class="upload-box" @click="setWhichImg('withdrawalHelp')">
+                    <el-upload class="rule-upload" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false" :on-success="uploadPicture">
+                      <img v-if="withdrawalHelpImg" :src="withdrawalHelpImg" class="avatar">
+                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="m-form-img-item">
+              <p class="m-form-label">客服</p>
+              <div class="m-item-content">
+                <div class=" m-item-row">
+                  <div class="upload-box" @click="setWhichImg('service')">
+                    <el-upload class="rule-upload" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false" :on-success="uploadPicture">
+                      <img v-if="serviceImg" :src="serviceImg" class="avatar">
+                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="m-form-img-item">
+              <p class="m-form-label">开店邀请函规则</p>
+              <div class="m-item-content">
+                <div class=" m-item-row">
+                  <div class="upload-box" @click="setWhichImg('storeInvitation')">
+                    <el-upload class="rule-upload" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false" :on-success="uploadPicture">
+                      <img v-if="storeInvitationImg" :src="storeInvitationImg" class="avatar">
+                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="m-form-img-item">
+              <p class="m-form-label">邀请专属粉丝的收益详情</p>
+              <div class="m-item-content">
+                <div class=" m-item-row">
+                  <div class="upload-box" @click="setWhichImg('incomeDetail')">
+                    <el-upload class="rule-upload" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false" :on-success="uploadPicture">
+                      <img v-if="incomeDetailImg" :src="incomeDetailImg" class="avatar">
+                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="m-personal-left-right">
+          <h3 class="m-title">我的 - 静态广告</h3>
+          <div class="m-form-item-box">
+            <div class="m-form-img-item" style="margin-right: 0.2rem">
+              <p class="m-form-label">小静态广告</p>
               <div class="m-item-content">
                 <div class=" m-item-row">
                   <div class="upload-box" @click="setWhichImg('smallAd')">
@@ -238,7 +293,7 @@
               </div>
             </div>
             <div class="m-form-img-item">
-              <p class="m-form-label">静态广告</p>
+              <p class="m-form-label">大静态广告</p>
               <div class="m-item-content">
                 <div class=" m-item-row">
                   <div class="upload-box" @click="setWhichImg('bigAd')">
@@ -291,29 +346,16 @@
         fansRuleImg: "",            // 等级规则 - 专属粉丝管理规则
         invitationRuleImg: "",      // 等级规则 - 开店邀请海报规则
         invitationFansImg: "",      // 邀请专属粉丝海报
-        fansShareImg: "",      // 专属粉丝分享海报
+        fansShareImg: "",           // 专属粉丝分享海报
         invitationStoreImg: "",     // 邀请开店海报
         myTeacherImg: "",           // 我的导师
-        smallAdImg: "",             // 小静态广告
-        bigAdImg: "",               // 大静态广告
+        withdrawalHelpImg: "",      // 提现帮助
+        serviceImg: "",             // 客服
+        storeInvitationImg: "",     // 开店邀请函规则
+        incomeDetailImg: "",        // 邀请专属粉丝的收益详情
+        smallAdImg: "",             // 我的 - 小静态广告
+        bigAdImg: "",               // 我的 - 大静态广告
         whichImg: "",               // 用来暂存是哪个img
-        options: [{
-          value: '选项1',
-          label: '黄金糕'
-        }, {
-          value: '选项2',
-          label: '双皮奶'
-        }, {
-          value: '选项3',
-          label: '蚵仔煎'
-        }, {
-          value: '选项4',
-          label: '龙须面'
-        }, {
-          value: '选项5',
-          label: '北京烤鸭'
-        }],
-        value: '',
         taskLevelList: [
           { value: "1", label: "等级 1" }, { value: "2", label: "等级 2" }, { value: "3", label: "等级 3" }, { value: "4", label: "等级 4" }
         ],
@@ -335,33 +377,6 @@
             for(let i = 0; i < this.levelList.length; i ++) {
               this.levelList[i].talevel = '等级' + this.levelList[i].talevel;
               this.levelList[i].doneTip = "【图片】";
-
-              // 显示奖励
-              let raward = this.levelList[i].raward;
-              this.levelList[i].reward = "";
-              for(let j = 0; j < raward.length; j ++) {
-                if(raward[j].ratype == 0) {
-                  // 如果是多个奖励，则在每两个奖励之间加上 + 号
-                  if(this.levelList[i].reward) {
-                    this.levelList[i].reward = this.levelList[i].reward + " + ";
-                  }
-                  this.levelList[i].reward = this.levelList[i].reward + raward[j].ranumber + "张满" + raward[j].rafilter + "-" + raward[j].raamount + "新衣币";
-                }else if(raward[j].ratype == 1) {
-                  if(this.levelList[i].reward) {
-                    this.levelList[i].reward = this.levelList[i].reward + " + ";
-                  }
-                  if(raward[j].ranumber == 1) {
-                    this.levelList[i].reward = this.levelList[i].reward + "售出首单佣金上涨" + raward[j].raratio + "%";
-                  }else if(raward[j].ranumber > 1) {
-                    this.levelList[i].reward = this.levelList[i].reward + "佣金上涨" + raward[j].raratio + "%";
-                  }
-                }else if(raward[j].ratype == 2) {
-                  if(this.levelList[i].reward) {
-                    this.levelList[i].reward = this.levelList[i].reward + " + ";
-                  }
-                  this.levelList[i].reward = this.levelList[i].reward + raward[j].ranumber + "张" + raward[j].raamount + "元无门槛新衣币";
-                }
-              }
             }
             // console.log(this.levelList);
           }else{
@@ -379,7 +394,6 @@
             // console.log(this.taskList);
 
             for(let i = 0; i < this.taskList.length; i ++) {
-
               // 判断任务类型   0: "满减", 1: "佣金加成", 2: "无门槛"
               switch (this.taskList[i].tatype){
                 case 0:
@@ -400,9 +414,7 @@
           }else{
             this.$message.error(res.data.message);
           }
-        },error => {
-          this.$message.error(error.data.message);
-        })
+        });
       },
       // 获取任务类型
       getAllTaskType() {
@@ -414,21 +426,16 @@
           }else{
             this.$message.error(res.data.message);
           }
-        },error => {
-          this.$message.error(error.data.message);
-        })
+        });
       },
       // 选择任务类型
       taskTypeChange(v) {
-        console.log(v)
         // 任务类型为观看视频时，视频。否则为完成度
         if(String(v) == "") {
           this.video_ratio = "视频/完成度";
-        }
-        if(String(v) == "0") {
+        }else if(String(v) == "0") {
           this.video_ratio = "视频";
-        }
-        if(String(v) == "1" || String(v) == "2" || String(v) == "3") {
+        }else if(String(v) == "1" || String(v) == "2" || String(v) == "3") {
           this.video_ratio = "完成度";
         }
       },
@@ -445,7 +452,7 @@
           this.levelTableClose = true;
         }
       },
-      // 暂存是哪个img
+      // 确定暂存是哪个img
       setWhichImg(which) {
         this.whichImg = which;
       },
@@ -459,27 +466,35 @@
           if(res.data.status == 200){
             // 根据不同img，将结果赋值给不同的img
             if(this.whichImg == "owner") {
-              this.ownerImg = res.data.data;
+              this.ownerImg = res.data.data;            // 发现页 - 弹框图片
             }else if(this.whichImg == "unRevelRule") {
-              this.unRevelRuleImg = res.data.data;
+              this.unRevelRuleImg = res.data.data;      // 等级规则 - 未开店
             }else if(this.whichImg == "revelRule") {
-              this.revelRuleImg = res.data.data;
+              this.revelRuleImg = res.data.data;        // 等级规则 - 已开店
             }else if(this.whichImg == "fansRule") {
-              this.fansRuleImg = res.data.data;
+              this.fansRuleImg = res.data.data;         // 等级规则 - 专属粉丝管理规则
             }else if(this.whichImg == "invitationRule") {
-              this.invitationRuleImg = res.data.data;
+              this.invitationRuleImg = res.data.data;   // 等级规则 - 开店邀请海报规则
             }else if(this.whichImg == "invitationFans") {
-              this.invitationFansImg = res.data.data;
+              this.invitationFansImg = res.data.data;   // 邀请专属粉丝海报
             }else if(this.whichImg == "fansShare") {
-              this.fansShareImg = res.data.data;
+              this.fansShareImg = res.data.data;        // 专属粉丝分享海报
             }else if(this.whichImg == "invitationStore") {
-              this.invitationStoreImg = res.data.data;
+              this.invitationStoreImg = res.data.data;  // 邀请开店海报
             }else if(this.whichImg == "myTeacher") {
-              this.myTeacherImg = res.data.data;
+              this.myTeacherImg = res.data.data;        // 我的导师
+            }else if(this.whichImg == "withdrawalHelp") {
+              this.withdrawalHelpImg = res.data.data;   // 提现帮助
+            }else if(this.whichImg == "service") {
+              this.serviceImg = res.data.data;          // 客服
+            }else if(this.whichImg == "storeInvitation") {
+              this.storeInvitationImg = res.data.data;  // 开店邀请函规则
+            }else if(this.whichImg == "incomeDetail") {
+              this.incomeDetailImg = res.data.data;     // 邀请专属粉丝的收益详情
             }else if(this.whichImg == "smallAd") {
-              this.smallAdImg = res.data.data;
+              this.smallAdImg = res.data.data;          // 我的 - 小静态广告
             }else if(this.whichImg == "bigAd") {
-              this.bigAdImg = res.data.data;
+              this.bigAdImg = res.data.data;            // 我的 - 大静态广告
             }
           }else{
             this.$message({ type: 'error', message: res.data.message });
@@ -578,25 +593,17 @@
                 { aiimage: this.invitationStoreImg, aitype: "8"},
                 { aiimage: this.myTeacherImg, aitype: "0"},
                 { aiimage: this.smallAdImg, aitype: "1"},
-                { aiimage: this.bigAdImg, aitype: "2"}
+                { aiimage: this.bigAdImg, aitype: "2"},
+                { aiimage: this.withdrawalHelpImg, aitype: "11"},
+                { aiimage: this.serviceImg, aitype: "12"},
+                { aiimage: this.storeInvitationImg, aitype: "13"},
+                { aiimage: this.incomeDetailImg, aitype: "14"}
               ]
             };
           }
           axios.post(api.add_image + '?token=' + localStorage.getItem('token'), params).then(res=>{
             if(res.data.status == 200){
-              this.$message({ type: 'success', message: res.data.message });
-
-              // 清空图片
-              // this.ownerImg = "";
-              // this.unRevelRuleImg = "";
-              // this.revelRuleImg = "";
-              // this.fansRuleImg = "";
-              // this.invitationRuleImg = "";
-              // this.invitationFansImg = "";
-              // this.invitationStoreImg = "";
-              // this.myTeacherImg = "";
-              // this.smallAdImg = "";
-              // this.bigAdImg = "";
+              this.$message({ type: 'success', message: "保存成功", duration: 1500 });
             }else{
               this.$message.error(res.data.message);
             }
@@ -616,30 +623,38 @@
             }
           });
         }else if(i == 2) {
-          axios.get(api.get_image_by_aitype + '?token=' + localStorage.getItem('token') + "&aitype=[0, 1, 2, 4, 5, 6, 7, 8, 9, 10]").then(res => {
+          axios.get(api.get_image_by_aitype + '?token=' + localStorage.getItem('token') + "&aitype=[0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]").then(res => {
             if(res.data.status == 200) {
 
               for(let i = 0; i <res.data.data.length; i ++) {
                 if(res.data.data[i].aitype == 0) {
-                  this.myTeacherImg = res.data.data[i].aiimage;
+                  this.myTeacherImg = res.data.data[i].aiimage;           // 我的 - 大静态广告
                 }else if(res.data.data[i].aitype == 1) {
-                  this.smallAdImg = res.data.data[i].aiimage;
+                  this.smallAdImg = res.data.data[i].aiimage;             // 我的 - 小静态广告
                 }else if(res.data.data[i].aitype == 2) {
-                  this.bigAdImg = res.data.data[i].aiimage;
+                  this.bigAdImg = res.data.data[i].aiimage;               // 我的 - 大静态广告
                 }else if(res.data.data[i].aitype == 4) {
-                  this.unRevelRuleImg = res.data.data[i].aiimage;
+                  this.unRevelRuleImg = res.data.data[i].aiimage;         // 等级规则 - 未开店
                 }else if(res.data.data[i].aitype == 5) {
-                  this.revelRuleImg = res.data.data[i].aiimage;
+                  this.revelRuleImg = res.data.data[i].aiimage;           // 等级规则 - 已开店
                 }else if(res.data.data[i].aitype == 6) {
-                  this.fansRuleImg = res.data.data[i].aiimage;
+                  this.fansRuleImg = res.data.data[i].aiimage;            // 等级规则 - 专属粉丝管理规则
                 }else if(res.data.data[i].aitype == 7) {
-                  this.invitationRuleImg = res.data.data[i].aiimage;
+                  this.invitationRuleImg = res.data.data[i].aiimage;      // 等级规则 - 开店邀请海报规则
                 }else if(res.data.data[i].aitype == 8) {
-                  this.invitationStoreImg = res.data.data[i].aiimage;
+                  this.invitationStoreImg = res.data.data[i].aiimage;     // 邀请开店海报
                 }else if(res.data.data[i].aitype == 9) {
-                  this.invitationFansImg = res.data.data[i].aiimage;
+                  this.invitationFansImg = res.data.data[i].aiimage;      // 邀请专属粉丝海报
                 }else if(res.data.data[i].aitype == 10) {
-                  this.fansShareImg = res.data.data[i].aiimage;
+                  this.fansShareImg = res.data.data[i].aiimage;           // 专属粉丝分享海报
+                }else if(res.data.data[i].aitype == 11) {
+                  this.withdrawalHelpImg = res.data.data[i].aiimage;      // 提现帮助
+                }else if(res.data.data[i].aitype == 12) {
+                  this.serviceImg = res.data.data[i].aiimage;             // 客服
+                }else if(res.data.data[i].aitype == 13) {
+                  this.storeInvitationImg = res.data.data[i].aiimage;     // 开店邀请函规则
+                }else if(res.data.data[i].aitype == 14) {
+                  this.incomeDetailImg = res.data.data[i].aiimage;        // 邀请专属粉丝的收益详情
                 }
               }
             }else{
