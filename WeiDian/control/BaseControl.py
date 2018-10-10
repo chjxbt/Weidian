@@ -319,6 +319,7 @@ class BaseShoppingCart(BaseProductControl):
         prid = cart.sku.PRid
         if prid:
             product = self.sproduct.get_product_by_prid(prid)
+
             if product:
                 cart.PRimage = product.PRmainpic
                 cart.PRtitle = product.PRtitle

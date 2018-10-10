@@ -32,6 +32,7 @@ class COrder():
         self.sproductimage = SProductImage()
         self.suser = SUser()
         self.scomplain = SComplain()
+        self.update_order_params = ['orid']
 
     @verify_token_decorator
     def add_one(self):
@@ -217,7 +218,7 @@ class COrder():
     def update_order(self):
         if is_tourist():
             return TOKEN_ERROR
-        pass
+        parameter_required(*self.update_order_params)
 
     def fix_orderproduct_info(self, sku_list, oiid):
         """
