@@ -8,7 +8,6 @@
             <search :search="search" @searchClick="searchClick" @inputClick="inputClick"></search>
             <navbar :list="nav_list" @navClick="navClick"></navbar>
           </div>
-
           <mt-swipe :auto="2000">
             <mt-swipe-item v-for="item in swipe_items" :key="item.baid" >
               <a :href="item.href" rel="external nofollow" >
@@ -490,7 +489,10 @@
                       arr.alreadylike = true;
                       Toast({ message: res.data.message, className: 'm-toast-success' });
                     }
-                    console.log(arr)
+                    // this.activity_list[index].icon[0] = arr;
+                    // this.$set(this.activity_list[index].icon[0],'name',arr.name);
+                    // this.$set(this.activity_list[index].icon[0],'alreadylike',arr.alreadylike);
+
                   }else{
                     Toast({ message: res.data.message, className: 'm-toast-fail' });
                   }

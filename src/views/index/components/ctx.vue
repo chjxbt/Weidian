@@ -220,13 +220,14 @@
   .m-icon-list{
     .flex-row(flex-end);
     li{
-      margin-left: 10px;
+      padding: 10px;
       .flex-col(center);
       font-size: 22px;
       .m-icon{
         display: block;
         width: 30px;
         height: 25px;
+        margin-bottom: 10px;
       }
     }
   }
