@@ -8,6 +8,7 @@ from WeiDian.common.TransformToList import add_model, dict_add_models
 from WeiDian.common.import_status import import_status
 from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, SYSTEM_ERROR
 from WeiDian.control.BaseControl import BaseShoppingCart
+from WeiDian.config.setting import PLATFORM_NAME, PLATFORM_POSTFEE
 sys.path.append(os.path.dirname(os.getcwd()))
 
 
@@ -31,6 +32,8 @@ class CShoppingCart(BaseShoppingCart):
         data = import_status('get_cart_success', "OK")
         data['data'] = {"cart": carts_list}
         data['total'] = self.total_price(carts_list)
+        data['name'] = PLATFORM_NAME
+        data['postfee'] = PLATFORM_POSTFEE
         return data
 
     @verify_token_decorator

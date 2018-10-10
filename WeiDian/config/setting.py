@@ -17,3 +17,8 @@ WindowsRoot = 'D:/'
 APP_ID = 'wx8206635590c9cc0e'
 APP_SECRET_KEY = 'ba8c532bfd8e7390e3cfc91ac17c0472'
 wximg = 'https://daaiti.cn/imgs/WeiDian/qrcode/wx.jpg'
+
+# platform
+
+PLATFORM_NAME = '衣百惠'
+PLATFORM_POSTFEE = '已免运费'

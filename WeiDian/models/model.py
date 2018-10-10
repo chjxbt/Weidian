@@ -172,8 +172,7 @@ class Product(BaseModel):
     PRmodifytime = Column(String(14))  # 修改时间
     PRstatus = Column(Integer, default=1)  # 商品状态: {0 删除, 1 正常, 2 禁用}
     PRprice = Column(Float, nullable=False)  # 显示价格
-    PRisdelete = Column(Boolean, default=False)
-    # 已下架
+    PRisdelete = Column(Boolean, default=False)  # 已下架
     PRviewnum = Column(Integer, default=0)  # 浏览量
     PRfakeviewnum = Column(Integer)  # 虚拟浏览数
     PRfakelikenum = Column(Integer, default=0)  # 虚拟收藏数量
@@ -808,7 +807,9 @@ class AdImage(BaseModel):
     __tablename__ = "adimage"
     AIid = Column(String(64), primary_key=True)
     AIimage = Column(String(255))  # 图片地址
-    AItype = Column(Integer)  # 图片类型{ 1:静态广告图, 2:弹窗背景图}
+    AItype = Column(Integer)
+    # 图片类型{0: 我的导师， 1:静态广告图, 2:弹窗背景图, 3: 发现弹框图片, 4: 等级规则图片(未开店), 5: 等级规则(已开店),
+    # 6: 专属粉丝管理规则，7：开店邀请海报规则， 8：邀请专属粉丝海报，9：邀请开店海报}
     AIsize = Column(Integer)  # 图片尺寸{ 1:小图 高度120px, 2:大图 高度400px}
     ACid = Column(String(64))  # 图片对应的活动
     AIcreatetime = Column(String(14))  # 创建时间
