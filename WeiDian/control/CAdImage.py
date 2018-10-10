@@ -3,6 +3,7 @@ import sys
 import os
 from datetime import datetime
 import uuid
+import json
 import re
 from WeiDian import logger
 from WeiDian.common.timeformat import format_for_db
@@ -56,6 +57,8 @@ class CAdImage():
             raise PARAMS_MISS('adimage')
         for adimage_web in adimage_list_web:
             aitype = adimage_web.get("aitype")
+            if not adimage_web.get("aiimage"):
+                continue
             adimage = {
                 'AIimage': adimage_web.get("aiimage"),
                 'AItype': adimage_web.get("aitype"),
@@ -89,6 +92,20 @@ class CAdImage():
             raise AUTHORITY_ERROR(u"未登录")
         aitype = request.args.to_dict().get("aitype")
         logger.debug('get aitype %s, and type of aitype %s', aitype, type(aitype))
+
+        if re.search(r'\[', aitype):
+            aitype = json.loads(aitype)
+            adimage_list = [self.get_image_list(aitype_item) for aitype_item in aitype]
+        else:
+            adimage_list = self.get_image_list(aitype)
+        res = import_status('get_adimage_success', 'OK')
+        if adimage_list:
+            res['data'] = adimage_list
+            return res
+        res['message'] = u'尚未添加图片'
+        return res
+
+    def get_image_list(self, aitype):
         if re.match(r'^[0-9]+$', str(aitype)):
             aitype = int(aitype)
         else:
@@ -101,14 +118,8 @@ class CAdImage():
                 adimage_list = self.sadimage.get_image_by_aitype(4)
         else:
             adimage_list = self.sadimage.get_image_by_aitype(aitype)
-
-        res = import_status('get_adimage_success', 'OK')
-        if adimage_list:
-            if aitype < 9:
-                res['data'] = adimage_list[0]
-                return res
-            else:
-                res['data'] = adimage_list
-                return res
-        res['message'] = u'尚未添加图片'
-        return res
+        if not adimage_list:
+            return {'aiimage': "尚未添加改图片", 'aitype': aitype}
+        if aitype < 9:
+            return adimage_list[0]
+        return adimage_list

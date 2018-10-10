@@ -225,8 +225,8 @@ class COrder():
         update_result = self.sorder.update_orderinfo_status(orid, {"OIpaystatus": oipaystatus})
         if not update_result:
             raise SYSTEM_ERROR(u'数据库连接异常')
-        if oipaystatus:
-            
+        # if oipaystatus:
+
 
 
 
