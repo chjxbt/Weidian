@@ -1,7 +1,7 @@
 <template>
     <div class="m-invitation">
       <div class="m-invitation-img-box">
-        <span class="m-rule">规则</span>
+        <span class="m-rule" @click="getRule(13)">规则</span>
         <div class="m-logo-name">
           <img src="" class="m-logo-img" alt="">
           <span class="m-name">xxxxx</span>
@@ -28,19 +28,49 @@
           <p class="m-flex-between"> <span class="m-red">￥139</span><span class="m-red-border">购买</span></p>
         </div>
       </div>
+      <img-modal v-if="show_img" :src="img_src" @closeModal="closeModal"></img-modal>
     </div>
 
 </template>
 
 <script type="text/ecmascript-6">
+  import axios from 'axios';
+  import api from '../../../api/api';
+  import {Toast} from 'mint-ui';
+  import imgModal from '../../../components/common/imgModal';
     export default {
         data() {
             return {
-                name: ''
+                img_src:'',
+                show_img:false
             }
         },
-        components: {},
-        methods: {},
+        components: {imgModal},
+      mounted(){
+
+      },
+        methods: {
+          getRule(type){
+            axios.get(api.get_image_by_aitype,{
+              params:{
+                token:localStorage.getItem('token'),
+                aitype:type
+              }
+            }).then(res => {
+              if(res.data.status == 200){
+                this.show_img = true;
+                this.img_src = res.data.data.aiimage;
+              }else{
+                Toast({ message: res.data.message, className: 'm-toast-fail' });
+              }
+            },error => {
+              Toast({ message: error.data.message, className: 'm-toast-fail' });            })
+          },
+          /*关闭模态框*/
+          closeModal(v){
+            this[v]  = false;
+          }
+        },
         created() {
 
         }
@@ -70,7 +100,7 @@
       }
       .m-logo-name{
         position: absolute;
-        top: 0;
+        top: 10px;
         left: 25px;
         display: flex;
         align-items: center;

@@ -181,7 +181,7 @@
               <span class="m-check"></span>
               <span>不使用新衣币</span>
             </div>
-            <span class="m-inviteStore-modal-btn" @click="getRule(8)">确定</span>
+            <span class="m-inviteStore-modal-btn" @click="inviteClick">确定</span>
           </div>
         </div>
       </div>
@@ -237,9 +237,6 @@
               this.show_modal = false;
             }
         },
-        showModalRule(v){
-          this.show_rule =v;
-        },
         getRule(type){
           axios.get(api.get_image_by_aitype,{
             params:{
@@ -260,10 +257,14 @@
         closeModal(v){
           this[v]  = false;
         },
+        inviteClick(){
+          this.show_modal = false;
+        }
       },
       mounted(){
         common.changeTitle('邀请开店');
         // this.getRule();
+        this.getRule(8);
       },
       created() {
 

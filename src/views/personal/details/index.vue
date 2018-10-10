@@ -1,7 +1,7 @@
 <template>
   <div class="m-details">
     <div class="m-total-money">
-      <span class="m-help" @click="changePopupVisible(true)">帮助</span>
+      <span class="m-help" @click="getRule(11)">帮助</span>
       <p>可提现金额数额</p>
       <p class="m-red">0.00</p>
       <span class="m-total-detail" @click="detailClick">提现明细</span>
@@ -94,13 +94,7 @@
       </div>
     </div>
     <picker :show_picker="show_picker" :slots="slots" @pickerSave="pickerSave"></picker>
-    <mt-popup
-      class="help-popup"
-      v-model="helpPopupVisible"
-      popup-transition="popup-fade">
-      <img class="close-img" @click="changePopupVisible(false)" src="static/images/icon-close-personal.png" alt="">
-      <img style="width: 100%;height: 100%;" src="static/images/fans_border.png" alt="">
-    </mt-popup>
+    <img-modal v-if="show_img" :src="img_src" @closeModal="closeModal"></img-modal>
   </div>
 
 </template>
@@ -109,11 +103,13 @@
   import discountCoupon from '../../../components/common/discountCoupon';
   import {Toast, MessageBox} from 'mint-ui';
   import picker from '../../../components/common/picker';
-
+  import axios from 'axios';
+  import api from '../../../api/api';
+  import common from '../../../common/js/common';
+  import imgModal from '../../../components/common/imgModal';
   export default {
     data() {
       return {
-        helpPopupVisible: false,
         name: '',
         isIncome: true,
         show_picker: false,
@@ -136,12 +132,15 @@
           }
         ],
         out: true,
-        send: true
+        send: true,
+        show_img:false,
+        img_src:''
       }
     },
     components: {
       discountCoupon,
-      picker
+      picker,
+      imgModal
     },
     mounted() {
       let myDate = new Date();
@@ -151,9 +150,6 @@
       this.date = [].concat(_arr)
     },
     methods: {
-      changePopupVisible(visible) {
-        this.helpPopupVisible = visible;
-      },
       detailClick() {
         this.$router.push('/withdrawalDetail');
       },
@@ -172,9 +168,28 @@
         this.show_picker = v;
       },
       changeOut(v, bool) {
-        console.log(v)
         this[v] = bool;
-      }
+      },
+      getRule(type){
+        axios.get(api.get_image_by_aitype,{
+          params:{
+            token:localStorage.getItem('token'),
+            aitype:type
+          }
+        }).then(res => {
+          if(res.data.status == 200){
+            this.show_img = true;
+            this.img_src = res.data.data.aiimage;
+          }else{
+            Toast({ message: res.data.message, className: 'm-toast-fail' });
+          }
+        },error => {
+          Toast({ message: error.data.message, className: 'm-toast-fail' });            })
+      },
+      /*关闭模态框*/
+      closeModal(v){
+        this[v]  = false;
+      },
     },
     created() {
 
@@ -370,16 +385,5 @@
     background: #FDEAEC;
   }
 
-  .help-popup{
-    height: 1000px;
-    width: 600px;
 
-    .close-img{
-      position: absolute;
-      top: -30px;
-      right: -30px;
-      width: 60px;
-      height: 60px;
-    }
-  }
 </style>
