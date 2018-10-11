@@ -9,6 +9,7 @@ import json
 import urllib2
 from WeiDian import logger
 from WeiDian import mp
+from WeiDian.common.params_require import parameter_required
 from WeiDian.config.response import PARAMS_MISS, SYSTEM_ERROR, NETWORK_ERROR, TOKEN_ERROR
 from WeiDian.common.token_required import verify_token_decorator, usid_to_token
 from WeiDian.common.import_status import import_status
@@ -48,6 +49,43 @@ class CUser():
             'level': level,
         }
         return data
+
+    # def weixin_callback(self):
+    #     """通过code, 获取用户信息"""
+    #     args = parameter_required('code')
+    #     code = args.get('code')
+    #     try:
+    #         data = self.login.access_token(code)
+    #         openid = data.openid
+    #         user = self.suser.get_user_by_openid(openid)
+    #         if not user:
+    #             # 添加用户
+    #             generic_error_log('新用户')
+    #             data = self.login.user_info(data.access_token, data.openid)
+    #             scid = str(uuid.uuid4())
+    #             to_model = {
+    #                 'SCid': scid,
+    #                 'USopenid': data.get('openid'),
+    #                 'USnicknme': data.get('nickname'),
+    #                 'USheader': data.get('headimgurl'),
+    #             }
+    #             to_model['USgender'] = 'm' if data.get('sex') == 1 else 'f'
+    #             self.suser.add_model('UserScore', to_model)
+    #         else:
+    #             scid = user.SCid
+    #         # 生成token
+    #         state = args.get('state')
+    #         token = usid_to_token(scid)
+    #         if '$' in state:
+    #             state = state.replace('$', '#')
+    #         redirect_url = state + "?newtoken=" + token
+    #         generic_error_log(redirect_url)
+    #         return redirect(redirect_url)
+    #     except WeixinLoginError as e:
+    #         generic_error_log('weixinerror')
+    #         return redirect(HTTP_HOST)
+    #
+
 
     def get_accesstoken(self):
         args = request.args.to_dict()
