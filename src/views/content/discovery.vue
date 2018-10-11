@@ -25,7 +25,7 @@
                 </div>
               </template>
             </el-table-column>
-            <el-table-column prop="title" label="时间" width="490">
+            <el-table-column prop="title" label="时间" width="480">
               <template slot-scope="scope">
                 <el-date-picker v-model="scope.row.activityTime" type="datetimerange" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
                                 start-placeholder="开始日期" end-placeholder="结束日期" style="width: 3.5rem;" :disabled="scope.row.disabled" @blur="timeClick(scope)">
@@ -81,7 +81,7 @@
         </div>
 
 
-        <div style="border-bottom: 1px #707070 solid; padding-bottom: 0.2rem; margin-bottom: 0.5rem">
+        <div v-if="page == '每日10荐'" style="border-bottom: 1px #707070 solid; padding-bottom: 0.2rem; margin-bottom: 0.5rem">
           <p class="m-form-label" style="margin-bottom: 0.1rem">商品推荐管理</p>
           <div class="num-list" style="font-size: 16px; margin-bottom: -0.1rem">
             <div class="num-box">
@@ -136,11 +136,17 @@
 
       <w-tab :list="tab_list2" v-if="page == '素材圈'" class="m-ft-12"  @wTabClick="wTabClick2"></w-tab>
 
-      <p class="m-form-label" style="margin-bottom: 0.2rem">推文管理</p>
+      <div class="m-form-label choose-banner">
+        <div class="title">推文管理</div>
+        <div class="choose-box tr">
+          <el-input v-model="activitySearch" placeholder="请输入推文内容搜索" style="width: 3rem; margin-right: 0.4rem"></el-input>
+        </div>
+        <div class="banner-btn" @click="searchActivity">搜 索</div>
+      </div>
       <div class="content-table">
         <el-table :data="activityList" border style="width: 100%" v-loading="activityLoading" @selection-change="selectionChange">
           <el-table-column fixed="left" type="selection" width="55" v-if="activityToBanner"></el-table-column>
-          <el-table-column prop="num" label="推文时间" width="490">
+          <el-table-column prop="num" label="推文时间" width="480">
             <template slot-scope="scope">
               <el-date-picker v-model="scope.row.activityTime" type="datetimerange" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
                               start-placeholder="开始日期" end-placeholder="结束日期" style="width: 3.5rem;" @blur="activityTimeClick(scope)" :disabled="scope.row.disabled">
@@ -149,9 +155,10 @@
           </el-table-column>
           <el-table-column prop="actext" label="推文内容">
             <template slot-scope="scope">
-              <el-input type="textarea" :autosize="{ minRows: 3, maxRows: 3 }" placeholder="请输入推文内容" v-model="scope.row.actext" :disabled="scope.row.disabled"></el-input>
+              <el-input type="textarea" :autosize="{ minRows: 1, maxRows: 3 }" placeholder="请输入推文内容" v-model="scope.row.actext" :disabled="scope.row.disabled"></el-input>
             </template>
           </el-table-column>
+          <el-table-column prop="acSkiptype" label="跳转类型" width="120"></el-table-column>
           <el-table-column fixed="right" label="管理" width="180">
             <template slot-scope="scope">
               <el-button @click="editClick(scope, 'activity')" type="text" size="small">编辑</el-button>
@@ -185,7 +192,7 @@
           <el-switch v-model="imgVideo" active-text="长图" inactive-text="视频" active-color="#91aeb5" inactive-color="#719aab"></el-switch>
         </div>
 
-        <div class="m-form-item" style="min-height: 1.8rem; max-height: 1.8rem" v-if="page != '教程'">
+        <div class="m-form-item" style="min-height: 1.6rem; max-height: 1.8rem" v-if="page != '教程'">
           <p class="m-form-label required" style="width: 0.8rem;">推文图片</p>
           <div class="m-item-content" style="width: 6rem;" :class="activityMediaSort > 4 ? 'five':''" id="abcd">
             <div class=" m-item-row">
@@ -253,7 +260,8 @@
           </div>
         </div>
         <div class="m-form-item">
-          <p class="m-form-label required" style="width: 0.8rem;">活动时间</p>
+          <p class="m-form-label required" style="width: 0.8rem;" v-if="page == '每日10荐'">活动时间</p>
+          <p class="m-form-label" style="width: 0.8rem;" v-else>活动时间</p>
           <div class="m-item-content">
             <el-date-picker v-model="activityActivityTime" type="datetimerange" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
                             start-placeholder="开始日期" end-placeholder="结束日期" style="width: 4rem;">
@@ -372,6 +380,7 @@
         toBanner: "",             // 筛选推文时专题的选择值
         toBannerList: [],         // 筛选推文时专题的可选择项
         addBannerBtn: true,
+        activitySearch: "",       // 搜索推文时输入的内容
         activityLoading: true,    // 推文/活动表格加载中
         activityTitle: '',        // 推文标题
         activityList: [],         // 推文/活动list
@@ -421,7 +430,7 @@
         ],
         // views: '',
         // activityTime: [],
-        page:'每日10荐',
+        page: "公告",      // 默认显示的页面
         tab_list1:[],     // 导航栏
         tab_list2:[],     // 素材圈的导航栏
         tableData: [
@@ -899,7 +908,7 @@
           if(this.activityACtext == "") {
             this.$message({ message: "请填写推文内容", type: 'warning', duration: 1500 });
           }else {
-            if(this.activityActivityTime.length != 2) {
+            if(this.activityActivityTime.length != 2 && this.page == "每日10荐") {
               this.$message({ message: "请填写推文时间", type: 'warning', duration: 1500 });
             }
             else {
@@ -1084,6 +1093,14 @@
             this.activityList = res.data.data;
 
             for(let i = 0; i < this.activityList.length; i ++) {
+              // 推文的跳转类型
+              if(this.activityList[i].acskiptype == "0") {
+                this.activityList[i].acSkiptype = "专题页/商品";
+              }else if(this.activityList[i].acskiptype == "1") {
+                this.activityList[i].acSkiptype = "专题页";
+              }else if(this.activityList[i].acskiptype == "2") {
+                this.activityList[i].acSkiptype = "商品";
+              }
               this.activityList[i].activityTime = [this.activityList[i].acstarttime, this.activityList[i].acendtime];
               this.activityList[i].disabled = true;
             }
@@ -1184,6 +1201,10 @@
           }
         }
       },
+      // 搜索推文
+      searchActivity() {
+
+      },
       // 当选择项发生变化时会触发该事件
       selectionChange(selection) {
         this.selectionList = [];
@@ -1210,6 +1231,9 @@
         this.tnid = this.tab_list1[i].tnid;
         this.clearFrom();         // 清空输入框
         this.getActivity(0, 5);   // 获取首页活动/推文内容列表
+        if(this.page == "每日10荐") {
+          this.getProduct();  // 获取推荐商品
+        }
       },
       // 素材圈的导航栏
       wTabClick2(i){
@@ -1258,7 +1282,7 @@
         axios.post(api.update + '?token=' + localStorage.getItem('token') + "&reid=" + this.productReid, params).then(res=>{
           if(res.data.status == 200){
             this.$message({ message: "上移成功", type: 'success', duration: 1500 });
-            this.getProduct();    // 获取首页顶部导航nav
+            this.getProduct();    // 获取推荐商品
           }else{
             this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
@@ -1309,7 +1333,9 @@
     mounted() {
       this.getBanner();     // 获取首页专题
       this.getTopNav();     // 获取首页顶部导航nav
-      this.getProduct();    // 获取首页顶部导航nav
+      if(this.page == "每日10荐") {
+        this.getProduct();  // 获取推荐商品
+      }
     }
   }
 </script>
@@ -1344,6 +1370,26 @@
       border-radius: 0.1rem;
       padding: 0.02rem 0.15rem;
       margin: 0.3rem 0 0 0.3rem;
+    }
+  }
+  .choose-banner {
+    display: flex;
+    justify-content: space-between;
+    .title {
+      white-space: nowrap;
+    }
+    .choose-box {
+      flex: 1;
+    }
+    .banner-btn {
+      color: #ffffff;
+      height: 0.2rem;
+      line-height: 0.22rem;
+      white-space: nowrap;
+      font-size: 0.12rem;
+      border-radius: 0.1rem;
+      padding: 0.05rem 0.2rem;
+      background-color: @mainColor;
     }
   }
 </style>

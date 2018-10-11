@@ -7,7 +7,7 @@
       <p class="m-form-label" style="margin-bottom: 0.2rem">专题管理</p>
       <div class="content-table">
         <el-table :data="bannerList" border style="width: 100%" v-loading="bannerLoading">
-          <el-table-column prop="baid" label="Id" width="300"></el-table-column>
+          <!--<el-table-column prop="baid" label="Id" width="300"></el-table-column>-->
           <el-table-column prop="batext" label="专题名称" width="150">
             <template slot-scope="scope">
               <el-input v-model="scope.row.batext" placeholder="请输入专题名称" :disabled="scope.row.disabled"></el-input>
@@ -24,7 +24,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="title" label="时间" width="490">
+          <el-table-column prop="title" label="时间" width="480">
             <template slot-scope="scope">
               <el-date-picker v-model="scope.row.activityTime" type="datetimerange" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
                               start-placeholder="开始日期" end-placeholder="结束日期" style="width: 3.5rem;" :disabled="scope.row.disabled" @blur="timeClick(scope)">
@@ -86,9 +86,10 @@
           <el-table-column prop="hmsort" label="热文顺序" width="200"></el-table-column>
           <el-table-column prop="hmtext" label="热文内容">
             <template slot-scope="scope">
-              <el-input v-model="scope.row.hmtext" placeholder="请输入热文内容" :disabled="scope.row.disabled" style="width: 5rem; margin: 0.05rem"></el-input>
+              <el-input v-model="scope.row.hmtext" placeholder="请输入热文内容" :disabled="scope.row.disabled" style="width: 5rem;"></el-input>
             </template>
           </el-table-column>
+          <el-table-column prop="hmsort" label="热文读者" width="200"></el-table-column>
           <el-table-column fixed="right" label="管理" width="180">
             <template slot-scope="scope">
               <el-button @click="editClick(scope, 'hot')" type="text" size="small" v-if="scope.row.editSave == '1'">编辑</el-button>
@@ -143,22 +144,17 @@
 
       <w-tab :list="tab_list"  @wTabClick="wTabClick" style="margin-top: 0.3rem"></w-tab>
 
-      <div class="m-form-label choose-banner" style="margin-bottom: 0.05rem">
+      <div class="m-form-label choose-banner">
         <div class="title">推文管理</div>
-        <div class="choose-box tr">
-          <el-select v-model="toBanner" class="m-input-l" placeholder="请选择专题内容页所对应的专题" style="width: 3rem;margin-right: 0.4rem">
-            <el-option v-for="item in toBannerList" :key="item.value" :label="item.value" :value="item.id"></el-option>
-          </el-select>
+        <div class="choose-box tr" style="margin-bottom: 0.1rem">
+          <el-input v-model="activitySearch" placeholder="请输入推文内容搜索" style="width: 3rem; margin-right: 0.5rem"></el-input>
         </div>
-        <el-tooltip class="item" effect="light" content="筛选出能跳转到专题内容页的推文" placement="top-start" v-if="!activityToBanner">
-          <div class="banner-btn" @click="toBannerClick('1')">筛选推文</div>
-        </el-tooltip>
-        <div class="banner-btn" @click="toBannerClick('2')" v-if="activityToBanner" :disabled="true">绑定专题</div>
+        <div class="banner-btn" style="margin-right: 0.1rem" @click="searchActivity">搜 索</div>
       </div>
       <div class="content-table">
         <el-table :data="activityList" border style="width: 100%" v-loading="activityLoading" @selection-change="selectionChange">
           <el-table-column fixed="left" type="selection" width="55" v-if="activityToBanner"></el-table-column>
-          <el-table-column prop="num" label="推文时间" width="490">
+          <el-table-column prop="num" label="推文时间" width="480">
             <template slot-scope="scope">
               <el-date-picker v-model="scope.row.activityTime" type="datetimerange" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
                               start-placeholder="开始日期" end-placeholder="结束日期" style="width: 3.5rem;" @blur="activityTimeClick(scope)" :disabled="scope.row.disabled">
@@ -167,9 +163,10 @@
           </el-table-column>
           <el-table-column prop="actext" label="推文内容">
             <template slot-scope="scope">
-              <el-input type="textarea" :autosize="{ minRows: 3, maxRows: 3 }" placeholder="请输入推文内容" v-model="scope.row.actext" :disabled="scope.row.disabled"></el-input>
+              <el-input type="textarea" :autosize="{ minRows: 1, maxRows: 3 }" placeholder="请输入推文内容" v-model="scope.row.actext" :disabled="scope.row.disabled"></el-input>
             </template>
           </el-table-column>
+          <el-table-column prop="acSkiptype" label="跳转类型" width="120"></el-table-column>
           <el-table-column fixed="right" label="管理" width="180">
             <template slot-scope="scope">
               <el-button @click="editClick(scope, 'activity')" type="text" size="small">编辑</el-button>
@@ -178,6 +175,18 @@
             </template>
           </el-table-column>
         </el-table>
+      </div>
+      <div class="m-form-label choose-banner" style="margin: -0.1rem 0 0.2rem 0; border-bottom: 1px solid #707070">
+        <!--<div class="title">推文管理</div>-->
+        <div class="choose-box tr" style="margin-bottom: 0.1rem">
+          <el-select v-model="toBanner" class="m-input-l" placeholder="请选择专题内容页所对应的专题" style="width: 3rem; margin-right: 0.4rem">
+            <el-option v-for="item in toBannerList" :key="item.value" :label="item.value" :value="item.id"></el-option>
+          </el-select>
+        </div>
+        <el-tooltip class="item" effect="light" content="筛选出能跳转到专题内容页的推文" placement="top-start" v-if="!activityToBanner">
+          <div class="banner-btn" @click="toBannerClick('1')">筛选推文</div>
+        </el-tooltip>
+        <div class="banner-btn" @click="toBannerClick('2')" v-if="activityToBanner" :disabled="true">绑定专题</div>
       </div>
 
 
@@ -190,7 +199,7 @@
             </div>
           </div>
         </div>
-        <div class="m-form-item" style="min-height: 1.8rem; max-height: 1.8rem">
+        <div class="m-form-item" style="min-height: 1.6rem; max-height: 1.8rem">
           <p class="m-form-label required" style="width: 0.8rem;">推文图片</p>
           <div class="m-item-content" style="width: 6rem;" :class="activityMediaSort > 4 ? 'five':''" id="abcd">
             <div class=" m-item-row">
@@ -318,6 +327,7 @@
         activityMediaSort: 0,     // 添加推文时图片的顺序编号
         activityPictureList: [],  // 推文上传/编辑时的图片墙list
         hotMessageList: [],       // 热文集合
+        activitySearch: "",       // 搜索推文时输入的内容
         dialogImageUrl: '',       // 推文上传图片后预览的url
         dialogVisible: false,     // 推文上传图片后预览的允许与否
         editActivity: false,      // 是否在编辑activity
@@ -392,7 +402,7 @@
       },
       // 移除推文图片时执行的方法
       pictureRemove(file, fileList) {
-        console.log(file, fileList);
+        // console.log(file, fileList);
         this.activityMediaSort = this.activityMediaSort - 1;
         // this.activityMedia = [];
       },
@@ -402,7 +412,7 @@
       },
       // select选择器获得焦点时执行
       focusselect(where) {
-        console.log(where)
+        // console.log(where)
       },
       // 轮播图管理-确定点击的图片是第几行
       rowClick(index, col) {
@@ -466,8 +476,8 @@
           this.hotMessageList[scope.$index].disabled = false;
           this.hotMessageList[scope.$index].editSave = "2";
         }else if(where == "activity") {
-          console.log(scope.row.media);
-          console.log(this.activityMedia);
+          // console.log(scope.row.media);
+          // console.log(this.activityMedia);
           this.activityMedia = scope.row.media;     // 把已有图片赋给activityMedia
           this.editActivity = true;
           this.activityEditScope = scope.$index;
@@ -662,9 +672,14 @@
           });
         }).catch(() => {  });
       },
+      // 搜索推文
+      searchActivity() {
+
+      },
       // 编辑推文 - 取消
       cancelActivity() {
         // 点击取消按钮清空编辑框
+        this.activityMediaSort = 0;
         this.activityACtext = "";
         this.activityJumpValue = "";
         this.activityJumpToValue = "";
@@ -954,6 +969,14 @@
             this.activityList = res.data.data;
 
             for(let i = 0; i < this.activityList.length; i ++) {
+              // 推文的跳转类型
+              if(this.activityList[i].acskiptype == "0") {
+                this.activityList[i].acSkiptype = "专题页/商品";
+              }else if(this.activityList[i].acskiptype == "1") {
+                this.activityList[i].acSkiptype = "专题页";
+              }else if(this.activityList[i].acskiptype == "2") {
+                this.activityList[i].acSkiptype = "商品";
+              }
               this.activityList[i].activityTime = [this.activityList[i].acstarttime, this.activityList[i].acendtime];
               this.activityList[i].disabled = true;
             }
