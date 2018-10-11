@@ -40,7 +40,7 @@
             <el-upload class="avatar-uploader" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false"
                        :on-success="uploadPicture">
               <img v-if="userImgTemp" :src="userImgTemp" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+              <i v-else class="el-icon-plus avatar-uploader-icon" style="line-height: 1rem"></i>
             </el-upload>
           </div>
           <div class="save-btn" @click="saveImg">保 存</div>
