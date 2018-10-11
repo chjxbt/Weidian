@@ -8,8 +8,8 @@ from WeiDian import logger
 from WeiDian.common.params_require import parameter_required
 from flask import request
 from WeiDian.common.import_status import import_status
-from WeiDian.common.timeformat import format_for_db, get_db_time_str
-from WeiDian.common.token_required import verify_token_decorator, is_admin
+from WeiDian.common.timeformat import format_for_db, get_db_time_str, get_web_time_str
+from WeiDian.common.token_required import verify_token_decorator, is_admin, is_tourist, is_partner
 from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR
 from WeiDian.common.TransformToList import add_model
 import json
@@ -24,25 +24,35 @@ class CHotMessage():
         from WeiDian.service.SProduct import SProduct
         self.sproduct = SProduct()
         self.hotmessage_type = ['0', '1', '2', '3', '4']
+        self.hotmessage_display_type = ['0', '1']
         self.empty = ['', None, [], {}]
         # self.hostmessage_update_key = ['HMtext', "HMcontent", "HMstarttime", 'HMendtime', "HMsort"]
 
+    @verify_token_decorator
     def get_all(self):
         """活动所有热文"""
+        if is_tourist():
+            raise TOKEN_ERROR(u'未登录')
         args = request.args.to_dict()
-        logger.info("get hotmessage args is %s", args)
+        logger.debug("get hotmessage args is %s", args)
         lasting = args.get('lasting', 'true')
-        # hot_list = self.s_hotmessage.get_all_hot()
+        htfilter = 1 if is_partner() else 0
+        if is_admin():
+            htfilter = [0, 1]
         try:
-            hot_list = self.s_hotmessage.get_hotmessage()
-            if lasting == 'true':
+            hot_list = self.s_hotmessage.get_hotmsg_list_by_filter(htfilter)
+            if str(lasting) == 'true':
                 hot_list = filter(lambda hot: hot.HMstarttime < get_db_time_str() < hot.HMendtime, hot_list)
+            for hotmsg in hot_list:
+                hotmsg.HMstarttime = get_web_time_str(hotmsg.HMstarttime)
+                hotmsg.HMendtime = get_web_time_str(hotmsg.HMendtime)
+
             data = import_status("get_hotmessage_list_success", "OK")
             data['data'] = hot_list
             return data
         except:
             logger.exception("get hotmessage error")
-            return SYSTEM_ERROR(u'服务器繁忙')
+            raise SYSTEM_ERROR(u'服务器繁忙')
     
     @verify_token_decorator
     def add_one(self):
@@ -50,7 +60,7 @@ class CHotMessage():
         if not is_admin():
             return AUTHORITY_ERROR  # 权限不足
         data = request.json
-        logger.info("add hotmessage data is ", data)
+        logger.debug("add hotmessage data is ", data)
         parameter_required('HMtext', 'HMsort', 'HMSkipType')
         now_time = datetime.strftime(datetime.now(), format_for_db)
         HMstarttime = get_db_time_str(data.get('HMstarttime', now_time))  # 热文开始时间
@@ -62,13 +72,10 @@ class CHotMessage():
         #     return SYSTEM_ERROR
         HMSkipType = data.get('HMSkipType')
         if str(HMSkipType) not in self.hotmessage_type:
-            raise SYSTEM_ERROR(u'参数错误')
-        # elif str(HMSkipType) == '1':
-        #     PRid = data.get('PRid')
-        #     BAid = ''
-        # else:
-        #     PRid = ''
-        #     BAid = data.get('BAid')
+            raise SYSTEM_ERROR(u'HMSkipType参数错误')
+        HMdisplaytype = data.get("HMdisplaytype")
+        if str(HMdisplaytype) not in self.hotmessage_display_type:
+            raise SYSTEM_ERROR(u'HMdisplaytype参数错误')
         try:
             HMid = str(uuid.uuid1())
             self.s_hotmessage.add_model('HotMessage', **{
@@ -78,9 +85,9 @@ class CHotMessage():
                 'HMendtime': HMendtime,
                 'HMsort': data.get('HMsort'),
                 'HMSkipType': HMSkipType,
-                # 'PRid': data.get('PRid', '0'),
-                # 'BAid': data.get('BAid', '0')
-                "HMcontent": data.get("HMcontent")
+                "HMcontent": data.get("HMcontent"),
+                "HMdisplaytype": HMdisplaytype
+
             })
             response_make_hotmesasge = import_status('add_hotmessage_success', 'OK')
             response_make_hotmesasge['data'] = {'HMid': HMid}
@@ -97,13 +104,20 @@ class CHotMessage():
         data = request.json
         if 'hmid'not in data.keys():
             return PARAMS_MISS
+        logger.debug("update hotmessage data is %s", data)
         hmid = data.get('hmid')
+        HMSkipType = data.get('hmskiptype')
+        HMdisplaytype = data.get("hmdisplaytype")
+        # if str(HMdisplaytype) not in self.hotmessage_display_type:
+        #     raise SYSTEM_ERROR(u'HMdisplaytype参数错误')
         hot = {
             "HMid": data.get("hmid"),
             "HMtext": data.get("hmtext"),
             "HMcontent": data.get("hmcontent"),
             "HMstarttime": get_db_time_str(data.get("hmstarttime")),
             "HMsort": data.get("hmsort"),
+            "HMSkipType": HMSkipType
+            # "HMdisplaytype": HMdisplaytype
         }
         hot = {k: v for k, v in hot.items() if v not in self.empty}
         if data.get("hmendtime"):

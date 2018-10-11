@@ -124,7 +124,7 @@ class ActivityTag(BaseModel):
     __tablename__ = 'activitytag'
     ATid = Column(String(64), primary_key=True)
     ACid = Column(String(64), nullable=False)  # 活动
-    ATname = Column(String(8), nullable=False)  # 角标文字
+    ATname = Column(String(255), nullable=False)  # 角标(后期确认改为图片)
     ATstate = Column(Integer, default=1)  # 显示状态: {1 显示, 0 隐藏}
 
     @orm.reconstructor
@@ -462,6 +462,7 @@ class HotMessage(BaseModel):
     HMsort = Column(Integer)  # 热文的顺序标志
     HMSkipType = Column(Integer, default=0)  # 跳转类型{0:无跳转类型, 1:专题, 2:商品, 3: 教程推文, 4, 公告推文}
     HMisdelete = Column(Boolean, default=False)  # 删除
+    HMdisplaytype = Column(Integer, default=0)  # 热文展示类别{该热文展示给 0:普通买家, 1: 合伙人}
 
     @orm.reconstructor
     @auto_createtime
@@ -474,7 +475,8 @@ class HotMessage(BaseModel):
             'HMendtime',
             'HMsort',
             'HMSkipType',
-            'HMcontent'
+            'HMcontent',
+            'HMdisplaytype'
         ]
 
 
