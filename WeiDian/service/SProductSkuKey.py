@@ -27,5 +27,8 @@ class SProductSkuKey(SBase):
             return Partner().one_level_divide * psk.PSKprice
         return psk.PSKprice
 
+    @close_session
+    def update_product_sku(self, skuid, ps):
+        return self.session.query(ProductSkuKey).filter(ProductSkuKey.PSskuid == skuid).update(ps)
 
 

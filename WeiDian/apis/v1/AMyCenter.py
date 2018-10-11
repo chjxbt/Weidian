@@ -24,6 +24,7 @@ class AMyCenter(Resource):
             "get_city": "self.control_mycenter.get_city_by_provincenum()",
             "get_area": "self.control_mycenter.get_area_by_citynum()",
             'get_today_total': 'self.control_mycenter.get_today_total()',
+            'get_schedual_show': 'self.control_mycenter.get_schedual_show()',  # 获取显示或隐藏
         }
         res = eval(apis[myinfo])
         return jsonify(res)

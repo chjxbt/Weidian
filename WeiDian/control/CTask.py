@@ -357,3 +357,7 @@ class CTask(BaseTask):
         logger.debug('get del task data, %s', data)
         update_result = self.stask.update_task(data.get("TAid"), {"TAstatus": 4})
         return import_status("delete_success", "OK")
+
+    # def do_shoppingtask_or_forwardtask(self, task_type):
+        # usid = request.user.id
+        # task_list =
