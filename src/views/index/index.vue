@@ -1,6 +1,6 @@
 <template>
-    <div class="m-index" :class="show_task?'noScroll':''" @touchmove.stop="touchMove" @touchend.stop="touchEnd" @touchstart.stop="touchStart">
-      <div class="m-suspend-btn " id="m-suspend-btn" :class="show_task_btn ? '':'active'" @click.stop="showModal('show_task')" >
+    <div class="m-index"  @touchmove.stop="touchMove" @touchend.stop="touchEnd" @touchstart.stop="touchStart">
+      <div class="m-suspend-btn " v-if="is_vip" id="m-suspend-btn" :class="show_task_btn ? '':'active'" @click.stop="showModal('show_task')" >
         <span>开始转发</span>
       </div>
       <mt-loadmore :top-method="loadTop"   :bottom-all-loaded="!isScroll" ref="loadmore">
@@ -49,7 +49,7 @@
           <!--&lt;!&ndash;</div>&ndash;&gt;-->
         <!--</div>-->
       <!--</div>-->
-      <div class="m-modal" v-if="show_task" @click.stop="closeModal('show_task')">
+      <div class="m-modal" v-if="show_task" @click.stop="closeModal('show_task')" >
         <div class="m-modal-state">
           <div class="m-modal-head">
             <span class="m-close" @click.stop="closeModal('show_task')"> x </span>
@@ -189,7 +189,8 @@
               TArole:'',
               code_src:'',
               components_src:'',
-              task_reward:null
+              task_reward:null,
+              is_vip:true
             }
         },
         components: {
@@ -212,8 +213,14 @@
         }
           this.getSwipe();
           this.getHot();
-        this.getTopnav();
-        this.getTask();
+          this.getTopnav();
+          if(localStorage.getItem('level') == 'partner'){
+            this.is_vip = true;
+            this.getTask();
+          }else{
+            this.is_vip = false;
+          }
+
 
           let that =this;
         this.interval = window.setInterval(that.animation,3000);
@@ -221,6 +228,15 @@
         // this.$nextTick(function () {
           wxapi.wxRegister(this.wxRegCallback)
         // })
+      },
+      watch:{
+        show_task:function (val,oldVal) {
+          if(val){
+            document.body.style.overflowY = 'hidden';
+          }else{
+            document.body.style.overflowY = 'auto';
+          }
+        }
       },
         methods: {
           /*手指滑动显示隐藏*/
@@ -665,9 +681,6 @@
 <style lang="less" rel="stylesheet/less" scoped>
   @import "../../common/css/index";
   @import "../../common/css/modal";
-  .noScroll{
-    overflow: hidden;
-  }
 .m-top{
   margin-top: 10px;
 }
