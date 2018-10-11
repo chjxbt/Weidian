@@ -1,8 +1,7 @@
 # -*- coding:utf8 -*-
-import json
-import re
 import sys
 import os
+import re
 sys.path.append(os.path.dirname(os.getcwd()))
 
 import uuid
@@ -358,6 +357,22 @@ class CTask(BaseTask):
         update_result = self.stask.update_task(data.get("TAid"), {"TAstatus": 4})
         return import_status("delete_success", "OK")
 
-    # def do_shoppingtask_or_forwardtask(self, task_type):
-        # usid = request.user.id
-        # task_list =
+    def do_shoppingtask_or_forwardtask(self, task_type):
+        if not re.match(r'^[0-4]$', str(task_type)):
+            return
+        task_type = int(str(task_type))
+        usid = request.user.id
+        task_list = self.stask.get_user_task_by_userid(usid)
+        map(self.fill_task_detail, task_list)
+        for task in task_list:
+            if int(task.TAtype) == task_type and int(task.TUstatus) == 0:
+                tunumber = int(task.TUnumber) + 1
+                tasknumber = int(task.TAurl)
+                task_user = {}
+                task_user['TUnumber'] = tunumber
+                if tunumber == tasknumber:
+                    task_user['TUstatus'] = 1
+
+                update_result = self.stask.update_user_task(task.TUid, task_user)
+                if not update_result:
+                    logger.error('update usertask error user is %s, task is %s', usid, task.TUid)

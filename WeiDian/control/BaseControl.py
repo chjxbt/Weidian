@@ -1,6 +1,7 @@
 # -*- coding:utf8 -*-
 import uuid
 import os
+import re
 from datetime import datetime
 
 from WeiDian.common.get_model_return_list import get_model_return_dict

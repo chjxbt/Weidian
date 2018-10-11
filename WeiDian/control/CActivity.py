@@ -13,12 +13,12 @@ from WeiDian.config.setting import QRCODEHOSTNAME, LinuxRoot, LinuxImgs, Windows
 from flask import request
 import math
 import uuid
-from WeiDian.common.token_required import verify_token_decorator, is_admin, is_tourist
+from WeiDian.common.token_required import verify_token_decorator, is_admin, is_tourist, is_partner
 from WeiDian.common.TransformToList import add_model
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db, get_db_time_str, get_web_time_str, format_for_web_second
 from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR, NOT_FOUND, PARAMS_ERROR
-from WeiDian.control.BaseControl import BaseActivityControl, BaseFile
+from WeiDian.control.BaseControl import BaseActivityControl, BaseFile, BaseTask
 from WeiDian.models.model import Activity
 sys.path.append(os.path.dirname(os.getcwd()))
 
@@ -508,6 +508,11 @@ class CActivity(BaseActivityControl):
             response["qrcodeurl"] = QRCODEHOSTNAME + '/' + LinuxImgs + '/qrcode/' + user.openid + now_time + '.png'
             response["components"] = QRCODEHOSTNAME + '/' + LinuxImgs + '/components.png'
             logger.debug('response url is %s', response["qrcodeurl"])
+
+            if is_partner():
+                from WeiDian.control.CTask import CTask
+                basetask = CTask()
+                basetask.do_shoppingtask_or_forwardtask(1)
             return response
         except:
             logger.exception("make qrcode error")
