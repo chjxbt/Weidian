@@ -108,21 +108,24 @@ class CActivity(BaseActivityControl):
             raise PARAMS_MISS(u"参数缺失")
         try:
             topnav = self.stopnav.get_topnav_by_tnid(tnid)
+            if not topnav:
+                raise NOT_FOUND(u'无此tnid')
             if topnav.TNtype == 2 and str(tnid) != '1':  # '1'为每日十荐页tnid
                 skiptype = 0
             print (skiptype)
-            activity_list = self.sactivity.get_activity_by_topnavid(tnid, page, count, skiptype, acid)
-            logger.info("get activity_list success")
 
-            if suid:
-                activity_list = self.sactivity.get_activity_by_suid(suid, page, count)
-
-            # if not activity_list:
-            #     raise SYSTEM_ERROR(u'数据库错误')
+            now_time = None
 
             if str(lasting) == 'true':
                 now_time = datetime.strftime(datetime.now(), format_for_db)
-                activity_list = filter(lambda act: act.ACstarttime < now_time < act.ACendtime, activity_list)
+            activity_list = self.sactivity.get_activity_by_topnavid(tnid, page, count, skiptype, acid, suid, now_time)
+            logger.info("get activity_list success")
+
+            # if suid:
+            #     activity_list = self.sactivity.get_activity_by_suid(suid, page, count)
+            # if not activity_list:
+            #     raise SYSTEM_ERROR(u'数据库错误')
+
             for activity in activity_list:
                 self.sactivity.update_view_num(activity.ACid)
                 self.fill_detail(activity)
@@ -286,6 +289,8 @@ class CActivity(BaseActivityControl):
         ACistop = data.get('ACistop', 0)
         ACtitle = data.get('ACtitle')
         AClinkvalue = data.get('AClinkvalue')
+        SUid = data.get('SUid')
+        SUid = request.user.id if not SUid else str(SUid)
         ACSkipType = int(data.get('ACSkipType', 0))   # 跳转类型
         # ACProductsSoldFakeNum = data.get('acproductssoldfakenum')
         # ACforwardFakenum = data.get('acforwardfakenum')
@@ -353,7 +358,7 @@ class CActivity(BaseActivityControl):
             'AClinkvalue': AClinkvalue,
             # 'BAid': BAid,
             # 'PRid': PRid,
-            'SUid': request.user.id,
+            'SUid': SUid,
             'ACtype': data.get('ACtype'),  # 类型
             'TopnavId': TopnavId,
             'ACtext': ACtext,
@@ -400,11 +405,13 @@ class CActivity(BaseActivityControl):
         ACistop = data.get('acistop', 0)
         ACtitle = data.get('actitle')
         AClinkvalue = data.get('aclinkvalue')
+        SUid = data.get('suid')
+        SUid = request.user.id if not SUid else str(SUid)
         ACSkipType = int(data.get('acskiptype', 0))  # 跳转类型
         ACProductsSoldFakeNum = data.get('acproductssoldfakenum')
-        ACforwardFakenum = data.get('acforwardfakenum')
+        ACforwardFakenum = data.get('acforwardFakenum')
         ACbrowsenum = data.get('acbrowsenum')
-        AClikeFakeNum = data.get('aclikefakenum')
+        AClikeFakeNum = data.get('aclikeFakeNum')
 
         if str(ACistop) == 'True':
             istop = self.sactivity.get_top_activity(TopnavId)
@@ -455,6 +462,7 @@ class CActivity(BaseActivityControl):
         model_dict = {
             'ACSkipType': ACSkipType,
             'AClinkvalue': AClinkvalue,
+            'SUid': SUid,
             'ACtype': data.get('actype'),  # 类型
             'ACtext': ACtext,
             'AClikeFakeNum': AClikeFakeNum,  # 喜欢数
