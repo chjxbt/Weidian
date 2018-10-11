@@ -60,10 +60,10 @@ class CProductLike():
         parameter_required("page_size", "page_num")
         page_num = args.get("page_num")
         page_size = args.get("page_size")
-        page_num = 1 if not page_num else args.get("page_num")
-        page_size = 5 if not page_size else args.get("page_size")
+        page_num = 1 if not page_num else int(page_num)
+        page_size = 5 if not page_size else int(page_size)
         try:
-            productlike_list = self.sproductlike.get_productlike_list_by_usid(request.user.id, int(page_num), int(page_size))
+            productlike_list = self.sproductlike.get_productlike_list_by_usid(request.user.id, page_num, page_size)
             logger.info("get product like")
             map(self.fill_productinfo, productlike_list)
             # TODO 暂存的虚假发圈数

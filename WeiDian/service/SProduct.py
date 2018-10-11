@@ -68,7 +68,7 @@ class SProduct(SBase):
 
     @close_session
     def get_products_by_prname(self, prname):
-        return self.session.query(Product).filter(Product.PRname.like("%{0}%".format(prname))).all()
+        return self.session.query(Product).filter(Product.PRtitle.like("%{0}%".format(prname))).all()
 
     @close_session
     def update_product_by_prid(self, prid, data):
