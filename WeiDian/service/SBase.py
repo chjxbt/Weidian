@@ -37,6 +37,8 @@ class SBase(object):
             self.session = DBSession.db_session()
         except Exception as e:
             # raise e
+            from WeiDian.common.loggers import generic_log
+            generic_log(e)
             print(e.message)
 
     @close_session

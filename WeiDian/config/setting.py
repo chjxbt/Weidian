@@ -7,6 +7,7 @@ TOKEN_EXPIRATION = 3600 * 222220  # token过期时间(秒)
 
 # 服务器域名
 QRCODEHOSTNAME = 'https://weidianweb.daaiti.cn'
+APIHOST = 'https://weidian.daaiti.cn'
 
 # 图片存储位置
 LinuxRoot = '/opt/WeiDian/'

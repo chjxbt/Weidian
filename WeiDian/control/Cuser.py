@@ -1,4 +1,5 @@
 # *- coding:utf8 *-
+import re
 import sys
 import os
 from flask import request, redirect
@@ -8,6 +9,7 @@ import datetime
 import json
 import urllib2
 
+from weixin import WeixinError
 from weixin.login import WeixinLoginError, WeixinLogin
 
 from WeiDian import logger
@@ -22,6 +24,7 @@ from WeiDian.config.urlconfig import get_subscribe
 from WeiDian.service.SUser import SUser
 from WeiDian.service.STask import STask
 from WeiDian.service.SMyCenter import SMyCenter
+from WeiDian.common.loggers import generic_log
 sys.path.append(os.path.dirname(os.getcwd()))
 
 
@@ -57,31 +60,34 @@ class CUser():
 
     def weixin_callback(self):
         """回调, 通过code, 获取用户信息"""
-        args = parameter_required('code')
-        code = args.get('code')
-        state = args.get('state')
-        # todo 确定上级
-        state = state.replace('$', '#').replace('~', '?')
-        wxlogin = WeixinLogin(APP_ID, APP_SECRET_KEY)
         try:
+            args = request.args.to_dict()
+            code = args.get('code')
+            state = args.get('state')
+            state = state.replace('$', '#').replace('~', '?').replace('+', '=')
+
+            wxlogin = WeixinLogin(APP_ID, APP_SECRET_KEY)
             data = wxlogin.access_token(code)
+            # 这是本人的openid
             openid = data.openid
             user = self.suser.get_user_by_openid(openid)
-            # 是否关注
+            # 是否关注 todo
             wx_subscribe = self.get_wx_response(get_subscribe.format(data.access_token, openid), "get subscribe")
-            if "subscribe" not in wx_subscribe:
-                logger.error("get subscribe error %s", wx_subscribe)
-                return wx_subscribe
+            generic_log(wx_subscribe)
+            # if "subscribe" not in wx_subscribe:
+            #     logger.error("get subscribe error %s", wx_subscribe)
+            #     raise WeixinError(u'get subscribe error')
+            wx_subscribe = dict()
             subscribe = wx_subscribe.get("subscribe", 0)
-            # 上级用户
-            upperd = self.suser.get_user_by_openid(args.get("UPPerd", ""))
-            if upperd:
-                upperd_id = upperd.USid
-            else:
-                upperd_id = None
+            data = wxlogin.user_info(data.access_token, data.openid)
             if not user:
+                # 新用户
+                # 这是上级openid, 而非本人openid, 根据openid获取上级身份
+                upper_list = re.findall(r'openid=(.*?)&?', state)
+                upper = upper_list[0] if upper_list else None
+                upperd = self.suser.get_user_by_openid(upper)
+                upperd_id = upperd.USid if upperd else None
                 # 添加用户
-                data = wxlogin.user_info(data.access_token, data.openid)
                 usid = str(uuid.uuid1())
                 self.suser.add_model("User", **{
                     "USid": usid,
@@ -93,30 +99,42 @@ class CUser():
                     "USname": data.get('nickname'),
                     "UPPerd": upperd_id,
                     "unionid": data.get('openid'),
-                    "accesstoken": data.access_token,
                     "subscribe": subscribe,
                 })
             else:
                 # 老用户
                 usid = user.USid
-                update_result = self.suser.update_user(usid, {
+                print(usid)
+                update_dict = {
                     "USlastlogin": datetime.datetime.now().strftime(format_for_db),
                     "USheader": data.get("headimgurl"),
                     "USgender": data.get("sex"),
                     "USname": data.get("nickname"),
-                    "UPPerd": args.get("UPPerd", ""),
                     "unionid": data.get("unionid"),
-                    "accesstoken": data,
                     "subscribe": subscribe,
-                })
+                }
+                update_result = self.suser.update_user(usid, update_dict)
                 if not update_result:
-                    return SYSTEM_ERROR
+                    raise SYSTEM_ERROR()
             # 生成token
             token = usid_to_token(usid)
             redirect_url = state + "?newtoken=" + token
             return redirect(redirect_url)
-        except WeixinLoginError as e:
+        except WeixinError as e:
+            generic_log(e)
             return redirect(QRCODEHOSTNAME)
+
+    def wx_login(self):
+        data = request.json
+        state_url = data.get('url') or request.url
+        state_url = state_url.replace('#', '$').replace('?', '~').replace('=', '+')
+        state = str(state_url)
+        login = WeixinLogin(APP_ID, APP_SECRET_KEY)
+        redirect_url = login.authorize(QRCODEHOSTNAME + "/user/wechat_callback", 'snsapi_userinfo', state=state)
+        return {"message":
+            {
+                'redirect_url': redirect_url
+            }, "status": 302}
 
     def get_accesstoken(self):
         args = request.args.to_dict()
@@ -210,7 +228,6 @@ class CUser():
                 "USheader": user_info.get("headimgurl"),
                 "USgender": user_info.get("sex"),
                 "USname": user_info.get("nickname"),
-                "UPPerd": args.get("UPPerd", ""),
                 "unionid": user_info.get("unionid"),
                 "accesstoken": access_token,
                 "subscribe": subscribe,

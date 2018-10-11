@@ -1,10 +1,5 @@
 # *- coding:utf8 *-
-from flask import request
-from weixin import WeixinLogin
-
-from WeiDian import APP_ID, APP_SECRET_KEY
 from WeiDian.common.base_error import BaseError
-from WeiDian.config.setting import QRCODEHOSTNAME
 
 
 class PARAMS_MISS(BaseError):
@@ -24,15 +19,9 @@ class PARAMS_REDUNDANCE(BaseError):
 
 
 class TOKEN_ERROR(BaseError):
-    status = 302
-    @property
-    def message(self):
-        state_url = request.environ.get('HTTP_X_URL', request.url)
-        state_url = state_url.replace('#', '$').replace('?', '~')
-        state = str(state_url)
-        login = WeixinLogin(APP_ID, APP_SECRET_KEY)
-        redirect_url = login.authorize(QRCODEHOSTNAME + "/api/v1/user/weixin_callback", 'snsapi_userinfo', state=state)
-        return redirect_url
+    status = 405
+    status_code = 405001
+    message = "未登录"
 
 
 class MethodNotAllowed(BaseError):

@@ -7,6 +7,8 @@ from datetime import datetime
 from flask import request, current_app
 
 BASEDIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+
+
 def generic_log(data):
     logger_file_name = datetime.now().strftime("%Y-%m-%d") + u'.log'
     logger_dir = os.path.join(BASEDIR, 'logs')
