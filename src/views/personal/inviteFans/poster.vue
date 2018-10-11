@@ -40,12 +40,12 @@
         </ul>
         <span class="m-slider-index">{{slider_index +1}}/{{slider_list.length}}</span>
       </div>
-      <!--<div class="m-poster-btn">-->
+      <div class="m-poster-btn">
         <!--<div class="m-btn">-->
-          <!--<span class="m-poster-btn-icon"></span>-->
-          <!--<p>保存图片</p>-->
+          <span class="m-poster-btn-icon"></span>
+          <p>长按保存，转发朋友圈</p>
         <!--</div>-->
-      <!--</div>-->
+      </div>
     </div>
 
 </template>
@@ -173,7 +173,7 @@
                 logoImg.src = "/static/images/poster/customer_service.png";
 
                 logoImg.onload = function () {
-                  context.drawImage(avatarImg, 100, 630, 200, 120);
+                  context.drawImage(avatarImg, 90, 580, 200, 200);
 
                   let codeImg = new Image();
                   codeImg.crossOrigin = 'Anonymous';
@@ -221,7 +221,7 @@
   @import "../../../common/css/index";
   .m-poster{
     width: 100%;
-    min-height: 100%;
+    height: 100%;
     background: linear-gradient(to bottom, #362AC2, #FF7DD3);
     .m-poster-close {
       position: absolute;
@@ -373,19 +373,17 @@
     .m-poster-btn{
       .flex-row(center);
       margin-top: 40px;
-      .m-btn{
         font-size: 22px;
         color: #666;
         .m-poster-btn-icon{
           display: inline-block;
-          width: 80px;
-          height: 80px;
+          width: 27px;
+          height: 27px;
           /*border: 1px solid #fff;*/
           border-radius: 50%;
           background: url("/static/images/icon-poster-download.png");
           background-size: 100% 100%;
         }
-      }
     }
   }
 </style>

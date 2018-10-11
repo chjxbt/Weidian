@@ -444,7 +444,8 @@
           /*获取热文*/
           getHot(){
             axios.get(api.get_all_hotmessage,{params:{
-                lasting:true
+                lasting:true,
+                token:localStorage.getItem('token')
               }}).then(res => {
               if(res.data.status == 200){
                 this.hot_list = res.data.data;
