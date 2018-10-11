@@ -1,7 +1,7 @@
 {
   "side":[
     {
-      "MNname":"用户权限",
+      "MNname":"用户管理",
       "MNurl":"/jurisdiction",
       "MNicon":"icon-person-side",
       "children":[
@@ -11,7 +11,7 @@
           "MNicon":"none"
         },
         {
-          "MNname":"用户数据管理",
+          "MNname":"会员管理",
           "MNurl":"user",
           "MNicon":"none"
         }
@@ -80,18 +80,6 @@
       "children":[
         {
           "MNname":"佣金管理",
-          "MNurl":"index",
-          "MNicon":"none"
-        }
-      ]
-    },
-    {
-      "MNname":"会员管理",
-      "MNurl":"/member",
-      "MNicon":"icon-member",
-      "children":[
-        {
-          "MNname":"会员",
           "MNurl":"index",
           "MNicon":"none"
         }
