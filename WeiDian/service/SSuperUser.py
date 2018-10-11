@@ -12,14 +12,19 @@ sys.path.append(os.path.dirname(os.getcwd()))
 class SSuperUser(SBase):
     
     @close_session
-    def get_all_super(self):
-        """获取所有的超级用户"""
-        return self.session.query(SuperUser).filter_by(SUisdelete=False).all()
+    def get_all_super_by_sufilter(self, sufilter):
+        """根据条件获取所有管理"""
+        return self.session.query(SuperUser).filter_by(**sufilter).all()
 
     @close_session
     def get_one_super_by_suid(self, suid):
         """通过suid获取超级用户"""
         return self.session.query(SuperUser).filter_by(SUid=suid).first()
+
+    @close_session
+    def get_existuser_by_name(self, sufilter):
+        """用于判断用户是否已存在"""
+        return self.session.query(SuperUser).filter_by(**sufilter).first()
 
     @close_session
     def verify_super(self, suname, supassword):

@@ -51,10 +51,10 @@ class CBigActivity(BaseActivityControl):
         baid = args.get('baid')
         page_num = args.get('page_num')
         page_size = args.get('page_size')
-        page_num = 1 if not page_num else args.get('page_num')
-        page_size = 5 if not page_size else args.get('page_size')
+        page_num = 1 if not page_num else int(page_num)
+        page_size = 5 if not page_size else int(page_size)
         try:
-            activity_list = self.sactivity.get_bigactivity_by_baid(baid, int(page_num), int(page_size))
+            activity_list = self.sactivity.get_bigactivity_by_baid(baid, page_num, page_size)
             for activity in activity_list:
                 self.sactivity.update_view_num(activity.ACid)
                 self.fill_detail(activity)
