@@ -262,7 +262,7 @@
               </div>
             </div>
             <div class="m-form-img-item">
-              <p class="m-form-label">邀请专属粉丝的收益详情</p>
+              <p class="m-form-label">专属粉丝收益详情</p>
               <div class="m-item-content">
                 <div class=" m-item-row">
                   <div class="upload-box" @click="setWhichImg('incomeDetail')">
