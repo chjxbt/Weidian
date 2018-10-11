@@ -264,7 +264,7 @@
       this.getInfo();
       common.changeTitle('商品详情');
       if(localStorage.getItem('level') == 'partner'){
-        this.is_vip = false;
+        this.is_vip = true;
       }else{
         this.is_vip = false;
       }
