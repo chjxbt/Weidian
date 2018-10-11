@@ -2,6 +2,8 @@
 import uuid
 import os
 from datetime import datetime
+
+from WeiDian.common.get_model_return_list import get_model_return_dict
 from WeiDian.config.response import SYSTEM_ERROR
 from flask import request
 from WeiDian.common.TransformToList import list_add_models, dict_add_models
@@ -280,13 +282,16 @@ class BaseProductControl():
         """日荐页中中部商品填充"""
         reid = recommend.REid
         products = self.sproduct.get_product_list_by_reid(reid)
+        from WeiDian.service.SRecommend import SRecommend
         for product in products:
+            product.rpsort = get_model_return_dict(SRecommend().get_recommendproduct_sort_by_filter({'REid': reid,
+                                                                               'PRid': product.PRid}))['RPsort']
             prkeeperprice = product.PRprice * (1 - Partner().one_level_divide)
             product.prkeeperprice = ('%.2f' % prkeeperprice)
             prsavemonty = product.PRprice - prkeeperprice
             product.prsavemonty = ('%.2f' % prsavemonty)
             product.PRprice = ('%.2f' % product.PRprice)
-            product.add('prkeeperprice', 'prsavemonty')
+            product.add('prkeeperprice', 'prsavemonty', 'rpsort')
         recommend.products = products
         recommend.add('products')
         return recommend

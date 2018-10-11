@@ -46,6 +46,10 @@ class SRecommend(SBase):
     #         self.session.add(recommend)
     #         return True
     @close_session
+    def get_recommendproduct_sort_by_filter(self, refilter):
+        return self.session.query(RecommendProduct.RPsort).filter_by(**refilter).first()
+
+    @close_session
     def get_exist_reproduct_by_filter(self, refilter):
         return self.session.query(RecommendProduct).filter_by(**refilter).first()
 
