@@ -329,9 +329,10 @@ class BaseShoppingCart(BaseProductControl):
                 cart.PRimage = product.PRmainpic
                 cart.PRtitle = product.PRtitle
                 cart.PRstatus = product.PRstatus
+                cart.PRprice = product.PRprice
                 product = self.fill_product_sku_key(product)  # 给获得货品的所有skukey值
                 cart.sku_total = product.sku
-                cart.add('PRimage', 'PRtitle', 'PRstatus', 'sku_total')
+                cart.add('PRimage', 'PRtitle', 'PRstatus', 'PRprice', 'sku_total')
         return cart
 
     def total_price(self, cart_list):
