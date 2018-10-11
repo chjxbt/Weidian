@@ -9,6 +9,7 @@ from WeiDian.common.token_required import verify_token_decorator, is_admin, is_t
 from WeiDian.common.TransformToList import list_add_models
 from WeiDian.common.import_status import import_status
 from WeiDian.common.divide import Partner
+from WeiDian.common.timeformat import get_db_time_str
 from WeiDian.config.response import TOKEN_ERROR, AUTHORITY_ERROR, PARAMS_MISS, SYSTEM_ERROR
 from WeiDian.control.BaseControl import BaseProductControl
 sys.path.append(os.path.dirname(os.getcwd()))
@@ -85,7 +86,8 @@ class CProduct(BaseProductControl):
         if not product:
             return import_status('no_product', 'OK')
 
-        update_result = self.sproduct.update_product_by_productid(data.get('productid'), {"PRisdelete": True})
+        update_result = self.sproduct.update_product_by_productid(data.get('productid'), {
+            "PRisdelete": True, 'PRmodifytime': get_db_time_str()})
         if not update_result:
             raise SYSTEM_ERROR(u'服务器繁忙')
         return import_status('delete_product_success', 'OK')
@@ -97,14 +99,15 @@ class CProduct(BaseProductControl):
             return AUTHORITY_ERROR(u'权限不足')
         data = parameter_required('productid')
         prstatus = data.get("prstatus", 1)
-        product = self.sproduct.get_product_by_productid(data.get('productid'))
-        if not product:
-            return import_status('no_product', 'OK')
 
         if not re.match(r'^[0-2]$', str(prstatus)):
             raise PARAMS_MISS(u'prstatus, 参数异常')
         prstatus = int(prstatus)
-        update_result = self.sproduct.update_product_by_productid(data.get('productid'), {"PRstatus": prstatus})
+        product = self.sproduct.get_product_by_productid(data.get('productid'))
+        if not product and prstatus != 1:
+            return import_status('no_product', 'OK')
+        update_result = self.sproduct.update_product_by_productid(data.get('productid'), {
+            "PRstatus": prstatus, 'PRmodifytime': get_db_time_str()})
         if not update_result:
             raise SYSTEM_ERROR(u'服务器繁忙')
         return import_status('update_product_success', 'OK')
@@ -155,6 +158,7 @@ class CProduct(BaseProductControl):
             if not data.get(key.lower()) and data.get(key.lower()) != 0:
                 continue
             product[key] = data.get(key.lower())
+        product['PRmodifytime'] = get_db_time_str()
         update_result = self.sproduct.update_product_by_productid(productid, product)
         if not update_result:
             raise SYSTEM_ERROR(u'服务器繁忙')
