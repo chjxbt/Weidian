@@ -28,11 +28,10 @@ class TOKEN_ERROR(BaseError):
     @property
     def message(self):
         state_url = request.environ.get('HTTP_X_URL', request.url)
-        if '#' in state_url:
-            state_url = state_url.replace('#', '$')
+        state_url = state_url.replace('#', '$').replace('?', '~')
         state = str(state_url)
-        self.login = WeixinLogin(APP_ID, APP_SECRET_KEY)
-        redirect_url = self.login.authorize(QRCODEHOSTNAME + "/api/v1/user/weixin_callback", 'snsapi_userinfo', state=state)
+        login = WeixinLogin(APP_ID, APP_SECRET_KEY)
+        redirect_url = login.authorize(QRCODEHOSTNAME + "/api/v1/user/weixin_callback", 'snsapi_userinfo', state=state)
         return redirect_url
 
 

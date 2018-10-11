@@ -24,7 +24,8 @@ class AUser(Resource):
         print user
         apis = {
             'get_accesstoken': 'self.cuser.get_accesstoken()',
-            'get_wx_config': 'self.cuser.get_wx_config()'
+            'get_wx_config': 'self.cuser.get_wx_config()',
+            'wechat_callback': 'self.cuser.weixin_callback()'
         }
         res = eval(apis[user])
         return jsonify(res)

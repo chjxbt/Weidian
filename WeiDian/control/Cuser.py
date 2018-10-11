@@ -1,12 +1,15 @@
 # *- coding:utf8 *-
 import sys
 import os
-from flask import request
+from flask import request, redirect
 # import logging
 import uuid
 import datetime
 import json
 import urllib2
+
+from weixin.login import WeixinLoginError, WeixinLogin
+
 from WeiDian import logger
 from WeiDian import mp
 from WeiDian.common.params_require import parameter_required
@@ -14,6 +17,8 @@ from WeiDian.config.response import PARAMS_MISS, SYSTEM_ERROR, NETWORK_ERROR, TO
 from WeiDian.common.token_required import verify_token_decorator, usid_to_token
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db
+from WeiDian.config.setting import QRCODEHOSTNAME, APP_ID, APP_SECRET_KEY
+from WeiDian.config.urlconfig import get_subscribe
 from WeiDian.service.SUser import SUser
 from WeiDian.service.STask import STask
 from WeiDian.service.SMyCenter import SMyCenter
@@ -50,42 +55,68 @@ class CUser():
         }
         return data
 
-    # def weixin_callback(self):
-    #     """通过code, 获取用户信息"""
-    #     args = parameter_required('code')
-    #     code = args.get('code')
-    #     try:
-    #         data = self.login.access_token(code)
-    #         openid = data.openid
-    #         user = self.suser.get_user_by_openid(openid)
-    #         if not user:
-    #             # 添加用户
-    #             generic_error_log('新用户')
-    #             data = self.login.user_info(data.access_token, data.openid)
-    #             scid = str(uuid.uuid4())
-    #             to_model = {
-    #                 'SCid': scid,
-    #                 'USopenid': data.get('openid'),
-    #                 'USnicknme': data.get('nickname'),
-    #                 'USheader': data.get('headimgurl'),
-    #             }
-    #             to_model['USgender'] = 'm' if data.get('sex') == 1 else 'f'
-    #             self.suser.add_model('UserScore', to_model)
-    #         else:
-    #             scid = user.SCid
-    #         # 生成token
-    #         state = args.get('state')
-    #         token = usid_to_token(scid)
-    #         if '$' in state:
-    #             state = state.replace('$', '#')
-    #         redirect_url = state + "?newtoken=" + token
-    #         generic_error_log(redirect_url)
-    #         return redirect(redirect_url)
-    #     except WeixinLoginError as e:
-    #         generic_error_log('weixinerror')
-    #         return redirect(HTTP_HOST)
-    #
-
+    def weixin_callback(self):
+        """回调, 通过code, 获取用户信息"""
+        args = parameter_required('code')
+        code = args.get('code')
+        state = args.get('state')
+        # todo 确定上级
+        state = state.replace('$', '#').replace('~', '?')
+        wxlogin = WeixinLogin(APP_ID, APP_SECRET_KEY)
+        try:
+            data = wxlogin.access_token(code)
+            openid = data.openid
+            user = self.suser.get_user_by_openid(openid)
+            # 是否关注
+            wx_subscribe = self.get_wx_response(get_subscribe.format(data.access_token, openid), "get subscribe")
+            if "subscribe" not in wx_subscribe:
+                logger.error("get subscribe error %s", wx_subscribe)
+                return wx_subscribe
+            subscribe = wx_subscribe.get("subscribe", 0)
+            # 上级用户
+            upperd = self.suser.get_user_by_openid(args.get("UPPerd", ""))
+            if upperd:
+                upperd_id = upperd.USid
+            else:
+                upperd_id = None
+            if not user:
+                # 添加用户
+                data = wxlogin.user_info(data.access_token, data.openid)
+                usid = str(uuid.uuid1())
+                self.suser.add_model("User", **{
+                    "USid": usid,
+                    "openid": openid,
+                    "USlastlogin": datetime.datetime.now().strftime(format_for_db),
+                    "USheader": data.get('headimgurl'),
+                    "USlevel": 0,
+                    "USgender": data.get('sex'),
+                    "USname": data.get('nickname'),
+                    "UPPerd": upperd_id,
+                    "unionid": data.get('openid'),
+                    "accesstoken": data.access_token,
+                    "subscribe": subscribe,
+                })
+            else:
+                # 老用户
+                usid = user.USid
+                update_result = self.suser.update_user(usid, {
+                    "USlastlogin": datetime.datetime.now().strftime(format_for_db),
+                    "USheader": data.get("headimgurl"),
+                    "USgender": data.get("sex"),
+                    "USname": data.get("nickname"),
+                    "UPPerd": args.get("UPPerd", ""),
+                    "unionid": data.get("unionid"),
+                    "accesstoken": data,
+                    "subscribe": subscribe,
+                })
+                if not update_result:
+                    return SYSTEM_ERROR
+            # 生成token
+            token = usid_to_token(usid)
+            redirect_url = state + "?newtoken=" + token
+            return redirect(redirect_url)
+        except WeixinLoginError as e:
+            return redirect(QRCODEHOSTNAME)
 
     def get_accesstoken(self):
         args = request.args.to_dict()
