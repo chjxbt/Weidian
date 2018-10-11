@@ -90,3 +90,5 @@ add_to_bigactivity_success = '成功{}条'
 set_success = '设置成功'
 update_superinfo_success = "修改信息成功"
 add_admin_success = "添加管理员成功"
+update_success = '设置成功'
+get_success = '获取成功'

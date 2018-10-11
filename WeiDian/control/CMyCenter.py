@@ -13,6 +13,7 @@ from WeiDian.common.import_status import import_status
 from WeiDian.common.params_require import parameter_required
 from WeiDian.common.token_required import verify_token_decorator, is_tourist, is_partner, is_admin
 from WeiDian.config.enums import BANK_MAP, finished_pay_status
+from WeiDian.config.messages import get_success
 from WeiDian.config.response import AUTHORITY_ERROR, SYSTEM_ERROR, TOKEN_ERROR, PARAMS_ERROR, TIME_ERROR, PARAMS_MISS
 from WeiDian.control.BaseControl import BaseMyCenterControl
 from flask import request
@@ -20,6 +21,7 @@ from flask import request
 from WeiDian.service.SOrder import SOrder
 from WeiDian.service.SPartnerSellOrInviteMatch import SPartnerSellOrInviteMatch
 from WeiDian.service.SRaward import SRaward
+from WeiDian.service.STopNav import STopNav
 
 sys.path.append(os.path.dirname(os.getcwd()))
 
@@ -41,6 +43,7 @@ class CMyCenter(BaseMyCenterControl):
         self.sorder = SOrder()
         self.sraward = SRaward()
         self.spartnermatch = SPartnerSellOrInviteMatch()
+        self.stopnav = STopNav()
 
     @verify_token_decorator
     def get_info_top(self):
@@ -70,7 +73,7 @@ class CMyCenter(BaseMyCenterControl):
                 my_achev = self.spartnermatch.get_partner_match_mount_by_usidpsmid(usid, psimid)
                 my_achev_value = my_achev.sellorinvitemount if my_achev else 0  # 我的销售总额(人数)
 
-                gt_my_sell_count = self.spartnermatch.get_partner_match_mount_gt_value(psimid, my_achev_value)  # 营业额(人数)比我多的
+                gt_my_sell_count = self.spartnermatch.get_partner_match_mount_gt_value(psimid, my_achev_value)   # 营业额(人数)比我多的
                 partner_num = self.suser.get_partner_count()  # vip总数
                 lt_my_sell_count = partner_num - gt_my_sell_count  # 比我销售(人数)少的
 
@@ -108,17 +111,50 @@ class CMyCenter(BaseMyCenterControl):
 
     @verify_token_decorator
     def set_schedual_show(self):
-        """设置个人主页升级进度显示"""
+        """设置个人主页升级进度显示(vip数据统计), 素材圈显示, 待评价"""
         if not is_admin():
             raise TOKEN_ERROR(u'请使用管理员登录')
-        data = parameter_required(u'show')
-        close = False if str(data.get('show')) == '1' else True
-        updated = self.spartnermatch.update_partner_match(1, {
-            'PSIMisclose': close
-        })
-        msg = 'set_schedual_hide_success' if close else 'set_schedual_show_success'
+        # data = parameter_required(u'vip_match', u'material', u'wait_apply')
+        data = request.json
+        paras_list = ['vip_match', 'material', 'wait_apply']
+        if not data or not filter(lambda x: x in paras_list, data):
+            raise PARAMS_MISS()
+        if 'vip_match' in data:  # vip进度, 写在model里
+            vip_match_show = False if str(data.get('vip_match')) == '1' else True
+            updated = self.spartnermatch.update_partner_match(1, {  # 更改: 这里的level没有用
+                'PSIMisclose': vip_match_show
+            })
+        if 'material' in data:  # 素材圈是否显示, 写在model里
+            material_show = False if str(data.get('material')) == '1' else True
+            updated = self.stopnav.update_topnav_by_tnidorname(data={
+                'Tisdelete': material_show
+            }, name='素材圈')
+
+        if 'wait_apply' in data:  # 写在配置文件里
+            wait_apply_show = data.get('wait_apply')
+            wait_apply_show = '0' if str(wait_apply_show) == '0' else '1'
+            Partner().set_item('show', 'wait_apply', wait_apply_show)
+        msg = 'update_success'
         data = import_status(msg, "OK")
         return data
+
+    def get_schedual_show(self):
+        """获取控制中心显示隐藏详情"""
+        match = self.spartnermatch.get_lasting_partner_match(level=1)
+        vip_match = 1 if match and match.PSIMisclose else 0
+        mater = self.stopnav.get_topnav_by_name('素材圈')
+        material = 0 if mater.Tisdelete else 1
+        wait_apply = Partner().get_item('show', 'wait_apply')
+        data = import_status('get_success', 'OK')
+        data['data'] = {
+            'vip_match': vip_match,
+            'material': material,
+            'wait_apply': wait_apply,
+        }
+        return data
+
+
+
 
     @verify_token_decorator
     def get_today_total(self):
