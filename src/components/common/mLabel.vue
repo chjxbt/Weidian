@@ -2,6 +2,7 @@
   <div class="m-label">
     <span class="m-triangle"></span>
     <span class="m-text">{{name}}</span>
+    <!--<img src="" alt="">-->
   </div>
 </template>
 
@@ -23,6 +24,11 @@
     right: 0;
     width: 70px;
     height: 70px;
+    img{
+      display: block;
+      width: 70px;
+      height: 70px;
+    }
     .m-text{
       font-size: 10px;
       z-index: 100;
