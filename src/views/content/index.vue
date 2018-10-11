@@ -381,7 +381,7 @@
             media = { amimage: res.data.data, amsort: this.activityMediaSort };
             this.activityMedia.push(media);
           }else{
-            this.$message({ type: 'error', message: res.data.message });
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         });
       },
@@ -398,7 +398,7 @@
       },
       // 超过文件数量限制时执行的方法
       onExceed(file, fileList) {
-        this.$message({ type: 'warning', message: "最多上传9张图片" });
+        this.$message({ type: 'warning', message: "最多上传9张图片", duration: 1500 });
       },
       // select选择器获得焦点时执行
       focusselect(where) {
@@ -521,13 +521,13 @@
           };
           axios.post(api.update_bact + '?token=' + localStorage.getItem('token') + "&baid=" + banner.baid, params).then(res=>{
             if(res.data.status == 200){
-              this.$message({ message: "保存成功", type: 'success' });
+              this.$message({ message: "保存成功", type: 'success', duration: 1500 });
 
               this.bannerList[scope.$index].disabled = true;
               this.bannerList[scope.$index].addSaveEdit = "3";
               this.bannerList = this.bannerList.concat();
             }else{
-              this.$message.error(res.data.message);
+              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
             }
           });
         }else if(where == "hot") {
@@ -538,25 +538,25 @@
           };
           axios.post(api.update_one_hot_message + '?token=' + localStorage.getItem('token'), params).then(res=>{
             if(res.data.status == 200){
-              this.$message({ message: "保存成功", type: 'success' });
+              this.$message({ message: "保存成功", type: 'success', duration: 1500 });
 
               this.hotMessageList[scope.$index].disabled = true;
               this.hotMessageList[scope.$index].editSave = "1";
               this.hotMessageList = this.hotMessageList.concat();
             }else{
-              this.$message.error(res.data.message);
+              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
             }
           });
         }else if(where == "activity") {
           if(this.activityMediaSort != 4 && this.activityMediaSort != 6 && this.activityMediaSort != 9) {
-            this.$message({ message: "上传推文图片时，数量需为4张、6张或9张", type: 'warning' });
+            this.$message({ message: "上传推文图片时，数量需为4张、6张或9张", type: 'warning', duration: 1500 });
           }else {
             if(this.activityACtext == "" || this.activityJumpValue == "" || this.activityType == "" || this.activityBadge == "" || this.likeNum == ""
             // if(this.activityACtext == "" || this.activityJumpValue == "" || this.activityJumpToValue == "" || this.activityType == "" || this.activityBadge == "" || this.likeNum == ""
               || this.activityActivityTime.length != 2) {
-              this.$message({ message: "请完整填写", type: 'warning' });
+              this.$message({ message: "请完整填写", type: 'warning', duration: 1500 });
               if(this.tnid == "") {
-                this.$message({ message: "请刷新页面后重试", type: 'warning' });
+                this.$message({ message: "请刷新页面后重试", type: 'warning', duration: 1500 });
               }
             }else {
               let actype = "";
@@ -584,7 +584,7 @@
               console.log(params);
               axios.post(api.update_act + '?token=' + localStorage.getItem('token') + "&acid=" + this.acidTemp, params).then(res=>{
                 if(res.data.status == 200){
-                  this.$message({ message: res.data.message, type: 'success' });
+                  this.$message({ message: res.data.message, type: 'success', duration: 1500 });
 
                   // 保存后把新数据回显到表格中
                   this.activityList[this.activityEditScope].actext = this.activityACtext;
@@ -602,7 +602,7 @@
                   this.activityPictureList = [];  // 图片list置为[]
                   this.activityMediaSort = 0;   // 上传成功后图片数量置为0
                 }else{
-                  this.$message.error(res.data.message);
+                  this.$message({ type: 'error', message: res.data.message, duration: 1500 });
                 }
               });
             }
@@ -624,10 +624,10 @@
             { baisdelete: true }).then(res=>{
             if(res.data.status == 200){
               this.bannerLoading = false;
-              this.$message({ message: "专题删除成功", type: 'success' });
+              this.$message({ message: "专题删除成功", type: 'success', duration: 1500 });
               this.bannerList.splice(scope.$index, 1);    // 刷新视图
             }else{
-              this.$message.error(res.data.message);
+              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
             }
           });
         }).catch(() => {  });
@@ -638,10 +638,10 @@
           {confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'}).then(() => {
           axios.post(api.update_one_hot_message + '?token=' + localStorage.getItem('token'), { hmid: this.hotMessageList[scope.$index].hmid, HMisdelete: true }).then(res=>{
             if(res.data.status == 200){
-              this.$message({ message: "热文删除成功", type: 'success' });
+              this.$message({ message: "热文删除成功", type: 'success', duration: 1500 });
               this.hotMessageList.splice(scope.$index, 1);    // 刷新视图
             }else{
-              this.$message.error(res.data.message);
+              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
             }
           });
         }).catch(() => {  });
@@ -653,11 +653,11 @@
           this.activityLoading = true;
           axios.post(api.update_act + '?token=' + localStorage.getItem('token') + "&acid=" + this.activityList[scope.$index].acid, { acisdelete: true }).then(res=>{
             if(res.data.status == 200){
-              this.$message({ message: "推文删除成功", type: 'success' });
+              this.$message({ message: "推文删除成功", type: 'success', duration: 1500 });
               this.activityList.splice(scope.$index, 1);    // 刷新视图
               this.activityLoading = false;
             }else{
-              this.$message.error(res.data.message);
+              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
             }
           });
         }).catch(() => {  });
@@ -682,11 +682,11 @@
         axios.post(api.update_bact + '?token=' + localStorage.getItem('token') + "&baid=" + this.bannerList[scope.$index].baid,
           { basort: this.bannerList[scope.$index - 1].basort }).then(res=>{
           if(res.data.status == 200){
-            this.$message({ message: "专题上移成功", type: 'success' });
+            this.$message({ message: "专题上移成功", type: 'success', duration: 1500 });
             this.bannerList = [];
             this.getBanner();     // 获取专题
           }else{
-            this.$message.error(res.data.message);
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         });
       },
@@ -696,11 +696,11 @@
         axios.post(api.update_one_hot_message + '?token=' + localStorage.getItem('token'),
           { hmid: this.hotMessageList[scope.$index].hmid, hmsort: this.hotMessageList[scope.$index - 1].hmsort }).then(res=>{
           if(res.data.status == 200){
-            this.$message({ message: "热文上移成功", type: 'success' });
+            this.$message({ message: "热文上移成功", type: 'success', duration: 1500 });
             this.hotMessageList = [];
             this.getHotMessage();     // 获取热文
           }else{
-            this.$message.error(res.data.message);
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         });
       },
@@ -739,7 +739,7 @@
               }
             }
           }else{
-            this.$message.error(res.data.message);
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         })
       },
@@ -755,7 +755,7 @@
               this.hotMessageList[i].editSave = "1";
             }
           }else{
-            this.$message.error(res.data.message);
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         })
       },
@@ -776,7 +776,7 @@
               }
               // console.log(this.jumpToList);
             }else{
-              this.$message.error(res.data.message);
+              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
             }
           })
           // 搜索专题
@@ -806,7 +806,7 @@
               }
               // console.log(this.jumpToList);
             }else{
-              this.$message.error(res.data.message);
+              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
             }
           })
         }
@@ -830,18 +830,18 @@
         }
         // console.log(params);
         if(params.BAimage == undefined || params.BAtext == "" || params.BAstarttime == undefined || params.BAendtime == undefined || params.BAtype == undefined) {
-          this.$message({ message: "请完整填写", type: 'warning' });
+          this.$message({ message: "请完整填写", type: 'warning', duration: 1500 });
         }else {
           if(params.BAtype == "0" && params.BAlongimg == undefined) {
-            this.$message({ message: "请完整填写", type: 'warning' });
+            this.$message({ message: "请完整填写", type: 'warning', duration: 1500 });
           }else {
             axios.post(api.create_hbact + '?token=' + localStorage.getItem('token'), params).then(res=>{
               if(res.data.status == 200){
-                this.$message({ message: "保存成功", type: 'success' });
+                this.$message({ message: "保存成功", type: 'success', duration: 1500 });
                 this.getBanner();       // 获取专题
                 this.addBannerBtn = true;
               }else{
-                this.$message.error(res.data.message);
+                this.$message({ type: 'error', message: res.data.message, duration: 1500 });
               }
             });
           }
@@ -850,7 +850,7 @@
       // 添加热文
       addHotMessage () {
         if(this.hotValue == "" || this.hotTime.length != 2 || this.hotJumpValue == "" || this.jumpToValue == "") {
-          this.$message({ message: "请完整填写", type: 'warning' });
+          this.$message({ message: "请完整填写", type: 'warning', duration: 1500 });
         }else {
           let params = {
             HMtext: this.hotValue,
@@ -862,7 +862,7 @@
           };
           axios.post(api.add_one_hot_message + '?token=' + localStorage.getItem('token'), params).then(res => {
             if(res.data.status == 200){
-              this.$message({ type: 'success', message: res.data.message });
+              this.$message({ type: 'success', message: res.data.message, duration: 1500 });
               this.getHotMessage();     // 获取热文
 
               this.hotValue = "";
@@ -870,7 +870,7 @@
               this.jumpToValue = "";
               this.hotTime = [];
             }else{
-              this.$message({ type: 'error', message: res.data.message });
+              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
             }
           });
         }
@@ -879,13 +879,13 @@
       addActivity () {
         // 推文图片的数量需为0、4、6、9
         if(this.activityMediaSort != 4 && this.activityMediaSort != 6 && this.activityMediaSort != 9) {
-          this.$message({ message: "上传推文图片时，数量需为4张、6张或9张", type: 'warning' });
+          this.$message({ message: "上传推文图片时，数量需为4张、6张或9张", type: 'warning', duration: 1500 });
         }else {
           if(this.activityACtext == "" || this.activityJumpValue == "" || this.activityJumpToValue == "" || this.activityType == "" || this.activityBadge == "" || this.likeNum == ""
             || this.activityActivityTime.length != 2) {
-            this.$message({ message: "请完整填写", type: 'warning' });
+            this.$message({ message: "请完整填写", type: 'warning', duration: 1500 });
             if(this.tnid == "") {
-              this.$message({ message: "请刷新页面后重试", type: 'warning' });
+              this.$message({ message: "请刷新页面后重试", type: 'warning', duration: 1500 });
             }
           }else {
             let params = {
@@ -907,7 +907,7 @@
             console.log(params);
             axios.post(api.add_one_activity + '?token=' + localStorage.getItem('token'), params).then(res => {
               if(res.data.status == 200){
-                this.$message({ type: 'success', message: res.data.message });
+                this.$message({ type: 'success', message: res.data.message, duration: 1500 });
                 this.getActivity(0, this.count);     // 获取推文/内容
 
                 // 保存成功后将input等置空
@@ -922,7 +922,7 @@
                 this.activityPictureList = [];   // 上传成功后图片list置为[]
                 this.activityMediaSort = 0;   // 上传成功后图片数量置为0
               }else{
-                this.$message({ type: 'error', message: res.data.message });
+                this.$message({ type: 'error', message: res.data.message, duration: 1500 });
               }
             });
           }
@@ -941,7 +941,7 @@
             }
             this.getActivity(0, this.count);   // 获取首页活动/推文内容列表
           }else{
-            this.$message.error(res.data.message);
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         })
       },
@@ -958,7 +958,7 @@
               this.activityList[i].disabled = true;
             }
           }else{
-            this.$message.error(res.data.message);
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         })
       },
@@ -973,13 +973,13 @@
         }else if(v == "2") {
           if(this.selectionList.length == 0 || this.toBanner == "") {
             if(this.selectionList.length == 0) {
-              this.$message({ type: 'warning', message: "请勾选推文" });
+              this.$message({ type: 'warning', message: "请勾选推文", duration: 1500 });
             }
             if(this.toBanner == "") {
-              this.$message({ type: 'warning', message: "请选择专题" });
+              this.$message({ type: 'warning', message: "请选择专题", duration: 1500 });
             }
             if(this.selectionList.length == 0 && this.toBanner == "") {
-              this.$message({ type: 'warning', message: "请选择专题和推文" });
+              this.$message({ type: 'warning', message: "请选择专题和推文", duration: 1500 });
             }
           }
           else {
@@ -989,10 +989,10 @@
             };
             axios.post(api.add_to_bigact + '?token=' + localStorage.getItem('token'), params).then(res=>{
               if(res.data.status == 200){
-                this.$message({ message: res.data.message, type: 'success' });
+                this.$message({ message: res.data.message, type: 'success', duration: 1500 });
                 this.activityToBanner = false;
               }else{
-                this.$message.error(res.data.message);
+                this.$message({ type: 'error', message: res.data.message, duration: 1500 });
               }
             });
           }
@@ -1023,9 +1023,9 @@
         axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token') + "&filetype = bannerLong", form).then(res => {
           if(res.data.status == 200){
             // console.log(res, file);
-            this.$message({ type: 'success', message: res.data.message });
+            this.$message({ type: 'success', message: res.data.message, duration: 1500 });
           }else{
-            this.$message({ type: 'error', message: res.data.message });
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
 
           this.bannerList[this.rowNum].balongimg = res.data.data;
@@ -1042,9 +1042,9 @@
         axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token') + "&filetype = banner", form).then(res => {
           if(res.data.status == 200){
             // console.log(res, file);
-            this.$message({ type: 'success', message: res.data.message });
+            this.$message({ type: 'success', message: res.data.message, duration: 1500 });
           }else{
-            this.$message({ type: 'error', message: res.data.message });
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
 
           this.bannerList[this.rowNum].baimage = res.data.data;
@@ -1059,10 +1059,10 @@
         const isLt2M = file.size / 1024 / 1024 < 20;
 
         if (!isJPG) {
-          this.$message.error('上传图片只能是 JPG 或 PNG 格式!');
+          this.$message({ type: 'error', message: "上传图片只能是 JPG 或 PNG 格式", duration: 1500 });
         }
         if (!isLt2M) {
-          this.$message.error('上传图片大小不能超过 20MB!');
+          this.$message({ type: 'error', message: "上传图片大小不能超过 20MB", duration: 1500 });
         }
         return isJPG && isLt2M;
       },

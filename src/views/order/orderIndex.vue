@@ -190,11 +190,9 @@
               }
             }
           }else{
-            this.$message.error(res.data.message);
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
-        },error => {
-          this.$message.error(error.data.message);
-        })
+        });
       },
       // 判断点击的tab
       handleClick(tab, event) {

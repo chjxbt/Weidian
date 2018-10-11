@@ -403,7 +403,7 @@
               this.getTabs(this.order.OMcount)
             }
           }else{
-            this.$message.error(res.data.message);
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         })
       },
@@ -448,7 +448,7 @@
               }
             }
           }else{
-            this.$message.error(res.data.message);
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         })
       }

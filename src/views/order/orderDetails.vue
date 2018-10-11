@@ -227,11 +227,9 @@
             // console.log(this.order)
             this.setStep()
           }else{
-            this.$message.error(res.data.message);
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
-        },error => {
-          this.$message.error(error.data.message);
-        })
+        });
       },
       // 将已支付的订单发货，使之变成已发货
       toSend() {
@@ -249,10 +247,8 @@
               this.setStep()
               this.$message({ message: res.data.message, type: 'success' });
             }else{
-              this.$message.error(res.data.message);
+              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
             }
-          }, res=>{
-            this.$message.error(res.data.message);
           });
         }
       },

@@ -139,7 +139,7 @@ export default {
         if(res.data.status == 200){
           this.userImgTemp = res.data.data;
         }else{
-          this.$message({ type: 'error', message: res.data.message });
+          this.$message({ type: 'error', message: res.data.message, duration: 1500 });
         }
       });
     },
@@ -157,7 +157,7 @@ export default {
             this.show_img_modal = false;
             this.userImgTemp = "";
           }else{
-            this.$message.error(res.data.message);
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         });
       }
@@ -192,10 +192,8 @@ export default {
                 localStorage.clear();                     // 清除所有localStorage
                 this.$router.push({ path: '/login' });    // 去登录页面
               }else{
-                this.$message.error(res.data.message);
+                this.$message({ type: 'error', message: res.data.message, duration: 1500 });
               }
-            }, res=>{
-              this.$message.error(res.data.message);
             });
           } else {
             console.log('error submit!!');

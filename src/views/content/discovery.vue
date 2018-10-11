@@ -450,7 +450,7 @@
             media = { amimage: res.data.data, amsort: this.activityMediaSort };
             this.activityMedia.push(media);
           }else{
-            this.$message({ type: 'error', message: res.data.message });
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         });
       },
@@ -469,9 +469,9 @@
             media = { amimage: res.data.data, amsort: 1 };
             this.activityMedia = [];
             this.activityMedia.push(media);
-            this.$message({ type: 'success', message: res.data.message });
+            this.$message({ type: 'success', message: res.data.message, duration: 1500 });
           }else{
-            this.$message({ type: 'error', message: res.data.message });
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         });
       },
@@ -490,9 +490,9 @@
             media = { amvideo: res.data.data };
             this.activityMedia = [];
             this.activityMedia.push(media);
-            this.$message({ type: 'success', message: res.data.message });
+            this.$message({ type: 'success', message: res.data.message, duration: 1500 });
           }else{
-            this.$message({ type: 'error', message: res.data.message });
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         });
       },
@@ -508,7 +508,7 @@
       },
       // 超过文件数量限制时执行的方法
       onExceed(file, fileList) {
-        this.$message({ type: 'warning', message: "最多上传9张图片" });
+        this.$message({ type: 'warning', message: "最多上传9张图片", duration: 1500 });
       },
       handleRemove(file, fileList) {
         console.log(file, fileList);
@@ -646,13 +646,13 @@
           };
           axios.post(api.update_bact + '?token=' + localStorage.getItem('token') + "&baid=" + banner.baid, params).then(res=>{
             if(res.data.status == 200){
-              this.$message({ message: "保存成功", type: 'success' });
+              this.$message({ message: "保存成功", type: 'success', duration: 1500 });
 
               this.bannerList[scope.$index].disabled = true;
               this.bannerList[scope.$index].addSaveEdit = "3";
               this.bannerList = this.bannerList.concat();
             }else{
-              this.$message.error(res.data.message);
+              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
             }
           });
         }else if(where == "product") {
@@ -670,25 +670,25 @@
           };
           axios.post(api.update + '?token=' + localStorage.getItem('token') + "&reid=" + this.productReid, params).then(res=>{
             if(res.data.status == 200){
-              this.$message({ message: "保存成功", type: 'success' });
+              this.$message({ message: "保存成功", type: 'success', duration: 1500 });
 
               this.productLoading = false;
               this.productDisabled = true;
               this.productEdit = false;
             }else{
-              this.$message.error(res.data.message);
+              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
             }
           });
         }else if(where == "activity") {
           // if(this.activityMediaSort != 4 && this.activityMediaSort != 6 && this.activityMediaSort != 9) {
-          //   this.$message({ message: "上传推文图片时，数量需为4张、6张或9张", type: 'warning' });
+          //   this.$message({ message: "上传推文图片时，数量需为4张、6张或9张", type: 'warning', duration: 1500 });
           // }else {
             if(this.activityACtext == ""
             // if(this.activityACtext == "" || this.activityJumpValue == "" || this.activityJumpToValue == "" || this.activityType == "" || this.activityActivityTime.length != 2
             ) {
-              this.$message({ message: "请完整填写", type: 'warning' });
+              this.$message({ message: "请完整填写", type: 'warning', duration: 1500 });
               if(this.tnid == "") {
-                this.$message({ message: "请刷新页面后重试", type: 'warning' });
+                this.$message({ message: "请刷新页面后重试", type: 'warning', duration: 1500 });
               }
             }else {
               let actype = "";
@@ -719,7 +719,7 @@
               console.log(params);
               axios.post(api.update_act + '?token=' + localStorage.getItem('token') + "&acid=" + this.acidTemp, params).then(res=>{
                 if(res.data.status == 200){
-                  this.$message({ message: res.data.message, type: 'success' });
+                  this.$message({ message: res.data.message, type: 'success', duration: 1500 });
 
                   // 保存后把新数据回显到表格中
                   this.activityList[this.activityEditScope].actext = this.activityACtext;
@@ -743,7 +743,7 @@
                   this.activityPictureList = [];  // 图片list置为[]
                   this.activityMediaSort = 0;   // 上传成功后图片数量置为0
                 }else{
-                  this.$message.error(res.data.message);
+                  this.$message({ type: 'error', message: res.data.message, duration: 1500 });
                 }
               });
             }
@@ -787,18 +787,18 @@
         }
         // console.log(params);
         if(params.BAimage == undefined || params.BAtext == "" || params.BAstarttime == undefined || params.BAendtime == undefined || params.BAtype == undefined) {
-          this.$message({ message: "请完整填写", type: 'warning' });
+          this.$message({ message: "请完整填写", type: 'warning', duration: 1500 });
         }else {
           if(params.BAtype == "0" && params.BAlongimg == undefined) {
-            this.$message({ message: "请完整填写", type: 'warning' });
+            this.$message({ message: "请完整填写", type: 'warning', duration: 1500 });
           }else {
             axios.post(api.create_dbact + '?token=' + localStorage.getItem('token'), params).then(res=>{
               if(res.data.status == 200){
-                this.$message({ message: "保存成功", type: 'success' });
+                this.$message({ message: "保存成功", type: 'success', duration: 1500 });
                 this.getBanner();       // 获取专题
                 this.addBannerBtn = true;
               }else{
-                this.$message.error(res.data.message);
+                this.$message({ type: 'error', message: res.data.message, duration: 1500 });
               }
             });
           }
@@ -826,10 +826,10 @@
             { baisdelete: true }).then(res=>{
             if(res.data.status == 200){
               this.bannerLoading = false;
-              this.$message({ message: "专题删除成功", type: 'success' });
+              this.$message({ message: "专题删除成功", type: 'success', duration: 1500 });
               this.bannerList.splice(scope.$index, 1);    // 刷新视图
             }else{
-              this.$message.error(res.data.message);
+              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
             }
           });
         }).catch(() => {  });
@@ -841,11 +841,11 @@
           this.activityLoading = true;
           axios.post(api.update_act + '?token=' + localStorage.getItem('token') + "&acid=" + this.activityList[scope.$index].acid, { acisdelete: true }).then(res=>{
             if(res.data.status == 200){
-              this.$message({ message: "推文删除成功", type: 'success' });
+              this.$message({ message: "推文删除成功", type: 'success', duration: 1500 });
               this.activityList.splice(scope.$index, 1);    // 刷新视图
               this.activityLoading = false;
             }else{
-              this.$message.error(res.data.message);
+              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
             }
           });
         }).catch(() => {  });
@@ -856,11 +856,11 @@
         axios.post(api.update_bact + '?token=' + localStorage.getItem('token') + "&baid=" + this.bannerList[scope.$index].baid,
           { basort: this.bannerList[scope.$index - 1].basort }).then(res=>{
           if(res.data.status == 200){
-            this.$message({ message: "专题上移成功", type: 'success' });
+            this.$message({ message: "专题上移成功", type: 'success', duration: 1500 });
             this.bannerList = [];
             this.getBanner();     // 获取专题
           }else{
-            this.$message.error(res.data.message);
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         });
       },
@@ -894,24 +894,24 @@
       // 添加推文/活动 - 判空
       addActivity () {
         if(this.tnid == "") {
-          this.$message({ message: "请刷新页面后重试", type: 'warning' });
+          this.$message({ message: "请刷新页面后重试", type: 'warning', duration: 1500 });
         }else {
           if(this.activityACtext == "") {
-            this.$message({ message: "请填写推文内容", type: 'warning' });
+            this.$message({ message: "请填写推文内容", type: 'warning', duration: 1500 });
           }else {
             if(this.activityActivityTime.length != 2) {
-              this.$message({ message: "请填写推文时间", type: 'warning' });
+              this.$message({ message: "请填写推文时间", type: 'warning', duration: 1500 });
             }
             else {
               if(this.page == "每日10荐" || this.page == "素材圈" || this.page == "公告") {
                 // 除教程外的其他页面，推文图片的数量需为0、4、6、9
                 if(this.activityMediaSort != 4 && this.activityMediaSort != 6 && this.activityMediaSort != 9) {
-                  this.$message({ message: "上传推文图片时，数量需为4张、6张或9张", type: 'warning' });
+                  this.$message({ message: "上传推文图片时，数量需为4张、6张或9张", type: 'warning', duration: 1500 });
                 }else {
                   // 每日十荐需要选择跳转
                   if(this.page == "每日10荐") {
                     if(this.activityJumpValue == "" || this.activityJumpToValue == "" || this.activityType == "") {
-                      this.$message({ message: "请完整填写", type: 'warning' });
+                      this.$message({ message: "请完整填写", type: 'warning', duration: 1500 });
                     }else {
                       let params = {
                         ACSkipType: this.activityJumpValue,
@@ -940,7 +940,7 @@
                     this.activityParams(params);
                   }else if(this.page == "公告") {
                     if(this.activityTitle == "") {
-                      this.$message({ message: "请填写推文标题", type: 'warning' });
+                      this.$message({ message: "请填写推文标题", type: 'warning', duration: 1500 });
                     }else {
                       let params = {
                         TopnavId: this.tnid,
@@ -986,7 +986,7 @@
         console.log(params);
         axios.post(api.add_one_activity + '?token=' + localStorage.getItem('token'), params).then(res => {
           if(res.data.status == 200){
-            this.$message({ type: 'success', message: res.data.message });
+            this.$message({ type: 'success', message: res.data.message, duration: 1500 });
             this.getActivity(0, this.count);     // 获取推文/内容
 
             // 保存成功后将input等置空
@@ -1007,7 +1007,7 @@
             this.activityPictureList = [];   // 上传成功后图片list置为[]
             this.activityMediaSort = 0;   // 上传成功后图片数量置为0
           }else{
-            this.$message({ type: 'error', message: res.data.message });
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         });
       },
@@ -1046,7 +1046,7 @@
               }
             }
           }else{
-            this.$message.error(res.data.message);
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         })
       },
@@ -1071,7 +1071,7 @@
 
             this.getActivity(0, 5);      // 获取首页活动/推文内容列表
           }else{
-            this.$message.error(res.data.message);
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         })
       },
@@ -1088,7 +1088,7 @@
               this.activityList[i].disabled = true;
             }
           }else{
-            this.$message.error(res.data.message);
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         })
       },
@@ -1105,9 +1105,9 @@
         axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token') + "&filetype = bannerLong", form).then(res => {
           if(res.data.status == 200){
             // console.log(res, file);
-            this.$message({ type: 'success', message: res.data.message });
+            this.$message({ type: 'success', message: res.data.message, duration: 1500 });
           }else{
-            this.$message({ type: 'error', message: res.data.message });
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
 
           this.bannerList[this.rowNum].balongimg = res.data.data;
@@ -1123,9 +1123,9 @@
         axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token') + "&filetype = banner", form).then(res => {
           if(res.data.status == 200){
             // console.log(res, file);
-            this.$message({ type: 'success', message: res.data.message });
+            this.$message({ type: 'success', message: res.data.message, duration: 1500 });
           }else{
-            this.$message({ type: 'error', message: res.data.message });
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
 
           this.bannerList[this.rowNum].baimage = res.data.data;
@@ -1166,7 +1166,7 @@
               }
               // console.log(this.jumpToList);
             }else{
-              this.$message.error(res.data.message);
+              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
             }
           })
         }else if(to == 'banner') {
@@ -1243,7 +1243,7 @@
             this.productReid = res.data.data[0].reid;
             this.productLoading = false;
           }else{
-            this.$message.error(res.data.message);
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         })
       },
@@ -1257,10 +1257,10 @@
         this.productLoading = true;
         axios.post(api.update + '?token=' + localStorage.getItem('token') + "&reid=" + this.productReid, params).then(res=>{
           if(res.data.status == 200){
-            this.$message({ message: "上移成功", type: 'success' });
+            this.$message({ message: "上移成功", type: 'success', duration: 1500 });
             this.getProduct();    // 获取首页顶部导航nav
           }else{
-            this.$message.error(res.data.message);
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         });
       },
@@ -1276,11 +1276,11 @@
           this.productLoading = true;
           axios.post(api.update + '?token=' + localStorage.getItem('token') + "&reid=" + this.productReid, params).then(res=>{
             if(res.data.status == 200){
-              this.$message({ message: "删除成功", type: 'success' });
+              this.$message({ message: "删除成功", type: 'success', duration: 1500 });
               this.productList.splice(scope.$index, 1);
               this.productLoading = false;
             }else{
-              this.$message.error(res.data.message);
+              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
             }
           });
         }).catch(() => {  });

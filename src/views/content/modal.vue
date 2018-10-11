@@ -380,11 +380,9 @@
             }
             // console.log(this.levelList);
           }else{
-            this.$message.error(res.data.message);
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
-        },error => {
-          this.$message.error(error.data.message);
-        })
+        });
       },
       // 获取所有任务
       getAllTask(){
@@ -412,7 +410,7 @@
             }
             this.taskLoading = false;
           }else{
-            this.$message.error(res.data.message);
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         });
       },
@@ -424,7 +422,7 @@
               this.taskTypeList[i] = { value: i, label: res.data.data[i] };
             }
           }else{
-            this.$message.error(res.data.message);
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         });
       },
@@ -497,7 +495,7 @@
               this.bigAdImg = res.data.data;            // 我的 - 大静态广告
             }
           }else{
-            this.$message({ type: 'error', message: res.data.message });
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
 
           this.bannerList[this.rowNum].baimage = res.data.data;
@@ -512,9 +510,9 @@
         form.append("index", 1);
         axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token') + "&filetype = task", form).then(res => {
           if(res.data.status == 200){
-            this.$message({ type: 'success', message: res.data.message });
+            this.$message({ type: 'success', message: res.data.message, duration: 1500 });
           }else{
-            this.$message({ type: 'error', message: res.data.message });
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
           // console.log(res.data);
           this.imageUrl = res.data.data;
@@ -531,9 +529,9 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$message({ type: 'success', message: '删除成功!' });
+          this.$message({ type: 'success', message: '删除成功!', duration: 1500 });
         }).catch(() => {
-          this.$message({ type: 'info', message: '已取消删除' });
+          this.$message({ type: 'info', message: '已取消删除', duration: 1500 });
         });
       },
       // 弹框管理-首页-提交   添加任务
@@ -551,12 +549,12 @@
             TAurl: this.formIndex.content
           };
           if(params.TAname == "" || String(params.TAtype) == "" || params.TAhead == "" || params.TLid == "" || params.TAurl == "") {
-            this.$message({ type: 'warning', message: '请填写全部必填项' });
+            this.$message({ type: 'warning', message: '请填写全部必填项', duration: 1500 });
             console.log(params.TAname == "", String(params.TAtype) == "", params.TAhead == "", params.TLid == "", params.TAurl == "")
           }else {
             axios.post(api.add_task + '?token=' + localStorage.getItem('token'), params).then(res=>{
               if(res.data.status == 200){
-                this.$message({ message: res.data.message, type: 'success' });
+                this.$message({ message: res.data.message, type: 'success', duration: 1500 });
                 this.getAllTask();        // 获取所有任务
 
                 this.formIndex.title = "";
@@ -569,7 +567,7 @@
                 this.activityTime = [];
 
               }else{
-                this.$message.error(res.data.message);
+                this.$message({ type: 'error', message: res.data.message, duration: 1500 });
               }
             });
           }
@@ -605,7 +603,7 @@
             if(res.data.status == 200){
               this.$message({ type: 'success', message: "保存成功", duration: 1500 });
             }else{
-              this.$message.error(res.data.message);
+              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
             }
           });
         }
@@ -619,7 +617,7 @@
             if(res.data.status == 200) {
               this.ownerImg = res.data.data.aiimage;
             }else{
-              this.$message.error(res.data.message);
+              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
             }
           });
         }else if(i == 2) {
@@ -658,7 +656,7 @@
                 }
               }
             }else{
-              this.$message.error(res.data.message);
+              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
             }
           });
         }
@@ -677,7 +675,7 @@
       activityTime(newValue, oldValue) {
         if(!this.activityTime) {
           if(newValue[0] == newValue[1]) {
-            this.$message.error("活动时间不正确，请重新选择");
+            this.$message({ type: 'error', message: "活动时间不正确，请重新选择", duration: 1500 });
             this.activityTime = "";
           }
         }

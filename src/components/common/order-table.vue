@@ -112,10 +112,7 @@
       // 分页组件的提示
       pageChange(v){
         if(v == this.current_page){
-          this.$message({
-            message: '这已经是第' + v + '页数据了',
-            type: 'warning'
-          });
+          this.$message({ message: '这已经是第' + v + '页数据了', type: 'warning', duration: 1500 });
           return false;
         }
         this.current_page = v;

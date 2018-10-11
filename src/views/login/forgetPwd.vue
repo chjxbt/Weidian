@@ -126,7 +126,7 @@
       },
       getCode(){
         if(this.ruleForm.MAtelphone == ''){
-          this.$message.error('请先输入手机号');
+          this.$message({ type: 'error', message: "请先输入手机号", duration: 1500 });
           return false;
         }
         this.show = false;

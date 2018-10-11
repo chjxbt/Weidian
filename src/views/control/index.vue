@@ -82,7 +82,7 @@
             this.jumpTo = res.data.data.skiptype;
             this.jumpLoading = false;
           }else{
-            this.$message.error(res.data.message);
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         })
       },
@@ -94,7 +94,7 @@
             this.$message({ type: 'success', message: res.data.message, duration: 1500 });
             this.jumpLoading = false;
           }else{
-            this.$message({ type: 'error', message: res.data.message });
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         });
       }

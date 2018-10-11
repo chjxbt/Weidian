@@ -121,7 +121,7 @@
               }
             }
           }else{
-            this.$message.error(res.data.message);
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         });
       },
@@ -181,7 +181,7 @@
                 this.addAdminVisible = false;
                 this.addForm = { userName: "", password: "", againPassword: "", userImg: "", level: 1 };
               }else{
-                this.$message.error(res.data.message);
+                this.$message({ type: 'error', message: res.data.message, duration: 1500 });
               }
             });
           }
@@ -238,7 +238,7 @@
             this.editAdminPw = true;
             this.addForm = { userName: "", password: "", againPassword: "", userImg: "", level: 1 };
           }else{
-            this.$message.error(res.data.message);
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         });
       },
@@ -263,7 +263,7 @@
               this.adminList = this.adminList.concat();
               this.adminLoading = false;
             }else{
-              this.$message.error(res.data.message);
+              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
             }
           });
         }else if(where == "unlock") {     // 解封管理员
@@ -275,7 +275,7 @@
               this.adminList = this.adminList.concat();
               this.adminLoading = false;
             }else{
-              this.$message.error(res.data.message);
+              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
             }
           });
         }else if(where == "delete") {     // 删除管理员
@@ -286,7 +286,7 @@
               this.adminList.splice(scope.$index, 1);
               this.adminLoading = false;
             }else{
-              this.$message.error(res.data.message);
+              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
             }
           });
         }
