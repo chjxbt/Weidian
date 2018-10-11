@@ -26,80 +26,6 @@
             </template>
           </el-table-column>
         </el-table>
-        <!--编辑管理员弹出框-->
-        <el-dialog :title="editAdminTitle" :visible.sync="editAdminVisible" width="40%" show-close center>
-          <div v-if="dialog=='index'">
-            <div class="edit-dialog" style="margin-top: 0.25rem">
-              <div class="change" @click="dialog='changePicture'">
-                <img class="change-pictures" src="../../assets/images/changePicture.png"/>
-                <div>修改管理员头像</div>
-              </div>
-              <div class="change" @click="dialog='changePw'">
-                <img class="change-pictures" src="../../assets/images/changePw.png"/>
-                <div>修改管理员密码</div>
-              </div>
-              <div v-if="row.MAstatus == '可用'">
-                <div class="change" @click="lockAdmin('封禁')">
-                  <img class="change-pictures" src="../../assets/images/changGroup.png"/>
-                  <div>封禁管理员</div>
-                </div>
-              </div>
-              <div v-if="row.MAstatus == '禁用'">
-                <div class="change" @click="lockAdmin('解封')">
-                  <img class="change-pictures" src="../../assets/images/changGroup.png"/>
-                  <div>解封管理员</div>
-                </div>
-              </div>
-              <div v-if="row.MAstatus == '未激活'">
-                <div class="change" @click="lockAdmin('激活')">
-                  <img class="change-pictures" src="../../assets/images/changGroup.png"/>
-                  <div>激活管理员</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div v-if="dialog=='changePicture'">
-            <div class="edit-dialog" style="margin-top: 0.15rem">
-              <el-upload class="avatar-uploader" action="https://jsonplaceholder.typicode.com/posts/"
-                :show-file-list="false" :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
-                <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-              </el-upload>
-              <div slot="footer" class="dialog-footer" align="right" style="margin-top: 0.2rem">
-                <el-button @click="dialog='index'">取 消</el-button>
-                <el-button class="m-top-button-button" @click="dialog='index'">确 定</el-button>
-              </div>
-            </div>
-          </div>
-          <div v-if="dialog=='changePw'">
-            <div class="edit-dialog">
-              <el-form :model="form" style="margin-right: 0.4rem">
-                <el-form-item label="请输入旧密码：" :label-width="formLabelWidth">
-                  <el-input v-model="form.oldPw" auto-complete="off" type="password" size="mini"></el-input>
-                </el-form-item>
-                <el-form-item label="请输入新密码：" :label-width="formLabelWidth">
-                  <el-input v-model="form.newPw" auto-complete="off" type="password" size="mini"></el-input>
-                </el-form-item>
-                <el-form-item label="请确认新密码：" :label-width="formLabelWidth">
-                  <el-input v-model="form.againNewPw" auto-complete="off" type="password" size="mini"></el-input>
-                </el-form-item>
-              </el-form>
-              <div slot="footer" class="dialog-footer" align="right" style="margin-top: 0.1rem">
-                <el-button @click="dialog='index'" size="mini">取 消</el-button>
-                <el-button class="m-top-button-button" @click="changePwDone" size="mini">确 定</el-button>
-              </div>
-            </div>
-          </div>
-          <div v-if="dialog=='changeMAstatus'">
-            <div class="edit-dialog" style="margin-top: 0.25rem;height: 1.2rem">
-              <div style="text-align: center;font-size: 18px">确认{{operation}}该管理员吗？</div>
-              <div slot="footer" class="dialog-footer" align="right" style="margin-top: 0.4rem">
-                <el-button @click="dialog='index'">取 消</el-button>
-                <el-button class="m-top-button-button" @click="changeMAstatus">确 定</el-button>
-              </div>
-            </div>
-          </div>
-        </el-dialog>
         <!--添加/编辑管理员弹出框-->
         <el-dialog :title="editAdminText" :visible.sync="addAdminVisible" width="30%" center>
           <div class="add-dialog">
@@ -121,6 +47,7 @@
                 <el-form-item label="确认密码：" :label-width="addFormWidth">
                   <el-input type="password" v-model="addForm.againPassword" size="mini" style="width: 80%"></el-input>
                 </el-form-item>
+                <div style="margin: -0.12rem 0 0.1rem 0;"><span style="color: red;">* </span>密码不含汉字，长度不小于四位</div>
               </div>
               <el-form-item label="用户级别：" :label-width="addFormWidth"><el-radio-group v-model="addForm.level">
                 <el-radio :label="0">客服</el-radio>
@@ -151,22 +78,11 @@
     data() {
       return {
         name: '管理员管理',
-        inputID: '',
-        inputName: '',
         adminList: [],              // 管理员list
         adminLoading: false,        // 管理员表格加载中
-        editAdminVisible: false,
         addAdminVisible: false,
         editAdminText: "添加管理员", // 编辑管理员的dialog标题
         editAdminPw: true,          // 编辑管理员的密码
-        editAdminTitle: '',
-        dialog: '',
-        imageUrl: '',
-        form: {
-          oldPw: '',
-          newPw: '',
-          againNewPw: '',
-        },
         addForm: {
           userName: "",
           password: "",
@@ -176,14 +92,7 @@
         },
         formLabelWidth: '1rem',
         addFormWidth: '1rem',
-        total_page: 0,
-        current_page: 0,
-        total_num: 0,
-        page_size: 10,
-        searchText: '',
-        row: [],
-        operation: '',
-        MAid: ''
+        row: "",
       }
     },
     components:{ pageTitle },
@@ -225,9 +134,8 @@
         axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token') + "&filetype = userImg", form).then(res => {
           if(res.data.status == 200){
             this.addForm.userImg = res.data.data;
-            // this.$message({ type: 'success', message: res.data.message });
           }else{
-            this.$message({ type: 'error', message: res.data.message });
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         });
       },
@@ -381,58 +289,6 @@
               this.$message.error(res.data.message);
             }
           });
-        }
-      },
-      // 点击封禁、解封、激活管理员产生的Dialog变化
-      lockAdmin(title) {
-        this.operation = title;
-        this.dialog = 'changeMAstatus'
-      },
-      // 封禁、解封、激活管理员的方法
-      changeMAstatus() {
-        let that = this
-        let MAstatus = ''
-        if(this.row.MAstatus == '未激活' || this.row.MAstatus == '禁用') {
-          MAstatus = '可用'
-        }else if(this.row.MAstatus == '可用') {
-          MAstatus = '禁用'
-        }
-        let params = {
-          MAtelphone: this.row.MAtelphone,
-          MAstatus: MAstatus
-        }
-        axios.post(api.update_manager_by_matel+'?token='+localStorage.getItem('token'), params).then(res => {
-          console.log(res)
-          if(res.data.status == 200){
-            this.editAdminVisible = false
-            this.$message({ message:res.data.message, type:'success' });
-            that.getData();
-          }
-        })
-      },
-      // 更改用户头像
-      handleAvatarSuccess(res, file) {
-        this.imageUrl = URL.createObjectURL(file.raw);
-      },
-      beforeAvatarUpload(file) {
-        const isJPG = file.type === 'image/jpeg';
-        const isLt2M = file.size / 1024 / 1024 < 2;
-
-        if (!isJPG) {
-          this.$message.error('上传头像图片只能是 JPG 格式!');
-        }
-        if (!isLt2M) {
-          this.$message.error('上传头像图片大小不能超过 2MB!');
-        }
-        return isJPG && isLt2M;
-      },
-      // 更改密码
-      changePwDone() {
-        if(this.form.againNewPw != this.form.newPw) {
-          this.$message.error('两次密码输入不一致');
-        }else {
-          this.$message({ type: 'success', message: '操作成功!' });
-          this.dialog = 'index';
         }
       },
       // 页面刷新的方法
