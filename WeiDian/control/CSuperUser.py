@@ -162,7 +162,6 @@ class CSuperUser():
             raise NOT_FOUND(u'要修改的信息不存在')
         upinfo = {
             "SUid": suid,
-            "SUpassword": generate_password_hash(password),
             "SUname": data.get("suname"),
             "SUheader": data.get("suheader"),
             "SUlevel": sulevel,
@@ -170,6 +169,15 @@ class CSuperUser():
             "SUisdelete": data.get("suisdelete")
         }
         upinfo = {k: v for k, v in upinfo.items() if v not in self.empty}
+        if password:
+            if len(password) < 4:
+                raise PARAMS_ERROR(u'密码长度低于4位')
+            zh_pattern = re.compile(u'[\u4e00-\u9fa5]+')
+            match = zh_pattern.search(password)
+            if match:
+                raise PARAMS_ERROR(u'密码包含中文字符')
+            pwdhashed = generate_password_hash(password)
+            upinfo["SUpassword"] = pwdhashed
         changed = self.ssuperuser.update_info(suid, upinfo)
         if not changed:
             raise SYSTEM_ERROR(u"修改信息不存在")
