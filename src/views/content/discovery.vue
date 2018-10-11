@@ -302,12 +302,23 @@
             </div>
           </div>
         </div>
+        <div class="m-form-item">
+          <p class="m-form-label" style="width: 0.65rem; margin-top: 0.1rem">发布者</p>
+          <div class="m-item-content">
+            <div class=" m-item-row">
+              <el-select v-model="author" class="m-input-l" placeholder="请选择发布者" @focus="focusselect('', 'author')">
+                <!--<el-option v-for="item in authorList" :key="item.value" :label="item.label" :value="item.value"></el-option>-->
+                <el-option v-for="item in authorList" :key="item.value" :label="item.label" :value="item.value">
+                  <div style="float: left; width: 3.4rem">{{ item.label }}</div>
+                  <img style="float: left; width: 0.25rem; height: 0.25rem; border-radius: 50%" :src="item.suheader">
+                </el-option>
+              </el-select>
+            </div>
+          </div>
+        </div>
         <div class="m-form-item" v-if="page == '公告' || page == '教程'">
           <p class="m-form-label">推文置顶</p>
-          <el-switch style="margin: 0.1rem 0 0.2rem 0"
-                     v-model="placedTop"
-                     active-color="#91aeb5"
-                     inactive-color="#DCDCDC">
+          <el-switch style="margin: 0.1rem 0 0.2rem 0" v-model="placedTop" active-color="#91aeb5" inactive-color="#DCDCDC">
           </el-switch>
         </div>
         <div class="m-form-confirm-btn">
@@ -376,6 +387,8 @@
           { value: '0', label: '长图' },
           { value: '1', label: '专题页' }
         ],
+        author: "",                 // 推文-发布者
+        authorList: [],             // 推文-发布者list
         selectionList: [],        // 筛选推文时盛放acid的list
         toBanner: "",             // 筛选推文时专题的选择值
         toBannerList: [],         // 筛选推文时专题的可选择项
@@ -564,6 +577,7 @@
           }
           this.activityMediaSort = activity.media.length;
           this.activityActivityTime = [activity.acstarttime, activity.acendtime];
+          this.author = activity.suuser.suname;
 
           if(this.page == "每日10荐") {
             // 商品
@@ -620,12 +634,13 @@
       },
       // select选择器获得焦点时执行
       focusselect(index, where) {
-        this.rowNum = index;      // 确定点击的是第几行
-
-        console.log(this.productList);
-
         if(where == "product") {
+          this.rowNum = index;      // 确定点击的是第几行
+
+          // console.log(this.productList);
           this.getJumpTo("product", "product");
+        } else if(where == "author") {    // 获取发布者/管理员list
+          this.getAdmin();
         }
       },
       // select选择器获得焦点时执行
@@ -719,6 +734,7 @@
                 acforwardFakenum: this.hairLapsNum,
                 acstarttime: this.activityActivityTime[0],
                 acendtime: this.activityActivityTime[1],
+                suid: this.author,
                 acistop: this.placedTop
               };
 
@@ -749,6 +765,7 @@
                   this.longImg = "";
                   this.placedTop = false;
                   this.activityTitle = "";
+                  this.author = "";
                   this.activityPictureList = [];  // 图片list置为[]
                   this.activityMediaSort = 0;   // 上传成功后图片数量置为0
                 }else{
@@ -774,6 +791,7 @@
         this.activityBadge = "";
         this.placedTop = false;
         this.activityTitle = "";
+        this.author = "";
         this.activityPictureList = [];  // 图片list置为[]
         this.activityMediaSort = 0;   // 上传成功后图片数量置为0
       },
@@ -908,6 +926,7 @@
           if(this.activityACtext == "") {
             this.$message({ message: "请填写推文内容", type: 'warning', duration: 1500 });
           }else {
+            // 素材圈、公告、教程页面的活动时间非必填
             if(this.activityActivityTime.length != 2 && this.page == "每日10荐") {
               this.$message({ message: "请填写推文时间", type: 'warning', duration: 1500 });
             }
@@ -980,6 +999,9 @@
                   ACistop: this.placedTop
                 };
                 console.log(params);
+                if(this.author != "") { // 发布者不为空时
+                  params.SUid = this.author;
+                }
                 this.activityParams(params);
               }
             }
@@ -1308,6 +1330,20 @@
             }
           });
         }).catch(() => {  });
+      },
+      // 获取管理员
+      getAdmin(){
+        this.authorList = [];
+        axios.get(api.get_all_suser + "?sutype=all&token=" + localStorage.getItem("token")).then(res => {
+          if(res.data.status == 200) {
+            for(let i = 0; i < res.data.data.length; i ++) {
+              let author = { value: res.data.data[i].suid, label: res.data.data[i].suname, suheader: res.data.data[i].suheader };
+              this.authorList.push(author);
+            }
+          }else{
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+          }
+        });
       }
     },
     watch: {
@@ -1328,7 +1364,7 @@
       // productList的值发生变化
       productList(newValue, oldValue) {
         // console.log(newValue, oldValue);
-      },
+      }
     },
     mounted() {
       this.getBanner();     // 获取首页专题
@@ -1358,6 +1394,7 @@
   }
   .num-list {
     display: flex;
+    justify-content: flex-start;
     .num-box {
       margin-right: 0.5rem;
     }

@@ -17,7 +17,7 @@
             <template slot-scope="scope">
               <div @click="rowClick(scope.$index, 'img')">
                 <el-upload class="avatar-uploader" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false"
-                           :on-success="uploadPicture" :before-upload="beforeAvatarUploads" :disabled="scope.row.disabled">
+                           :on-success="uploadPicture" :before-upload="beforeAvatarUpload" :disabled="scope.row.disabled">
                   <img v-if="scope.row.baimage" :src="scope.row.baimage" class="avatar">
                   <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                 </el-upload>
@@ -265,6 +265,20 @@
             </div>
           </div>
         </div>
+        <div class="m-form-item">
+          <p class="m-form-label" style="width: 0.65rem; margin-top: 0.1rem">发布者</p>
+          <div class="m-item-content">
+            <div class=" m-item-row">
+              <el-select v-model="author" class="m-input-l" placeholder="请选择发布者" @focus="focusselect('author')">
+                <!--<el-option v-for="item in authorList" :key="item.value" :label="item.label" :value="item.value"></el-option>-->
+                <el-option v-for="item in authorList" :key="item.value" :label="item.label" :value="item.value">
+                  <div style="float: left; width: 3.4rem">{{ item.label }}</div>
+                  <img style="float: left; width: 0.25rem; height: 0.25rem; border-radius: 50%" :src="item.suheader">
+                </el-option>
+              </el-select>
+            </div>
+          </div>
+        </div>
         <div class="m-form-confirm-btn">
           <span @click="addActivity" v-if="!editActivity">保 存</span>
           <span @click="cancelActivity" v-if="editActivity">取 消</span>
@@ -346,6 +360,8 @@
           { value: "10", label: "5 元 10 件" }
         ],
         likeNum: '',                // 推文-虚拟点赞数
+        author: "",                 // 推文-发布者
+        authorList: [],             // 推文-发布者list
         activityType: '',           // 添加推文/活动时的活动类型选择的值
         activityBadge: '',          // 推文-活动角标
         activityACtext: '',         // 推文-活动内容
@@ -413,6 +429,10 @@
       // select选择器获得焦点时执行
       focusselect(where) {
         // console.log(where)
+        // 获取发布者/管理员list
+        if(where == "author") {
+          this.getAdmin();      // 获取管理员
+        }
       },
       // 轮播图管理-确定点击的图片是第几行
       rowClick(index, col) {
@@ -476,7 +496,7 @@
           this.hotMessageList[scope.$index].disabled = false;
           this.hotMessageList[scope.$index].editSave = "2";
         }else if(where == "activity") {
-          // console.log(scope.row.media);
+          console.log(scope.row);
           // console.log(this.activityMedia);
           this.activityMedia = scope.row.media;     // 把已有图片赋给activityMedia
           this.editActivity = true;
@@ -515,6 +535,7 @@
           this.activityActivityTime = [activity.acstarttime, activity.acendtime];
           this.likeNum = activity.likenum;
           this.activityBadge = activity.tags[0].atname;
+          this.author = activity.suuser.suname;
         }
       },
       // 保存编辑后的banner、热文、推文
@@ -585,7 +606,8 @@
                 tags: [{ atname: this.activityBadge }],
                 aclikeFakeNum: this.likeNum,
                 acstarttime: this.activityActivityTime[0],
-                acendtime: this.activityActivityTime[1]
+                acendtime: this.activityActivityTime[1],
+                suid: this.author
               };
 
               if(this.activityProductSales != "") {
@@ -609,6 +631,7 @@
                   this.activityActivityTime = "";
                   this.likeNum = "";
                   this.activityBadge = "";
+                  this.author = "";
                   this.activityPictureList = [];  // 图片list置为[]
                   this.activityMediaSort = 0;   // 上传成功后图片数量置为0
                 }else{
@@ -687,6 +710,7 @@
         this.activityActivityTime = "";
         this.likeNum = "";
         this.activityBadge = "";
+        this.author = "";
         this.activityPictureList = [];  // 图片list置为[]
 
         this.editActivity = false;      // 隐藏取消按钮
@@ -915,8 +939,11 @@
               ACstarttime: this.activityActivityTime[0],
               ACendtime: this.activityActivityTime[1]
             };
-            if(this.activityProductSales != "") {
+            if(this.activityProductSales != "") { // 虚拟销量不为空时
               params.ACProductsSoldFakeNum = this.activityProductSales;
+            }
+            if(this.author != "") { // 发布者不为空时
+              params.SUid = this.author;
             }
             this.activityLoading = true;
             console.log(params);
@@ -936,6 +963,7 @@
                 this.activityBadge = "";
                 this.activityPictureList = [];   // 上传成功后图片list置为[]
                 this.activityMediaSort = 0;   // 上传成功后图片数量置为0
+                this.author = "";
               }else{
                 this.$message({ type: 'error', message: res.data.message, duration: 1500 });
               }
@@ -1076,7 +1104,7 @@
         });
       },
       // 上传图片前的限制方法
-      beforeAvatarUploads(file) {
+      beforeAvatarUpload(file) {
         this.$message({ type: 'warning', message: "上传中，请等待" });
         const isJPG = file.type === 'image/jpeg' || 'image/png';
         const isLt2M = file.size / 1024 / 1024 < 20;
@@ -1089,11 +1117,19 @@
         }
         return isJPG && isLt2M;
       },
-      handleAvatarSuccess(){
-
-      },
-      beforeAvatarUpload(){
-
+      // 获取管理员
+      getAdmin(){
+        this.authorList = [];
+        axios.get(api.get_all_suser + "?sutype=all&token=" + localStorage.getItem("token")).then(res => {
+          if(res.data.status == 200) {
+            for(let i = 0; i < res.data.data.length; i ++) {
+              let author = { value: res.data.data[i].suid, label: res.data.data[i].suname, suheader: res.data.data[i].suheader };
+              this.authorList.push(author);
+            }
+          }else{
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+          }
+        });
       }
     },
     watch: {
