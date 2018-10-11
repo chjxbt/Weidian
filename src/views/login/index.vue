@@ -88,7 +88,7 @@
                 this.$router.push({ path: '/content/index' });
                 this.$notify({ title: '登录成功', type: 'success' });
               }else{
-                this.$message.error(res.data.message);
+                this.$message.error("用户名或密码错误");
               }
             }, res=>{
               this.$message.error(res.data.message);
