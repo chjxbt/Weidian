@@ -71,5 +71,9 @@ class SProduct(SBase):
         return self.session.query(Product).filter(Product.PRname.like("%{0}%".format(prname))).all()
 
     @close_session
-    def update_product_by_prid(self, prid, data):
-        return self.session.query(Product).filter(Product.PRid == prid).update(data)
+    def update_product_by_productid(self, productid, data):
+        return self.session.query(Product).filter(Product.PRoductId == productid).update(data)
+
+    @close_session
+    def get_product_by_productid(self, productid):
+        return self.session.query(Product).filter(Product.PRoductId == productid).first()

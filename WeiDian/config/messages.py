@@ -90,3 +90,6 @@ add_to_bigactivity_success = '成功{}条'
 set_success = '设置成功'
 update_superinfo_success = "修改信息成功"
 add_admin_success = "添加管理员成功"
+delete_product_success = '删除商品成功'
+update_product_success = '更新商品信息成功'
+update_product_sku_success = '更新商品sku信息成功'
