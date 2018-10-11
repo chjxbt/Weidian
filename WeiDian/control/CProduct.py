@@ -3,6 +3,7 @@ import sys
 import os
 from flask import request
 import re
+import json
 from WeiDian.common.params_require import parameter_required
 from WeiDian.common.token_required import verify_token_decorator, is_admin, is_tourist, is_ordirnaryuser, is_customerservice
 from WeiDian.common.TransformToList import list_add_models
@@ -29,7 +30,9 @@ class CProduct(BaseProductControl):
         self.sproductlike = SProductLike()
         # 后续修改
         self.partner = Partner()
-        self.update_sku_params = ['PRid', "PSVid", 'PSKproductnum', 'PSKalias', 'PSKprice', 'PSKpostfee', 'PSKactiviyid', 'PSskuid']
+        self.update_sku_params = ['PRid', "PSVid", 'PSKproductnum',
+                                  'PSKalias', 'PSKprice', 'PSKpostfee', 'PSKactiviyid', 'PSKproperkey']
+
         self.update_product_params = [
             'PRmainpic',
             'PRdetail',
@@ -77,8 +80,12 @@ class CProduct(BaseProductControl):
     def delete_product(self):
         if not is_admin():
             return AUTHORITY_ERROR(u'权限不足')
-        data = parameter_required('prid')
-        update_result = self.sproduct.update_product_by_prid(data.get('prid'), {"PRisdelete": True})
+        data = parameter_required('productid')
+        product = self.sproduct.get_product_by_productid(data.get('productid'))
+        if not product:
+            return import_status('no_product', 'OK')
+
+        update_result = self.sproduct.update_product_by_productid(data.get('productid'), {"PRisdelete": True})
         if not update_result:
             raise SYSTEM_ERROR(u'服务器繁忙')
         return import_status('delete_product_success', 'OK')
@@ -88,12 +95,16 @@ class CProduct(BaseProductControl):
     def shelves_product(self):
         if not is_admin():
             return AUTHORITY_ERROR(u'权限不足')
-        data = parameter_required('prid')
+        data = parameter_required('productid')
         prstatus = data.get("prstatus", 1)
-        if re.match(r'^[0-2]$', str(prstatus)):
+        product = self.sproduct.get_product_by_productid(data.get('productid'))
+        if not product:
+            return import_status('no_product', 'OK')
+
+        if not re.match(r'^[0-2]$', str(prstatus)):
             raise PARAMS_MISS(u'prstatus, 参数异常')
         prstatus = int(prstatus)
-        update_result = self.sproduct.update_product_by_prid(data.get('prid'), {"PRstatus": prstatus})
+        update_result = self.sproduct.update_product_by_productid(data.get('productid'), {"PRstatus": prstatus})
         if not update_result:
             raise SYSTEM_ERROR(u'服务器繁忙')
         return import_status('update_product_success', 'OK')
@@ -103,20 +114,27 @@ class CProduct(BaseProductControl):
     def update_sku(self):
         if not is_admin():
             return AUTHORITY_ERROR(u'权限不足')
-        data = parameter_required('skuid', 'productid')
+        data = parameter_required('psskuid', 'productid')
         pskpropervalue = data.get('pskpropervalue')
         skukey = {}
+        product = self.sproduct.get_product_by_productid(data.get('productid'))
+        if not product:
+            return import_status('no_product', 'OK')
+
         for key in self.update_sku_params:
             if not data.get(key.lower()) and data.get(key.lower()) != 0:
                 continue
             skukey[key] = data.get(key.lower())
 
-        update_result = self.sproductskukey.update_product_sku(data.get("skuid"), skukey)
+        if skukey.get("PSKproperkey"):
+            skukey['_PSKproperkey'] = json.dumps(skukey.pop('PSKproperkey'))
+
+        update_result = self.sproductskukey.update_product_sku(data.get("psskuid"), skukey)
         if not update_result:
             raise SYSTEM_ERROR(u'服务器繁忙')
-        product = self.sproduct.get_product_by_productid(data.get('productid'))
-        if pskpropervalue:
-            update_result = self.sproductskuvalue.update_skuvalue(product.PRid, {"PSVpropervalue": pskpropervalue})
+
+        if pskpropervalue and product:
+            update_result = self.sproductskuvalue.update_skuvalue(product.PRid, {"_PSVpropervalue": json.dumps(pskpropervalue)})
             if not update_result:
                 raise SYSTEM_ERROR(u'服务器繁忙')
         return import_status('update_product_sku_success', 'OK')
@@ -129,6 +147,9 @@ class CProduct(BaseProductControl):
 
         data = parameter_required('productid')
         productid = data.get('productid')
+        product = self.sproduct.get_product_by_productid(productid)
+        if not product:
+            return import_status('no_product', 'OK')
         product = {}
         for key in self.update_product_params:
             if not data.get(key.lower()) and data.get(key.lower()) != 0:

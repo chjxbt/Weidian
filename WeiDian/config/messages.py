@@ -93,3 +93,4 @@ add_admin_success = "添加管理员成功"
 delete_product_success = '删除商品成功'
 update_product_success = '更新商品信息成功'
 update_product_sku_success = '更新商品sku信息成功'
+no_product = '商品不存在或已下架'

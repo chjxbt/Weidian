@@ -76,4 +76,5 @@ class SProduct(SBase):
 
     @close_session
     def get_product_by_productid(self, productid):
-        return self.session.query(Product).filter(Product.PRoductId == productid).first()
+        return self.session.query(Product).filter(
+            Product.PRoductId == productid, Product.PRstatus == 1, Product.PRisdelete == False).first()
