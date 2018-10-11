@@ -16,15 +16,15 @@
       <!--<img v-if="popupVisible" src="/static/images/icon-list-down.png" class="list-right-down">-->
       <!--<img v-if="!popupVisible" src="/static/images/icon-list-right.png" class="list-right-down">-->
     <!--</div>-->
-
     <mt-popup v-model="popupVisible" position="bottom">
       <div class="product-params-content">
         <img src="/static/images/product1.png" class="product-img">
         <div class="product-params-center">
-          <p class="product-price m-ft-20 m-red m-ft-b tl">￥<span class="m-ft-34">160</span></p>
+          <p class="product-price m-ft-20 m-red m-ft-b tl" v-if="surplus_value && surplus_value.length == 1">￥<span class="m-ft-34">{{surplus_value[0].pskprice}}</span></p>
+          <p class="product-price m-ft-20 m-red m-ft-b tl" v-else>￥<span class="m-ft-34">{{price}}</span></p>
           <div class="choose-prompt m-ft-26 tl">{{prompt}}</div>
         </div>
-        <img src="/static/images/delete.png" class="close-popup" @click="productParams">
+        <img src="/static/images/delete.png" class="close-popup" @click="closeModal">
       </div>
       <div class="line"></div>
       <div class="product-size-color" v-for="(option, index) in options">
@@ -34,7 +34,7 @@
       <div class="line"></div>
       <div class="product-quantity">
         <div class="product-quantity-text m-ft-30 tl">购买数量</div>
-        <product-quantity :quantity="quantity" class="product-quantity-edit" :id="id"></product-quantity>
+        <product-quantity :quantity="quantity" class="product-quantity-edit" @changeNum="changeNum"></product-quantity>
       </div>
       <div class="choose-done m-ft-28 m-bg-main-color" @click="chooseDone">确定</div>
     </mt-popup>
@@ -47,13 +47,15 @@
     data() {
       return {
         name: 'productParams',
-        popupVisible: false,
+        popupVisible: this.choose,
         prompt: "请选择规格",
         sel: [],
         colorSizeList: new Array(this.options.length),
         // options: [ {name: "颜色", items: [{id: 0, msg: "黄色"}, {id: 1, msg: "绿色"}, {id: 2, msg: "红色"}, {id:3, msg: "蓝色"}]},
         //   {name: "尺寸", items: [{id: 0, msg: "S"}, {id: 1, msg: "M"}, {id: 2, msg: "L"}, {id: 3, msg: "XL"}, {id: 4, msg: "2XL"}, {id: 5, msg: "3XL"}]} ],
-       id: ''
+       id: '',
+        all_sku:null,
+        surplus_value:null
       }
     },
     components: { productQuantity },
@@ -85,12 +87,36 @@
       sku:{
         type:Array,
         default:null
+      },
+      price:{
+        type:Number,
+        default:null
+      }
+    },
+    watch:{
+      choose:function (val,oldValue) {
+        this.popupVisible = val
       }
     },
     mounted(){
       // this.colorSizeList=new Array(this.options.length);
+      // console.log(this.sku)
+      let _arr = this.sku;
+      for(let i=0;i<_arr.length;i++){
+        let _id = '';
+        for(let j=0;j<_arr[i].pskproperkey.length;j++){
+          _id = _id + _arr[i].pskproperkey[j].vid
+        }
+        _arr[i].id_arr = _id;
+      }
+      this.surplus_value = [].concat(_arr);
+      this.all_sku = [].concat(_arr);
     },
     methods: {
+      closeModal(){
+        this.popupVisible = false;
+        this.$emit('closeModal')
+      },
       // 判断选择商品类型的下部弹框是否弹出
       productParams() {
         if(this.popupVisible) {
@@ -117,8 +143,9 @@
       select(index, ind) {
         this.sel[index] = ind;                  // 让数组sel的第index+1的元素的值等于ind
         this.sel = this.sel.concat([]);         // 因为数组是引用类型，对其中一个变量直接赋值不会影响到另一个变量（并未操作引用的对象），使用concat（操作了应用对象）
-        this.colorSizeList[index] = this.options[index].values[ind].value;         // 获取选中的id
+        this.colorSizeList[index] = this.options[index].values[ind];         // 获取选中的id
         this.changePrompt();
+        this.clickSku(index,this.options[index].values[ind].vid)
       },
       // 根据选择的商品参数来改变提示信息
       changePrompt() {
@@ -130,7 +157,7 @@
         }
         let promptTemp = "";
         for(let i = 0; i < this.colorSizeList.length; i ++) {
-          promptTemp = promptTemp + " " + this.options[i].key+':'+ this.colorSizeList[i];
+          promptTemp = promptTemp + " " + this.options[i].key+':'+ this.colorSizeList[i].value;
         }
         this.prompt = promptTemp;
         // for(let a=0;a<this.sku.length;a++){
@@ -155,6 +182,33 @@
           }
         }
         this.popupVisible = false;
+        this.$emit('carChoose',this.surplus_value);
+      },
+      clickSku(index,vid){
+        console.log(vid)
+        let arr =[];
+        for(let i =0;i<this.surplus_value.length;i++){
+            if(this.surplus_value[i].pskproperkey[index].vid == vid){
+              arr.push(this.surplus_value[i]);
+            }
+        }
+        if(arr.length <1){
+          let _id = '';
+          for(let j=0;j<this.colorSizeList.length;j++){
+            _id = _id + this.colorSizeList[j].vid;
+          }
+
+          for(let i =0;i<this.all_sku.length;i++){
+              if(this.all_sku[i].id_arr == _id ){
+                arr.push(this.all_sku[i]);
+              }
+          }
+        }
+        this.surplus_value = [].concat(arr);
+      },
+      changeNum(num){
+        this.$emit('changeNum',num)
+
       }
     },
     created() {

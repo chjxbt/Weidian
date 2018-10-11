@@ -30,19 +30,14 @@
     },
     methods: {
       //修改购物车
-      changeQuantity(){
-        axios.post(api.update_shoppingcart + '?token=' + localStorage.getItem('token'),{
-          pskid:this.id,
-          changenum:this.quantitys
-        }).then(res => {
-
-        })
+      postQuantity(){
+        this.$emit('changeNum',this.quantitys)
       },
       // 产品数量减 1
       deductQuantity() {
         if(this.quantitys > 1) {
           this.quantitys -= 1;
-          this.changeQuantity();
+          this.postQuantity();
         }
       },
       changeQuantity() {
@@ -57,14 +52,14 @@
           showInput:true
         }).then(({ value, action }) => {
           if(action == "confirm") {
-            this.changeQuantity();
+            this.postQuantity();
           }
         });
       },
       // 产品数量加 1
       addQuantity() {
         this.quantitys += 1;
-        this.changeQuantity();
+        this.postQuantity();
       }
     },
     created() {
