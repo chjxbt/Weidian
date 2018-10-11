@@ -1,4 +1,5 @@
 # -*- coding:utf8 -*-
+import re
 import sys
 import os
 import uuid
@@ -63,6 +64,14 @@ class CSuperUser():
         parameter_required('suname', 'password', 'suheader')
         suid = str(uuid.uuid1())
         password = data.get('password')
+
+        if len(password) < 4:
+            raise PARAMS_ERROR(u'密码长度低于4位')
+        zh_pattern = re.compile(u'[\u4e00-\u9fa5]+')
+        match = zh_pattern.search(password)
+        if match:
+            raise PARAMS_ERROR(u'密码包含中文字符')
+
         suname = data.get('suname')
         sulevel = data.get('sulevel')
         sulevel = 1 if not sulevel else int(sulevel)
