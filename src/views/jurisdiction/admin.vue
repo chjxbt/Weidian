@@ -252,43 +252,44 @@
       },
       // 编辑管理员状态
       editAdminStatus(scope, where) {
-        this.adminLoading = true;
+        let msg = "";
         let params = {};
-        if(where == "lock") {             // 封禁管理员
+        if(where == "lock") {           // 封禁管理员
+          msg = "封禁该管理员";
           params = { suid: scope.row.suid, suisfreeze: true };
-          axios.post(api.update_admin + '?token=' + localStorage.getItem('token'), params).then(res=>{
-            if(res.data.status == 200){
-              this.$message({ message: "封禁成功", type: 'success', duration: 1500 });
-              this.adminList[scope.$index].suStatus = "封禁中";
-              this.adminList = this.adminList.concat();
-              this.adminLoading = false;
-            }else{
-              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
-            }
-          });
-        }else if(where == "unlock") {     // 解封管理员
+        }else if(where == "unlock") {   // 解封管理员
+          msg = "解除该管理员的封禁";
           params = { suid: scope.row.suid, suisfreeze: false };
-          axios.post(api.update_admin + '?token=' + localStorage.getItem('token'), params).then(res=>{
-            if(res.data.status == 200){
-              this.$message({ message: "解封成功", type: 'success', duration: 1500 });
-              this.adminList[scope.$index].suStatus = "正常";
-              this.adminList = this.adminList.concat();
-              this.adminLoading = false;
-            }else{
-              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
-            }
-          });
-        }else if(where == "delete") {     // 删除管理员
+        }else if(where == "delete") {   // 删除管理员
+          msg = "删除该管理员";
           params = { suid: scope.row.suid, suisdelete: true };
+        }
+        this.$confirm("此操作将" + msg + ", 是否继续?", '提示',
+          {confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'}).then(() => {
+          this.adminLoading = true;
           axios.post(api.update_admin + '?token=' + localStorage.getItem('token'), params).then(res=>{
             if(res.data.status == 200){
-              this.$message({ message: "删除成功", type: 'success', duration: 1500 });
-              this.adminList.splice(scope.$index, 1);
+              this.saveAdminStatus(scope, where);     // 将请求发送出去
               this.adminLoading = false;
             }else{
               this.$message({ type: 'error', message: res.data.message, duration: 1500 });
             }
           });
+        }).catch(() => {  });
+      },
+      // 将请求发送出去
+      saveAdminStatus(scope, where) {
+        if(where == "lock") {           // 封禁管理员
+          this.$message({ message: "封禁成功", type: 'success', duration: 1500 });
+          this.adminList[scope.$index].suStatus = "封禁中";
+          this.adminList = this.adminList.concat();
+        }else if(where == "unlock") {   // 解封管理员
+          this.$message({ message: "解封成功", type: 'success', duration: 1500 });
+          this.adminList[scope.$index].suStatus = "正常";
+          this.adminList = this.adminList.concat();
+        }else if(where == "delete") {   // 删除管理员
+          this.$message({ message: "删除成功", type: 'success', duration: 1500 });
+          this.adminList.splice(scope.$index, 1);
         }
       },
       // 页面刷新的方法
@@ -326,10 +327,6 @@
       .edit-admin-button {
         color: @sidebarChildColor;
       }
-      /*.el-crud {
-        font-size: 14px;
-        color: #000000;
-      }*/
       .edit-dialog {
         .el-form-item {
           margin-bottom: 0;
