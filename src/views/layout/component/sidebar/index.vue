@@ -36,7 +36,7 @@
       },
         methods: {
           sidebarClick(v){
-            console.log(v)
+            // console.log(v)
             this.side_list[v].opened = !this.side_list[v].opened;
             for(let i =0;i<this.side_list.length;i++){
               if(i != v){
@@ -45,10 +45,10 @@
             }
           },
           handleOpen(key, keyPath) {
-            console.log(key, keyPath);
+            // console.log(key, keyPath);
           },
           handleClose(key, keyPath) {
-            console.log(key, keyPath);
+            // console.log(key, keyPath);
           },
           indexClick(){
             if(this.$store.state.role.indexOf('管理员') != -1){
@@ -65,7 +65,7 @@
 
             }else{
               this.side_list = this.$store.state.side;
-              console.log(this.side_list)
+              // console.log(this.side_list)
             }
         },
         computed:{
