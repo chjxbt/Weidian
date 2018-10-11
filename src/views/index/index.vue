@@ -120,6 +120,21 @@
   import mVideo from '../../components/common/video';
   import imgModal from '../../components/common/imgModal';
   import wx from 'weixin-js-sdk';
+  var scroll = (function (className) {
+    var scrollTop;
+    return {
+      afterOpen: function () {
+        scrollTop = document.scrollingElement.scrollTop || document.body.scrollTop;
+        document.body.classList.add(className);
+        document.body.style.top = -scrollTop + 'px';
+      },
+      beforeClose: function () {
+        document.body.classList.remove(className);
+        document.scrollingElement.scrollTop = scrollTop;
+        document.body.scrollTop = scrollTop;
+      }
+    };
+  })('scroll');
     export default {
       mixins: [wxapi],
         data() {
@@ -232,9 +247,9 @@
       watch:{
         show_task:function (val,oldVal) {
           if(val){
-            document.body.style.overflowY = 'hidden';
+            scroll.afterOpen();
           }else{
-            document.body.style.overflowY = 'auto';
+            scroll.beforeClose();
           }
         }
       },
@@ -681,7 +696,8 @@
 <style lang="less" rel="stylesheet/less" scoped>
   @import "../../common/css/index";
   @import "../../common/css/modal";
-.m-top{
+
+  .m-top{
   margin-top: 10px;
 }
   .m-course-img{
