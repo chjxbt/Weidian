@@ -16,6 +16,7 @@ class AUser(Resource):
         apis = {
             'login': 'self.cuser.login()',
             # 'get_wx_config': 'self.cuser.get_wx_config()'
+            'wx_login': 'self.cuser.wx_login()'
         }
         res = eval(apis[user])
         return jsonify(res)
@@ -24,7 +25,11 @@ class AUser(Resource):
         print user
         apis = {
             'get_accesstoken': 'self.cuser.get_accesstoken()',
-            'get_wx_config': 'self.cuser.get_wx_config()'
+            'get_wx_config': 'self.cuser.get_wx_config()',
+            'wechat_callback': 'self.cuser.weixin_callback()',
         }
         res = eval(apis[user])
+        from werkzeug.wrappers import Response
+        if isinstance(res, Response):
+            return res
         return jsonify(res)
