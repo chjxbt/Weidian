@@ -2,6 +2,8 @@
 import sys
 import os
 from flask import request
+
+from WeiDian.common.params_require import parameter_required
 from WeiDian.common.token_required import verify_token_decorator, is_admin, is_tourist, is_ordirnaryuser, is_customerservice
 from WeiDian.common.TransformToList import list_add_models
 from WeiDian.common.import_status import import_status
@@ -42,28 +44,42 @@ class CProduct(BaseProductControl):
         data['data'] = {'prid': self.prid_list}
         return data
 
+    # 删除商品
+    @verify_token_decorator
+    def delete_product(self):
+        if not is_admin():
+            return
+        data = parameter_required('prid')
+
+    # 上下架商品
+    @verify_token_decorator
+    def shelves_product(self):
+        pass
+    # 更新sku
+    @verify_token_decorator
+    def update_sku(self):
+        pass
+    # 更新商品
+    @verify_token_decorator
+    def update_product(self):
+        pass
+
     def get_product_list(self):
         args = request.args.to_dict()
         page = int(args.get('page', 1))  # 页码
-        start = int(args.get('start', 0))  # 起始位置
         count = int(args.get('count', 15))  # 取出条数
         kw = args.get('kw')
-        if not start:
-            start = (page -1) * count
-        if kw:
-            product_list = self.sproduct.get_product_list_contail_title(kw)
-        else:
-            product_list = self.sproduct.get_all()
-        len_product_list = len(product_list)
-        if count > 30:
-            count = 30
-        end = start + count
-        if end > len_product_list:
-            end = len_product_list
-        product_list = product_list[start: end]
-        print start, end
+        status = args.get('status')
+        try:
+            isdelete = int(args.get('isdelete'))  # 0  or  1
+            isdelete = False if isdelete else True
+        except Exception as e:
+            isdelete = None
+        product_list = self.sproduct.get_product_filter(kw, isdelete, status, page, count)
         data = import_status('get_product_list_success', 'OK')
         data['data'] = product_list
+        data["count"] = request.all_count
+        data["page_count"] = request.page_count
         return data
 
     @verify_token_decorator

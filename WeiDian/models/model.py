@@ -170,9 +170,9 @@ class Product(BaseModel):
     PRcreatetime = Column(String(14))  # 创建时间
     SUmodifyid = Column(String(64))  # 修改人id
     PRmodifytime = Column(String(14))  # 修改时间
-    PRstatus = Column(Integer, default=1)  # 商品状态: {0 删除, 1 正常, 2 禁用}
+    PRstatus = Column(Integer, default=1)  # 商品状态: {0 下架, 1 正常, 2 禁用}
     PRprice = Column(Float, nullable=False)  # 显示价格
-    PRisdelete = Column(Boolean, default=False)  # 已下架
+    PRisdelete = Column(Boolean, default=False)  # 删除
     PRviewnum = Column(Integer, default=0)  # 浏览量
     PRfakeviewnum = Column(Integer)  # 虚拟浏览数
     PRfakelikenum = Column(Integer, default=0)  # 虚拟收藏数量

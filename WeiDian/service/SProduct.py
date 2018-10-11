@@ -28,11 +28,15 @@ class SProduct(SBase):
         return product_list
 
     @close_session
-    def get_product_list_contail_title(self, kw):
+    def get_product_filter(self, kw=None, isdelete=None, status=None, page=None, count=None):
         """模糊搜索商品名字"""
-        product_list = self.session.query(Product).filter_by(
-            PRstatus=1, PReditstate=1).filter(Product.PRtitle.contains(kw)).all()
-        return product_list
+        return self.session.query(Product).\
+            filter_without_none(
+                Product.PRstatus == 1,
+                Product.PReditstate == 1,
+                Product.PRstatus == status,
+                Product.PRisdelete == isdelete
+            ).contain(Product.PRtitle == kw).all_with_page(page, count)
 
     @close_session
     def get_all_by_filter(self, pagenum, pagesize):
@@ -66,6 +70,6 @@ class SProduct(SBase):
     def get_products_by_prname(self, prname):
         return self.session.query(Product).filter(Product.PRname.like("%{0}%".format(prname))).all()
 
-    # @close_session
-    # def get_product_relation_act_by_prid(self, prid):
-    #     return self.session.query(Activity).filter(Activity.PRid == prid, Activity.ACisdelete == False).all()
+    @close_session
+    def update_product_by_prid(self, prid, data):
+        return self.session.query(Product).filter(Product.PRid == prid).update(data)
