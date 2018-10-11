@@ -121,3 +121,7 @@ class SOrder(SBase):
     def get_orderproductinfo_by_oiid(self, oiid):
         return self.session.query(
             OrderProductInfo).filter_by(OIid=oiid).first()
+
+    @close_session
+    def update_orderinfo_status(self, oiid, orderinfo):
+        return self.session.query(OrderInfo).filter(OrderInfo.OIid == oiid).update(orderinfo)

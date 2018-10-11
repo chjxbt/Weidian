@@ -106,10 +106,11 @@ class CAdImage():
         return res
 
     def get_image_list(self, aitype):
-        # if re.match(r'^[0-9]+$', str(aitype)):
-        if re.match(r'^\d', str(aitype)):
+        if re.match(r'^[0-9]+$', str(aitype)):
+        # if re.match(r'^\d', str(aitype)):
             aitype = int(aitype)
             if not 0 <= aitype < 15:
+
                 aitype = -1
         else:
             aitype = -1
@@ -123,6 +124,12 @@ class CAdImage():
             adimage_list = self.sadimage.get_image_by_aitype(aitype)
         if not adimage_list:
             return {'aiimage': "尚未添加改图片", 'aitype': aitype}
+
+        # if aitype == 10:
+        #     return adimage_list
+        # return adimage_list[0]
+
         if aitype < 15:
             return adimage_list[0]
         return adimage_list
+
