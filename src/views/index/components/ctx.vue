@@ -220,7 +220,7 @@
   .m-icon-list{
     .flex-row(flex-end);
     li{
-      padding: 10px;
+      padding: 10px 15px;
       .flex-col(center);
       font-size: 22px;
       .m-icon{
