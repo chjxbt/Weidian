@@ -32,24 +32,9 @@ FastClick.attach(document.body);
 import promise from 'es6-promise';//解决axios在ie9下不生效的方法
 promise.polyfill();
 
-// let token = "eyJhbGciOiJIUzI1NiIsImV4cCI6MTUzOTMzMTA4NCwiaWF0IjoxNTM5MzIzODg0fQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0xMC0xMiAxMzo1ODowNCJ9.rLCPVKR04yfp8zlicErPI4bGyK5CqOORuMV84vJYX08";
+// let token = "eyJhbGciOiJIUzI1NiIsImV4cCI6MTUzOTMzODM4NSwiaWF0IjoxNTM5MzMxMTg1fQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0xMC0xMiAxNTo1OTo0NSJ9.f_2fve4Vzl2zhdxYZRo77O7bjJ8JWqpgGFrc1GjmLHg";
 // localStorage.setItem('token', token);
 
-
-// 点击预览图片
-// document.getElementById('#app').on('click','img',function(){
-//   console.log(this)
-//   // var src = $(this).attr('src');
-//   // var imgs = $(this).parent().parent().find('img');
-//   // var list = new Array();
-//   // for (var i = 0; i < imgs.length; i++) {
-//   //   list.push($(imgs[i]).attr('src'));
-//   // }
-//   // wx.previewImage({
-//   //   current: src, // 当前显示图片的http链接
-//   //   urls: list // 需要预览的图片http链接列表
-//   // });
-// });
 
 
 Vue.prototype.$http = axios;

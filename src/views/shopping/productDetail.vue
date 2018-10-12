@@ -29,12 +29,15 @@
       <img src="/static/images/commitment.png" class="commitment-img">
       <div class="commitment-text">{{item}}</div>
     </div>
+    <!--<div class="m-commitment">-->
+      <!--<img src="" class="m-commitment-img" alt="">-->
+    <!--</div>-->
     <!--<div class="product-activity-title">
       <div class="product-activity-name m-ft-26 m-grey">活动1</div>
       <div class="product-activity-content m-ft-28 m-grey-color m-ft-b tl">满89减5;满139减10</div>
       <img src="/static/images/icon-list-right.png" class="to-activity">
     </div>-->
-    <product-params :choose="is_choose" :quantity="quantity" :options="params_options" :price="product_info.prprice" :sku="sku" @carChoose="carChoose" @changeNum="changeNum" @closeModal="closeModal"></product-params>
+    <product-params :choose="is_choose" :quantity="quantity" :options="params_options" :price="product_info.prprice" :sku="sku" @carChoose="carChoose"  @closeModal="closeModal"></product-params>
     <div class="rectangular"></div>
     <div class="product-evaluation">
       <div class="evaluation-title m-ft-26 m-grey-color b">商品评价（99+）</div>
@@ -194,8 +197,9 @@
           this.collectionVisible = true;
         }
       },
-      carChoose(v){
+      carChoose(v,num){
         this.choose = v;
+        this.quantity = num;
         if(this.click_add){
           this.postCar();
         }
@@ -252,9 +256,9 @@
           console.log('error', response);   // 发生错误
         });
       },
-      changeNum(num){
-        this.quantity = num;
-      },
+      // changeNum(num){
+      //   this.quantity = num;
+      // },
       toCart(){
         this.$router.push('/shopping/index');
       }
@@ -370,6 +374,13 @@
     .commitment-text {
       width: 130px;
       white-space: nowrap;
+    }
+  }
+  .m-commitment{
+    .m-commitment-img{
+      display: block;
+      width: 100%;
+      height: 68px;
     }
   }
   .product-activity-title {

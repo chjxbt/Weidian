@@ -51,6 +51,10 @@
 </template>
 
 <script type="text/ecmascript-6">
+  import api from '../../../api/api';
+  import axios from 'axios';
+  import {Toast} from 'mint-ui';
+  import common from '../../../common/js/common'
     export default {
         data() {
             return {
@@ -74,19 +78,48 @@
                 }],
               startX:0,//开始触摸的位置
               endX:0,//结束触摸的位置
-              interval:''
-
+              interval:'',
+              person_info:null,
             }
         },
         components: {},
         mounted(){
             let that = this;
-          for(let i=0;i<this.slider_list.length;i++){
-            this.drawWay(this.slider_list[i].name)
-          }
+          that.getCode();
+          this.getInfo();
+          that.getRule();
+          common.changeTitle('邀请海报');
           this.interval = window.setInterval(that.animation,3000);
         },
         methods: {
+          getCode(){
+              let _url = '';
+              _url = window.location.origin + '/#/index';
+              axios.post(api.share_qrcode +'?token=' + localStorage.getItem('token'),{
+                dataurl:_url
+              }).then(res => {
+                if(res.data.status == 200){
+                  this.code_src = res.data.qrcodeurl;
+                  for(let i=0;i<this.slider_list.length;i++){
+                    this.drawWay(this.slider_list[i].name,this.slider_list[i].src)
+                  }
+                }
+              })
+          },
+          getInfo(){
+            axios.get(api.get_info_mycenter,{
+              params:{
+                token:localStorage.getItem('token')
+              }
+            }).then(res => {
+              if(res.data.status == 200){
+                this.person_info = res.data.data.user;
+              }else{
+                Toast({ message: res.data.message, className: 'm-toast-fail' });
+              }
+            },error => {
+              Toast({ message: error.data.message, className: 'm-toast-fail' });            })
+          },
           /*动画*/
           animation(v){
             v = v || 1;
@@ -125,7 +158,7 @@
             this.interval = window.setInterval(that.animation,3000)
           },
           /*绘制图片*/
-          drawWay(id){
+          drawWay(id,src){
             let canvas = document.createElement("canvas");
             let that = this;
             // let canvas = document.getElementById("m-canvas");
@@ -140,7 +173,8 @@
 
             let bgImg = new Image();
             bgImg.crossOrigin = 'Anonymous';
-            bgImg.src = "/static/images/poster/bg.jpg";
+            // bgImg.src = "/static/images/poster/bg.jpg";
+            bgImg.src= src;
 
             bgImg.onload = function () {
               context.drawImage(bgImg, 0, 0,580,870);
@@ -152,35 +186,43 @@
 
               context.fillStyle = "#000";
               context.font = "normal 26px PingFang-SC";
-              context.fillText("name", 153, 90);
+              context.fillText(that.person_info.usname, 153, 90);
 
-              context.fillStyle="#fff";
+              context.strokeStyle="#fff";
               context.beginPath();
-              context.lineWidth=5;
-              context.arc(85,80,52,Math.PI*2,0,true);
+              context.lineWidth=10;
+              context.arc(85,80,45,Math.PI*2,0,true);
               context.closePath();
-              context.fill();
+              context.stroke();
+              //头像
               let avatarImg = new Image();
               avatarImg.crossOrigin = 'Anonymous';
-              avatarImg.src = "/static/images/poster/fans_img.png";
+              // avatarImg.src = "/static/images/poster/fans_img.png";
+              avatarImg.src=that.person_info.usheader;
 
               avatarImg.onload = function () {
-                context.drawImage(avatarImg, 40, 35,90,90);
+                context.save(); // 保存当前ctx的状态
+                context.arc(85,80,45,Math.PI*2,0,true); //画出圆
+                context.clip(); //裁剪上面的圆形
+                context.drawImage(avatarImg, 40, 35,90,90); // 在刚刚裁剪的园上画图
+                context.restore(); // 还原状态
+                // context.drawImage(avatarImg, 40, 35,90,90);
 
-
+                //logo
                 let logoImg = new Image();
                 logoImg.crossOrigin = 'Anonymous';
-                logoImg.src = "/static/images/poster/customer_service.png";
+                logoImg.src = "/static/images/poster/fans_img.png";
 
                 logoImg.onload = function () {
-                  context.drawImage(avatarImg, 90, 580, 200, 200);
+                  context.drawImage(logoImg, 90, 580, 200, 200);
 
                   let codeImg = new Image();
                   codeImg.crossOrigin = 'Anonymous';
-                  codeImg.src = "/static/images/poster/fans_img.png";
-
+                  // codeImg.src = "/static/images/poster/fans_img.png";
+                  codeImg.src=that.code_src;
                   codeImg.onload = function () {
-                    context.drawImage(avatarImg, 390, 600, 145, 145);
+                    console.log(that.code_src)
+                    context.drawImage(codeImg, 390, 600, 145, 145);
                     let base64 = canvas.toDataURL("image/png");  //"image/png" 这里注意一下
                     let img = document.getElementById(id);
 
@@ -209,7 +251,29 @@
             }else if(index == (this.slider_index +1 ) || (this.slider_list.length-1  == this.slider_index && index == 0)){
               this.animation(-1);
             }
-          }
+          },
+          getRule(){
+            axios.get(api.get_image_by_aitype,{
+              params:{
+                token:localStorage.getItem('token'),
+                aitype:10
+              }
+            }).then(res => {
+              if(res.data.status == 200){
+                let arr = [];
+                for(let i =0;i<res.data.data.length;i++){
+                  let one ={src:'', name:0};
+                  one.src = res.data.data[i].aiimage;
+                  one.name = i;
+                  arr.push(one);
+                }
+                this.slider_list = [].concat(arr)
+              }else{
+                Toast({ message: res.data.message, className: 'm-toast-fail' });
+              }
+            },error => {
+              Toast({ message: error.data.message, className: 'm-toast-fail' });            })
+          },
 
         },
         created() {
@@ -223,15 +287,17 @@
     width: 100%;
     height: 100%;
     background: linear-gradient(to bottom, #362AC2, #FF7DD3);
+    overflow: hidden!important;
     .m-poster-close {
       position: absolute;
-      right: -20px;
+      right: 0;
       top: 10px;
-      width: 120px;
+      width: 100px;
       height: 50px;
       line-height: 50px;
       opacity: 0.7;
-      border-radius: 29.5px;
+      border-top-left-radius: 29.5px;
+      border-bottom-left-radius: 29.5px;
       background-color: #333333;
       color: @grey;
       font-size: 30px;

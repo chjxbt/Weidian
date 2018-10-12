@@ -34,7 +34,7 @@
       <div class="line"></div>
       <div class="product-quantity">
         <div class="product-quantity-text m-ft-30 tl">购买数量</div>
-        <product-quantity :quantity="quantity" class="product-quantity-edit" @changeNum="changeNum"></product-quantity>
+        <product-quantity :quantity="quantity"   class="product-quantity-edit" @changeNum="changeNum"></product-quantity>
       </div>
       <div class="choose-done m-ft-28 m-bg-main-color" @click="chooseDone">确定</div>
     </mt-popup>
@@ -50,12 +50,13 @@
         popupVisible: this.choose,
         prompt: "请选择规格",
         sel: [],
-        colorSizeList: new Array(this.options.length),
+        colorSizeList: [],
         // options: [ {name: "颜色", items: [{id: 0, msg: "黄色"}, {id: 1, msg: "绿色"}, {id: 2, msg: "红色"}, {id:3, msg: "蓝色"}]},
         //   {name: "尺寸", items: [{id: 0, msg: "S"}, {id: 1, msg: "M"}, {id: 2, msg: "L"}, {id: 3, msg: "XL"}, {id: 4, msg: "2XL"}, {id: 5, msg: "3XL"}]} ],
        id: '',
         all_sku:null,
-        surplus_value:null
+        surplus_value:null,
+        select_num:0
       }
     },
     components: { productQuantity },
@@ -91,6 +92,10 @@
       price:{
         type:Number,
         default:null
+      },
+      item:{
+        type:Number,
+        default:null
       }
     },
     watch:{
@@ -101,7 +106,15 @@
     mounted(){
       // this.colorSizeList=new Array(this.options.length);
       // console.log(this.sku)
+
+      if(this.selects){
+        this.colorSizeList = [].concat(this.selects);
+
+      }else{
+        this.colorSizeList = new Array(this.options.length);
+      }
       let _arr = this.sku;
+
       for(let i=0;i<_arr.length;i++){
         let _id = '';
         for(let j=0;j<_arr[i].pskproperkey.length;j++){
@@ -111,6 +124,9 @@
       }
       this.surplus_value = [].concat(_arr);
       this.all_sku = [].concat(_arr);
+      if(this.selects){
+        this.clickSku(0,this.selects[0].vid,true);
+      }
     },
     methods: {
       closeModal(){
@@ -137,6 +153,17 @@
           //     }
           //   }
           // }
+          if(this.selects){
+            for(let i = 0;i<this.selects.length;i++){
+              for(let j = 0;j<this.options[i].values.length;j++){
+                if(this.options[i].values[j].vid == this.selects[i].vid){
+                  this.sel[i] = j;
+                  continue;
+                }
+              }
+            }
+          }
+          console.log(this.sel,'asdasd')
           this.changePrompt();
         }
       },
@@ -182,17 +209,24 @@
           }
         }
         this.popupVisible = false;
-        this.$emit('carChoose',this.surplus_value);
+        if(this.item !=null){
+          this.$emit('carChoose',this.surplus_value,this.select_num,this.item);
+        }else{
+          this.$emit('carChoose',this.surplus_value,this.select_num);
+        }
+
       },
-      clickSku(index,vid){
-        console.log(vid)
+      clickSku(index,vid,isFirst){
         let arr =[];
-        for(let i =0;i<this.surplus_value.length;i++){
+        if(!isFirst){
+          for(let i =0;i<this.surplus_value.length;i++){
             if(this.surplus_value[i].pskproperkey[index].vid == vid){
               arr.push(this.surplus_value[i]);
             }
+          }
         }
-        if(arr.length <1){
+
+        if(arr.length <1 ){
           let _id = '';
           for(let j=0;j<this.colorSizeList.length;j++){
             _id = _id + this.colorSizeList[j].vid;
@@ -204,11 +238,17 @@
               }
           }
         }
+
+        console.log(arr,this.options)
         this.surplus_value = [].concat(arr);
       },
-      changeNum(num){
-        this.$emit('changeNum',num)
-
+      changeNum(num,i){
+        // if(i == undefined && this.item != null){
+        //   this.$emit('changeNum',num,this.item,'no');
+        // }else{
+        //   this.$emit('changeNum',num);
+        // }
+        this.select_num = num;
       }
     },
     created() {
