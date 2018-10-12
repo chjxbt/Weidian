@@ -23,8 +23,9 @@ class AMyCenter(Resource):
             "get_province": "self.control_mycenter.get_province()",
             "get_city": "self.control_mycenter.get_city_by_provincenum()",
             "get_area": "self.control_mycenter.get_area_by_citynum()",
-            'get_today_total': 'self.control_mycenter.get_today_total()',
-            'get_schedual_show': 'self.control_mycenter.get_schedual_show()',  # 获取显示或隐藏
+            "get_today_total": "self.control_mycenter.get_today_total()",
+            "get_schedual_show": "self.control_mycenter.get_schedual_show()",  # 获取显示或隐藏
+            "get_share_params": "self.control_mycenter.get_share_params()"
         }
         res = eval(apis[myinfo])
         return jsonify(res)
@@ -41,6 +42,8 @@ class AMyCenter(Resource):
             "get_inforcode": "self.control_mycenter.get_inforcode()",
             "verify_inforcode": "self.control_mycenter.verify_inforcode()",
             "set_schedual_show": "self.control_mycenter.set_schedual_show()",
+            "set_share_params": "self.control_mycenter.set_share_params()",
+
         }
         res = eval(apis[myinfo])
         return jsonify(res)

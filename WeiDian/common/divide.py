@@ -55,10 +55,15 @@ class Partner(object):
         self.cf.write(open(self.config_file_path, "w"))
 
     def get_item(self, section, option):
-        return int(self.cf.get(section, option))
+        value = self.cf.get(section, option)
+        return value
 
     def set_item(self, section, option, value):
-        self.cf.set(section, option, str(value).encode('utf8'))
+        if not isinstance(value, basestring):
+            value = str(value).encode('utf8')
+        elif isinstance(value, unicode):
+            value = value.encode('utf8')
+        self.cf.set(section, option, value)
         self.cf.write(open(self.config_file_path, "w"))
         return 'ok'
 

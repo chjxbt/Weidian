@@ -2,7 +2,7 @@
 import sys
 import os
 from SBase import SBase, close_session
-from WeiDian.models.model import Product, ProductLike, Recommend, RecommendProduct, Activity
+from WeiDian.models.model import Product, ProductLike, Recommend, RecommendProduct, Activity, ProductTarget
 sys.path.append(os.path.dirname(os.getcwd()))
 
 
@@ -78,3 +78,7 @@ class SProduct(SBase):
     def get_product_by_productid(self, productid):
         return self.session.query(Product).filter(
             Product.PRoductId == productid, Product.PRstatus == 1, Product.PRisdelete == False).first()
+
+    @close_session
+    def get_product_target_by_productid(self, productid):
+        return self.session.query(ProductTarget).filter(ProductTarget.PRid == productid).all()

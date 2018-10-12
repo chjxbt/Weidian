@@ -201,6 +201,13 @@ class BaseProductControl():
         product.add('images')
         return product
 
+    def fill_prtarget(self, product):
+        prid = product.PRid
+        target_list = [target.PRtarget for target in self.sproduct.get_product_target_by_productid(prid)]
+        # if '101' in target_list:
+        product.PRtarget = target_list
+        return product
+
     def fill_product_sku_key(self, product):
         prid = product.PRid
         # 该商品的所有skukey
