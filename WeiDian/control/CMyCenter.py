@@ -581,6 +581,35 @@ class CMyCenter(BaseMyCenterControl):
     def set_share_params(self):
         if not is_admin():
             raise TOKEN_ERROR(u'请使用管理员登录')
+        data = request.json
+        title = data.get('title')
+        # title = title.encode("utf8") if isinstance(title, unicode) else title
+
+        content = data.get('content')
+        img = data.get('img')
+
+
+        parameter_required('title', 'content', 'img')
+        Partner().set_item('share', 'title', title)
+        Partner().set_item('share', 'content', content)
+        Partner().set_item('share', 'img', img)
+        response = import_status('set_success', 'OK')
+        return response
+
+    @verify_token_decorator
+    def get_share_params(self):
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'请使用管理员登录')
+        settings = Partner()
+        title = settings.get_item('share', 'title')
+        content = settings.get_item('share', 'content')
+        img = settings.get_item('share', 'img')
+        response = import_status("messages_get_item_ok", "OK")
+        response['data'] = {'title': title,
+                            'content': content,
+                            'img': img
+                            }
+        return response
 
 
 
