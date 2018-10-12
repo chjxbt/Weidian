@@ -382,8 +382,16 @@ class BaseActivityCommentControl():
 
     def fill_user(self, comment):
         """给对象添加一个用户字段"""
-        usid = comment.USid
-        comment.user = self.suser.get_user_by_user_id(usid)  # 对象的用户
+        if comment.ACOrobot:
+            user = {
+                'usname': comment.ACOrobot,
+                'robot': 1
+            }
+        else:
+            usid = comment.USid
+            user = self.suser.get_user_by_user_id(usid)  # 对象的用户
+            user.fill(False, 'robot')
+        comment.user = user  # 对象的用户
         comment.add('user').hide('USid')
         return comment
 
