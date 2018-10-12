@@ -515,11 +515,11 @@
                     if(arr.alreadylike) {
                       arr.name -= 1;
                       arr.alreadylike = false;
-                      Toast({ message: res.data.message, className: 'm-toast-warning' });
+                      Toast({ message: res.data.message,duration: 800, className: 'm-toast-warning' });
                     }else if(!arr.alreadylike) {
                       arr.name = Number(arr.name) + 1;
                       arr.alreadylike = true;
-                      Toast({ message: res.data.message, className: 'm-toast-success' });
+                      Toast({ message: res.data.message, duration: 800, className: 'm-toast-success' });
                     }
                     // this.activity_list[index].icon[0] = arr;
                     // this.$set(this.activity_list[index].icon[0],'name',arr.name);
