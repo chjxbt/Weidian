@@ -153,12 +153,13 @@
               </el-date-picker>
             </template>
           </el-table-column>
+          <el-table-column prop="actitle" label="推文标题" width="150"></el-table-column>
           <el-table-column prop="actext" label="推文内容">
             <template slot-scope="scope">
               <el-input type="textarea" :autosize="{ minRows: 1, maxRows: 3 }" placeholder="请输入推文内容" v-model="scope.row.actext" :disabled="scope.row.disabled"></el-input>
             </template>
           </el-table-column>
-          <el-table-column prop="acSkiptype" label="跳转类型" width="120"></el-table-column>
+          <el-table-column prop="acSkiptype" label="跳转类型" width="100"></el-table-column>
           <el-table-column fixed="right" label="管理" width="180">
             <template slot-scope="scope">
               <el-button @click="editClick(scope, 'activity')" type="text" size="small">编辑</el-button>
@@ -1117,7 +1118,7 @@
             for(let i = 0; i < this.activityList.length; i ++) {
               // 推文的跳转类型
               if(this.activityList[i].acskiptype == "0") {
-                this.activityList[i].acSkiptype = "专题页/商品";
+                this.activityList[i].acSkiptype = "全部";
               }else if(this.activityList[i].acskiptype == "1") {
                 this.activityList[i].acSkiptype = "专题页";
               }else if(this.activityList[i].acskiptype == "2") {
