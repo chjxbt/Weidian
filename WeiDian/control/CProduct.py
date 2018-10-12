@@ -210,6 +210,7 @@ class CProduct(BaseProductControl):
             product = self.fill_product_nums(product)
         # 填充一些都需要的信息
         self.fill_images(product)
+        self.fill_prtarget(product)
         self.fill_product_sku_key(product)
         self.fill_product_sku_value(product)
         self.sproduct.update_view_num(prid)
