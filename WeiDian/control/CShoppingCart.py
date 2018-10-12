@@ -44,7 +44,7 @@ class CShoppingCart(BaseShoppingCart):
         data = request.json  
         # pskid
         pskid = data.get('pskid')
-        scahangenums = int(data.get('changenum', 1))  # 更改数量
+        scnums = int(data.get('changenum', 1))  # 更改数量
         usid = request.user.id
         if not pskid:
             return PARAMS_MISS
@@ -52,14 +52,14 @@ class CShoppingCart(BaseShoppingCart):
         # 如果是已经存在的购物车
         if cart:
             scid = cart.SCid
-            scnums = cart.SCnums + scahangenums
+            # scnums = cart.SCnums + scahangenums
             if scnums < 1:
                 # 删除
                 return self.delete_shoppingcart(scid)
             self.sshoppingcart.update_shoppingcart(cart, scnums)
         # 创建
         else:
-            if scahangenums < 1:
+            if scnums < 1:
                 return SYSTEM_ERROR('错误的数量')
             scid = str(uuid.uuid4())
             psk = self.sproductskukey.get_psk_by_pskid(pskid)
@@ -70,7 +70,7 @@ class CShoppingCart(BaseShoppingCart):
                 'scid': scid,
                 'usid': usid,
                 'pskid': pskid,
-                'scnums': scahangenums,
+                'scnums': scnums,
                 'prid': prid
             }
             dict_add_models('ShoppingCart', cartdict)
