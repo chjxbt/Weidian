@@ -90,6 +90,11 @@ class SActivity(SBase):
         return self.session.query(Activity).filter_by(ACSkipType=2, AClinkvalue=prid, ACisdelete=False).all()
 
     @close_session
+    def get_activity_list_by_actext(self, actext, tnid):
+        """根据actext获取"""
+        return self.session.query(Activity).filter(Activity.ACtext.like("%{0}%".format(actext)), Activity.TopnavId == tnid, Activity.ACisdelete == False).all()
+
+    @close_session
     def get_product_soldnum_by_acid(self, acid):
         """根据活动获取对应商品的销量"""
         cur_activity = self.session.query(Activity).filter_by(ACid=acid).first()

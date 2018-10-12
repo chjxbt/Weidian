@@ -106,17 +106,17 @@ class CHotMessage():
             return PARAMS_MISS
         logger.debug("update hotmessage data is %s", data)
         hmid = data.get('hmid')
-        HMSkipType = data.get('hmskiptype')
-        HMdisplaytype = data.get("hmdisplaytype")
+        # HMSkipType = data.get('hmskiptype')
+        # HMdisplaytype = data.get("hmdisplaytype")
         # if str(HMdisplaytype) not in self.hotmessage_display_type:
         #     raise SYSTEM_ERROR(u'HMdisplaytype参数错误')
         hot = {
             "HMid": data.get("hmid"),
             "HMtext": data.get("hmtext"),
-            "HMcontent": data.get("hmcontent"),
+            # "HMcontent": data.get("hmcontent"),
             "HMstarttime": get_db_time_str(data.get("hmstarttime")),
             "HMsort": data.get("hmsort"),
-            "HMSkipType": HMSkipType
+            # "HMSkipType": HMSkipType
             # "HMdisplaytype": HMdisplaytype
         }
         hot = {k: v for k, v in hot.items() if v not in self.empty}
