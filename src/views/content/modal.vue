@@ -47,15 +47,15 @@
        <el-form :label-position="labelPosition" label-width="100px" :model="formIndex">
          <div class="m-form-item m-item-modal">
            <el-form-item label="任务等级" class="required">
-             <el-select v-model="formIndex.taskLevel" clearable placeholder="请选择">
+             <el-select v-model="formIndex.taskLevel" clearable placeholder="请选择任务等级">
                <el-option v-for="item in taskLevelList" :key="item.value" :label="item.label" :value="item.value"></el-option>
              </el-select>
            </el-form-item>
            <el-form-item label="任务标题" class="required">
-             <el-input v-model="formIndex.title" class="m-input-m"></el-input>
+             <el-input v-model="formIndex.title" class="m-input-m" placeholder="请输入任务标题"></el-input>
            </el-form-item>
            <el-form-item label="任务类型" class="required">
-             <el-select v-model="taskType" clearable placeholder="请选择" @change="taskTypeChange" @clear="clearType">
+             <el-select v-model="taskType" clearable placeholder="请选择任务类型" @change="taskTypeChange" @clear="clearType">
                <el-option v-for="item in taskTypeList" :key="item.value" :label="item.label" :value="item.value"></el-option>
              </el-select>
            </el-form-item>
@@ -67,11 +67,11 @@
              </el-upload>
            </el-form-item>
            <el-form-item :label="video_ratio" class="required">
-             <el-input v-model="formIndex.content" class="m-input-m"></el-input>
+             <el-input v-model="formIndex.content" class="m-input-m" placeholder="请先选择任务类型"></el-input>
            </el-form-item>
          </div>
          <el-form-item label="备注">
-           <el-input v-model="formIndex.memo" class="m-input-m"></el-input>
+           <el-input v-model="formIndex.memo" class="m-input-m" placeholder="选填"></el-input>
          </el-form-item>
          <el-form-item label="活动时间">
            <el-date-picker v-model="activityTime" type="datetimerange" range-separator="至"
