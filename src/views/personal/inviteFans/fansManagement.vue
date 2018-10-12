@@ -1,22 +1,22 @@
 <template>
     <div class="m-fansManagement">
-      <div class="m-fans-code-box">
-        <div class="m-fans-code">
-          <div>
-            <span>我的邀请码：</span>
-            <span class="m-red">345678</span>
-            <span class="m-fans-red-border">复制</span>
-          </div>
-          <p @click="getRule(6)">规则</p>
-        </div>
-        <p class="m-fans-code-info">被邀请好友填写你的邀请码即可</p>
-      </div>
+      <!--<div class="m-fans-code-box">-->
+        <!--<div class="m-fans-code">-->
+          <!--<div>-->
+            <!--<span>我的邀请码：</span>-->
+            <!--<span class="m-red">345678</span>-->
+            <!--<span class="m-fans-red-border">复制</span>-->
+          <!--</div>-->
+          <p class="m-rule-p" @click="getRule(6)">规则</p>
+        <!--</div>-->
+        <!--<p class="m-fans-code-info">被邀请好友填写你的邀请码即可</p>-->
+      <!--</div>-->
       <div class="m-fans-img-box"></div>
       <div class="m-fans-type">
         <span :class=" fans_type == 'exclusive' ? 'active':''" @click="fansChange('exclusive')">专属粉丝 (15人) </span>
         <!--<span :class=" fans_type == 'invite' ? 'active':''" @click="fansChange('invite')">邀请潜在粉丝（125人）</span>-->
       </div>
-      <div class="m-flex-between m-ft-b m-fans-total-money">
+      <div class="m-flex-between m-fans-total-money">
         <span>专属粉丝累计收益</span>
         <span class="m-red m-ft-28">￥400</span>
       </div>
@@ -26,7 +26,7 @@
           <div class="m-one-right">
             <div class="m-one-right-row">
               <p>微信名：茉莉<span class="m-fans-red-border">专属粉丝</span></p>
-              <p class="m-red m-ft-b m-ft-28">￥200</p>
+              <p class="m-red  m-ft-28">￥200</p>
             </div>
             <p>日期：2018.8.2</p>
             <p>粉丝期限:永久</p>
@@ -38,7 +38,7 @@
           <div class="m-one-right">
             <div class="m-one-right-row">
               <p>微信名：茉莉<span class="m-fans-red-border">专属粉丝</span></p>
-              <p class="m-red m-ft-b m-ft-28">￥200</p>
+              <p class="m-red  m-ft-28">￥200</p>
             </div>
             <p>日期：2018.8.2</p>
             <p>粉丝期限:永久</p>
@@ -147,6 +147,15 @@
         margin-top: 10px;
       }
     }
+    .m-rule-p{
+      position: absolute;
+      top:10px;
+      right: 10px;
+      color: #fff;
+      font-family: Arial;
+      font-size: 30px;
+      letter-spacing: 3px;
+    }
     .m-fans-img-box{
       width: 100%;
       height: 275px;
@@ -158,16 +167,15 @@
       border-bottom: 1px solid @borderColor;
       margin-bottom: 10px;
       span{
+        width: 100%;
         display: block;
         font-size: 26px;
-        color: #727272;
-        font-weight: bold;
+        letter-spacing: 2.6px;
+        /*font-weight: bold;*/
         line-height: 38px;
         padding: 10px 0;
-        &.active{
-          color: @mainColor;
-          border-bottom: 3px solid @mainColor;
-        }
+        background-color: @mainColor;
+        color: #fff;
       }
     }
     .m-fans-total-money{
