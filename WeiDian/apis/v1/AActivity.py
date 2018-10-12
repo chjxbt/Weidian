@@ -19,6 +19,7 @@ class AActivity(Resource):
             "get_one": "self.control_activity.get_one()",
             "get_activity_list_by_actitle": "self.control_activity.get_activity_list_by_actitle()",
             "get_show_type": "self.control_activity.get_show_type()",
+            "get_all_tags": "self.control_activity.get_exist_tags()"
         }
         res = eval(apis[activity])
         # res = {7777:"666"}
