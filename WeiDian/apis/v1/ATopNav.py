@@ -14,6 +14,7 @@ class ATopNav(Resource):
     def get(self, topnav):
         print topnav
         apis = {
+            'get_all_topnav': 'self.ctopnav.get_all_topnav()',
             'get_home': 'self.ctopnav.get_home()',
             'get_dp': 'self.ctopnav.get_dp()'
         }

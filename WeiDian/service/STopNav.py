@@ -11,6 +11,10 @@ sys.path.append(os.path.dirname(os.getcwd()))
 class STopNav(SBase):
 
     @close_session
+    def get_all_topnav(self):
+        return self.session.query(TopNav).filter_by(Tisdelete=False, TNparentid=0).order_by(TopNav.TSort).all()
+
+    @close_session
     def get_home_list_by_parentid(self, tnparentid=0):
         return self.session.query(TopNav).filter_by(Tisdelete=False, TNparentid=tnparentid, TNtype=1).order_by(
             TopNav.TSort).all()
