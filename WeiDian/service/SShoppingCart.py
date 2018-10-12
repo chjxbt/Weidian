@@ -45,3 +45,8 @@ class SShoppingCart(SBase):
         """删除购物车"""
         return self.session.query(ShoppingCart).filter_by(SCid=scid).delete()
 
+    @close_session
+    def update_shoppingcat_by_scid(self, scid, data):
+        """更新购物车"""
+        return self.session.query(ShoppingCart).filter(ShoppingCart.SCid == scid).update(data)
+
