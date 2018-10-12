@@ -56,8 +56,8 @@ class CAdImage():
         if not adimage_list_web:
             raise PARAMS_MISS('adimage')
         for adimage_web in adimage_list_web:
-            aitype = adimage_web.get("aitype")
-            if not adimage_web.get("aiimage"):
+            aitype = int(adimage_web.get("aitype"))
+            if not adimage_web.get("aiimage") or not (0 <= aitype < 15):
                 continue
             adimage = {
                 'AIimage': adimage_web.get("aiimage"),
@@ -65,8 +65,9 @@ class CAdImage():
                 'AIsize': adimage_web.get("aisize"),
                 'ACid': adimage_web.get("acid"),
             }
+
             adimage_list = self.sadimage.get_image_by_aitype(aitype)
-            if aitype < 15:
+            if aitype != 10:
                 if adimage_list:
                     update_result = self.sadimage.update_image(adimage_list[0].AIid, adimage)
                     if not update_result:
@@ -84,6 +85,7 @@ class CAdImage():
                 else:
                     adimage['AIid'] = str(uuid.uuid1())
                     self.sadimage.add_model("AdImage", **adimage)
+
         return import_status('save_photo_success', 'OK')
 
     @verify_token_decorator
@@ -125,8 +127,8 @@ class CAdImage():
         if not adimage_list:
             return {'aiimage': "尚未添加改图片", 'aitype': aitype}
 
-        # if aitype == 10:
-        #     return adimage_list
+        if aitype == 10:
+            return adimage_list
         # return adimage_list[0]
 
         if aitype < 15:
