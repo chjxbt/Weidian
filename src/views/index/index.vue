@@ -412,7 +412,7 @@
           },
           /*获取热文*/
           getHot(){
-            axios.get(api.get_all_hotmessage,{params:{
+            axios.get(api.get_all_hotmessage +'?token=' +  localStorage.getItem('token'),{params:{
                 lasting:true
               }}).then(res => {
               if(res.data.status == 200){
