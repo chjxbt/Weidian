@@ -3,15 +3,16 @@
       <mt-loadmore :top-method="loadTop" ref="loadmore">
         <navbar :list="nav_list" @navClick="navClick"></navbar>
 
-        <!--每日10荐-->
-        <every v-if="nav_select == '0'" :tnid="nav_list[0].tnid" ref="every"></every>
-        <!--素材圈-->
-        <fodder v-if="nav_select == '1'" :tnid="nav_list[1].tnid" :sub="sub" ref="fodder"></fodder>
-        <!--公告-->
-        <announcement v-if="nav_select == '2'" :tnid="nav_list[2].tnid" ref="announcement"></announcement>
-        <!--教程-->
-        <course v-if="nav_select == '3'" :tnid="nav_list[3].tnid" ref="course"></course>
-
+        <!--<template v-for="(item,index) in nav_list">-->
+          <!--每日10荐-->
+          <every v-if="nav_select == '每日10荐'" :tnid="nav_list[select_index].tnid" ref="every"></every>
+          <!--素材圈-->
+          <fodder v-if="nav_select == '素材圈'" :tnid="nav_list[select_index].tnid" :sub="sub" ref="fodder"></fodder>
+          <!--公告-->
+          <announcement v-if="nav_select == '公告'" :tnid="nav_list[select_index].tnid " ref="announcement"></announcement>
+          <!--教程-->
+          <course v-if="nav_select == '教程'" :tnid=" nav_list[select_index].tnid" ref="course"></course>
+        <!--</template>-->
       </mt-loadmore>
 
       <div class="m-modal" v-if="show_modal">
@@ -57,7 +58,8 @@
             { tnid: "1" }, { tnid: "1" }],// 5ed4e908-a6db-11e8-b2ff-0cd292f93404*/
           nav_list: [{ tnid: "1" }],// 5ed4e908-a6db-11e8-b2ff-0cd292f93404
           nav_select: '',
-          sub: []
+          sub: [],
+          select_index:0
         }
       },
       components: { navbar, fodder, every, announcement, course, iconList },
@@ -68,17 +70,7 @@
       },
       watch: {
         name: function (val) {
-          switch (this.$route.query.name){
-            case '赚钱学院':
-              this.getTopnav(3);
-              break;
-            case '素材圈':
-              this.getTopnav(1);
-              break;
-            case '公告':
-              this.getTopnav(2);
-              break;
-          }
+          this.getTopnav(this.$route.query.name)
         },
       },
       mounted(){
@@ -86,17 +78,9 @@
           this.show_modal = true
         }
         if(this.$route.query.name){
-          switch (this.$route.query.name){
-            case '赚钱学院':
-              this.getTopnav(3);
-              break;
-            case '素材圈':
-              this.getTopnav(1);
-              break;
-            case '公告':
-              this.getTopnav(2);
-              break;
-          }
+
+          this.getTopnav(this.$route.query.name)
+
         }else{
           this.getTopnav();
         }
@@ -104,13 +88,13 @@
       },
       methods: {
         loadTop() {
-          if(this.nav_select == 0) {
+          if(this.nav_select == '每日10荐') {
             this.$refs.every.loadTop();
-          }else if(this.nav_select == 1) {
+          }else if(this.nav_select == '素材圈') {
             this.$refs.fodder.loadTop();
-          }else if(this.nav_select == 2) {
+          }else if(this.nav_select == '公告') {
             this.$refs.announcement.loadTop();
-          }else if(this.nav_select == 3) {
+          }else if(this.nav_select == '教程') {
             this.$refs.course.loadTop();
           }
           this.$refs.loadmore.onTopLoaded();
@@ -123,17 +107,30 @@
           }
           arr[v].click = true;
           this.nav_list = [].concat(arr);
-          this.nav_select = v;
+          this.nav_select = this.nav_list[v].tnname;
+          this.select_index = v;
         },
         // 获取上部导航
-        getTopnav(index) {
-          let _index = index || 0;
+        getTopnav(name) {
+          let _index = 0;
           axios.get(api.get_dp_topnav).then(res => {
             if(res.data.status == 200) {
               this.nav_list = res.data.data;
-              this.sub = this.nav_list[1].sub;
+              for(let j=0;j<this.nav_list.length;j++){
+                if(this.nav_list[j].tnname == '素材圈'){
+                  this.sub = this.nav_list[j].sub;
+                }
+              }
+              for(let i=0;i<this.nav_list.length;i++){
+                if(this.nav_list[i].tnname == name){
+                  _index = i;
+                }else if(name == '赚钱学院' && this.nav_list[i].tnname == '教程'){
+                  _index = i
+                }
+              }
               this.nav_list[_index].click = true;
-              this.nav_select = _index;
+              this.select_index = _index;
+              this.nav_select = this.nav_list[_index].tnname;
             }else{
               Toast({ message: res.data.message, className: 'm-toast-fail' });
             }

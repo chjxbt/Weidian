@@ -193,6 +193,9 @@
       },
       /*获取活动列表*/
       getActivity(start, count){
+        if(!this.tnid){
+          return false;
+        }
         axios.get(api.get_all_activity + '?token=' + localStorage.getItem('token'), {
           params: { start: start || 0, count: count || this.count, tnid: this.tnid,acid: (this.$route.query.name == '赚钱学院' && this.$route.query.acid) || '' }}).then(res => {
           if(res.data.status == 200){
@@ -224,7 +227,7 @@
             if (hour < 10) hour = "0" + hour;
             if (minu < 10) minu = "0" + minu;
             if (sec < 10) sec = "0" + sec;
-            let time = year + month + date + hour + minu + sec;
+            let time = ''+year + month + date + hour + minu + sec;
             let time1 = time.slice(0,4);// 当前年份
             let time2 = time.slice(4,8);// 当前日期
 
