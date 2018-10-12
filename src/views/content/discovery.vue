@@ -139,7 +139,7 @@
       <div class="m-form-label choose-banner">
         <div class="title">推文管理</div>
         <div class="choose-box tr">
-          <el-input v-model="activitySearch" placeholder="请输入推文内容搜索" style="width: 3rem; margin-right: 0.4rem"></el-input>
+          <el-input v-model="activitySearch" placeholder="请输入推文内容搜索" style="width: 3rem; margin-right: 0.3rem"></el-input>
         </div>
         <div class="banner-btn" @click="searchActivity">搜 索</div>
       </div>
