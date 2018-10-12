@@ -626,7 +626,7 @@
 
               for(let i = 0; i <res.data.data.length; i ++) {
                 if(res.data.data[i].aitype == 0) {
-                  this.myTeacherImg = res.data.data[i].aiimage;           // 我的 - 大静态广告
+                  this.myTeacherImg = res.data.data[i].aiimage;           // 我的导师
                 }else if(res.data.data[i].aitype == 1) {
                   this.smallAdImg = res.data.data[i].aiimage;             // 我的 - 小静态广告
                 }else if(res.data.data[i].aitype == 2) {
