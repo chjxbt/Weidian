@@ -26,6 +26,7 @@
           <el-table-column prop="to" label="跳转模块" width="500">
             <template slot-scope="scope">
               <el-radio-group v-model="jumpTo" @change="jumpToChange">
+                <el-radio :label="0" disabled>全部</el-radio>
                 <el-radio :label="1">专题</el-radio>
                 <el-radio :label="2">商品</el-radio>
               </el-radio-group>
@@ -50,29 +51,77 @@
         hiddenLoading: false,
         hiddenList: [
           { name: "发现", content: "素材圈", show: false },
-          { name: "我的", content: "VIP数据统计", show: true },
-          { name: "我的", content: "我的订单-待评价板块", show: true }
+          { name: "我的", content: "VIP数据统计", show: false },
+          { name: "我的", content: "我的订单-待评价板块", show: false }
         ],
         jumpLoading: false,
         jumpList: [{ name: "首页", to: "" }],
         jumpTo: 0,
-        rowNum: ""
+        status: ""    // 暂存隐藏状态
       }
     },
     components: { pageTitle },
     methods: {
-      // 隐藏控制的变化钩子
+      // 隐藏控制的变化钩子，保存点击的状态
       hiddenRow(v) {
-        console.log(v);
+        if(v) {
+          this.status = 1;
+        }else if(!v) {
+          this.status = 0;
+        }
       },
-      // 保存点击的行数
+      // 获取点击的行数，发送请求
       rowClick(row) {
-        this.rowNum = row;
-        console.log("row", row);
+        let params = {};
+        this.hiddenLoading = true;
+        if(row == 0) {
+          params = { material: this.status };
+        }else if(row == 1) {
+          params = { vip_match: this.status };
+        }else if(row == 2) {
+          params = { wait_apply: this.status };
+        }
+        axios.post(api.set_schedual + '?token=' + localStorage.getItem('token'), params).then(res => {
+          if(res.data.status == 200){
+            this.$message({ type: 'success', message: res.data.message, duration: 1500 });
+            this.hiddenLoading = false;
+          }else{
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+          }
+        });
+
       },
       // 隐藏控制
       hiddenControl() {
 
+      },
+      // 获取隐藏控制的值
+      getHidden() {
+        this.hiddenLoading = true;
+        axios.get(api.get_schedual).then(res => {
+          if(res.data.status == 200) {
+
+            // 从接口中拿到显示的状态，并转换
+            if(res.data.data.material == "0") {     // 素材圈
+              this.hiddenList[0].show = false;
+            }else if(res.data.data.material == "1") {
+              this.hiddenList[0].show = true;
+            }
+            if(res.data.data.vip_match == "0") {    // vip
+              this.hiddenList[1].show = false;
+            }else if(res.data.data.vip_match == "1") {
+              this.hiddenList[1].show = true;
+            }
+            if(res.data.data.wait_apply == "0") {   // 待评价
+              this.hiddenList[2].show = false;
+            }else if(res.data.data.wait_apply == "1") {
+              this.hiddenList[2].show = true;
+            }
+            this.hiddenLoading = false;
+          }else{
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+          }
+        })
       },
       // 获取跳转控制的值
       getJumpto() {
@@ -100,6 +149,7 @@
       }
     },
     mounted() {
+      this.getHidden();     // 获取隐藏控制的值
       this.getJumpto();     // 获取跳转控制的值
     },
     created() {
