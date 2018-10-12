@@ -195,6 +195,8 @@
       </div>
       <div class="m-form-label choose-banner" style="margin: -0.1rem 0 0.2rem 0; border-bottom: 1px solid #707070">
         <!--<div class="title">推文管理</div>-->
+        <Pagination class="page-box" :total="total_page" @pageChange="pageChange"></Pagination>
+
         <div class="choose-box tr" style="margin-bottom: 0.1rem">
           <el-select v-model="toBanner" class="m-input-l" placeholder="请选择专题内容页所对应的专题" style="width: 3rem; margin-right: 0.3rem">
             <el-option v-for="item in toBannerList" :key="item.value" :label="item.value" :value="item.id"></el-option>
@@ -309,6 +311,7 @@
 
 <script>
   import pageTitle from '../../components/common/title';
+  import Pagination from "../../components/common/page";
   import wTab from '../../components/common/wTab';
   import axios from 'axios';
   import api from '../../api/api';
@@ -375,7 +378,8 @@
         dialogImageUrl: '',       // 推文上传图片后预览的url
         dialogVisible: false,     // 推文上传图片后预览的允许与否
         editActivity: false,      // 是否在编辑activity
-        activityList: [],         // 推文/活动list
+        activityList: [],         // 推文 - 活动list
+        total_page: 1,            // 推文 - 总页数
         activityTypeList: [       // 添加推文/活动时的活动类型选择项
           { value: "0", label: "普通动态" },
           { value: "1", label: "满减" },
@@ -421,7 +425,7 @@
         tnid: "",         // 暂存导航栏的tnid
       }
     },
-    components:{ pageTitle, wTab },
+    components:{ pageTitle, Pagination, wTab },
     methods:{
 
       // 上传推文图片
@@ -776,7 +780,7 @@
       },
       // 获取banner滚动图
       getBanner() {
-        axios.get(api.get_bigactivitys + '?lasting=true&token=' + localStorage.getItem('token')).then(res => {
+        axios.get(api.get_bigactivitys + '?lasting=false&token=' + localStorage.getItem('token')).then(res => {
           if(res.data.status == 200) {
             this.bannerLoading = false;
 
@@ -1056,7 +1060,7 @@
       // 获取首页活动/推文内容列表
       getActivity(start, count, skiptype) {
         axios.get(api.get_all_activity + '?lasting=false&token=' + localStorage.getItem('token'),
-          { params: { lasting: true, start: start || 0, count: count || this.count, tnid: this.tnid, skiptype: skiptype || "all" }}).then(res => {
+          { params: { lasting: false, start: start || 0, count: count || this.count, tnid: this.tnid, skiptype: skiptype || "all" }}).then(res => {
           if(res.data.status == 200) {
             this.activityLoading = false;
             this.activityList = res.data.data;
@@ -1195,6 +1199,10 @@
             this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         });
+      },
+      // 分页点击方法
+      pageChange(v) {
+        console.log(v);
       }
     },
     watch: {
@@ -1277,5 +1285,8 @@
       padding: 0.05rem 0.2rem;
       background-color: @mainColor;
     }
+  }
+  .page-box {
+
   }
 </style>
