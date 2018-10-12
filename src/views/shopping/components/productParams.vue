@@ -56,7 +56,7 @@
        id: '',
         all_sku:null,
         surplus_value:null,
-        select_num:0
+        select_num:this.quantity
       }
     },
     components: { productQuantity },
@@ -239,7 +239,6 @@
           }
         }
 
-        console.log(arr,this.options)
         this.surplus_value = [].concat(arr);
       },
       changeNum(num,i){

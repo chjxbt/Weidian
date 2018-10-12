@@ -29,11 +29,11 @@
             <div class="one-product-three">
               <div class="product-name m-ft-24 tl m-ft-b" @click="toDetail(product)">{{product.prtitle}}</div>
               <!-- :options="product.sku_total" -->
-              <product-params :item="index" :selects="product.sku.pskproperkey" :price="product.sku.pskprice" :options="sku" :quantity="product.scnums"   @carChoose="carChoose"></product-params>
+              <product-params :item="index" :selects="product.current_sku.pskproperkey" :price="product.current_sku.pskprice" :options="product.sku_value.psvpropervalue" :sku="product.sku" :quantity="product.scnums"   @carChoose="carChoose"></product-params>
               <product-quantity :item="index" :quantity="product.scnums" @changeNum="changeNum"></product-quantity>
             </div>
             <div class="one-product-four">
-              <p class="one-product-price m-red m-ft-20 m-ft-b">￥<span class="product-price-number">{{product.sku.pskprice}}</span></p>
+              <p class="one-product-price m-red m-ft-20 m-ft-b">￥<span class="product-price-number">{{product.current_sku.pskprice}}</span></p>
               <div class="product-failure m-ft-24 m-grey"></div>
               <img src="/static/images/delete.png" class="delete-product-img" @click="deleteProduct(product)">
             </div>
@@ -47,7 +47,7 @@
               <div class="product-name m-ft-24 tl m-ft-b">{{failure.prtitle}}</div>
               <!--<div class="tl">尺寸：{{failure.size}} 颜色：{{failure.color}}</div>-->
               <div class="product-params-text m-ft-26 m-grey tl m-ml-0" >
-                <template v-for="(i,index) in failure.sku.pskproperkey">
+                <template v-for="(i,index) in failure.current_sku.pskproperkey">
                   <span class="product-params-detail  m-grey">{{i.key}}:{{i.value}} </span>
                 </template>
               </div>
@@ -55,7 +55,7 @@
               <!--<product-quantity :quantity="failure.quantity"></product-quantity>-->
             </div>
             <div class="one-product-four">
-              <p class="one-product-price m-red m-ft-20 m-ft-b">￥<span class="product-price-number">{{failure.sku.pskprice}}</span></p>
+              <p class="one-product-price m-red m-ft-20 m-ft-b">￥<span class="product-price-number">{{failure.current_sku.pskprice}}</span></p>
               <div class="product-failure m-ft-24 m-grey">失效</div>
               <img src="/static/images/delete.png" class="delete-product-img">
             </div>
@@ -133,10 +133,11 @@
       this.getShop()
     },
     methods: {
-      postCar(id,num){
+      postCar(id,num,scid){
         axios.post(api.update_shoppingcart + '?token=' + localStorage.getItem('token'),{
           pskid:id,
-          changenum:num || 1
+          num:num,
+          scid:scid
         }).then(res => {
           if(res.data.status == 200){
             this.click_add = false;
@@ -179,7 +180,7 @@
               if(this.orderList[i].productList[j].choose) {
                 this.order.push(this.orderList[i].productList[j]);
                 // 计算单价商品的总价
-                this.totalPrice = this.orderList[i].productList[j].sku.pskprice * this.orderList[i].productList[j].scnums;
+                this.totalPrice = this.orderList[i].productList[j].current_sku.pskprice * this.orderList[i].productList[j].scnums;
               }
             }
           }
@@ -205,7 +206,7 @@
               this.orderList[i].productList[j].choose = true;
               // console.log(this.orderList[i].productList[j]);
               // 单价、数量
-              price = parseFloat(this.orderList[i].productList[j].sku.pskprice);
+              price = parseFloat(this.orderList[i].productList[j].current_sku.pskprice);
               quantity = parseInt(this.orderList[i].productList[j].scnums);
               // 计算总价
               this.totalPrice = this.totalPrice + price * quantity;
@@ -245,10 +246,12 @@
       },
       changeNum(num,i){
         this.orderList[0].productList[i].scnums = num;
-        this.postCar(this.orderList[0].productList[i].sku.pskid,num);
+        this.postCar(this.orderList[0].productList[i].current_sku.pskid,num);
       },
       carChoose(v,num,i){
-        console.log(v,num,i)
+        this.orderList[0].productList[i].scnums = num;
+        this.orderList[0].productList[i].current_sku = v[0];
+        this.postCar(this.orderList[0].productList[i].current_sku.pskid,num,this.orderList[0].productList[i].scid);
       }
     },
     created() {}

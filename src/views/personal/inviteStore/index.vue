@@ -1,11 +1,8 @@
 <template>
-    <div class="m-inviteStore">
-      <span class="m-inviteStore-rule m-ft-20 m-bg-main-color tr" @click="getRule(7)" >规 则</span>
+    <div class="m-inviteStore" >
+      <span class="m-inviteStore-rule m-ft-20 m-bg-main-color tr" @click="getRule(7)" ></span>
       <!--<rule :show_modal="show_rule" :rule="rule" @showModal="showModalRule"></rule>-->
-
-      <div class="m-inviteStore-img-box">
-        <img src="http://d6.yihaodianimg.com/N00/M00/FE/31/CgMBmVNv9WCAWLTNAAXxZghPNoo13800.jpg" class="m-inviteStore-img">
-      </div>
+      <img :src="bg_src" class="m-inviteStore-bg" alt="">
       <div class="m-inviteStore-state">
         <div class="m-inviteStore-state-box">
           <ul class="m-inviteStore-type-ul">
@@ -14,58 +11,62 @@
             </template>
           </ul>
           <div class="m-inviteStore-content" v-if="now.name == '邀请记录'">
-            <div class="m-inviteStore-progress">
-              <p class="m-inviteStore-content-have">已成功邀请<span class="m-red">1</span>人，再邀请<span class="m-red">19</span>人可晋升，加油！</p>
-              <mt-progress :value="20" :bar-height="5"></mt-progress>
-            </div>
-            <ul class="m-inviteStore-content-ul m-inviteStore-content-prepaid">
-              <li>
-                <div class="m-inviteStore-content-img-box">
-                  <img src="" class="m-inviteStore-content-img" alt="">
-                  <div>
-                    <h3>乌东东</h3>
-                    <p class="m-inviteStore-content-complete"><span>2018-08-08</span> </p>
+            <div class="m-scroll">
+              <div class="m-inviteStore-progress">
+                <p class="m-inviteStore-content-have">已成功邀请<span class="m-red">1</span>人，再邀请<span class="m-red">19</span>人可晋升，加油！</p>
+                <mt-progress :value="20" :bar-height="5"></mt-progress>
+              </div>
+              <ul class="m-inviteStore-content-ul m-inviteStore-content-prepaid">
+                <li>
+                  <div class="m-inviteStore-content-img-box">
+                    <img src="" class="m-inviteStore-content-img" alt="">
+                    <div>
+                      <h3>乌东东</h3>
+                      <p class="m-inviteStore-content-complete"><span>2018-08-08</span> </p>
+                    </div>
                   </div>
-                </div>
-                <span >已支付</span>
-              </li>
-            </ul>
+                  <span >已支付</span>
+                </li>
+              </ul>
 
-            <p class="m-inviteStore-content-info">邀请以下好友开店的概率更大哦，快行动吧~</p>
-            <ul class="m-inviteStore-content-ul">
-              <li>
-                <div class="m-inviteStore-content-img-box">
-                  <img src="" class="m-inviteStore-content-img" alt="">
-                  <div>
-                    <h3>乌东东</h3>
-                    <p class="m-inviteStore-content-complete"><span>2018-08-08</span> </p>
+              <p class="m-inviteStore-content-info">邀请以下好友开店的概率更大哦，快行动吧~</p>
+              <ul class="m-inviteStore-content-ul">
+                <li>
+                  <div class="m-inviteStore-content-img-box">
+                    <img src="" class="m-inviteStore-content-img" alt="">
+                    <div>
+                      <h3>乌东东</h3>
+                      <p class="m-inviteStore-content-complete"><span>2018-08-08</span> </p>
+                    </div>
                   </div>
-                </div>
-                <span >已购买16单</span>
-              </li>
-              <li>
-                <div class="m-inviteStore-content-img-box">
-                  <img src="" class="m-inviteStore-content-img" alt="">
-                  <div>
-                    <h3>乌东东</h3>
-                    <p class="m-inviteStore-content-complete"><span>2018-08-08</span> </p>
+                  <span >已购买16单</span>
+                </li>
+                <li>
+                  <div class="m-inviteStore-content-img-box">
+                    <img src="" class="m-inviteStore-content-img" alt="">
+                    <div>
+                      <h3>乌东东</h3>
+                      <p class="m-inviteStore-content-complete"><span>2018-08-08</span> </p>
+                    </div>
                   </div>
-                </div>
-                <span >已购买16单</span>
-              </li>
-              <li>
-                <div class="m-inviteStore-content-img-box">
-                  <img src="" class="m-inviteStore-content-img" alt="">
-                  <div>
-                    <h3>乌东东</h3>
-                    <p class="m-inviteStore-content-complete"><span>2018-08-08</span> </p>
+                  <span >已购买16单</span>
+                </li>
+                <li>
+                  <div class="m-inviteStore-content-img-box">
+                    <img src="" class="m-inviteStore-content-img" alt="">
+                    <div>
+                      <h3>乌东东</h3>
+                      <p class="m-inviteStore-content-complete"><span>2018-08-08</span> </p>
+                    </div>
                   </div>
-                </div>
-                <span>已购买16单</span>
-              </li>
-            </ul>
+                  <span>已购买16单</span>
+                </li>
+              </ul>
+            </div>
+
           </div>
           <div class="m-inviteStore-content" v-else-if="now.name == '礼包动态'">
+            <div class="m-scroll">
               <ul class="m-inviteStore-dynamic-ul">
                 <li>
                   <img src="http://imgsrc.baidu.com/image/c0%3Dshijue1%2C0%2C0%2C294%2C40/sign=20a7d1b16163f62408503140ef2d818d/6a600c338744ebf8c8f43eb7d3f9d72a6159a7b5.jpg" class="m-inviteStore-dynamic-img">
@@ -88,59 +89,61 @@
                   <p><span class="m-red">￥136</span></p>
                 </li>
               </ul>
-
+            </div>
           </div>
           <div class="m-inviteStore-content" v-else-if="now.name == '邀请排行榜'">
+            <div class="m-scroll">
               <h3 class="m-inviteStore-ranking-h3">-8月8日邀请开店排行榜-</h3>
-            <p class="m-inviteStore-ranking-info">每日更新排行，请加油哦</p>
-            <div class="m-fans-ranking-list">
-              <div class="m-fans-top-three">
-                <div class="m-fans-top-one">
-                  <div class="m-fans-top-one-top m-fans-top-two">
-                    <img src="" class="m-fans-top-one-img" alt="">
-                    <span class="m-fans-crown"></span>
-                    <span class="m-fans-scarf">No 2</span>
+              <p class="m-inviteStore-ranking-info">每日更新排行，请加油哦</p>
+              <div class="m-fans-ranking-list">
+                <div class="m-fans-top-three">
+                  <div class="m-fans-top-one">
+                    <div class="m-fans-top-one-top m-fans-top-two">
+                      <img src="" class="m-fans-top-one-img" alt="">
+                      <span class="m-fans-crown"></span>
+                      <span class="m-fans-scarf">No 2</span>
+                    </div>
+                    <p class="m-golden m-fans-top-name">贝之店</p>
+                    <p class="m-ft-20">邀请数：<span  class="m-golden">212424</span></p>
                   </div>
-                  <p class="m-golden m-fans-top-name">贝之店</p>
-                  <p class="m-ft-20">邀请数：<span  class="m-golden">212424</span></p>
-                </div>
-                <div class="m-fans-top-one">
-                  <div class="m-fans-top-one-top">
-                    <img src="" class="m-fans-top-one-img" alt="">
-                    <span class="m-fans-crown"></span>
-                    <span class="m-fans-scarf">No 1</span>
+                  <div class="m-fans-top-one">
+                    <div class="m-fans-top-one-top">
+                      <img src="" class="m-fans-top-one-img" alt="">
+                      <span class="m-fans-crown"></span>
+                      <span class="m-fans-scarf">No 1</span>
+                    </div>
+                    <p class="m-golden m-fans-top-name">贝之店</p>
+                    <p class="m-ft-20">邀请数：<span  class="m-golden">212424</span></p>
                   </div>
-                  <p class="m-golden m-fans-top-name">贝之店</p>
-                  <p class="m-ft-20">邀请数：<span  class="m-golden">212424</span></p>
-                </div>
-                <div class="m-fans-top-one ">
-                  <div class="m-fans-top-one-top m-fans-top-three">
-                    <img src="" class="m-fans-top-one-img" alt="">
-                    <span class="m-fans-crown"></span>
-                    <span class="m-fans-scarf">No 3</span>
+                  <div class="m-fans-top-one ">
+                    <div class="m-fans-top-one-top m-fans-top-three">
+                      <img src="" class="m-fans-top-one-img" alt="">
+                      <span class="m-fans-crown"></span>
+                      <span class="m-fans-scarf">No 3</span>
+                    </div>
+                    <p class="m-golden m-fans-top-name">贝之店</p>
+                    <p class="m-ft-20">邀请数：<span  class="m-golden">212424</span></p>
                   </div>
-                  <p class="m-golden m-fans-top-name">贝之店</p>
-                  <p class="m-ft-20">邀请数：<span  class="m-golden">212424</span></p>
                 </div>
+                <ul class="m-fans-ranking-ul">
+                  <li>
+              <span>
+                <span class="m-fans-ranking">4</span>
+                <span class="m-fans-person-name">成成</span>
+              </span>
+                    <span class="m-ft-22">邀请5143个专属粉丝</span>
+                  </li>
+                  <li>
+                    <span>
+                      <span class="m-fans-ranking">5</span>
+
+                      <span class="m-fans-person-name">成成</span>
+                    </span>
+                    <span class="m-ft-22">邀请5143个专属粉丝</span>
+                  </li>
+
+                </ul>
               </div>
-              <ul class="m-fans-ranking-ul">
-                <li>
-            <span>
-              <span class="m-fans-ranking">4</span>
-              <span class="m-fans-person-name">成成</span>
-            </span>
-                  <span class="m-ft-22">邀请5143个专属粉丝</span>
-                </li>
-                <li>
-                  <span>
-                    <span class="m-fans-ranking">5</span>
-
-                    <span class="m-fans-person-name">成成</span>
-                  </span>
-                  <span class="m-ft-22">邀请5143个专属粉丝</span>
-                </li>
-
-              </ul>
             </div>
           </div>
         </div>
@@ -221,7 +224,8 @@
           show_modal:false,
           show_rule: false,
           show_img:false,
-          img_src:''
+          img_src:'',
+          bg_src:''
         }
       },
       components: {
@@ -245,8 +249,13 @@
             }
           }).then(res => {
             if(res.data.status == 200){
-              this.show_img = true;
-              this.img_src = res.data.data.aiimage;
+              if(type == 8){
+                this.bg_src = res.data.data.aiimage;
+              }else{
+                this.show_img = true;
+                this.img_src = res.data.data.aiimage;
+              }
+
             }else{
               Toast({ message: res.data.message, className: 'm-toast-fail' });
             }
@@ -276,18 +285,16 @@
   @import "../../../common/css/modal";
 .m-inviteStore{
   .m-inviteStore-rule {
-    width: 45%;
-    position: fixed;
-    padding: 13px;
+    width: 56px;
+    height: 36px;
+    position: absolute;
+    top: 20px;
+    right: 54px;
+    background-color: transparent;
   }
-  .m-inviteStore-img-box {
-    background-color: #CF2A2A;
-    .m-inviteStore-img{
-      margin: 60px 13px 0 13px;
-      width: 724px;
-      height: 424px;
-      border-radius: 10px;
-    }
+  .m-inviteStore-bg{
+    width: 100%;
+    height:auto;
   }
   .m-modal{
     .m-modal-state{
@@ -341,7 +348,10 @@
   }
   .m-inviteStore-state{
     padding: 13px;
-    background-color: #CF2A2A;
+    /*background-color: #CF2A2A;*/
+    background-color: transparent;
+    position: absolute;
+    top:760px;
     .m-inviteStore-state-box{
      background-color: #fff;
       border-radius: 10px;
@@ -363,7 +373,14 @@
       }
       .m-inviteStore-content{
         padding: 34px;
-        min-height: 800px;
+        /*min-height: 800px;*/
+        height: 400px;
+        overflow: hidden;
+        .m-scroll{
+          height: 400px;
+          overflow-y: auto;
+          overflow-x: hidden;
+        }
         .m-inviteStore-progress{
           padding: 0 47px;
           .m-inviteStore-content-have{

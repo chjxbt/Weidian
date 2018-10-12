@@ -172,7 +172,7 @@
       postCar(){
         axios.post(api.update_shoppingcart + '?token=' + localStorage.getItem('token'),{
           pskid:this.choose[0].pskid,
-          changenum:this.quantity
+          update_num:this.quantity
         }).then(res => {
            if(res.data.status == 200){
              this.click_add = false;
