@@ -77,7 +77,7 @@ class CAdImage():
                     self.sadimage.add_model("AdImage", **adimage)
 
             else:
-                if len(adimage_list) == 2:
+                if len(adimage_list) == 3:
                     adimage['AIcreatetime'] = get_db_time_str()
                     update_result = self.sadimage.update_image(adimage_list[1].AIid, adimage)
                     if not update_result:
