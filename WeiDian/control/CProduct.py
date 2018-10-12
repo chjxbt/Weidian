@@ -4,13 +4,15 @@ import os
 from flask import request
 import re
 import json
+
+from WeiDian import logger
 from WeiDian.common.params_require import parameter_required
 from WeiDian.common.token_required import verify_token_decorator, is_admin, is_tourist, is_ordirnaryuser, is_customerservice
 from WeiDian.common.TransformToList import list_add_models
 from WeiDian.common.import_status import import_status
 from WeiDian.common.divide import Partner
 from WeiDian.common.timeformat import get_db_time_str
-from WeiDian.config.response import TOKEN_ERROR, AUTHORITY_ERROR, PARAMS_MISS, SYSTEM_ERROR
+from WeiDian.config.response import TOKEN_ERROR, AUTHORITY_ERROR, PARAMS_MISS, SYSTEM_ERROR, NOT_FOUND
 from WeiDian.control.BaseControl import BaseProductControl
 sys.path.append(os.path.dirname(os.getcwd()))
 
@@ -185,13 +187,14 @@ class CProduct(BaseProductControl):
 
     @verify_token_decorator
     def get_product_one(self):
+        logger.info(request.detail)
         args = request.args.to_dict()
         prid = args.get('prid')
         if not prid:
             return PARAMS_MISS
         product = self.sproduct.get_product_by_prid(prid)
         if not product:
-            return SYSTEM_ERROR
+            return NOT_FOUND()
         # 是管理员或客服则显示全部信息
         if is_admin() or is_customerservice():
             product.fields = product.all

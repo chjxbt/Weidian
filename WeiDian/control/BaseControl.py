@@ -315,41 +315,48 @@ class BaseShoppingCart(BaseProductControl):
             cart.PRprice = sku.PSKprice * \
                 Partner().one_level_divide if is_partner() else sku.PSKprice
             cart.subtotal = cart.PRprice * cart.SCnums
-            cart.sku = sku
-            cart.add('sku', 'subtotal')
+            cart.current_sku = sku
+            cart.add('current_sku', 'subtotal')
         return cart
 
     def fill_product(self, cart):
         """填充购物车的商品信息"""
-        if not hasattr(cart, 'sku'):
+        if not hasattr(cart, 'current_sku'):
             return cart
-        prid = cart.sku.PRid
+        prid = cart.current_sku.PRid
         if prid:
             product = self.sproduct.get_product_by_prid(prid)
 
             if product:
+                # product
                 cart.PRimage = product.PRmainpic
                 cart.PRtitle = product.PRtitle
                 cart.PRstatus = product.PRstatus
                 cart.PRprice = product.PRprice
-                product = self.fill_product_sku_key(product)  # 给获得货品的所有skukey值
-                cart.sku_total = product.sku
-                cart.add('PRimage', 'PRtitle', 'PRstatus', 'PRprice', 'sku_total')
+                sku_key = self.fill_product_sku_key(product)  # 给获得货品的所有skukey值
+                # sku
+                cart.sku = sku_key.sku
+                cart.add('PRimage', 'PRtitle', 'PRstatus', 'PRprice', 'sku')
+                # sku_value
+                self.fill_product_sku_value(product)
+                cart.sku_value = product.sku_value
+                cart.add('sku_value')
         return cart
 
     def total_price(self, cart_list):
         """总金额"""
+        # todo modify current_sku
         has_price = filter(
             lambda x: hasattr(
                 x,
-                'sku') and hasattr(
-                x.sku,
+                'current_sku') and hasattr(
+                x.current_sku,
                 'PSKprice'),
             cart_list)
         if not has_price:
             return 0
-        total = sum([x.sku.PSKprice * x.SCnums +
-                     x.sku.PSKpostfee for x in has_price])
+        total = sum([x.current_sku.PSKprice * x.SCnums +
+                     x.current_sku.PSKpostfee for x in has_price])
         return total
 
 
