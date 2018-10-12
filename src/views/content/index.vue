@@ -75,7 +75,7 @@
               <span class="m-item-add" @click="addBanner" v-if="addBannerBtn">+</span>
             </el-tooltip>
           </div>
-          <p class="m-item-alert tr">轮播图尺寸大小750*280</p>
+          <p class="m-item-alert tr"><span style="color: red">* </span>轮播图尺寸大小750*280</p>
         </div>
       </div>
 
@@ -83,13 +83,21 @@
       <p class="m-form-label" style="margin-bottom: 0.2rem">热文管理</p>
       <div class="content-table">
         <el-table :data="hotMessageList" border style="width: 100%" v-loading="hotLoading">
-          <el-table-column prop="hmsort" label="热文顺序" width="200"></el-table-column>
+          <el-table-column prop="hmsort" label="热文顺序" width="100"></el-table-column>
           <el-table-column prop="hmtext" label="热文内容">
             <template slot-scope="scope">
-              <el-input v-model="scope.row.hmtext" placeholder="请输入热文内容" :disabled="scope.row.disabled" style="width: 5rem;"></el-input>
+              <el-input v-model="scope.row.hmtext" size="mini" placeholder="请输入热文内容" :disabled="scope.row.disabled"></el-input>
             </template>
           </el-table-column>
-          <el-table-column prop="hmsort" label="热文读者" width="200"></el-table-column>
+          <el-table-column prop="title" label="跳转类型" width="130">
+            <template slot-scope="scope">
+              <el-select v-model="scope.row.hmskiptype" class="m-input-l" placeholder="请选择" :disabled="scope.row.disabled"
+                         style="width: 0.8rem" @change="bannerToValueChange">
+                <el-option v-for="item in hotJumpList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+              </el-select>
+            </template>
+          </el-table-column>
+          <el-table-column prop="hmdisplaytype" label="热文读者" width="100"></el-table-column>
           <el-table-column fixed="right" label="管理" width="180">
             <template slot-scope="scope">
               <el-button @click="editClick(scope, 'hot')" type="text" size="small" v-if="scope.row.editSave == '1'">编辑</el-button>
@@ -103,6 +111,7 @@
         </el-table>
       </div>
 
+      <p class="m-item-alert tr" style="margin-top: -0.15rem; color: #999999; font-size: 0.12rem;"><span style="color: red">* </span>热文字数建议少于25字</p>
       <div style="display: flex">
         <div style="flex: 1">
           <el-tooltip effect="light" content="添加热文" placement="right">
@@ -147,7 +156,7 @@
       <div class="m-form-label choose-banner">
         <div class="title">推文管理</div>
         <div class="choose-box tr" style="margin-bottom: 0.1rem">
-          <el-input v-model="activitySearch" placeholder="请输入推文内容搜索" style="width: 3rem; margin-right: 0.5rem"></el-input>
+          <el-input v-model="activitySearch" placeholder="请输入推文内容搜索" style="width: 3rem; margin-right: 0.4rem"></el-input>
         </div>
         <div class="banner-btn" style="margin-right: 0.1rem" @click="searchActivity">搜 索</div>
       </div>
@@ -179,11 +188,11 @@
       <div class="m-form-label choose-banner" style="margin: -0.1rem 0 0.2rem 0; border-bottom: 1px solid #707070">
         <!--<div class="title">推文管理</div>-->
         <div class="choose-box tr" style="margin-bottom: 0.1rem">
-          <el-select v-model="toBanner" class="m-input-l" placeholder="请选择专题内容页所对应的专题" style="width: 3rem; margin-right: 0.4rem">
+          <el-select v-model="toBanner" class="m-input-l" placeholder="请选择专题内容页所对应的专题" style="width: 3rem; margin-right: 0.3rem">
             <el-option v-for="item in toBannerList" :key="item.value" :label="item.value" :value="item.id"></el-option>
           </el-select>
         </div>
-        <el-tooltip class="item" effect="light" content="筛选出能跳转到专题内容页的推文" placement="top-start" v-if="!activityToBanner">
+        <el-tooltip class="item" effect="light" content="筛选出能跳转到专题内容页的推文" placement="bottom" v-if="!activityToBanner">
           <div class="banner-btn" @click="toBannerClick('1')">筛选推文</div>
         </el-tooltip>
         <div class="banner-btn" @click="toBannerClick('2')" v-if="activityToBanner" :disabled="true">绑定专题</div>
@@ -334,13 +343,24 @@
         toBannerList: [],     // 筛选推文时专题的可选择项
         activityToBanner: false,  // 依此判断筛选专题和绑定专题（前部勾选框）的显示情况
         hotLoading: true,         // 热文表格加载中
+        hotMessageList: [],       // 热文集合
+        hotJumpList: [            // 热文 - 跳转类型
+          { value: "0", label: "无跳转" },
+          { value: "1", label: "专题" },
+          { value: "2", label: "商品" },
+          { value: "3", label: "公告" },
+          { value: "4", label: "教程" }
+        ],
+        hotReaderList: [            // 热文 - 读者list
+          { value: "0", label: "普通用户" },
+          { value: "1", label: "合伙人" }
+        ],
         activityLoading: true,    // 推文/活动表格加载中
         addBannerBtn: true,       // 依此判断添加banner按钮的显示情况
         // activityTime: [],
         activityMedia: [],        // 添加推文时盛放图片的list
         activityMediaSort: 0,     // 添加推文时图片的顺序编号
         activityPictureList: [],  // 推文上传/编辑时的图片墙list
-        hotMessageList: [],       // 热文集合
         activitySearch: "",       // 搜索推文时输入的内容
         dialogImageUrl: '',       // 推文上传图片后预览的url
         dialogVisible: false,     // 推文上传图片后预览的允许与否
@@ -790,6 +810,24 @@
 
             this.hotMessageList = res.data.data;
             for(let i = 0; i < this.hotMessageList.length; i ++) {
+              // 转换热文读者
+              if(this.hotMessageList[i].hmdisplaytype == "0") {
+                this.hotMessageList[i].hmdisplaytype = "普通用户";
+              }else if(this.hotMessageList[i].hmdisplaytype == "1") {
+                this.hotMessageList[i].hmdisplaytype = "合伙人";
+              }
+              // 转换热文跳转类型
+              if(this.hotMessageList[i].hmskiptype == "0") {
+                this.hotMessageList[i].hmskiptype = "无跳转";
+              }else if(this.hotMessageList[i].hmskiptype == "1") {
+                this.hotMessageList[i].hmskiptype = "专题";
+              }else if(this.hotMessageList[i].hmskiptype == "2") {
+                this.hotMessageList[i].hmskiptype = "商品";
+              }else if(this.hotMessageList[i].hmskiptype == "3") {
+                this.hotMessageList[i].hmskiptype = "公告";
+              }else if(this.hotMessageList[i].hmskiptype == "4") {
+                this.hotMessageList[i].hmskiptype = "教程";
+              }
               this.hotMessageList[i].disabled = true;
               this.hotMessageList[i].editSave = "1";
             }
@@ -990,7 +1028,7 @@
       },
       // 获取首页活动/推文内容列表
       getActivity(start, count, skiptype) {
-        axios.get(api.get_all_activity + '?token=' + localStorage.getItem('token'),
+        axios.get(api.get_all_activity + '?lasting=false&token=' + localStorage.getItem('token'),
           { params: { lasting: true, start: start || 0, count: count || this.count, tnid: this.tnid, skiptype: skiptype || "all" }}).then(res => {
           if(res.data.status == 200) {
             this.activityLoading = false;
