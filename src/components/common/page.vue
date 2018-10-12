@@ -11,15 +11,10 @@
     </div>
 
     <div class="page-button">
-      <span @click="change(1)">首页</span>
-      <el-pagination
-        background
-        layout="prev, pager, next"
-        :pager-count="5"
-        :page-count="total"
-      @current-change="change">
+      <!--<span @click="change(1)">首页</span>-->
+      <el-pagination background layout="prev, pager, next" :page-count="total" @current-change="change">
       </el-pagination>
-      <span @click="change(total)">尾页</span>
+      <!--<span @click="change(total)">尾页</span>-->
     </div>
   </div>
 </template>
@@ -27,25 +22,15 @@
 <script>
   export default {
     name: 'Pagination',
-
     data () {
       return {
 
       }
     },
     props:{
-      total:{
-        type:Number,
-        default:1
-      },
-      num:{
-        type:Number,
-        default:0
-      },
-      page_size:{
-        type:Number,
-        default:10
-      }
+      total: { type: Number, default: 1 },
+      num: { type: Number, default: 0 },
+      page_size: { type: Number, default: 5 }
     },
     methods:{
       change(v) {
