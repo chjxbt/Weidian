@@ -184,7 +184,7 @@ class Product(BaseModel):
     PRstock = Column(Integer)  # 商品详情页库存
     PRsalestatus = Column(String(64))  #我的-收藏夹
     PRoductId = Column(Integer)  # 微点系统商品id
-    PRtarget = Column(Integer)  # {101: 首页, 102: 发现页}
+    PRtarget = Column(String(64))  # {101: 首页, 102: 发现页}
 
     @orm.reconstructor
     @auto_createtime
@@ -269,6 +269,14 @@ class ProductImage(BaseModel):
     @orm.reconstructor
     def __init__(self):
         self.fields = self.all
+
+
+class ProductTarget(BaseModel):
+    """商品关联专题"""
+    __tablename__ = 'producttarget'
+    PTid = Column(String(64), primary_key=True)
+    PRid = Column(String(64), nullable=False)      # 商品id
+    PRtarget = Column(String(64), nullable=False)  # 对应模块id
 
 
 class ProductLike(BaseModel):
@@ -820,7 +828,7 @@ class AdImage(BaseModel):
     """
      图片类型{0: 我的导师， 1:小静态广告图, 2:大静态广告图, 3: 发现弹框图片, 
      4: 等级规则图片(未开店), 5: 等级规则(已开店), 6: 专属粉丝管理规则，
-     7：开店邀请海报规则， 8：邀请专属粉丝海报，9：邀请开店海报, 10：专属粉丝分享海报, 11: 提现帮助,
+     7：开店邀请海报规则， 8：邀请开店海报，9：邀请专属粉丝海报, 10：专属粉丝分享海报, 11: 提现帮助,
      12: 客服, 13: 开店邀请函, 14: 收益详情 }
     """
     AIsize = Column(Integer)  # 图片尺寸{ 1:小图 高度120px, 2:大图 高度400px}
