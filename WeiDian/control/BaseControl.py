@@ -134,6 +134,7 @@ class BaseProductControl():
         self.prid_list = []
         for item in items:
             prid = str(uuid.uuid4())  # 生成商品id
+            prtarget_items = item.pop("prtarget")  # 每个商品对应多个专题
             self.prid_list.append(prid)
             psvid = str(uuid.uuid4())  # 每一个商品对应一个psv
             image_items = item.pop('images')  # 取出image列表
@@ -144,6 +145,8 @@ class BaseProductControl():
             image_items = self.fix_image_list(image_items, prid)
             sku_items = self.fix_sku_list(sku_items, prid, psvid)
             productskuvalue = self.fix_sku_value(sku_value, prid, psvid)
+            prtarget_items = self.fix_tartget_list(prtarget_items, prid)
+            list_add_models('ProductTarget', prtarget_items)
             list_add_models('ProductImage', image_items)
             list_add_models('ProductSkuKey', sku_items)
             if productskuvalue:
@@ -158,6 +161,14 @@ class BaseProductControl():
             image_item['piid'] = str(uuid.uuid4())
             image_item['prid'] = prid
         return image_items
+
+    def fix_tartget_list(self, target_list, prid):
+        if not isinstance(target_list, list) or not target_list:
+            return []
+        targer_model_list = [{'prid': prid, 'prtarget': prtarget, 'ptid': str(uuid.uuid4())}
+                             for prtarget in target_list]
+
+        return targer_model_list
 
     def fix_sku_list(self, sku_items, prid, psvid):
         """
@@ -188,6 +199,13 @@ class BaseProductControl():
         images_list = self.sproductimage.get_images_by_prid(prid)
         product.images = images_list
         product.add('images')
+        return product
+
+    def fill_prtarget(self, product):
+        prid = product.PRid
+        target_list = [target.PRtarget for target in self.sproduct.get_product_target_by_productid(prid)]
+        # if '101' in target_list:
+        product.PRtarget = target_list
         return product
 
     def fill_product_sku_key(self, product):

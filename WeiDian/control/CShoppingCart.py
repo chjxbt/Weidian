@@ -6,7 +6,7 @@ from flask import request
 from WeiDian.common.token_required import verify_token_decorator, is_tourist
 from WeiDian.common.TransformToList import add_model, dict_add_models
 from WeiDian.common.import_status import import_status
-from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, SYSTEM_ERROR
+from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, SYSTEM_ERROR, NOT_FOUND
 from WeiDian.control.BaseControl import BaseShoppingCart
 from WeiDian.config.setting import PLATFORM_NAME, PLATFORM_POSTFEE
 from WeiDian.service.SProductSkuValue import SProductSkuValue
@@ -44,39 +44,55 @@ class CShoppingCart(BaseShoppingCart):
         """购物车添加或者修改"""
         if is_tourist():
             return TOKEN_ERROR  # token无效或者未登录的用户
-        data = request.json  
-        # pskid
+        data = request.json
+        scid = data.get('scid')  # 如果是scid则是修改
         pskid = data.get('pskid')
-        scnums = int(data.get('changenum', 1))  # 更改数量
-        usid = request.user.id
+        scnums = data.get('num')
+        update_nums = data.get('update_num')
+        if not scnums and not update_nums:
+            raise PARAMS_MISS()
         if not pskid:
-            return PARAMS_MISS
+            raise PARAMS_MISS()
+        productsku = self.sproductskukey.get_psk_by_pskid(pskid)
+        if not productsku:
+            raise NOT_FOUND(u'sku不存在')
+        usid = request.user.id
         cart = self.sshoppingcart.get_shoppingcar_by_usidandpskid(usid, pskid)
         # 如果是已经存在的购物车
         if cart:
             scid = cart.SCid
-            # scnums = cart.SCnums + scahangenums
+            if update_nums:
+                scnums = cart.SCnums + update_nums
+            elif scnums:
+                scnums = scnums
             if scnums < 1:
                 # 删除
                 return self.delete_shoppingcart(scid)
             self.sshoppingcart.update_shoppingcart(cart, scnums)
         # 创建
         else:
+            if update_nums:
+                scnums = update_nums
+            elif scnums:
+                scnums = scnums
             if scnums < 1:
-                return SYSTEM_ERROR('错误的数量')
-            scid = str(uuid.uuid4())
+                return self.delete_shoppingcart(scid)
             psk = self.sproductskukey.get_psk_by_pskid(pskid)
             if not psk:
                 raise SYSTEM_ERROR('不存在的商品')
             prid = psk.PRid
             cartdict = {
-                'scid': scid,
-                'usid': usid,
-                'pskid': pskid,
-                'scnums': scnums,
-                'prid': prid
+                'USid': usid,
+                'PSKid': pskid,
+                'SCnums': scnums,
+                'PRid': prid
             }
-            dict_add_models('ShoppingCart', cartdict)
+            if scid:
+                self.sshoppingcart.update_shoppingcat_by_scid(scid, cartdict)
+            else:
+                scid = str(uuid.uuid4())
+                cartdict['SCid'] = scid
+                dict_add_models('ShoppingCart', cartdict)
         data = import_status('update_cart_success', 'OK')
         data['data'] = {
             'scid': scid
