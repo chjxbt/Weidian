@@ -3,6 +3,8 @@ from sqlalchemy.dialects.mysql import LONGTEXT
 from sqlalchemy import Column, create_engine, Integer, String, Text, Float, Boolean, orm
 from WeiDian.config import dbconfig as cfg
 from WeiDian.models.base_model import BaseModel, auto_createtime
+import json
+
 
 DB_PARAMS = "{0}://{1}:{2}@{3}/{4}?charset={5}".format(
     cfg.sqlenginename,
@@ -124,7 +126,7 @@ class ActivityTag(BaseModel):
     __tablename__ = 'activitytag'
     ATid = Column(String(64), primary_key=True)
     ACid = Column(String(64), nullable=False)  # 活动
-    ATname = Column(String(8), nullable=False)  # 角标文字
+    ATname = Column(String(255), nullable=False)  # 角标(后期确认改为图片)
     ATstate = Column(Integer, default=1)  # 显示状态: {1 显示, 0 隐藏}
 
     @orm.reconstructor
@@ -181,6 +183,8 @@ class Product(BaseModel):
     PRlogisticsfee = Column(Float)  # 物流费
     PRstock = Column(Integer)  # 商品详情页库存
     PRsalestatus = Column(String(64))  #我的-收藏夹
+    PRoductId = Column(Integer)  # 微点系统商品id
+    PRtarget = Column(Integer)  # {101: 首页, 102: 发现页}
 
     @orm.reconstructor
     @auto_createtime
@@ -198,7 +202,9 @@ class Product(BaseModel):
             'PRchannelid',
             'SUid',
             'PRstock',
-            'PRsalestatus']
+            'PRsalestatus',
+            'PRtarget'
+        ]
 
 
 class ProductSkuKey(BaseModel):
@@ -213,6 +219,7 @@ class ProductSkuKey(BaseModel):
     PSKprice = Column(Float, default=0.00)  # 价格
     PSKpostfee = Column(Float, nullable=False)  # 物流费
     PSKactiviyid = Column(String(64))  # 活动id, 不知用处
+    PSskuid = Column(Integer)  # 微点商品sku id
 
     @orm.reconstructor
     @auto_createtime
@@ -222,11 +229,11 @@ class ProductSkuKey(BaseModel):
 
     @property
     def PSKproperkey(self):
-        return eval(self._PSKproperkey)
+        return json.loads(self._PSKproperkey)
 
     @PSKproperkey.setter
     def PSKproperkey(self, raw):
-        self._PSKproperkey = str(raw)
+        self._PSKproperkey = json.dumps(raw)
 
 
 class ProductSkuValue(BaseModel):
@@ -244,11 +251,11 @@ class ProductSkuValue(BaseModel):
 
     @property
     def PSVpropervalue(self):
-        return eval(self._PSVpropervalue)
+        return json.loads(self._PSVpropervalue)
 
     @PSVpropervalue.setter
     def PSVpropervalue(self, raw):
-        self._PSVpropervalue = str(raw)
+        self._PSVpropervalue = json.dumps(raw)
 
 
 class ProductImage(BaseModel):
@@ -462,6 +469,7 @@ class HotMessage(BaseModel):
     HMsort = Column(Integer)  # 热文的顺序标志
     HMSkipType = Column(Integer, default=0)  # 跳转类型{0:无跳转类型, 1:专题, 2:商品, 3: 教程推文, 4, 公告推文}
     HMisdelete = Column(Boolean, default=False)  # 删除
+    HMdisplaytype = Column(Integer, default=0)  # 热文展示类别{该热文展示给 0:普通买家, 1: 合伙人}
 
     @orm.reconstructor
     @auto_createtime
@@ -474,7 +482,8 @@ class HotMessage(BaseModel):
             'HMendtime',
             'HMsort',
             'HMSkipType',
-            'HMcontent'
+            'HMcontent',
+            'HMdisplaytype'
         ]
 
 

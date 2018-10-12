@@ -11,3 +11,8 @@ class SProductSkuValue(SBase):
     def get_skvalue_by_prid(self, prid):
         """根据prid获取productskuvalue"""
         return self.session.query(ProductSkuValue).filter_by(PRid=prid).first()
+
+    @close_session
+    def update_skuvalue(self, prid, skuvalue):
+        """根据prid更新skuvalue"""
+        return self.session.query(ProductSkuValue).filter(ProductSkuValue.PRid == prid).update(skuvalue)

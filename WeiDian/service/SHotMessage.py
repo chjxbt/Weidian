@@ -13,8 +13,15 @@ sys.path.append(os.path.dirname(os.getcwd()))
 class SHotMessage(SBase):
 
     @close_session
-    def get_hotmessage(self):
+    def get_hotmsg_list_by_filter(self, htfilter):
         """正在进行中的热文"""
+        filter_hotmsg = {HotMessage.HMisdelete == False}
+        if isinstance(htfilter, list):
+            filter_hotmsg.add(HotMessage.HMdisplaytype.in_(htfilter))
+        else:
+            filter_hotmsg.add(HotMessage.HMdisplaytype == htfilter)
+        return self.session.query(HotMessage).filter(*filter_hotmsg).order_by(HotMessage.HMdisplaytype, HotMessage.HMsort.asc()).all()
+
         # hots = self.session.query(HotMessage).order_by(HotMessage.HMsort).all()
         # now_time = datetime.strftime(datetime.now(), format_for_db)
         # hots = filter(lambda ht: ht.HMstarttime < now_time < ht.HMendtime, hots)
@@ -22,7 +29,6 @@ class SHotMessage(SBase):
         # settings = Partner()
         # skiptype = settings.get_item('skip', 'skip_type')
         # return self.session.query(HotMessage).filter_by(HMisdelete=False, HMSkipType=skiptype).order_by(HotMessage.HMsort.asc()).all()
-        return self.session.query(HotMessage).filter_by(HMisdelete=False).order_by(HotMessage.HMsort.asc()).all()
 
     # @close_session
     # def get_all_hot(self):

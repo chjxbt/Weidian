@@ -15,6 +15,10 @@ class AProduct(Resource):
         print product
         apis = {
             'add_list': 'self.cproduct.add_product_list()',
+            'delete_product': 'self.cproduct.delete_product()',
+            'shelves_product': 'self.cproduct.shelves_product()',
+            'update_sku': 'self.cproduct.update_sku()',
+            'update_product': 'self.cproduct.update_product()',
         }
         res = eval(apis[product])
         return jsonify(res)

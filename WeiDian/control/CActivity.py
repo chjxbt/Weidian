@@ -6,6 +6,7 @@ import base64
 from datetime import datetime, timedelta
 from WeiDian import logger
 from WeiDian.common.divide import Partner
+from WeiDian.common.get_model_return_list import get_model_return_list
 from WeiDian.common.loggers import generic_log
 from WeiDian.common.make_qrcode import make_qrcode
 from WeiDian.common.params_require import parameter_required
@@ -13,12 +14,12 @@ from WeiDian.config.setting import QRCODEHOSTNAME, LinuxRoot, LinuxImgs, Windows
 from flask import request
 import math
 import uuid
-from WeiDian.common.token_required import verify_token_decorator, is_admin, is_tourist
+from WeiDian.common.token_required import verify_token_decorator, is_admin, is_tourist, is_partner
 from WeiDian.common.TransformToList import add_model
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db, get_db_time_str, get_web_time_str, format_for_web_second
 from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR, NOT_FOUND, PARAMS_ERROR
-from WeiDian.control.BaseControl import BaseActivityControl, BaseFile
+from WeiDian.control.BaseControl import BaseActivityControl, BaseFile, BaseTask
 from WeiDian.models.model import Activity
 sys.path.append(os.path.dirname(os.getcwd()))
 
@@ -490,6 +491,29 @@ class CActivity(BaseActivityControl):
         return response
 
     @verify_token_decorator
+    def get_exist_tags(self):
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'非管理员权限')
+        args = request.args.to_dict()
+        logger.debug("get tags args is %s", args)
+        try:
+            # tags_list = set(get_model_return_list(self.stags.get_exist_tags())['ATname'])
+            tags_list = self.stags.get_exist_tags()
+            originallist = []
+            for tag in tags_list:
+                originallist.append(tag[0])
+            setlist = set(originallist)
+            changelist = list(setlist)
+
+            logger.info("try to get tags")
+            response = import_status("messages_get_item_ok", "OK")
+            response['date'] = {"tags_list": changelist}
+            return response
+        except Exception as e:
+            logger.exception("get exist tags error")
+            raise SYSTEM_ERROR(u"数据错误")
+
+    @verify_token_decorator
     def share_activity(self):
         if is_tourist():
             raise TOKEN_ERROR(u'未登录')
@@ -508,6 +532,11 @@ class CActivity(BaseActivityControl):
             response["qrcodeurl"] = QRCODEHOSTNAME + '/' + LinuxImgs + '/qrcode/' + user.openid + now_time + '.png'
             response["components"] = QRCODEHOSTNAME + '/' + LinuxImgs + '/components.png'
             logger.debug('response url is %s', response["qrcodeurl"])
+
+            if is_partner():
+                from WeiDian.control.CTask import CTask
+                basetask = CTask()
+                basetask.do_shoppingtask_or_forwardtask(1)
             return response
         except:
             logger.exception("make qrcode error")
@@ -552,10 +581,9 @@ class CActivity(BaseActivityControl):
     def upload_home_images(self):
         if not is_admin():
             raise AUTHORITY_ERROR(u'权限不足')
-
         filetype = request.args.to_dict().get("filetype", 'home')
-
-        url = BaseFile().upload_file(filetype)
+        notimetag = request.args.to_dict().get("notimetag", '')
+        url = BaseFile().upload_file(filetype, notimetag)
         res = import_status("save_photo_success", "OK")
         res['data'] = url
         return res
