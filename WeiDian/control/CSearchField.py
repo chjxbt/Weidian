@@ -2,6 +2,8 @@
 import sys
 import os
 import uuid
+
+from WeiDian import logger
 from flask import request
 from datetime import datetime
 from WeiDian.common.TransformToList import add_model
@@ -94,24 +96,30 @@ class CSearchField():
             return TOKEN_ERROR  # 未登录, 或token错误
         
         args = request.args.to_dict()
-        # lasting = args.get('lasting', 'true')  # 是否正在进行的活动
+        logger.debug("get search args is %s", args)
         page = args.get('page')  # 页码
         page = 1 if not page else int(page)
-        start = int(args.get('start'))  # 起始位置
+        start = args.get('start')  # 起始位置
         count = args.get('count')  # 取出条数
         count = 5 if not count else int(count)
-        if not start:
-            start = int((page - 1) * count)
+        start = int((page - 1) * count) if not start else int(start)
+        serachact = args.get("serachact")
+        tnid = args.get('tnid')
         from WeiDian.service.SProduct import SProduct
         from WeiDian.service.SActivity import SActivity
         from WeiDian.control.CActivity import CActivity
         prname = args.get("PRname")
         prname = prname.encode("utf8") if isinstance(prname, unicode) else prname
-        prid_list = SProduct().get_products_by_prname(prname)
         sactivity = SActivity()
         activity_list = []
-        for prid in prid_list:
-            activity_list.extend(sactivity.get_activity_by_prid(prid.PRid))
+        if str(serachact) == 'true':
+            logger.info("now we'll search act through actext")
+            activity_list.extend(sactivity.get_activity_list_by_actext(prname, tnid))
+        else:
+            logger.info("now we'll search act with product through prname")
+            prid_list = SProduct().get_products_by_prname(prname)
+            for prid in prid_list:
+                activity_list.extend(sactivity.get_activity_by_prid(prid.PRid))
 
         if count > 30:
             count = 30
