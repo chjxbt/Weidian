@@ -9,6 +9,8 @@ from WeiDian.common.import_status import import_status
 from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, SYSTEM_ERROR
 from WeiDian.control.BaseControl import BaseShoppingCart
 from WeiDian.config.setting import PLATFORM_NAME, PLATFORM_POSTFEE
+from WeiDian.service.SProductSkuValue import SProductSkuValue
+
 sys.path.append(os.path.dirname(os.getcwd()))
 
 
@@ -20,6 +22,7 @@ class CShoppingCart(BaseShoppingCart):
         self.sproduct = SProduct()
         from WeiDian.service.SProductSkuKey import SProductSkuKey
         self.sproductskukey = SProductSkuKey()
+        self.sproductskuvalue = SProductSkuValue()
 
     @verify_token_decorator
     def get_shopingcart_all(self):
