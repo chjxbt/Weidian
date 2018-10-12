@@ -278,7 +278,7 @@
   @import "../../../common/css/index";
   @import "../../../common/css/modal";
 .m-inviteStore{
-  background-color: #BE3D36;
+  background-color: #C8433B;
   .m-inviteStore-rule {
     width: 56px;
     height: 36px;
