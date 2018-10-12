@@ -585,6 +585,7 @@
             }
             arr[v].click = true;
             this.nav_list = [].concat(arr);
+            this.activity_list = [];
             this.getActivity(this.nav_list[v].tnid);
           },
           /*每个活动icon点击*/
