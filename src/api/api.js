@@ -20,8 +20,6 @@ const api={
   update_bact: title + 'bigactivity/update_bact',     // 修改专题/删除轮播图（测试）
   get_home: title + 'topnav/get_home',                // 获取上部导航 - 首页
   get_dp: title + 'topnav/get_dp',                    // 获取上部导航 - 发现页
-  set_show_type: title + 'activity/set_show_type',    // 设置首页专题默认的过滤类型
-  get_show_type: title + 'activity/get_show_type',    // 获取首页默认的过滤类型
   get_all_activity: title + 'activity/get_all',       // 获取首页/发现页活动/推文内容列表
   add_one_activity: title + 'activity/add_one',       // 添加首页活动/推文（测试）
   update_act: title + 'activity/update_act',          // 修改/删除活动/推文 - 首页/发现页
@@ -34,6 +32,10 @@ const api={
   add_admin: title + 'super/add_admin',               // 添加普通管理员
   update_admin: title + 'super/update_other_admin',   // 超管管理其他管理
 
+  set_show_type: title + 'activity/set_show_type',    // 控制中心 - 设置首页专题默认的过滤类型
+  get_show_type: title + 'activity/get_show_type',    // 控制中心 - 获取首页默认的过滤类型
+  get_schedual: title + 'mycenter/get_schedual_show', // 控制中心 - 获取控制中心显隐
+  set_schedual: title + 'mycenter/set_schedual_show', // 控制中心 - 设置控制中心显隐
 
   // upload_task_img: title + 'task/upload_task_img',         // 上传任务图标-上传图片
   upload_task_img: title + 'activity/upload_home_images',     // 上传图片
