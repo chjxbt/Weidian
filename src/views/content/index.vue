@@ -83,21 +83,21 @@
       <p class="m-form-label" style="margin-bottom: 0.2rem">热文管理</p>
       <div class="content-table">
         <el-table :data="hotMessageList" border style="width: 100%" v-loading="hotLoading">
-          <el-table-column prop="hmsort" label="热文顺序" width="100"></el-table-column>
+          <!--<el-table-column prop="hmsort" label="热文顺序" width="100"></el-table-column>-->
           <el-table-column prop="hmtext" label="热文内容">
             <template slot-scope="scope">
               <el-input v-model="scope.row.hmtext" size="mini" placeholder="请输入热文内容" :disabled="scope.row.disabled"></el-input>
             </template>
           </el-table-column>
-          <el-table-column prop="title" label="跳转类型" width="130">
-            <template slot-scope="scope">
+          <el-table-column prop="hmskiptype" label="跳转类型" width="130">
+            <!--<template slot-scope="scope">
               <el-select v-model="scope.row.hmskiptype" class="m-input-l" placeholder="请选择" :disabled="scope.row.disabled"
                          style="width: 0.8rem" @change="bannerToValueChange">
                 <el-option v-for="item in hotJumpList" :key="item.value" :label="item.label" :value="item.value"></el-option>
               </el-select>
-            </template>
+            </template>-->
           </el-table-column>
-          <el-table-column prop="hmdisplaytype" label="热文读者" width="100"></el-table-column>
+          <el-table-column prop="hmdisplaytype" label="热文读者" width="130"></el-table-column>
           <el-table-column fixed="right" label="管理" width="180">
             <template slot-scope="scope">
               <el-button @click="editClick(scope, 'hot')" type="text" size="small" v-if="scope.row.editSave == '1'">编辑</el-button>
@@ -105,13 +105,12 @@
               <el-button type="text" size="small">|</el-button>
               <el-button type="text" size="small" @click="deleteHotMessage(scope)">删除</el-button>
               <el-button type="text" size="small">|</el-button>
-              <el-button type="text" size="small" @click="upHotMessage(scope)" :disabled="scope.$index == '0'">上移</el-button>
+              <el-button type="text" size="small" @click="upHotMessage(scope)" :disabled="scope.$index == '0' || scope.$index == hmdisplaytype">上移</el-button>
             </template>
           </el-table-column>
         </el-table>
       </div>
 
-      <p class="m-item-alert tr" style="margin-top: -0.15rem; color: #999999; font-size: 0.12rem;"><span style="color: red">* </span>热文字数建议少于25字</p>
       <div style="display: flex">
         <div style="flex: 1">
           <el-tooltip effect="light" content="添加热文" placement="right">
@@ -127,17 +126,17 @@
           <div class=" m-item-row">
             <el-input v-model="hotValue" placeholder="请输入热文内容" maxlength="25" class="hot-message-input"></el-input>
           </div>
-          <p class="m-item-alert" style="margin-top: 0.05rem; font-size: 0.12rem">字数控制在25字以内</p>
+          <p class="m-item-alert" style="margin-top: 0.05rem; font-size: 0.12rem"><span style="color: red">* </span>字数控制在25字以内</p>
         </div>
         <p class="m-form-label">热文分类</p>
         <div class="m-item-content">
           <div class=" m-item-row">
-            <el-select v-model="hotJumpValue" class="m-input-l" placeholder="商品/专题/公告/教程">
+            <el-select v-model="hotJumpValue" class="m-input-l" placeholder="商品/专题/教程/公告">
               <el-option v-for="item in hotJump" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
             <el-select v-if="hotJumpValue != ''" v-model="jumpToValue" filterable placeholder="请选择" style="width: 4rem; margin-left: 0.5rem">
-              <el-option v-for="item in jumpToList" :key="item.value" :label="item.value" :value="item.id"></el-option>
+              <el-option v-for="item in jumpToList" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
           </div>
         </div>
@@ -146,6 +145,15 @@
           <el-date-picker v-model="hotTime" type="datetimerange" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
                           start-placeholder="开始日期" end-placeholder="结束日期" style="width: 4rem;">
           </el-date-picker>
+        </div>
+        <p class="m-form-label">热文读者</p>
+        <div class="m-item-content">
+          <div class=" m-item-row">
+            <el-select v-model="hotReader" class="m-input-l" placeholder="请选择可看到该热文的对象">
+              <el-option v-for="item in hotReaderList" :key="item.value" :label="item.label" :value="item.value">
+              </el-option>
+            </el-select>
+          </div>
         </div>
         <div class="save-btn" @click="addHotMessage">保 存</div>
       </div>
@@ -175,7 +183,7 @@
               <el-input type="textarea" :autosize="{ minRows: 1, maxRows: 3 }" placeholder="请输入推文内容" v-model="scope.row.actext" :disabled="scope.row.disabled"></el-input>
             </template>
           </el-table-column>
-          <el-table-column prop="acSkiptype" label="跳转类型" width="120"></el-table-column>
+          <el-table-column prop="acSkiptype" label="跳转类型" width="100"></el-table-column>
           <el-table-column fixed="right" label="管理" width="180">
             <template slot-scope="scope">
               <el-button @click="editClick(scope, 'activity')" type="text" size="small">编辑</el-button>
@@ -344,6 +352,7 @@
         activityToBanner: false,  // 依此判断筛选专题和绑定专题（前部勾选框）的显示情况
         hotLoading: true,         // 热文表格加载中
         hotMessageList: [],       // 热文集合
+        hmdisplaytype: 0,         // 热文中普通用户可查看的热文数量
         hotJumpList: [            // 热文 - 跳转类型
           { value: "0", label: "无跳转" },
           { value: "1", label: "专题" },
@@ -351,6 +360,7 @@
           { value: "3", label: "公告" },
           { value: "4", label: "教程" }
         ],
+        hotReader: "",              // 热文 - 读者
         hotReaderList: [            // 热文 - 读者list
           { value: "0", label: "普通用户" },
           { value: "1", label: "合伙人" }
@@ -757,6 +767,7 @@
           if(res.data.status == 200){
             this.$message({ message: "热文上移成功", type: 'success', duration: 1500 });
             this.hotMessageList = [];
+            this.hmdisplaytype = 0;
             this.getHotMessage();     // 获取热文
           }else{
             this.$message({ type: 'error', message: res.data.message, duration: 1500 });
@@ -804,7 +815,7 @@
       },
       // 获取热文
       getHotMessage() {
-        axios.get(api.get_all_hot_message + '?lasting=true&token=' + localStorage.getItem('token')).then(res => {
+        axios.get(api.get_all_hot_message + '?lasting=false&token=' + localStorage.getItem('token')).then(res => {
           if(res.data.status == 200) {
             this.hotLoading = false;
 
@@ -813,6 +824,7 @@
               // 转换热文读者
               if(this.hotMessageList[i].hmdisplaytype == "0") {
                 this.hotMessageList[i].hmdisplaytype = "普通用户";
+                this.hmdisplaytype += 1;
               }else if(this.hotMessageList[i].hmdisplaytype == "1") {
                 this.hotMessageList[i].hmdisplaytype = "合伙人";
               }
@@ -824,9 +836,9 @@
               }else if(this.hotMessageList[i].hmskiptype == "2") {
                 this.hotMessageList[i].hmskiptype = "商品";
               }else if(this.hotMessageList[i].hmskiptype == "3") {
-                this.hotMessageList[i].hmskiptype = "公告";
-              }else if(this.hotMessageList[i].hmskiptype == "4") {
                 this.hotMessageList[i].hmskiptype = "教程";
+              }else if(this.hotMessageList[i].hmskiptype == "4") {
+                this.hotMessageList[i].hmskiptype = "公告";
               }
               this.hotMessageList[i].disabled = true;
               this.hotMessageList[i].editSave = "1";
@@ -926,17 +938,31 @@
       },
       // 添加热文
       addHotMessage () {
-        if(this.hotValue == "" || this.hotTime.length != 2 || this.hotJumpValue == "" || this.jumpToValue == "") {
+        if(this.hotValue == "" || this.hotTime.length != 2 || this.hotJumpValue == "" || this.jumpToValue == "" || this.hotReader == "") {
           this.$message({ message: "请完整填写", type: 'warning', duration: 1500 });
         }else {
           let params = {
             HMtext: this.hotValue,
             HMstarttime: this.hotTime[0],
             HMendtime: this.hotTime[1],
-            HMsort: this.hotMessageList[this.hotMessageList.length - 1].hmsort + 1,
             HMSkipType: this.hotJumpValue,
-            HMcontent: this.jumpToValue
+            HMcontent: this.jumpToValue,
+            HMdisplaytype: this.hotReader
           };
+          // 添加热文时热文的HMsort
+          if(this.hotMessageList.length == 0) {
+            params.HMsort = 1;
+          }else if(this.hotMessageList.length == 1) {
+            params.HMsort = this.hotMessageList[0].hmsort + 1;
+          }else if(this.hotMessageList.length > 1) {
+            for(let i = 0; i < (this.hotMessageList.length - 1); i ++) {
+              if(this.hotMessageList[i].hmsort > this.hotMessageList[i + 1].hmsort) {
+                params.HMsort = this.hotMessageList[i].hmsort + 1;
+              }else {
+                params.HMsort = this.hotMessageList[i + 1].hmsort + 1;
+              }
+            }
+          }
           axios.post(api.add_one_hot_message + '?token=' + localStorage.getItem('token'), params).then(res => {
             if(res.data.status == 200){
               this.$message({ type: 'success', message: res.data.message, duration: 1500 });
@@ -945,6 +971,7 @@
               this.hotValue = "";
               this.hotJumpValue = "";
               this.jumpToValue = "";
+              this.hotReader = "";
               this.hotTime = [];
             }else{
               this.$message({ type: 'error', message: res.data.message, duration: 1500 });
@@ -1037,7 +1064,7 @@
             for(let i = 0; i < this.activityList.length; i ++) {
               // 推文的跳转类型
               if(this.activityList[i].acskiptype == "0") {
-                this.activityList[i].acSkiptype = "专题页/商品";
+                this.activityList[i].acSkiptype = "全部";
               }else if(this.activityList[i].acskiptype == "1") {
                 this.activityList[i].acSkiptype = "专题页";
               }else if(this.activityList[i].acskiptype == "2") {
