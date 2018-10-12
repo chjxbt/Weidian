@@ -25,7 +25,7 @@
       <span class="owner-price-one tl">店主价￥{{product_info.prkeeperprice}}</span>
       <span class="owner-price-two tr">成为店主 ></span>
     </div>
-    <div class="product-commitment" v-for="item in commitmentList">
+    <div class="product-commitment" v-if="show_commit" v-for="item in commitmentList">
       <img src="/static/images/commitment.png" class="commitment-img">
       <div class="commitment-text">{{item}}</div>
     </div>
@@ -149,7 +149,8 @@
         choose:null,
         is_choose:false,
         quantity:1,
-        click_add:false
+        click_add:false,
+        show_commit:true
       }
     },
     components: { productParams },
@@ -165,6 +166,11 @@
             this.product_info =  res.data.data;
             this.params_options = res.data.data.sku_value.psvpropervalue;
             this.sku = res.data.data.sku;
+            for(let i =0;i<res.data.data.prtarget.length;i++){
+              if(res.data.data.prtarget[i] == '101'){
+                this.show_commit = false;
+              }
+            }
           }
         })
       },
