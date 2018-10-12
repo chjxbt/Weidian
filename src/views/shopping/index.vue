@@ -29,7 +29,7 @@
             <div class="one-product-three">
               <div class="product-name m-ft-24 tl m-ft-b" @click="toDetail(product)">{{product.prtitle}}</div>
               <!-- :options="product.sku_total" -->
-              <product-params :item="index" :selects="product.current_sku.pskproperkey" :price="product.current_sku.pskprice" :options="product.sku_value.psvpropervalue" :sku="product.sku" :quantity="product.scnums"   @carChoose="carChoose"></product-params>
+              <product-params :item="index" :selects="product.current_sku.pskproperkey" :number="product.current_sku.pskproductnum" :price="product.current_sku.pskprice" :options="product.sku_value.psvpropervalue" :sku="product.sku" :quantity="product.scnums"   @carChoose="carChoose"></product-params>
               <product-quantity :item="index" :quantity="product.scnums" @changeNum="changeNum"></product-quantity>
             </div>
             <div class="one-product-four">

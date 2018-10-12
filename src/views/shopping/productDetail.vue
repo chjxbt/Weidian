@@ -37,7 +37,7 @@
       <div class="product-activity-content m-ft-28 m-grey-color m-ft-b tl">满89减5;满139减10</div>
       <img src="/static/images/icon-list-right.png" class="to-activity">
     </div>-->
-    <product-params :choose="is_choose" :quantity="quantity" :options="params_options" :price="product_info.prprice" :sku="sku" @carChoose="carChoose"  @closeModal="closeModal"></product-params>
+    <product-params :choose="is_choose" :quantity="quantity"  :options="params_options" :price="product_info.prprice" :sku="sku" @carChoose="carChoose"  @closeModal="closeModal"></product-params>
     <div class="rectangular"></div>
     <div class="product-evaluation">
       <div class="evaluation-title m-ft-26 m-grey-color b">商品评价（99+）</div>
@@ -163,7 +163,6 @@
         }).then(res => {
           if(res.data.status == 200){
             this.product_info =  res.data.data;
-            console.log(this.product_info)
             this.params_options = res.data.data.sku_value.psvpropervalue;
             this.sku = res.data.data.sku;
           }
@@ -267,10 +266,10 @@
       this.imgsDone();
       this.getInfo();
       common.changeTitle('商品详情');
-      if(localStorage.getItem('level') == 'partner'){
-        this.is_vip = true;
-      }else{
+      if(localStorage.getItem('user_level') == 0){
         this.is_vip = false;
+      }else{
+        this.is_vip = true;
       }
     },
     created() {

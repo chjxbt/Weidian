@@ -39,7 +39,6 @@
       },
       watch: {
         selected: function (val, oldVal) {
-
           this.$store.state.tabbar_select = val;
           common.changeTitle(val);
           switch(val){
@@ -55,7 +54,6 @@
                 } else{
                 this.$router.push('/discover');
               }
-
 
               break;
             case '购物车':

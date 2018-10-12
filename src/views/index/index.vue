@@ -93,7 +93,7 @@
         </div>
       </div>
       <attention v-if="show_fixed" :src="code_src" :components_src="components_src" :shareParams="shareParams" @closeModal="closeModal('show_fixed')"></attention>
-      <!--<img :src="'/static/images/course/course-'+ course + '.png'" v-if="show_course" class="m-course-img" alt="" @click.stop="courseClick">-->
+      <img :src="'/static/images/course/course-'+ course + '.png'" v-if="show_course" class="m-course-img" alt="" @click.stop="courseClick">
       <!--<img src="/static/images/fen.png" v-if="show_fen" class="m-course-img" alt="" @click.stop="fenClick">-->
       <m-video v-if="show_video" :src="video_src" @videoClose="videoClose"></m-video>
       <img-modal v-if="show_img" :src="img_src" @closeModal="closeModal"></img-modal>
@@ -235,8 +235,9 @@
           }else{
             this.is_vip = false;
           }
-
-
+          if(localStorage.getItem('is_first')){
+            this.show_course = true;
+          }
           let that =this;
         this.interval = window.setInterval(that.animation,3000);
 
@@ -660,7 +661,7 @@
             // this.$refs.loadmore.onBottomLoaded();
           },
           courseClick(){
-            if(this.course <6){
+            if(this.course <3){
               this.course += 1;
             }else{
               this.show_course = false;

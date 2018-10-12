@@ -22,21 +22,26 @@
         <div class="product-params-center">
           <p class="product-price m-ft-20 m-red m-ft-b tl" v-if="surplus_value && surplus_value.length == 1">￥<span class="m-ft-34">{{surplus_value[0].pskprice}}</span></p>
           <p class="product-price m-ft-20 m-red m-ft-b tl" v-else>￥<span class="m-ft-34">{{price}}</span></p>
-          <div class="choose-prompt m-ft-26 tl">{{prompt}}</div>
+          <div class="choose-prompt m-ft-26 tl">{{prompt}}   库存：{{num}}</div>
         </div>
         <img src="/static/images/delete.png" class="close-popup" @click="closeModal">
       </div>
       <div class="line"></div>
-      <div class="product-size-color" v-for="(option, index) in options">
-        <p class="product-size-color-text m-ft-30 tl">{{option.key}}</p>
-        <span :class="{select: sel[index] == ind}" v-for="(item, ind) in option.values" @click="select(index, ind)">{{item.value}}</span>
+      <div class="product-size-color" v-for="(opt, index) in option">
+        <p class="product-size-color-text m-ft-30 tl">{{opt.key}}</p>
+        <template v-for="(item, ind) in opt.values">
+          <span :class="{select:colorSizeList[index]&& colorSizeList[index].vid == item.vid}" v-if="item.active"  @click="select(index, ind)">{{item.value}}</span>
+          <span class="m-cancel"  v-else>{{item.value}}</span>
+        </template>
+
       </div>
       <div class="line"></div>
       <div class="product-quantity">
         <div class="product-quantity-text m-ft-30 tl">购买数量</div>
         <product-quantity :quantity="quantity"   class="product-quantity-edit" @changeNum="changeNum"></product-quantity>
       </div>
-      <div class="choose-done m-ft-28 m-bg-main-color" @click="chooseDone">确定</div>
+      <div class="choose-done m-ft-28 m-bg-main-color" v-if="num" @click="chooseDone">确定</div>
+      <div class="choose-done m-ft-28 m-choose-cancel" v-else >确定</div>
     </mt-popup>
   </div>
 </template>
@@ -56,7 +61,10 @@
        id: '',
         all_sku:null,
         surplus_value:null,
-        select_num:this.quantity
+        select_num:this.quantity,
+        option:null,
+        num:null,
+        show_num:false
       }
     },
     components: { productQuantity },
@@ -96,6 +104,10 @@
       item:{
         type:Number,
         default:null
+      },
+      number:{
+        type:Number,
+        default:null
       }
     },
     watch:{
@@ -106,12 +118,22 @@
     mounted(){
       // this.colorSizeList=new Array(this.options.length);
       // console.log(this.sku)
-
+      let options_arr=this.options;
+      for(let b=0;b<options_arr.length;b++){
+        for(let c=0;c<options_arr[b].values.length;c++){
+          options_arr[b].values[c].active = true;
+        }
+      }
+      this.option =[].concat(options_arr);
+       if(this.number){
+         this.num = this.number;
+         this.show_num = true;
+       }
       if(this.selects){
         this.colorSizeList = [].concat(this.selects);
 
       }else{
-        this.colorSizeList = new Array(this.options.length);
+        this.colorSizeList = new Array(this.option.length);
       }
       let _arr = this.sku;
 
@@ -155,36 +177,36 @@
           // }
           if(this.selects){
             for(let i = 0;i<this.selects.length;i++){
-              for(let j = 0;j<this.options[i].values.length;j++){
-                if(this.options[i].values[j].vid == this.selects[i].vid){
+              for(let j = 0;j<this.option[i].values.length;j++){
+                if(this.option[i].values[j].vid == this.selects[i].vid){
                   this.sel[i] = j;
                   continue;
                 }
               }
             }
           }
-          console.log(this.sel,'asdasd')
           this.changePrompt();
         }
       },
       select(index, ind) {
         this.sel[index] = ind;                  // 让数组sel的第index+1的元素的值等于ind
         this.sel = this.sel.concat([]);         // 因为数组是引用类型，对其中一个变量直接赋值不会影响到另一个变量（并未操作引用的对象），使用concat（操作了应用对象）
-        this.colorSizeList[index] = this.options[index].values[ind];         // 获取选中的id
+        this.colorSizeList[index] = this.option[index].values[ind];         // 获取选中的id
         this.changePrompt();
-        this.clickSku(index,this.options[index].values[ind].vid)
+
+        this.clickSku(index,this.option[index].values[ind],false,this.option[index].kid)
       },
       // 根据选择的商品参数来改变提示信息
       changePrompt() {
         for(let i=0;i<this.colorSizeList.length;i++){
           if(!this.colorSizeList[i]){
-            this.prompt = "请选择 " + this.options[i].key;
+            this.prompt = "请选择 " + this.option[i].key;
             return false;
           }
         }
         let promptTemp = "";
         for(let i = 0; i < this.colorSizeList.length; i ++) {
-          promptTemp = promptTemp + " " + this.options[i].key+':'+ this.colorSizeList[i].value;
+          promptTemp = promptTemp + " " + this.option[i].key+':'+ this.colorSizeList[i].value;
         }
         this.prompt = promptTemp;
         // for(let a=0;a<this.sku.length;a++){
@@ -216,29 +238,85 @@
         }
 
       },
-      clickSku(index,vid,isFirst){
+      clickSku(index,v,isFirst,kid){
         let arr =[];
-        if(!isFirst){
-          for(let i =0;i<this.surplus_value.length;i++){
-            if(this.surplus_value[i].pskproperkey[index].vid == vid){
-              arr.push(this.surplus_value[i]);
+        // if(!isFirst){
+        //   for(let i =0;i<this.surplus_value.length;i++){
+        //     if(this.surplus_value[i].pskproperkey[index].vid == v.vid){
+        //       arr.push(this.surplus_value[i]);
+        //     }
+        //   }
+        // }
+        // console.log(this.all_sku,this.colorSizeList)
+        // if(arr.length <1 ){
+            let _id = '';
+            for(let j=0;j<this.colorSizeList.length;j++){
+              if(this.colorSizeList[j])
+                _id = _id + this.colorSizeList[j].vid;
             }
-          }
-        }
 
-        if(arr.length <1 ){
-          let _id = '';
-          for(let j=0;j<this.colorSizeList.length;j++){
-            _id = _id + this.colorSizeList[j].vid;
-          }
-
-          for(let i =0;i<this.all_sku.length;i++){
-              if(this.all_sku[i].id_arr == _id ){
-                arr.push(this.all_sku[i]);
+          // for(let j=0;j<this.colorSizeList.length;j++){
+              for(let i =0;i<this.all_sku.length;i++){
+                  if(this.all_sku[i].id_arr.length == _id.length && this.all_sku[i].id_arr == _id ){
+                    arr.push(this.all_sku[i]);
+                  }else{
+                    for(let a=0;a<this.all_sku[i].pskproperkey.length;a++){
+                      if(this.all_sku[i].pskproperkey[a].vid == _id){
+                        arr.push(this.all_sku[i]);
+                      }
+                    }
+                  }
               }
-          }
-        }
+          // }
 
+        // }
+
+        // if(arr.length != 1){
+        //   let option_arr=this.options;
+        //   for(let b=0;b<option_arr.length;b++){
+        //     for(let c=0;c<option_arr[b].values.length;c++){
+        //       option_arr[b].values[c].active = true;
+        //     }
+        //   }
+        //   this.option =[].concat(option_arr);
+
+          // let new_arr = [];
+          // for(let y =0;y<arr[0].pskproperkey.length;y++){
+          //   new_arr[y] = { kid:arr[0].pskproperkey[y].kid,key:arr[0].pskproperkey[y].key,values:[]};
+          // }
+          // for(let x=0;x<arr.length;x++){
+          //   if(arr[x].pskproductnum == 0){
+          //     for(let y =0;y<arr[x].pskproperkey.length;y++){
+          //       new_arr[y].values.push({value:arr[x].pskproperkey[y].value,vid:arr[x].pskproperkey[y].vid})
+          //     }
+          //   }
+          // }
+          // let options_arr = this.option;
+          // for(let m =0;m<options_arr.length;m++){
+          //   if(options_arr[m].kid == kid ){
+          //     continue;
+          //   }else{
+          //     for(let n=0;n<options_arr[m].values.length;n++){
+          //       for(let b=0;b<new_arr.length;b++){
+          //         if(new_arr[b].kid == kid){
+          //           continue;
+          //         }else{
+          //           for(let c=0;c<new_arr[b].values.length;c++){
+          //             if(new_arr[b].values[c].vid == options_arr[m].values[n].vid){
+          //               options_arr[m].values[n].active = false;
+          //             }
+          //           }
+          //         }
+          //       }
+          //     }
+          //   }
+          // }
+          // this.option = [].concat(options_arr);
+        // }
+        if(arr.length ==1){
+            this.num = arr[0].pskproductnum;
+        }
+        console.log(arr)
         this.surplus_value = [].concat(arr);
       },
       changeNum(num,i){
@@ -257,6 +335,9 @@
 
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/css/index";
+  .m-cancel{
+    color: #a4a4a4;
+  }
 
   .product-params {
     .product-params-choose {
@@ -350,6 +431,10 @@
       padding: 30px;
       letter-spacing: 10px;
       background-color: @mainColor;
+      &.m-choose-cancel{
+        background-color: #f4f3f9;
+        color: #a4a4a4;
+      }
     }
   }
 </style>

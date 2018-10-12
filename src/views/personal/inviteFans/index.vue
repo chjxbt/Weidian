@@ -52,7 +52,8 @@
     components: {imgModal},
     mounted(){
       this.getRule(9);
-      wxapi.wxRegister(this.wxRegCallback)
+      wxapi.wxRegister(this.wxRegCallback);
+      common.changeTitle('邀请专属粉丝');
     },
     methods: {
       fansClick(){
