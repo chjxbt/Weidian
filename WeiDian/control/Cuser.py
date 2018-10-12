@@ -86,7 +86,12 @@ class CUser():
                 upper_list = re.findall(r'openid=(.*?)&?', state)
                 upper = upper_list[0] if upper_list else None
                 upperd = self.suser.get_user_by_openid(upper)
-                upperd_id = upperd.USid if upperd else None
+                if upperd:
+                    # todo 记录邀请成功时间(如果活动进行中的话
+                    upperd_id = upperd.USid
+
+                else:
+                    upperd_id = None
                 # 添加用户
                 usid = str(uuid.uuid1())
                 self.suser.add_model("User", **{

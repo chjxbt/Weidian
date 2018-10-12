@@ -141,7 +141,7 @@ class CMyCenter(BaseMyCenterControl):
     def get_schedual_show(self):
         """获取控制中心显示隐藏详情"""
         match = self.spartnermatch.get_lasting_partner_match(level=1)
-        vip_match = 1 if match and match.PSIMisclose else 0
+        vip_match = 1 if match else 0
         mater = self.stopnav.get_topnav_by_name('素材圈')
         material = 0 if mater.Tisdelete else 1
         wait_apply = Partner().get_item('show', 'wait_apply')
@@ -152,9 +152,6 @@ class CMyCenter(BaseMyCenterControl):
             'wait_apply': wait_apply,
         }
         return data
-
-
-
 
     @verify_token_decorator
     def get_today_total(self):

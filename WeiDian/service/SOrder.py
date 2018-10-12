@@ -123,5 +123,18 @@ class SOrder(SBase):
             OrderProductInfo).filter_by(OIid=oiid).first()
 
     @close_session
+    def get_orderproductinfo_by_oisn(self, oisn):
+        """通过订单号获取订单商品信息"""
+        return self.session.query(OrderProductInfo).\
+            join(OrderInfo, OrderProductInfo.OIid == OrderInfo.OIid).filter(
+            OrderInfo.OIsn == oisn
+        ).all()
+
+    @close_session
     def update_orderinfo_status(self, oiid, orderinfo):
         return self.session.query(OrderInfo).filter(OrderInfo.OIid == oiid).update(orderinfo)
+
+    @close_session
+    def update_orderinfo_by_oisn(self, oisn, data):
+        """更新订单"""
+        return self.session.query(OrderInfo).filter(OrderInfo.OIsn == oisn).update(data)

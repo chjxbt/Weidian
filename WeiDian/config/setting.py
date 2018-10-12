@@ -18,6 +18,9 @@ WindowsRoot = 'D:/'
 APP_ID = 'wx8206635590c9cc0e'
 APP_SECRET_KEY = 'ba8c532bfd8e7390e3cfc91ac17c0472'
 wximg = 'https://daaiti.cn/imgs/WeiDian/qrcode/wx.jpg'
+MCH_ID = ''
+MCH_KEY = ''
+notify_url = ''
 
 # platform
 
