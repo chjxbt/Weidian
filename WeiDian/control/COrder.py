@@ -5,9 +5,12 @@ import uuid
 import random
 from datetime import datetime
 
+from weixin import WeixinPay
+
 from WeiDian import logger
 from WeiDian.common.params_require import parameter_required
 from WeiDian.config.enums import ORDER_STATUS
+from WeiDian.config.setting import QRCODEHOSTNAME, APP_ID, MCH_ID, MCH_KEY, notify_url
 from flask import request
 from WeiDian.common.TransformToList import dict_add_models, list_add_models
 from WeiDian.common.timeformat import format_for_db
@@ -19,7 +22,7 @@ from WeiDian.service.SProductSkuKey import SProductSkuKey
 from WeiDian.service.SProduct import SProduct
 from WeiDian.service.SComplain import SComplain
 from WeiDian.service.SUser import SUser
-from WeiDian.config.response import PARAMS_MISS, SYSTEM_ERROR, AUTHORITY_ERROR, TOKEN_ERROR
+from WeiDian.config.response import PARAMS_MISS, SYSTEM_ERROR, AUTHORITY_ERROR, TOKEN_ERROR, NOT_FOUND
 from WeiDian.common.token_required import is_tourist
 sys.path.append(os.path.dirname(os.getcwd()))
 
@@ -33,6 +36,7 @@ class COrder():
         self.suser = SUser()
         self.scomplain = SComplain()
         self.update_order_params = ['orid', 'oipaystatus']
+        self.pay = WeixinPay(APP_ID, MCH_ID, MCH_KEY, notify_url)
 
     @verify_token_decorator
     def add_one(self):
@@ -216,6 +220,7 @@ class COrder():
 
     @verify_token_decorator
     def update_order(self):
+        """没用"""
         if is_tourist():
             return TOKEN_ERROR
         parameter_required(*self.update_order_params)
@@ -227,8 +232,49 @@ class COrder():
             raise SYSTEM_ERROR(u'数据库连接异常')
         # if oipaystatus:
 
+    @verify_token_decorator
+    def pay_order(self):
+        """付款"""
+        if is_tourist():
+            raise TOKEN_ERROR()
+        data = parameter_required(u'oiid')
+        oiid = data.get('oiid')
+        order = self.sorder.get_order_by_oiid(oiid)
+        if not order or order.USid != request.user.id or order.OIpaystatus != 1:
+            raise NOT_FOUND()
+        openid = request.user.openid
+        total_fee = order.OImount * 100
+        oisn = order.OIsn  # 订单号
+        raw = self.pay.jsapi(trade_type="JSAPI", openid=openid,
+                             out_trade_no=oisn,
+                             total_fee=int(total_fee),
+                             spbill_create_ip=request.remote_addr)
+        res = dict(raw)
+        res['paySign'] = res.get('sign')
+        data = import_status('messages_get_item_ok', res)
+        return data
+
+    def pay_callback(self):
+        """回调"""
+        data = self.pay.to_dict(request.data)
+        from WeiDian.common.loggers import generic_log
+        generic_log(data)
+        if not self.pay.check(data):
+            return self.pay.reply(u"签名验证失败", False)
+        # 修改订单状态
+        sn = data.get('out_trade_no')
+        paytime = data.get('time_end')
+        order = self.sorder.update_orderinfo_by_oisn(sn, {
+            'OIpaystatus': 4,  # 待发货
+            'OIpaytime': paytime,
+            'OIpaytype': 1,  # 统一微信支付
+        })
+        # 记录销售额活动
+        order = self.sorder.get_order_by_oisn(sn)
 
 
+        upper_user = self.suser.get_user_by_user_id(order)
+        return self.pay.reply("OK", True)
 
     def fix_orderproduct_info(self, sku_list, oiid):
         """
@@ -282,21 +328,5 @@ class COrder():
         order.add('complainstatus')
         return order
 
-    # @staticmethod
-    # def fill_oistatusmessage(order):
-    #     oistatus = order.OIpaystatus
-    #     if oistatus == 1:
-    #         order.oipaystatusmsg = '待支付'
-    #     elif oistatus == 5:
-    #         order.oipaystatusmsg = '待发货'
-    #     elif oistatus == 6:
-    #         order.oipaystatusmsg = '已发货'
-    #     elif oistatus == 7:
-    #         order.oipaystatusmsg = '已取消'
-    #     else:
-    #         order.oipaystatusmsg = '暂无此类订单'
-    #     # oipaystatusmsg = ORDER_STATUS[1]
-    #     order.add('oipaystatusmsg')
-    #     return order
-
+    
 

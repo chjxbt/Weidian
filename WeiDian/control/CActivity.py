@@ -24,7 +24,7 @@ from WeiDian.models.model import Activity
 sys.path.append(os.path.dirname(os.getcwd()))
 
 
-class CActivity(BaseActivityControl):
+class CActivity(BaseActivityControl, BaseTask):
     hmsk_type = ['3', '4']
 
     def __init__(self):
@@ -50,6 +50,8 @@ class CActivity(BaseActivityControl):
         self.sbigactivity = SBigActivity()
         from WeiDian.service.STopNav import STopNav
         self.stopnav = STopNav()
+        from WeiDian.service.STask import STask
+        self.stask = STask()
         self.empty = ['', None, [], {}]
 
     @verify_token_decorator
@@ -519,28 +521,38 @@ class CActivity(BaseActivityControl):
             raise TOKEN_ERROR(u'未登录')
         data = request.json
         logger.debug("share qrcode data is %s", data)
-        data_url = data.get("dataurl")
-        now_time = datetime.strftime(datetime.now(), '%Y%m%d%H%M%S')
+        # data_url = data.get("dataurl")
+        data_url = self.get_share_url(data.get("dataurl"))
         try:
             logger.info("get user info")
             user = self.suser.get_user_by_user_id(request.user.id)
             if not user:
                 raise SYSTEM_ERROR(u'找不到该用户')
-            save_path = LinuxRoot + LinuxImgs + "/qrcode/" + user.openid + now_time + '.png' if platform.system() == "Linux" else WindowsRoot + "qrcode/" + user.openid + now_time + '.png'
+            save_path = LinuxRoot + LinuxImgs + "/qrcode/" + user.openid + '.png' if platform.system() == "Linux" else WindowsRoot + "qrcode/" + user.openid + '.png'
             make_qrcode(user.USheader, data_url, save_path)
             response = import_status("make_qrcode_success", "OK")
-            response["qrcodeurl"] = QRCODEHOSTNAME + '/' + LinuxImgs + '/qrcode/' + user.openid + now_time + '.png'
+            response["qrcodeurl"] = QRCODEHOSTNAME + '/' + LinuxImgs + '/qrcode/' + user.openid + '.png'
             response["components"] = QRCODEHOSTNAME + '/' + LinuxImgs + '/components.png'
             logger.debug('response url is %s', response["qrcodeurl"])
 
             if is_partner():
-                from WeiDian.control.CTask import CTask
-                basetask = CTask()
-                basetask.do_shoppingtask_or_forwardtask(1)
+
+                self.do_shoppingtask_or_forwardtask(1)
             return response
         except:
             logger.exception("make qrcode error")
             return SYSTEM_ERROR(u'服务器繁忙')
+
+    def get_share_url(self, url):
+        if isinstance(url, unicode):
+            _url = url.encode('utf8')
+        else:
+            _url = str(url)
+        now_time = datetime.strftime(datetime.now(), '%Y%m%d%H%M%S')
+
+        _url_punctuation = '& 'if '?' in _url else '?'
+        _url = _url + "{0}time={1}".format(_url_punctuation, now_time)
+        return _url
 
     @verify_token_decorator
     def generate_poster(self):
