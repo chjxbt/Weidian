@@ -54,16 +54,16 @@
           <h3>管理员数据管理</h3>
           <p>--修改密码</p>
           <el-form :inline="false" :model="pwdForm" :rules="rules" ref="pwdForm"  label-width="1.2rem">
-                <el-form-item label="请输入旧密码" prop="MApasswordOld">
-                  <el-input v-model="pwdForm.MApasswordOld" type="password" class="m-input-pwd" placeholder=""></el-input>
-                </el-form-item>
-                <el-form-item label="请输入新密码" prop="MApasswordNew">
-                  <el-input v-model="pwdForm.MApasswordNew" type="password" class="m-input-pwd" placeholder=""></el-input>
-                </el-form-item>
-                <el-form-item label="请确认新密码" prop="MApasswordRepeat">
-                  <el-input v-model="pwdForm.MApasswordRepeat" type="password" class="m-input-pwd" placeholder=""></el-input>
-                </el-form-item>
-              <p class="m-btn-p" @click="pwdSubmit('pwdForm')">保 存</p>
+            <el-form-item label="请输入旧密码" prop="MApasswordOld">
+              <el-input v-model="pwdForm.MApasswordOld" type="password" class="m-input-pwd" placeholder="" size="mini"></el-input>
+            </el-form-item>
+            <el-form-item label="请输入新密码" prop="MApasswordNew">
+              <el-input v-model="pwdForm.MApasswordNew" type="password" class="m-input-pwd" placeholder="" size="mini"></el-input>
+            </el-form-item>
+            <el-form-item label="请确认新密码" prop="MApasswordRepeat">
+              <el-input v-model="pwdForm.MApasswordRepeat" type="password" class="m-input-pwd" placeholder="" size="mini"></el-input>
+            </el-form-item>
+            <p class="m-btn-p" @click="pwdSubmit('pwdForm')">保 存</p>
           </el-form>
         </div>
       </div>
