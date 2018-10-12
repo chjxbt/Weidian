@@ -160,6 +160,19 @@
                 </div>
               </div>
             </div>
+            <div class="m-form-img-item">
+              <p class="m-form-label">开店邀请函规则</p>
+              <div class="m-item-content">
+                <div class=" m-item-row">
+                  <div class="upload-box" @click="setWhichImg('storeInvitation')">
+                    <el-upload class="rule-upload" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false" :on-success="uploadPicture">
+                      <img v-if="storeInvitationImg" :src="storeInvitationImg" class="avatar">
+                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="m-personal-left-right">
@@ -172,19 +185,6 @@
                   <div class="upload-box" @click="setWhichImg('invitationFans')">
                     <el-upload class="rule-upload" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false" :on-success="uploadPicture">
                       <img v-if="invitationFansImg" :src="invitationFansImg" class="avatar">
-                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                    </el-upload>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="m-form-img-item">
-              <p class="m-form-label">专属粉丝分享海报</p>
-              <div class="m-item-content">
-                <div class=" m-item-row">
-                  <div class="upload-box" @click="setWhichImg('fansShare')">
-                    <el-upload class="rule-upload" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false" :on-success="uploadPicture">
-                      <img v-if="fansShareImg" :src="fansShareImg" class="avatar">
                       <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                     </el-upload>
                   </div>
@@ -217,11 +217,19 @@
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-        <div class="m-personal-left-right">
-          <h3 class="m-title">杂项图片</h3>
-          <div class="m-form-item-box">
+            <div class="m-form-img-item">
+              <p class="m-form-label">专属粉丝收益详情</p>
+              <div class="m-item-content">
+                <div class=" m-item-row">
+                  <div class="upload-box" @click="setWhichImg('incomeDetail')">
+                    <el-upload class="rule-upload" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false" :on-success="uploadPicture">
+                      <img v-if="incomeDetailImg" :src="incomeDetailImg" class="avatar">
+                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div class="m-form-img-item">
               <p class="m-form-label">提现帮助</p>
               <div class="m-item-content">
@@ -248,38 +256,69 @@
                 </div>
               </div>
             </div>
-            <div class="m-form-img-item">
-              <p class="m-form-label">开店邀请函规则</p>
-              <div class="m-item-content">
-                <div class=" m-item-row">
-                  <div class="upload-box" @click="setWhichImg('storeInvitation')">
-                    <el-upload class="rule-upload" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false" :on-success="uploadPicture">
-                      <img v-if="storeInvitationImg" :src="storeInvitationImg" class="avatar">
-                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                    </el-upload>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="m-form-img-item">
-              <p class="m-form-label">专属粉丝收益详情</p>
-              <div class="m-item-content">
-                <div class=" m-item-row">
-                  <div class="upload-box" @click="setWhichImg('incomeDetail')">
-                    <el-upload class="rule-upload" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false" :on-success="uploadPicture">
-                      <img v-if="incomeDetailImg" :src="incomeDetailImg" class="avatar">
-                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                    </el-upload>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
         <div class="m-personal-left-right">
-          <h3 class="m-title">我的 - 静态广告</h3>
+          <h3 class="m-title">专属粉丝</h3>
           <div class="m-form-item-box">
-            <div class="m-form-img-item" style="margin-right: 0.2rem">
+            <div class="m-form-img-item">
+              <p class="m-form-label">专属粉丝分享海报</p>
+              <div class="m-item-content">
+                <div class=" m-item-row">
+                  <div class="upload-box" @click="setWhichImg('fansShare')">
+                    <el-upload class="rule-upload" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false" :on-success="uploadPicture">
+                      <img v-if="fansShareImg_o" :src="fansShareImg_o" class="avatar">
+                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="m-form-img-item" v-if="fansNum > 0">
+              <p class="m-form-label">专属粉丝分享海报</p>
+              <div class="m-item-content">
+                <div class=" m-item-row">
+                  <div class="upload-box" @click="setWhichImg('fansShare')">
+                    <el-upload class="rule-upload" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false" :on-success="uploadPicture">
+                      <img v-if="fansShareImg_tw" :src="fansShareImg_tw" class="avatar">
+                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="m-form-img-item" v-if="fansNum > 1">
+              <p class="m-form-label">专属粉丝分享海报</p>
+              <div class="m-item-content">
+                <div class=" m-item-row">
+                  <div class="upload-box" @click="setWhichImg('fansShare')">
+                    <el-upload class="rule-upload" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false" :on-success="uploadPicture">
+                      <img v-if="fansShareImg_th" :src="fansShareImg_th" class="avatar">
+                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--<div class="m-form-img-item" v-if="fansNum > 2">
+              <p class="m-form-label">专属粉丝分享海报</p>
+              <div class="m-item-content">
+                <div class=" m-item-row">
+                  <div class="upload-box" @click="setWhichImg('fansShare')">
+                    <el-upload class="rule-upload" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false" :on-success="uploadPicture">
+                      <img v-if="fansShareImg_f" :src="fansShareImg_f" class="avatar">
+                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                  </div>
+                </div>
+              </div>
+            </div>-->
+          </div>
+        </div>
+        <div class="m-personal-left-right">
+          <h3 class="m-title">静态广告</h3>
+          <div class="m-form-item-box">
+            <div class="m-form-img-item" style="margin-right: 0.7rem">
               <p class="m-form-label">小静态广告</p>
               <div class="m-item-content">
                 <div class=" m-item-row">
@@ -346,7 +385,10 @@
         fansRuleImg: "",            // 等级规则 - 专属粉丝管理规则
         invitationRuleImg: "",      // 等级规则 - 开店邀请海报规则
         invitationFansImg: "",      // 邀请专属粉丝海报
-        fansShareImg: "",           // 专属粉丝分享海报
+        fansShareImg_o: "",         // 专属粉丝分享海报
+        fansShareImg_tw: "",        // 专属粉丝分享海报
+        fansShareImg_th: "",        // 专属粉丝分享海报
+        // fansShareImg_f: "",         // 专属粉丝分享海报
         invitationStoreImg: "",     // 邀请开店海报
         myTeacherImg: "",           // 我的导师
         withdrawalHelpImg: "",      // 提现帮助
@@ -356,6 +398,7 @@
         smallAdImg: "",             // 我的 - 小静态广告
         bigAdImg: "",               // 我的 - 大静态广告
         whichImg: "",               // 用来暂存是哪个img
+        fansNum: 0,                // 用来暂存已经上传多少个专属粉丝分享海报
         taskLevelList: [
           { value: "1", label: "等级 1" }, { value: "2", label: "等级 2" }, { value: "3", label: "等级 3" }, { value: "4", label: "等级 4" }
         ],
@@ -476,7 +519,19 @@
             }else if(this.whichImg == "invitationFans") {
               this.invitationFansImg = res.data.data;   // 邀请专属粉丝海报
             }else if(this.whichImg == "fansShare") {
-              this.fansShareImg = res.data.data;        // 专属粉丝分享海报
+              if(this.fansNum == 0) {
+                this.fansShareImg_o = res.data.data;    // 专属粉丝分享海报
+                this.fansNum += 1;
+              }else if(this.fansNum == 1) {
+                this.fansShareImg_tw = res.data.data;   // 专属粉丝分享海报
+                this.fansNum += 1;
+              }else if(this.fansNum == 2) {
+                this.fansShareImg_th = res.data.data;   // 专属粉丝分享海报
+                this.fansNum += 1;
+              }/*else if(this.fansNum == 3) {
+                this.fansShareImg_f = res.data.data;    // 专属粉丝分享海报
+                this.fansNum += 1;
+              }*/
             }else if(this.whichImg == "invitationStore") {
               this.invitationStoreImg = res.data.data;  // 邀请开店海报
             }else if(this.whichImg == "myTeacher") {
@@ -497,9 +552,8 @@
           }else{
             this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
-
-          this.bannerList[this.rowNum].baimage = res.data.data;
-          this.bannerList = this.bannerList.concat();
+          // this.bannerList[this.rowNum].baimage = res.data.data;
+          // this.bannerList = this.bannerList.concat();
         });
       },
       // 上传任务图标图片
@@ -525,10 +579,7 @@
       // 删除按钮
       deleteDone() {
         this.$confirm('此操作将删除该任务, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
+          confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'}).then(() => {
           this.$message({ type: 'success', message: '删除成功!', duration: 1500 });
         }).catch(() => {
           this.$message({ type: 'info', message: '已取消删除', duration: 1500 });
@@ -587,7 +638,10 @@
                 { aiimage: this.fansRuleImg, aitype: "6"},
                 { aiimage: this.invitationRuleImg, aitype: "7"},
                 { aiimage: this.invitationFansImg, aitype: "9"},
-                { aiimage: this.fansShareImg, aitype: "10"},
+                { aiimage: this.fansShareImg_o, aitype: "10"},
+                { aiimage: this.fansShareImg_tw, aitype: "10"},
+                { aiimage: this.fansShareImg_th, aitype: "10"},
+                // { aiimage: this.fansShareImg_f, aitype: "10"},
                 { aiimage: this.invitationStoreImg, aitype: "8"},
                 { aiimage: this.myTeacherImg, aitype: "0"},
                 { aiimage: this.smallAdImg, aitype: "1"},
@@ -643,8 +697,20 @@
                   this.invitationStoreImg = res.data.data[i].aiimage;     // 邀请开店海报
                 }else if(res.data.data[i].aitype == 9) {
                   this.invitationFansImg = res.data.data[i].aiimage;      // 邀请专属粉丝海报
-                }else if(res.data.data[i].aitype == 10) {
-                  this.fansShareImg = res.data.data[i].aiimage;           // 专属粉丝分享海报
+                }else if(res.data.data[i].aitype == undefined) {
+                  if(res.data.data[i].length == 1) {
+                    this.fansNum = 0;
+                    this.fansShareImg_o = res.data.data[i][0].aiimage;           // 专属粉丝分享海报
+                  }else if(res.data.data[i].length == 2) {
+                    this.fansNum = 1;
+                    this.fansShareImg_o = res.data.data[i][0].aiimage;           // 专属粉丝分享海报
+                    this.fansShareImg_tw = res.data.data[i][1].aiimage;           // 专属粉丝分享海报
+                  }else if(res.data.data[i].length == 3) {
+                    this.fansNum = 2;
+                    this.fansShareImg_o = res.data.data[i][0].aiimage;           // 专属粉丝分享海报
+                    this.fansShareImg_tw = res.data.data[i][1].aiimage;           // 专属粉丝分享海报
+                    this.fansShareImg_th = res.data.data[i][2].aiimage;           // 专属粉丝分享海报
+                  }
                 }else if(res.data.data[i].aitype == 11) {
                   this.withdrawalHelpImg = res.data.data[i].aiimage;      // 提现帮助
                 }else if(res.data.data[i].aitype == 12) {
