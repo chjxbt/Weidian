@@ -72,31 +72,45 @@ REWARD_TYPE = {
 
 icon = {
            "name": '首页',
-           "icon": 'https://daaiti.cn/imgs/WeiDian/icon/home.png',
-           "active_icon": 'https://daaiti.cn/imgs/WeiDian/icon/home2.png',
+           "icon": 'https://weidianweb.daaiti.cn/imgs/icon/home.png',
+           "active_icon": 'https://weidianweb.daaiti.cn/imgs/icon/home2.png',
            "url": 'index'
        }, {
            "name": '客服',
-           "icon": 'https://daaiti.cn/imgs/WeiDian/icon/info.png',
-           "active_icon": 'https://daaiti.cn/imgs/WeiDian/icon/info2.png',
+           "icon": 'https://weidianweb.daaiti.cn/imgs/icon/info.png',
+           "active_icon": 'https://weidianweb.daaiti.cn/imgs/icon/info2.png',
            "url": 'service'
        }, {
            "name": '发现',
-           "icon": 'https://daaiti.cn/imgs/WeiDian/icon/search2.png',
-           "active_icon": 'https://daaiti.cn/imgs/WeiDian/icon/search.png',
+           "icon": 'https://weidianweb.daaiti.cn/imgs/icon/search2.png',
+           "active_icon": 'https://weidianweb.daaiti.cn/imgs/icon/search.png',
            "url": 'discover'
        }, {
            "name": '购物车',
-           "icon": 'https://daaiti.cn/imgs/WeiDian/icon/cart2.png',
-           "active_icon": 'https://daaiti.cn/imgs/WeiDian/icon/cart.png',
+           "icon": 'https://weidianweb.daaiti.cn/imgs/icon/cart2.png',
+           "active_icon": 'https://weidianweb.daaiti.cn/imgs/icon/cart.png',
            "url": 'shopping'
        }, {
            "name": '我的',
-           "icon": 'https://daaiti.cn/imgs/WeiDian/icon/me.png',
-           "active_icon": 'https://daaiti.cn/imgs/WeiDian/icon/me2.png',
+           "icon": 'https://weidianweb.daaiti.cn/imgs/icon/me.png',
+           "active_icon": 'https://weidianweb.daaiti.cn/imgs/icon/me2.png',
            "url": 'personal'
        }
 
 finished_pay_status = ['2', '4', '5', '7', '9', '10', '11']
 
 HMSkipType = {'0': '无跳转类型', '1': '专题', '2': '商品', '3': '教程', '4': '公告'}
+
+staticimage = {
+    "home": "home.png",
+    "home_active": "home2.png",
+    "info": "info.png",
+    "info_active": "info2.png",
+    "search": "search2.png",
+    "search_active": "search.png",
+    "cart": "cart2.png",
+    "cart_active": "cart.png",
+    "me": "me.png",
+    "me_active": "me2.png",
+    "shareimage": "shareimage.png",
+}

@@ -265,8 +265,6 @@ class CMyCenter(BaseMyCenterControl):
                 address.add("addressinfo")
         return address_list
 
-
-
     @verify_token_decorator
     def add_useraddress(self):
         if not hasattr(request, 'user'):
@@ -579,6 +577,10 @@ class CMyCenter(BaseMyCenterControl):
             raise SYSTEM_ERROR(u'卡号无效')
         return bank
 
+    @verify_token_decorator
+    def set_share_params(self):
+        if not is_admin():
+            raise TOKEN_ERROR(u'请使用管理员登录')
 
 
 
