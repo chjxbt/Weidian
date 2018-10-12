@@ -1,4 +1,5 @@
 # -*- coding:utf8 -*-
+import platform
 import uuid
 import os
 import re
@@ -477,7 +478,7 @@ class BaseTask():
 
 class BaseFile():
 
-    def upload_file(self, rootdir):
+    def upload_file(self, rootdir, notimetag):
         logger.debug('get filetype %s', rootdir)
         from WeiDian.common.timeformat import get_db_time_str
         from WeiDian.config.setting import QRCODEHOSTNAME, LinuxRoot, LinuxImgs
@@ -487,14 +488,17 @@ class BaseFile():
             filename = str(filename)
         filessuffix = filename.split(".")[-1]
         filedir = os.path.join(LinuxRoot, LinuxImgs, rootdir)
-        logger.debug('get filedir is %s',filedir)
+        logger.debug('get filedir is %s', filedir)
         if not os.path.isdir(filedir):
             os.mkdir(filedir)
         if not is_admin():
             filename_title = request.user.openid
         else:
             filename_title = request.user.id
-        filename = rootdir + filename_title + get_db_time_str() + "." + filessuffix
+        if str(notimetag) == 'true':
+            filename = rootdir + filename_title + "." + filessuffix
+        else:
+            filename = rootdir + filename_title + get_db_time_str() + "." + filessuffix
         filepath = os.path.join(filedir, filename)
         print(filepath)
         files.save(filepath)
