@@ -10,7 +10,7 @@ from WeiDian.common.get_model_return_list import get_model_return_list
 from WeiDian.common.loggers import generic_log
 from WeiDian.common.make_qrcode import make_qrcode
 from WeiDian.common.params_require import parameter_required
-from WeiDian.config.setting import QRCODEHOSTNAME, LinuxRoot, LinuxImgs, WindowsRoot
+from WeiDian.config.setting import QRCODEHOSTNAME, LinuxRoot, LinuxImgs, WindowsRoot, LinuxStaticImgs
 from flask import request
 import math
 import uuid
@@ -596,6 +596,20 @@ class CActivity(BaseActivityControl, BaseTask):
         filetype = request.args.to_dict().get("filetype", 'home')
         notimetag = request.args.to_dict().get("notimetag", '')
         url = BaseFile().upload_file(filetype, notimetag)
+        res = import_status("save_photo_success", "OK")
+        res['data'] = url
+        return res
+
+    @verify_token_decorator
+    def upload_static_image(self):
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'权限不足')
+        logger.debug('get args is %s', request.args.to_dict())
+        filetype = request.args.to_dict().get('filetype')
+        from WeiDian.config.enums import staticimage
+        if filetype not in staticimage:
+            raise PARAMS_MISS('filetype is not right')
+        url = BaseFile().upload_file("", "", staticimage.get(filetype))
         res = import_status("save_photo_success", "OK")
         res['data'] = url
         return res

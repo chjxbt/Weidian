@@ -13,6 +13,7 @@ APIHOST = 'https://weidian.daaiti.cn'
 LinuxRoot = '/opt/WeiDian/'
 LinuxImgs = 'imgs'
 WindowsRoot = 'D:/'
+LinuxStaticImgs = '/opt/WeiDian/imgs/icon'
 
 # weidian
 APP_ID = 'wx8206635590c9cc0e'

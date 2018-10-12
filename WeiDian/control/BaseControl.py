@@ -507,29 +507,33 @@ class BaseTask():
 
 class BaseFile():
 
-    def upload_file(self, rootdir, notimetag):
+    def upload_file(self, rootdir, notimetag, filepath=None):
         logger.debug('get filetype %s', rootdir)
         from WeiDian.common.timeformat import get_db_time_str
-        from WeiDian.config.setting import QRCODEHOSTNAME, LinuxRoot, LinuxImgs
+        from WeiDian.config.setting import QRCODEHOSTNAME, LinuxRoot, LinuxImgs, LinuxStaticImgs
         files = request.files.get("file")
-        filename = files.filename
-        if not isinstance(filename, basestring):
-            filename = str(filename)
-        filessuffix = filename.split(".")[-1]
-        filedir = os.path.join(LinuxRoot, LinuxImgs, rootdir)
-        logger.debug('get filedir is %s', filedir)
-        if not os.path.isdir(filedir):
-            os.mkdir(filedir)
-        if not is_admin():
-            filename_title = request.user.openid
+        if filepath:
+            filepath = os.path.join(LinuxStaticImgs, filepath)
+            url = QRCODEHOSTNAME + "/imgs/icon/" + filepath
         else:
-            filename_title = request.user.id
-        if str(notimetag) == 'true':
-            filename = rootdir + filename_title + "." + filessuffix
-        else:
-            filename = rootdir + filename_title + get_db_time_str() + "." + filessuffix
-        filepath = os.path.join(filedir, filename)
+            filename = files.filename
+            if not isinstance(filename, basestring):
+                filename = str(filename)
+            filessuffix = filename.split(".")[-1]
+            filedir = os.path.join(LinuxRoot, LinuxImgs, rootdir)
+            logger.debug('get filedir is %s', filedir)
+            if not os.path.isdir(filedir):
+                os.mkdir(filedir)
+            if not is_admin():
+                filename_title = request.user.openid
+            else:
+                filename_title = request.user.id
+            if str(notimetag) == 'true':
+                filename = rootdir + filename_title + "." + filessuffix
+            else:
+                filename = rootdir + filename_title + get_db_time_str() + "." + filessuffix
+            filepath = os.path.join(filedir, filename)
+            url = QRCODEHOSTNAME + "/imgs/{0}/".format(rootdir) + filename
         print(filepath)
         files.save(filepath)
-        url = QRCODEHOSTNAME + "/imgs/{0}/".format(rootdir) + filename
         return url
