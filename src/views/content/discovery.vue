@@ -1045,7 +1045,7 @@
       },
       // 获取banner滚动图
       getBanner() {
-        axios.get(api.get_bigactivitys + '?lasting=true&token=' + localStorage.getItem('token')).then(res => {
+        axios.get(api.get_bigactivitys + '?lasting=false&token=' + localStorage.getItem('token')).then(res => {
           if(res.data.status == 200) {
             this.bannerLoading = false;
 
@@ -1110,7 +1110,7 @@
       // 获取首页活动/推文内容列表
       getActivity(start, count, skiptype) {
         axios.get(api.get_all_activity + '?token=' + localStorage.getItem('token'),
-          { params: { lasting: true, start: start || 0, count: count || this.count, tnid: this.tnid, skiptype: skiptype || "all" }}).then(res => {
+          { params: { lasting: false, start: start || 0, count: count || this.count, tnid: this.tnid, skiptype: skiptype || "all" }}).then(res => {
           if(res.data.status == 200) {
             this.activityLoading = false;
             this.activityList = res.data.data;
@@ -1276,7 +1276,7 @@
       getProduct() {
         this.productList = [];
         this.productLoading = true;
-        axios.get(api.get_info + '?lasting=true&token=' + localStorage.getItem('token')).then(res => {
+        axios.get(api.get_info + '?token=' + localStorage.getItem('token')).then(res => {
           if(res.data.status == 200) {
             this.productViewNum = res.data.data[0].reviewnum;     // 虚拟查看数
             this.productLikeNum = res.data.data[0].relikenum;     // 虚拟喜欢数
