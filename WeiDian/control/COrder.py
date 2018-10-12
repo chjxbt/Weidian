@@ -261,20 +261,28 @@ class COrder():
         generic_log(data)
         if not self.pay.check(data):
             return self.pay.reply(u"签名验证失败", False)
-        # 修改订单状态
         sn = data.get('out_trade_no')
+        order = self.sorder.get_order_by_oisn(sn)
+        if not order or order.OIpaystatus != 1:
+            # 无效请求
+            return self.pay.reply("OK", True)
+        order_owner = self.suser.get_user_by_user_id(order.USid)
+        # 修改订单状态
         paytime = data.get('time_end')
-        order = self.sorder.update_orderinfo_by_oisn(sn, {
-            'OIpaystatus': 4,  # 待发货
+        update_dict = {
+            'OIpaystatus': 5,  # 待发货
             'OIpaytime': paytime,
             'OIpaytype': 1,  # 统一微信支付
-        })
+        }
+        if order_owner and order_owner.UPPerd:
+            pass
+        order = self.sorder.update_orderinfo_by_oisn(sn, )
         # 记录销售额活动
         order = self.sorder.get_order_by_oisn(sn)
 
 
         upper_user = self.suser.get_user_by_user_id(order)
-        return self.pay.reply("OK", True)
+
 
     def fix_orderproduct_info(self, sku_list, oiid):
         """
