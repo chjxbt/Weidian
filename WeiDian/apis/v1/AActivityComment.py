@@ -23,7 +23,8 @@ class AActivityComment(Resource):
     def get(self, activitycomment):
         print activitycomment
         apis = {
-            'get_list': self.cactivitycomment.get_comment_list,
+            'get_list': self.cactivitycomment.get_comment_list,  #
+            'get_comment_with_apply': self.cactivitycomment.get_comment_with_apply,
         }
         res = apis[activitycomment]()
         return jsonify(res)

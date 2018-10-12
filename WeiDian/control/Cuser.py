@@ -136,7 +136,7 @@ class CUser():
         state = str(state_url)
         login = WeixinLogin(APP_ID, APP_SECRET_KEY)
         redirect_url = login.authorize(QRCODEHOSTNAME + "/user/wechat_callback", 'snsapi_userinfo', state=state)
-        return {"message":
+        return {"data":
             {
                 'redirect_url': redirect_url
             }, "status": 302}

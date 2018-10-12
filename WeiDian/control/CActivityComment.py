@@ -26,6 +26,8 @@ class CActivityComment(BaseActivityCommentControl):
         self.sactivity = SActivity()
         from WeiDian.service.SUser import SUser
         self.suser = SUser()
+        from WeiDian.service.SSuperUser import SSuperUser
+        self.ssuperuser = SSuperUser()
 
     @verify_token_decorator
     def add_comment(self):
@@ -102,6 +104,38 @@ class CActivityComment(BaseActivityCommentControl):
             generic_log(e)
             raise e
 
-    def get_commen_reply(self):
-        pass
+    def get_comment_with_apply(self):
+        """获取推文的评论列表(评论回复嵌套)"""
+        try:
+            args = request.args.to_dict()
+            acid = args.get('acid')
+            if not acid:
+                raise PARAMS_MISS(u'必要的参数缺失: acid;')
+            page = int(args.get('page', 1))  # 页码
+            count = int(args.get('count', 15))  # 取出条数
+            comment_list = self.sactivitycomment.get_comment_by_activity_id(acid, page, count)
+            for comment in comment_list:
+                self.fill_user(comment)
+                reply = self.sactivitycomment.get_apply_by_acoid(comment.ACOid)
+                if reply:
+                    comment.fill(reply, 'reply')
+                    # 改: 所有的回复都是管理员回复
+                    admin_user = self.ssuperuser.get_one_super_by_suid(reply.USid)
+                    if admin_user:
+                        user = admin_user
+                        admin_user.fill(0, 'robot')
+                    else:
+                        user = {
+                            'name': u'运营人员',
+                            'robot': 1
+                        }
+                    reply.fill(user, 'user')
+            data = import_status('get_acvity_comment_list_success', 'OK')
+            data['data'] = comment_list
+            data["count"] = request.all_count
+            data["page_count"] = request.page_count
+            return data
+        except Exception as e:
+            generic_log(e)
+            raise e
 

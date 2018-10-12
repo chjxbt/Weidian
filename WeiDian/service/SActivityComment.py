@@ -32,6 +32,11 @@ class SActivityComment(SBase):
         return comment
 
     @close_session
+    def get_apply_by_acoid(self, acoid):
+        """获取评论的回复"""
+        return self.session.query(ActivityComment).filter(ActivityComment.ACOparentid == acoid).first()
+
+    @close_session
     def get_apply_for_by_acoid(self, acoid):
         """通过评论id获取所回复的用户"""
         return self.session.query(SuperUser).join(

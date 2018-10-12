@@ -78,6 +78,7 @@ class ActivityComment(BaseModel):
     ACtext = Column(String(255), nullable=False)  # 评论内容
     ACOcreatetime = Column(String(14))  # 时间
     ACisdelete = Column(Boolean, default=False)  # 是否删除
+    ACOrobot = Column(String(16), comment=u'评论小马甲')
 
     @orm.reconstructor
     @auto_createtime
