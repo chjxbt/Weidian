@@ -11,7 +11,6 @@
             </template>
           </ul>
           <div class="m-inviteStore-content" v-if="now.name == '邀请记录'">
-            <div class="m-scroll">
               <div class="m-inviteStore-progress">
                 <p class="m-inviteStore-content-have">已成功邀请<span class="m-red">1</span>人，再邀请<span class="m-red">19</span>人可晋升，加油！</p>
                 <mt-progress :value="20" :bar-height="5"></mt-progress>
@@ -62,11 +61,9 @@
                   <span>已购买16单</span>
                 </li>
               </ul>
-            </div>
 
           </div>
           <div class="m-inviteStore-content" v-else-if="now.name == '礼包动态'">
-            <div class="m-scroll">
               <ul class="m-inviteStore-dynamic-ul">
                 <li>
                   <img src="http://imgsrc.baidu.com/image/c0%3Dshijue1%2C0%2C0%2C294%2C40/sign=20a7d1b16163f62408503140ef2d818d/6a600c338744ebf8c8f43eb7d3f9d72a6159a7b5.jpg" class="m-inviteStore-dynamic-img">
@@ -89,10 +86,8 @@
                   <p><span class="m-red">￥136</span></p>
                 </li>
               </ul>
-            </div>
           </div>
           <div class="m-inviteStore-content" v-else-if="now.name == '邀请排行榜'">
-            <div class="m-scroll">
               <h3 class="m-inviteStore-ranking-h3">-8月8日邀请开店排行榜-</h3>
               <p class="m-inviteStore-ranking-info">每日更新排行，请加油哦</p>
               <div class="m-fans-ranking-list">
@@ -144,7 +139,6 @@
 
                 </ul>
               </div>
-            </div>
           </div>
         </div>
       </div>
@@ -284,6 +278,7 @@
   @import "../../../common/css/index";
   @import "../../../common/css/modal";
 .m-inviteStore{
+  background-color: #BE3D36;
   .m-inviteStore-rule {
     width: 56px;
     height: 36px;
@@ -350,8 +345,6 @@
     padding: 13px;
     /*background-color: #CF2A2A;*/
     background-color: transparent;
-    position: absolute;
-    top:760px;
     .m-inviteStore-state-box{
      background-color: #fff;
       border-radius: 10px;
@@ -373,14 +366,7 @@
       }
       .m-inviteStore-content{
         padding: 34px;
-        /*min-height: 800px;*/
-        height: 400px;
-        overflow: hidden;
-        .m-scroll{
-          height: 400px;
-          overflow-y: auto;
-          overflow-x: hidden;
-        }
+        min-height: 800px;
         .m-inviteStore-progress{
           padding: 0 47px;
           .m-inviteStore-content-have{
