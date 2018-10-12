@@ -9,7 +9,7 @@ from flask import request, current_app
 BASEDIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 
-def generic_log(data):
+def generic_log(data, info=None):
     logger_file_name = datetime.now().strftime("%Y-%m-%d") + u'.log'
     logger_dir = os.path.join(BASEDIR, 'logs')
     if not os.path.isdir(logger_dir):
@@ -24,7 +24,10 @@ def generic_log(data):
         )
     handler.setFormatter(logging_format)
     current_app.logger.addHandler(handler)
-    current_app.logger.error(u'>>>>>>>>>>>>>>>>>>bug<<<<<<<<<<<<<<<<<<<')
+    if info:
+        current_app.logger.error(u'>>>>>>>>>>>>>>>>>>{}<<<<<<<<<<<<<<<<<<<'.format(info))
+    else:
+        current_app.logger.error(u'>>>>>>>>>>>>>>>>>>bug<<<<<<<<<<<<<<<<<<<')
     current_app.logger.error(data)
     current_app.logger.error(request.detail)
     current_app.logger.removeHandler(handler)

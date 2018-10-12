@@ -274,14 +274,39 @@ class COrder():
             'OIpaytime': paytime,
             'OIpaytype': 1,  # 统一微信支付
         }
+        # 如果存在上一级
         if order_owner and order_owner.UPPerd:
-            pass
-        order = self.sorder.update_orderinfo_by_oisn(sn, )
-        # 记录销售额活动
-        order = self.sorder.get_order_by_oisn(sn)
+            try:
+                uppid = order_owner.UPPerd
+                update_dict['Sellerid'] = uppid
+                # 记录销售额活动
+                from WeiDian.service.SPartnerSellOrInviteMatch import SPartnerSellOrInviteMatch
+                self.spartnermatch = SPartnerSellOrInviteMatch()
+                match = self.spartnermatch.get_lasting_partner_match(1)  # 销售比赛, 不分等级
+                # 如果活动在进行中
+                if match:
+                    match_item = self.spartnermatch.get_partner_match_mount_by_usidpsmid(uppid, match.PSIMid)
+                    # 如果有此人上级的记录
+                    if match_item:
+                        from WeiDian.models.model import PartnerSellOrinviteMount
+                        self.spartnermatch.update_partner_match_mount_by_psomid(match_item.PSOMid, {
+                            'sellorinvitemount': PartnerSellOrinviteMount.sellorinvitemount + order.OImount
+                        })
+                    else:  # 无记录
+                        add_mount = {
+                            'PSOMid': str(uuid.uuid4()),
+                            'USid': order_owner.UPPerd,
+                            'sellorinvitemount': order.OImount,
+                            'PSIMid': match.PSIMid
+                        }
+                        self.spartnermatch.add_model('PartnerSellOrinviteMount', add_mount)
+            except Exception as e:
+                generic_log(e, 'paycall_back_error')
+        updated = self.sorder.update_orderinfo_by_oisn(sn, update_dict)
+        return self.pay.reply("OK", True)
 
 
-        upper_user = self.suser.get_user_by_user_id(order)
+
 
 
     def fix_orderproduct_info(self, sku_list, oiid):

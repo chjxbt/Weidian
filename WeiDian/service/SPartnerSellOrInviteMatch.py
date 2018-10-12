@@ -43,6 +43,13 @@ class SPartnerSellOrInviteMatch(SBase):
         ).first()
 
     @close_session
+    def update_partner_match_mount_by_psomid(self, psomid):
+        """更新参加活动的数据"""
+        return self.session.query(PartnerSellOrinviteMount).filter(
+            PartnerSellOrinviteMount.PSOMid == psomid,
+        ).first()
+
+    @close_session
     def get_partner_match_mount_gt_value(self, psimid, value):
         """大于该活动中某值合伙人成绩人数"""
         return self.session.query(PartnerSellOrinviteMount).filter(
