@@ -1,5 +1,5 @@
 <template>
-    <div class="m-img-modal">
+    <div class="m-img-modal" @click="closeModal">
       <div class="m-modal-state">
         <!--<span class="m-close" @click="closeModal">X</span>-->
         <!--<img :src="src"  alt="">-->

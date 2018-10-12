@@ -30,7 +30,7 @@
               <div class="product-name m-ft-24 tl m-ft-b" @click="toDetail(product)">{{product.prtitle}}</div>
               <!-- :options="product.sku_total" -->
               <product-params  :selects="product.sku.pskproperkey" :options="sku" :quantity="product.scnums" ></product-params>
-              <product-quantity :quantity="product.scnums"></product-quantity>
+              <product-quantity :quantity="product.scnums" @changeNum="changeNum"></product-quantity>
             </div>
             <div class="one-product-four">
               <p class="one-product-price m-red m-ft-20 m-ft-b">￥<span class="product-price-number">{{product.sku.pskprice}}</span></p>
@@ -215,7 +215,9 @@
             axios.post(api.delete_shoppingcart + '?token='+localStorage.getItem('token'),{
               scid:product.scid
             }).then(res => {
-              console.log(res)
+              if(res.data.status == 200){
+                this.getShop()
+              }
             })
           }
         });
@@ -229,6 +231,15 @@
       toOrder() {
         let order = this.order;
         this.$router.push({path: "/submitOrder", query: { order }});
+      },
+      changeNum(num){
+        console.log(this.selects)
+        // axios.post(api.update_shoppingcart + '?token=' + localStorage.getItem('token'),{
+        //   pskid:id,
+        //   changenum:num
+        // }).then(res => {
+        //
+        // });
       }
     },
     created() {}

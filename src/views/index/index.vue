@@ -1,6 +1,6 @@
 <template>
-    <div class="m-index" :class="show_task?'noScroll':''" @touchmove.stop="touchMove" @touchend.stop="touchEnd" @touchstart.stop="touchStart">
-      <div class="m-suspend-btn " id="m-suspend-btn" :class="show_task_btn ? '':'active'" @click.stop="showModal('show_task')" >
+    <div class="m-index"  @touchmove.stop="touchMove" @touchend.stop="touchEnd" @touchstart.stop="touchStart">
+      <div class="m-suspend-btn " v-if="is_vip" id="m-suspend-btn" :class="show_task_btn ? '':'active'" @click.stop="showModal('show_task')" >
         <span>开始转发</span>
       </div>
       <mt-loadmore :top-method="loadTop"   :bottom-all-loaded="!isScroll" ref="loadmore">
@@ -49,7 +49,7 @@
           <!--&lt;!&ndash;</div>&ndash;&gt;-->
         <!--</div>-->
       <!--</div>-->
-      <div class="m-modal" v-if="show_task" @click.stop="closeModal('show_task')">
+      <div class="m-modal" v-if="show_task" @click.stop="closeModal('show_task')" >
         <div class="m-modal-state">
           <div class="m-modal-head">
             <span class="m-close" @click.stop="closeModal('show_task')"> x </span>
@@ -120,6 +120,21 @@
   import mVideo from '../../components/common/video';
   import imgModal from '../../components/common/imgModal';
   import wx from 'weixin-js-sdk';
+  var scroll = (function (className) {
+    var scrollTop;
+    return {
+      afterOpen: function () {
+        scrollTop = document.scrollingElement.scrollTop || document.body.scrollTop;
+        document.body.classList.add(className);
+        document.body.style.top = -scrollTop + 'px';
+      },
+      beforeClose: function () {
+        document.body.classList.remove(className);
+        document.scrollingElement.scrollTop = scrollTop;
+        document.body.scrollTop = scrollTop;
+      }
+    };
+  })('scroll');
     export default {
       mixins: [wxapi],
         data() {
@@ -189,7 +204,8 @@
               TArole:'',
               code_src:'',
               components_src:'',
-              task_reward:null
+              task_reward:null,
+              is_vip:true
             }
         },
         components: {
@@ -212,8 +228,14 @@
         }
           this.getSwipe();
           this.getHot();
-        this.getTopnav();
-        this.getTask();
+          this.getTopnav();
+          if(localStorage.getItem('level') == 'partner'){
+            this.is_vip = true;
+            this.getTask();
+          }else{
+            this.is_vip = false;
+          }
+
 
           let that =this;
         this.interval = window.setInterval(that.animation,3000);
@@ -221,6 +243,15 @@
         // this.$nextTick(function () {
           wxapi.wxRegister(this.wxRegCallback)
         // })
+      },
+      watch:{
+        show_task:function (val,oldVal) {
+          if(val){
+            scroll.afterOpen();
+          }else{
+            scroll.beforeClose();
+          }
+        }
       },
         methods: {
           /*手指滑动显示隐藏*/
@@ -412,8 +443,9 @@
           },
           /*获取热文*/
           getHot(){
-            axios.get(api.get_all_hotmessage +'?token=' +  localStorage.getItem('token'),{params:{
-                lasting:true
+            axios.get(api.get_all_hotmessage,{params:{
+                lasting:true,
+                token:localStorage.getItem('token')
               }}).then(res => {
               if(res.data.status == 200){
                 this.hot_list = res.data.data;
@@ -483,11 +515,11 @@
                     if(arr.alreadylike) {
                       arr.name -= 1;
                       arr.alreadylike = false;
-                      Toast({ message: res.data.message, className: 'm-toast-warning' });
+                      Toast({ message: res.data.message,duration: 800, className: 'm-toast-warning' });
                     }else if(!arr.alreadylike) {
                       arr.name = Number(arr.name) + 1;
                       arr.alreadylike = true;
-                      Toast({ message: res.data.message, className: 'm-toast-success' });
+                      Toast({ message: res.data.message, duration: 800, className: 'm-toast-success' });
                     }
                     // this.activity_list[index].icon[0] = arr;
                     // this.$set(this.activity_list[index].icon[0],'name',arr.name);
@@ -665,10 +697,8 @@
 <style lang="less" rel="stylesheet/less" scoped>
   @import "../../common/css/index";
   @import "../../common/css/modal";
-  .noScroll{
-    overflow: hidden;
-  }
-.m-top{
+
+  .m-top{
   margin-top: 10px;
 }
   .m-course-img{

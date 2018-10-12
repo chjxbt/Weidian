@@ -34,7 +34,7 @@
       <div class="product-activity-content m-ft-28 m-grey-color m-ft-b tl">满89减5;满139减10</div>
       <img src="/static/images/icon-list-right.png" class="to-activity">
     </div>-->
-    <product-params :choose="false" :options="params_options" :sku="sku"></product-params>
+    <product-params :choose="is_choose" :quantity="quantity" :options="params_options" :price="product_info.prprice" :sku="sku" @carChoose="carChoose" @changeNum="changeNum" @closeModal="closeModal"></product-params>
     <div class="rectangular"></div>
     <div class="product-evaluation">
       <div class="evaluation-title m-ft-26 m-grey-color b">商品评价（99+）</div>
@@ -100,12 +100,17 @@
         <img src="/static/images/product_detail_service.png" class="to-buy-icon m-ft-20">
         <p class="to-buy-text m-ft-20">客服</p>
       </span>
-      <span class="service-add" @click="addCart">
+      <span class="service-add" @click="toCart">
         <img src="/static/images/produc_detail_shopping_cart.png" class="to-buy-icon m-ft-20">
         <p class="to-buy-text m-ft-20">购物车</p>
       </span>
-      <span class="to-buy-btn m-ft-36 m-bg-main-color" v-if="!is_vip" @click="buyNow">立即购买</span>
-      <div class="m-vip-btn m-ft-36 "  v-if="is_vip">
+      <div class="m-vip-btn m-normal m-ft-36 "  v-if="!is_vip" @click="addCart">
+        <p>加入购物车</p>
+      </div>
+      <div class="m-vip-btn m-normal m-ft-36 active" v-if="!is_vip" @click="buyNow">
+        <p>立即购买</p>
+    </div>
+      <div class="m-vip-btn m-ft-36 "  v-if="is_vip" @click="addCart">
         <p>买</p>
         <p class="m-ft-24">省￥6.5</p>
       </div>
@@ -137,7 +142,11 @@
         // brandList: [{img: "http://pic1.win4000.com/wallpaper/8/599d1d60036a2.jpg"}, {img: "http://bbsfiles.vivo.com.cn/vivobbs/attachment/forum/201804/25/145712qjc3gwcbtvgoct9w.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/57eb314a3c143.jpg"}, {img: "http://pic1.win4000.com/wallpaper/8/57eb322625b50.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc06f60ecf.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc080092c6.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc07478a17.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc08474821.jpg"}]
         params_options:null,
         sku:[],
-        is_vip:false
+        is_vip:false,
+        choose:null,
+        is_choose:false,
+        quantity:1,
+        click_add:false
       }
     },
     components: { productParams },
@@ -151,10 +160,22 @@
         }).then(res => {
           if(res.data.status == 200){
             this.product_info =  res.data.data;
+            console.log(this.product_info)
             this.params_options = res.data.data.sku_value.psvpropervalue;
             this.sku = res.data.data.sku;
           }
         })
+      },
+      postCar(){
+        axios.post(api.update_shoppingcart + '?token=' + localStorage.getItem('token'),{
+          pskid:this.choose[0].pskid,
+          changenum:this.quantity
+        }).then(res => {
+           if(res.data.status == 200){
+             this.click_add = false;
+             Toast({ message: '已添加到购物车', className: 'm-toast-success' });
+           }
+        });
       },
       // 返回上一页
       backPage() {
@@ -173,6 +194,12 @@
           this.collectionVisible = true;
         }
       },
+      carChoose(v){
+        this.choose = v;
+        if(this.click_add){
+          this.postCar();
+        }
+      },
       // 分享商品
       shareProduct() {
 
@@ -189,14 +216,23 @@
       toService () {
 
       },
-      // 添加购物车
-      addCart () {
 
-      },
       // 立即购买
       buyNow() {
         let order = "";
         this.$router.push({path: "/submitOrder", query: { order }});
+      },
+      // 添加购物车
+      addCart(){
+        if(!this.choose){
+          this.is_choose = true;
+          this.click_add = true;
+        }else{
+          this.postCar();
+        }
+      },
+      closeModal(){
+        this.is_choose = false;
       },
       // 引入商品详情图片
       imgsDone() {
@@ -215,6 +251,12 @@
         },function(response){
           console.log('error', response);   // 发生错误
         });
+      },
+      changeNum(num){
+        this.quantity = num;
+      },
+      toCart(){
+        this.$router.push('/shopping/index');
       }
     },
     mounted() {
@@ -459,10 +501,12 @@
     display: flex;
     position: fixed;
     background-color: @bgMainColor;
+    height: 96px;
+    color: #666666;
     .service-add {
       flex: 1;
-      border-top: 2px solid @grey;
-      border-right: 2px solid @grey;
+      border-top: 2px solid rgb(231,231,231);
+      border-right: 2px solid rgb(231,231,231);
       .to-buy-icon {
         width: 52px;
         height: 45px;
@@ -482,7 +526,8 @@
     .m-vip-btn{
       margin-left: -2px;
       width: 230px;
-      padding: 16px 0;
+      height: 96px;
+      /*padding: 16px 0;*/
       /*height: 110px;*/
       /*line-height: 110px;*/
       white-space: nowrap;
@@ -490,6 +535,21 @@
       letter-spacing: 3.6px;
       background-color: #000;
       color: #fff;
+      &.m-normal{
+        padding: 0;
+        line-height: 96px;
+        background-color: #393939;
+        p{
+          &:first-child{
+            margin-top: 0;
+          }
+        }
+      }
+      p{
+        &:first-child{
+          margin-top: 10px;
+        }
+      }
       &.active{
         background-color: @mainColor;
       }
