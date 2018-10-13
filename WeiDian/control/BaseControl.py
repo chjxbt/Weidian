@@ -61,8 +61,9 @@ class BaseActivityControl():
 
     def fill_like_num(self, activity):
         """添加点赞相关字段"""
-        if hasattr(request, 'user'):
-            alreadylike = self.salike.is_like(request.user.id, activity.ACid)
+        if not is_tourist():
+            from WeiDian.service.SActivityLike import SActivityLike
+            alreadylike = SActivityLike().is_like(request.user.USid, activity.ACid)
             activity.alreadylike = True if alreadylike else False
         activity.likenum = activity.AClikeFakeNum or activity.AClikenum
         activity.add('likenum', 'alreadylike')

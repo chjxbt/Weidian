@@ -56,7 +56,7 @@ class SProduct(SBase):
         if product.PRfakeviewnum:
             product.PRfakeviewnum = product.PRfakeviewnum + 1
         self.session.add(product)
-        self.session.commit()
+        # self.session.commit()
 
     @close_session
     def update_like_num(self, prid, num=1):

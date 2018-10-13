@@ -73,7 +73,7 @@ class SRecommend(SBase):
         if recommend.REfakeviewnum:
             recommend.REfakeviewnum = recommend.REfakeviewnum + 1
         self.session.add(recommend)
-        self.session.commit()
+        # self.session.commit()
 
     @close_session
     def add_like_num(self, reid):
@@ -82,7 +82,7 @@ class SRecommend(SBase):
         if recommend.RElikefakenum:
             recommend.RElikefakenum = recommend.RElikefakenum + 1
         self.session.add(recommend)
-        self.session.commit()
+        # self.session.commit()
 
     @close_session
     def del_like_num(self, reid):
@@ -91,4 +91,4 @@ class SRecommend(SBase):
         if recommend.RElikefakenum:
             recommend.RElikefakenum = recommend.RElikefakenum - 1
         self.session.add(recommend)
-        self.session.commit()
+        # self.session.commit()

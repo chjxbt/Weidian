@@ -21,8 +21,8 @@ class SActivityComment(SBase):
 
     @close_session
     def get_comment_by_acid_two(self, acid):
-        """通过活动id获取下面的评论和回复，只显示最近时间前两条"""
-        comment_list = self.session.query(ActivityComment).filter_by(ACid=acid, ACisdelete=False).order_by(ActivityComment.ACOcreatetime.desc()).limit(2).all()
+        """通过活动id获取下面的评论和回复，只显示最近时间前两条(改为6条)"""
+        comment_list = self.session.query(ActivityComment).filter_by(ACid=acid, ACisdelete=False).order_by(ActivityComment.ACOcreatetime.desc()).limit(6).all()
         return comment_list
 
     @close_session
