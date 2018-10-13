@@ -5,9 +5,11 @@ const api={
   login: title + 'super/login',       // 管理员登录
 
   get_all_task_level: title + 'task/get_all_task_level',    // 获取所有任务等级
+  edit_task_level: title + 'task/add_or_update_task_level', // 获取所有任务等级
   get_all_task_type: title + 'task/get_all_task_type',      // 获取任务类型
   get_all_task: title + 'task/get_all_task',                // 获取所有任务
   add_task: title + 'task/add_task',                        // 添加或更新任务
+  del_task: title + 'task/del_task',                        // 删除任务
 
   get_bigactivitys: title + 'bigactivity/get_bigactivitys', //获取专题列表-后台
   get_all_hot_message: title + 'hotmessage/get_all',        //获取全部热文 - 首页

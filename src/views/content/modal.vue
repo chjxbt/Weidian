@@ -5,7 +5,7 @@
       <w-tab :list="tab_list" @wTabClick="wTabClick"></w-tab>
       <!--首页-->
      <div class="m-index" v-if="page == '首页'">
-       <h3 class="m-title">浮窗管理</h3>
+       <!--<h3 class="m-title">浮窗管理</h3>-->
 
        <div class="title-img-box">
          <h3 class="m-title">任务等级管理</h3>
@@ -16,14 +16,30 @@
        <div v-if="!levelTableClose" class="content-table">
          <el-table :data="levelList" border style="width: 100%" v-loading="levelLoading">
            <el-table-column prop="talevel" label="任务等级" width="120"></el-table-column>
-           <!--<el-table-column prop="reward" label="奖励方式"></el-table-column>-->
-           <el-table-column prop="doneTip" label="完成提示" width="120"></el-table-column>
-           <el-table-column prop="tarole" label="规则"></el-table-column>
+           <el-table-column prop="raward" label="奖励方式"></el-table-column>
+           <el-table-column prop="tacomplatenotifications" label="完成提示" width="120">
+             <template slot-scope="scope">
+               <div @click="rowClick(scope.$index, 'img')">
+                 <el-upload class="task-done-uploader" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false"
+                            :on-success="uploadTaskDonePicture" :disabled="scope.row.disabled">
+                   <img v-if="scope.row.tacomplatenotifications" :src="scope.row.tacomplatenotifications" class="task-done-icon">
+                   <i v-else class="el-icon-plus task-done-icon"></i>
+                 </el-upload>
+               </div>
+             </template>
+           </el-table-column>
+           <el-table-column prop="tarole" label="规则">
+             <template slot-scope="scope">
+               <el-input v-model="scope.row.tarole" size="mini" placeholder="请输入热文内容" :disabled="scope.row.disabled"></el-input>
+             </template>
+           </el-table-column>
            <el-table-column fixed="right" label="管理" width="150">
              <template slot-scope="scope">
-               <el-button @click="editDone(scope.row)" type="text" size="small">编辑</el-button>
+               <el-button @click="editDone(scope, 'taskLevel')" type="text" size="small" v-if="scope.row.disabled">编辑</el-button>
+               <el-button @click="saveTaskLevel(scope, 'cancel')" type="text" size="small" v-if="!scope.row.disabled">取消</el-button>
                <el-button type="text" size="small" readonly>|</el-button>
-               <el-button @click="deleteDone" type="text" size="small">删除</el-button>
+               <el-button @click="deleteDone(scope, 'level')" type="text" size="small" v-if="scope.row.disabled">删除</el-button>
+               <el-button @click="saveTaskLevel(scope, 'save')" type="text" size="small" v-if="!scope.row.disabled">保存</el-button>
              </template>
            </el-table-column>
          </el-table>
@@ -34,11 +50,12 @@
          <el-table :data="taskList" border style="width: 100%" v-loading="taskLoading">
            <el-table-column prop="taname" label="任务标题"></el-table-column>
            <el-table-column prop="tatype" label="任务类型"></el-table-column>
-           <el-table-column fixed="right" label="管理" width="260">
+           <el-table-column prop="raward" label="任务奖励"></el-table-column>
+           <el-table-column fixed="right" label="管理" width="150">
              <template slot-scope="scope">
-               <el-button @click="editDone(scope.row)" type="text" size="small">编辑</el-button>
+               <el-button @click="editDone(scope, 'task')" type="text" size="small">编辑</el-button>
                <el-button type="text" size="small" readonly>|</el-button>
-               <el-button @click="deleteDone" type="text" size="small">删除</el-button>
+               <el-button @click="deleteDone(scope, 'task')" type="text" size="small">删除</el-button>
              </template>
            </el-table-column>
          </el-table>
@@ -46,41 +63,41 @@
 
        <el-form :label-position="labelPosition" label-width="100px" :model="formIndex">
          <div class="m-form-item m-item-modal">
-           <el-form-item label="任务等级" class="required">
+           <el-form-item label="任务名称：" class="required">
+             <el-input v-model="formIndex.title" class="m-input-m" placeholder="请输入任务名称"></el-input>
+           </el-form-item>
+           <el-form-item label="任务等级：" class="required">
              <el-select v-model="formIndex.taskLevel" clearable placeholder="请选择任务等级">
                <el-option v-for="item in taskLevelList" :key="item.value" :label="item.label" :value="item.value"></el-option>
              </el-select>
            </el-form-item>
-           <el-form-item label="任务标题" class="required">
-             <el-input v-model="formIndex.title" class="m-input-m" placeholder="请输入任务标题"></el-input>
-           </el-form-item>
-           <el-form-item label="任务类型" class="required">
+           <el-form-item label="任务类型：" class="required">
              <el-select v-model="taskType" clearable placeholder="请选择任务类型" @change="taskTypeChange" @clear="clearType">
                <el-option v-for="item in taskTypeList" :key="item.value" :label="item.label" :value="item.value"></el-option>
              </el-select>
            </el-form-item>
-           <el-form-item label="图标" class="m-s required" style="width: 2rem;">
+           <el-form-item label="图标：" class="m-s required" style="width: 2rem; min-height: 1rem">
              <el-upload class="avatar-uploader" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false"
                         :on-success="uploadTaskPicture">
-               <img v-if="imageUrl" :src="imageUrl" class="avatar">
+               <img v-if="taskImg" :src="taskImg" class="avatar">
                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
              </el-upload>
            </el-form-item>
-           <el-form-item :label="video_ratio" class="required">
-             <el-input v-model="formIndex.content" class="m-input-m" placeholder="请先选择任务类型"></el-input>
+           <el-form-item :label="video_ratio">
+             <el-input v-model="formIndex.content" class="m-input-m" placeholder="选填"></el-input>
            </el-form-item>
          </div>
-         <el-form-item label="备注">
+         <el-form-item label="备注：">
            <el-input v-model="formIndex.memo" class="m-input-m" placeholder="选填"></el-input>
          </el-form-item>
-         <el-form-item label="活动时间">
+         <el-form-item label="活动时间：">
            <el-date-picker v-model="activityTime" type="datetimerange" range-separator="至"
                            value-format="yyyy-MM-dd HH:mm:ss"
                            start-placeholder="开始日期" end-placeholder="结束日期" style="width: 4rem;">
            </el-date-picker>
          </el-form-item>
-         <el-form-item label="持续时间">
-           <el-input v-model="formIndex.duration" class="m-input-m">
+         <el-form-item label="持续时间：">
+           <el-input v-model="formIndex.duration" class="m-input-m" placeholder="选填">
              <template slot="append">天</template>
            </el-input>
            <!--<span class="m-item-add">+</span>-->
@@ -349,8 +366,10 @@
       </div>
 
       <div class="m-form-confirm-btn ">
-        <span v-if="page == '首页'">暂 停</span>
-        <span @click="submit">保 存</span>
+        <!--<span v-if="page == '首页'">暂 停</span>-->
+        <span @click="clearInput" v-if="editTask">取 消</span>
+        <span @click="submit" v-if="!editTask">保 存</span>
+        <span @click="saveTask" v-if="editTask">保 存</span>
       </div>
     </div>
   </div>
@@ -372,13 +391,16 @@
           { name:'发现', url:'', active:false },
           { name:'我的', url:'', active:false }
         ],
-        levelTableClose: true,
-        levelList: [],
-        levelLoading: true,
-        taskList: [],
-        taskLoading: true,
-        activityTime: [],
-        video_ratio: "视频/完成度",
+        levelTableClose: true,      // 任务等级管理隐藏
+        levelList: [],              // 任务等级list
+        rowNum: "",                 // 确定点击的图片是第几行的
+        levelLoading: true,         // 任务表格加载中
+        taskList: [],               // 任务表格
+        taskLoading: false,         // 任务表格加载中
+        editTask: false,            // 是否在编辑任务
+        editTaskRow: false,         // 正在编辑的任务行号
+        activityTime: [],           // 任务的活动时间
+        video_ratio: "视频/完成度：",
         ownerImg: "",               // 发现页 - 弹框图片
         unRevelRuleImg: "",         // 等级规则 - 未开店
         revelRuleImg: "",           // 等级规则 - 已开店
@@ -398,14 +420,14 @@
         smallAdImg: "",             // 我的 - 小静态广告
         bigAdImg: "",               // 我的 - 大静态广告
         whichImg: "",               // 用来暂存是哪个img
-        fansNum: 0,                // 用来暂存已经上传多少个专属粉丝分享海报
-        taskLevelList: [
+        fansNum: 0,                 // 用来暂存已经上传多少个专属粉丝分享海报
+        taskLevelList: [            // 任务等级list
           { value: "1", label: "等级 1" }, { value: "2", label: "等级 2" }, { value: "3", label: "等级 3" }, { value: "4", label: "等级 4" }
         ],
-        taskType: '',
-        taskTypeList: [{ value: "", label: "" }],
-        imageUrl:'',
-        labelPosition:'left',
+        taskType: '',               // 任务类型
+        taskTypeList: [{ value: "", label: "" }],   // 任务类型list
+        taskImg:'',                 // 任务图标
+        labelPosition: 'left',      // 表单左对齐
         formIndex:{ value:'', title: '', content: '', ratio: '', memo: '', rule: '', duration: '', taskLevel: '' },
       }
     },
@@ -419,7 +441,7 @@
             this.levelLoading = false;
             for(let i = 0; i < this.levelList.length; i ++) {
               this.levelList[i].talevel = '等级' + this.levelList[i].talevel;
-              this.levelList[i].doneTip = "【图片】";
+              this.levelList[i].disabled = true;
             }
           }else{
             this.$message({ type: 'error', message: res.data.message, duration: 1500 });
@@ -428,6 +450,7 @@
       },
       // 获取所有任务
       getAllTask(){
+        this.taskLoading = true;
         axios.get(api.get_all_task + '?token=' + localStorage.getItem('token')).then(res => {
           if(res.data.status == 200){
             this.taskList = res.data.data;
@@ -472,11 +495,11 @@
       taskTypeChange(v) {
         // 任务类型为观看视频时，视频。否则为完成度
         if(String(v) == "") {
-          this.video_ratio = "视频/完成度";
+          this.video_ratio = "视频/完成度：";
         }else if(String(v) == "0") {
-          this.video_ratio = "视频";
+          this.video_ratio = "视频：";
         }else if(String(v) == "1" || String(v) == "2" || String(v) == "3") {
-          this.video_ratio = "完成度";
+          this.video_ratio = "完成度：";
         }
       },
       // 清空任务类型选择时
@@ -551,8 +574,22 @@
           }else{
             this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
-          // this.bannerList[this.rowNum].baimage = res.data.data;
-          // this.bannerList = this.bannerList.concat();
+        });
+      },
+      // 上传任务完成的提示图片
+      uploadTaskDonePicture(res, file) {
+        let form = new FormData();
+        form.append("file", file.raw);
+        form.append("FileType", 'NewsPic');
+        form.append("index", 1);
+        axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token') + "&filetype = task", form).then(res => {
+          if(res.data.status == 200){
+            this.levelList[this.rowNum].tacomplatenotifications = res.data.data;
+            console.log(this.levelList[this.rowNum].tacomplatenotifications);
+            this.$message({ type: 'success', message: res.data.message, duration: 1500 });
+          }else{
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+          }
         });
       },
       // 上传任务图标图片
@@ -563,26 +600,82 @@
         form.append("index", 1);
         axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token') + "&filetype = task", form).then(res => {
           if(res.data.status == 200){
+            this.taskImg = res.data.data;
             this.$message({ type: 'success', message: res.data.message, duration: 1500 });
           }else{
             this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
-          // console.log(res.data);
-          this.imageUrl = res.data.data;
         });
+      },
+      // 确定点击的图片是第几行的
+      rowClick(index, col) {
+        // console.log(col);
+        this.rowNum = index;
       },
       // 编辑按钮
-      editDone(row) {
-        console.log(row);
+      editDone(scope, where) {
+        // 任务表格编辑
+        if(where == "task") {
+          this.editTask = true;
+          this.editTaskRow = scope.$index;
+          for(let i = 0; i < this.taskTypeList.length; i ++) {
+            if(scope.row.tatype = this.taskTypeList[i].label) {
+              this.taskType = this.taskTypeList[i].value;
+            }
+          }
+          this.formIndex.title = scope.row.taname;
+          this.formIndex.taskLevel = scope.row.tlid;
+          this.taskImg = scope.row.tahead;
+          this.formIndex.content = scope.row.taurl;
+          this.formIndex.memo = scope.row.tamessage;
+          this.activityTime = [scope.row.tastarttime, scope.row.taendtime];
+          this.formIndex.duration = scope.row.taduration;
+
+        }else if(where == "taskLevel") {    // 任务等级表格编辑
+          this.levelList[scope.$index].disabled = false;
+          this.levelList = this.levelList.concat();
+        }
+      },
+      // 保存任务等级或取消
+      saveTaskLevel(scope, where) {
+        if(where == "cancel") {
+          this.levelList[scope.$index].disabled = true;
+          this.levelList = this.levelList.concat();
+        }else if(where == "save") {
+          let params = {
+
+          };
+          /*this.levelLoading = false;
+          axios.post(api.edit_task_level + '?token=' + localStorage.getItem('token'), params).then(res=>{
+            if(res.data.status == 200){
+
+              this.levelLoading = false;
+            }else{
+              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+            }
+          });*/
+        }
       },
       // 删除按钮
-      deleteDone() {
-        this.$confirm('此操作将删除该任务, 是否继续?', '提示', {
+      deleteDone(scope, where) {
+        this.$confirm('此操作将删除该行, 是否继续?', '提示', {
           confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'}).then(() => {
-          this.$message({ type: 'success', message: '删除成功!', duration: 1500 });
-        }).catch(() => {
-          this.$message({ type: 'info', message: '已取消删除', duration: 1500 });
-        });
+          if(where == "task") {     // 删除任务
+            this.taskLoading = true;
+            axios.post(api.del_task + '?token=' + localStorage.getItem('token'),
+              { TAid: scope.row.taid }).then(res=>{
+              if(res.data.status == 200){
+                this.$message({ message: res.data.message, type: 'success', duration: 1500 });
+                this.taskList.splice(scope.$index, 1);
+                this.taskLoading = false;
+              }else{
+                this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+              }
+            });
+          }else if(where == "level") {    // 删除任务等级
+            console.log(this.levelList[scope.$index]);
+          }
+        }).catch();
       },
       // 弹框管理-首页-提交   添加任务
       submit() {
@@ -590,7 +683,7 @@
           let params = {
             TAname: this.formIndex.title,
             TAtype: this.taskType,
-            TAhead: this.imageUrl,
+            TAhead: this.taskImg,
             TLid: this.formIndex.taskLevel,
             TAstartTime: this.activityTime[0],
             TAendTime: this.activityTime[1],
@@ -598,24 +691,16 @@
             TAmessage: this.formIndex.memo,
             TAurl: this.formIndex.content
           };
-          if(params.TAname == "" || String(params.TAtype) == "" || params.TAhead == "" || params.TLid == "" || params.TAurl == "") {
-            this.$message({ type: 'warning', message: '请填写全部必填项', duration: 1500 });
-            console.log(params.TAname == "", String(params.TAtype) == "", params.TAhead == "", params.TLid == "", params.TAurl == "")
+          if(params.TAname == "" || String(params.TAtype) == "" || params.TAhead == "" || params.TLid == "") {
+            this.$message({ type: 'warning', message: '请完整填写', duration: 1500 });
           }else {
+            this.taskLoading = true;
             axios.post(api.add_task + '?token=' + localStorage.getItem('token'), params).then(res=>{
               if(res.data.status == 200){
-                this.$message({ message: res.data.message, type: 'success', duration: 1500 });
+                this.taskLoading = false;
                 this.getAllTask();        // 获取所有任务
-
-                this.formIndex.title = "";
-                this.formIndex.taskLevel = "";
-                this.formIndex.duration = "";
-                this.formIndex.memo = "";
-                this.formIndex.content = "";
-                this.taskType = "";
-                this.imageUrl = "";
-                this.activityTime = [];
-
+                this.$message({ message: res.data.message, type: 'success', duration: 1500 });
+                this.clearInput();         // 将编辑框置空
               }else{
                 this.$message({ type: 'error', message: res.data.message, duration: 1500 });
               }
@@ -661,8 +746,59 @@
           });
         }
       },
+      // 保存编辑后的任务
+      saveTask() {
+        let params = {
+          TAid: this.taskList[this.editTaskRow].taid,
+          TAname: this.formIndex.title,
+          TAtype: this.taskType,
+          TAhead: this.taskImg,
+          TLid: this.formIndex.taskLevel,
+          TAstartTime: this.activityTime[0],
+          TAendTime: this.activityTime[1],
+          TAduration: this.formIndex.duration,
+          TAmessage: this.formIndex.memo,
+          TAurl: this.formIndex.content
+        };
+        if(params.TAname == "" || String(params.TAtype) == "" || params.TAhead == "" || params.TLid == "") {
+          this.$message({ type: 'warning', message: '请完整填写', duration: 1500 });
+        }else {
+          this.taskLoading = true;
+          axios.post(api.add_task + '?token=' + localStorage.getItem('token'), params).then(res=>{
+            if(res.data.status == 200){
+              this.$message({ message: "保存成功", type: 'success', duration: 1500 });
+              // 保存后把新数据回显到表格中
+              this.taskList[this.editTaskRow].taname = this.formIndex.title;
+              this.taskList[this.editTaskRow].tlid = this.formIndex.taskLevel;
+              this.taskList[this.editTaskRow].tahead = this.taskImg;
+              this.taskList[this.editTaskRow].taurl = this.formIndex.content;
+              this.taskList[this.editTaskRow].tamessage = this.formIndex.memo;
+              this.taskList[this.editTaskRow].tastarttime = this.activityTime[0];
+              this.taskList[this.editTaskRow].taendtime = this.activityTime[1];
+              this.taskList[this.editTaskRow].taduration = this.formIndex.duration;
+
+              this.taskLoading = false;
+              this.clearInput();         // 将编辑框置空
+            }else{
+              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+            }
+          });
+        }
+      },
+      // 将编辑框置空
+      clearInput() {
+        this.formIndex.title = "";
+        this.formIndex.taskLevel = "";
+        this.formIndex.duration = "";
+        this.formIndex.memo = "";
+        this.formIndex.content = "";
+        this.taskType = "";
+        this.taskImg = "";
+        this.activityTime = [];
+      },
       // 顶部首页、发现、我的点击切换
       wTabClick(i){
+        this.clearInput();         // 将编辑框置空
 
         // 获取已有的各种图片
         if(i == 1) {
