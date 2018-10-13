@@ -186,6 +186,7 @@ class Product(BaseModel):
     PRsalestatus = Column(String(64))  #我的-收藏夹
     PRoductId = Column(Integer)  # 微点系统商品id
     PRtarget = Column(String(64))  # {101: 首页, 102: 发现页}
+    PRpushCode = Column(String(16))  # 微点推送人的标识
 
     @orm.reconstructor
     @auto_createtime
@@ -204,7 +205,8 @@ class Product(BaseModel):
             'SUid',
             'PRstock',
             'PRsalestatus',
-            'PRtarget'
+            'PRtarget',
+            'PRpushCode'
         ]
 
 
@@ -221,6 +223,7 @@ class ProductSkuKey(BaseModel):
     PSKpostfee = Column(Float, nullable=False)  # 物流费
     PSKactiviyid = Column(String(64))  # 活动id, 不知用处
     PSskuid = Column(Integer)  # 微点商品sku id
+    PSisdelete = Column(Integer, default=1)  # 属性是否删除 {0:删除, 1：正常}
 
     @orm.reconstructor
     @auto_createtime
