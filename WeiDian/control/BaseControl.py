@@ -165,10 +165,13 @@ class BaseProductControl():
     def fix_tartget_list(self, target_list, prid):
         if not isinstance(target_list, list) or not target_list:
             return []
-        targer_model_list = [{'prid': prid, 'prtarget': prtarget, 'ptid': str(uuid.uuid4())}
-                             for prtarget in target_list]
+        if '101' in target_list:
+            targer_model_list = [{'prid': prid, 'prtarget': '101', 'ptid': str(uuid.uuid4())}]
+        else:
+            targer_model_list = [{'prid': prid, 'prtarget': prtarget, 'ptid': str(uuid.uuid4())}
+                                 for prtarget in target_list]
 
-        return targer_model_list
+        return targer_model_list[:3]
 
     def fix_sku_list(self, sku_items, prid, psvid):
         """

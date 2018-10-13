@@ -34,7 +34,7 @@ class CProduct(BaseProductControl):
         # 后续修改
         self.partner = Partner()
         self.update_sku_params = ['PRid', "PSVid", 'PSKproductnum',
-                                  'PSKalias', 'PSKprice', 'PSKpostfee', 'PSKactiviyid', 'PSKproperkey']
+                                  'PSKalias', 'PSKprice', 'PSKpostfee', 'PSKactiviyid', 'PSKproperkey', "PSisdelete"]
 
         self.update_product_params = [
             'PRmainpic',
