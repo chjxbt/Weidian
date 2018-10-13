@@ -238,6 +238,7 @@
 
           if(localStorage.getItem('is_first')  == 'true' || localStorage.getItem('is_first')  == '1'){
             this.show_course = true;
+            localStorage.setItem("is_first", "0");
           }
           let that =this;
         this.interval = window.setInterval(that.animation,3000);
