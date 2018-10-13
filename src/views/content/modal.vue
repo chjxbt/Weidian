@@ -421,7 +421,6 @@
               this.levelList[i].talevel = '等级' + this.levelList[i].talevel;
               this.levelList[i].doneTip = "【图片】";
             }
-            // console.log(this.levelList);
           }else{
             this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
