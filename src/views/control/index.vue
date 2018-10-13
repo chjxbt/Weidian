@@ -34,6 +34,41 @@
           </el-table-column>
         </el-table>
       </div>
+
+      <p class="m-form-label" style="margin: 0.1rem 0">微信分享设置</p>
+      <div class="m-form-item">
+        <p class="m-form-label required" style="width: 0.8rem; font-size: 0.12rem">分享标题</p>
+        <div class="m-item-content">
+          <div class=" m-item-row">
+            <el-input v-model="shareTitle" placeholder="请输入分享标题" maxlength="25" class="hot-message-input"></el-input>
+          </div>
+        </div>
+      </div>
+      <div class="m-form-item">
+        <p class="m-form-label required" style="width: 0.8rem; font-size: 0.12rem">分享内容</p>
+        <div class="m-item-content">
+          <div class=" m-item-row">
+            <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 2 }" placeholder="请输入分享内容" v-model="shareText" style="width: 4rem"></el-input>
+          </div>
+          <!--<p class="m-item-alert" style="margin-top: 0.05rem; font-size: 0.12rem"><span style="color: red">* </span>字数控制在25字以内</p>-->
+        </div>
+      </div>
+      <div class="m-form-item">
+        <p class="m-form-label required" style="width: 0.8rem; font-size: 0.12rem">分享图片</p>
+        <div class="m-item-content">
+          <div class=" m-item-row">
+            <div class="upload-box">
+              <el-upload class="share-upload" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false" :on-success="uploadPicture">
+                <img v-if="shareImg" :src="shareImg" class="share-img">
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+              </el-upload>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="m-form-confirm-btn">
+        <span @click="saveShare">保 存</span>
+      </div>
     </div>
   </div>
 </template>
@@ -57,7 +92,10 @@
         jumpLoading: false,
         jumpList: [{ name: "首页", to: "" }],
         jumpTo: 0,
-        status: ""    // 暂存隐藏状态
+        status: "",       // 暂存隐藏状态
+        shareTitle: "",   // 微信分享标题
+        shareText: "",    // 微信分享内容
+        shareImg: "",     // 微信分享图片
       }
     },
     components: { pageTitle },
@@ -89,18 +127,16 @@
             this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         });
-
       },
       // 隐藏控制
-      hiddenControl() {
+      /*hiddenControl() {
 
-      },
+      },*/
       // 获取隐藏控制的值
       getHidden() {
         this.hiddenLoading = true;
         axios.get(api.get_schedual).then(res => {
           if(res.data.status == 200) {
-
             // 从接口中拿到显示的状态，并转换
             if(res.data.data.material == "0") {     // 素材圈
               this.hiddenList[0].show = false;
@@ -121,7 +157,7 @@
           }else{
             this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
-        })
+        });
       },
       // 获取跳转控制的值
       getJumpto() {
@@ -133,7 +169,7 @@
           }else{
             this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
-        })
+        });
       },
       // 跳转控制的变化钩子
       jumpToChange(v) {
@@ -146,11 +182,54 @@
             this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         });
+      },
+      // 上传分享图片
+      uploadPicture(res, file) {
+        let form = new FormData();
+        form.append("file", file.raw);
+        form.append("FileType", 'NewsPic');
+        form.append("index", 1);
+        axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token') + "&filetype = banner", form).then(res => {
+          if(res.data.status == 200){
+            this.shareImg = res.data.data;
+            this.$message({ type: 'success', message: res.data.message, duration: 1500 });
+          }else{
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+          }
+        });
+      },
+      // 获取微信分享参数
+      getShare() {
+        axios.get(api.get_share_params + '?token=' + localStorage.getItem('token')).then(res => {
+          if(res.data.status == 200) {
+            this.shareTitle = res.data.data.title;
+            this.shareText = res.data.data.content;
+            this.shareImg = res.data.data.img;
+          }else{
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+          }
+        });
+      },
+      // 保存微信分享参数
+      saveShare() {
+        let params = {
+          title: this.shareTitle,
+          content: this.shareText,
+          img: this.shareImg,
+        };
+        axios.post(api.set_share_params + '?token=' + localStorage.getItem('token'), params).then(res => {
+          if(res.data.status == 200){
+            this.$message({ type: 'success', message: res.data.message, duration: 1500 });
+          }else{
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+          }
+        });
       }
     },
     mounted() {
       this.getHidden();     // 获取隐藏控制的值
       this.getJumpto();     // 获取跳转控制的值
+      this.getShare();      // 获取微信分享参数
     },
     created() {
 

@@ -34,10 +34,12 @@ const api={
   add_admin: title + 'super/add_admin',               // 添加普通管理员
   update_admin: title + 'super/update_other_admin',   // 超管管理其他管理
 
-  set_show_type: title + 'activity/set_show_type',    // 控制中心 - 设置首页专题默认的过滤类型
-  get_show_type: title + 'activity/get_show_type',    // 控制中心 - 获取首页默认的过滤类型
-  get_schedual: title + 'mycenter/get_schedual_show', // 控制中心 - 获取控制中心显隐
-  set_schedual: title + 'mycenter/set_schedual_show', // 控制中心 - 设置控制中心显隐
+  set_show_type: title + 'activity/set_show_type',          // 控制中心 - 设置首页专题默认的过滤类型
+  get_show_type: title + 'activity/get_show_type',          // 控制中心 - 获取首页默认的过滤类型
+  get_schedual: title + 'mycenter/get_schedual_show',       // 控制中心 - 获取控制中心显隐
+  set_schedual: title + 'mycenter/set_schedual_show',       // 控制中心 - 设置控制中心显隐
+  get_share_params: title + 'mycenter/get_share_params',    // 控制中心 - 获取微信分享参数
+  set_share_params: title + 'mycenter/set_share_params',    // 控制中心 - 设置微信分享参数
 
   // upload_task_img: title + 'task/upload_task_img',         // 上传任务图标-上传图片
   upload_task_img: title + 'activity/upload_home_images',     // 上传图片
