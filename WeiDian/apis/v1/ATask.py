@@ -33,6 +33,7 @@ class ATask(Resource):
             "add_or_update_task_level": "self.ctask.add_or_update_task_level()",
             "upload_task_img": "self.ctask.upload_task_img()",
             "del_task": "self.ctask.del_task()",
+            "del_task_level": "self.ctask.del_task_level()",
         }
         if task not in apis:
             raise APIS_WRONG(' %s is not found' % task)

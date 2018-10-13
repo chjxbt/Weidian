@@ -109,6 +109,7 @@ class CTask(BaseTask):
                     "TArole": data.get("TArole"),
                     "TAcomplateNotifications": data.get("TAcomplateNotifications"),
                 })
+
                 for reward in reward_list:
                     self.add_task_raward(tlid, reward)
 
@@ -152,7 +153,7 @@ class CTask(BaseTask):
             raise AUTHORITY_ERROR(u"未登录")
         task_list = self.stask.get_user_task_by_userid(request.user.id)
         if not task_list:
-            return SYSTEM_ERROR(u'r当前没有任务')
+            return SYSTEM_ERROR(u'当前没有任务')
 
         # task_list = self.fill_task_detail(task) for task in task_list
         task_detail_list, task_list = task_list, []
@@ -160,6 +161,8 @@ class CTask(BaseTask):
             task_detail = self.fill_task_detail(task)
             if task_detail:
                 task_list.append(task_detail)
+        if not task_list:
+            return SYSTEM_ERROR(u'当前没有任务')
 
         task_level = self.stask.get_task_level_by_tlid(task_list[0].TLid)
         logger.debug('get task list %s', dict(task_level))
@@ -362,3 +365,17 @@ class CTask(BaseTask):
             raise SYSTEM_ERROR(u'数据库异常')
         return import_status("delete_success", "OK")
 
+    @verify_token_decorator
+    def del_task_level(self):
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'权限不足')
+        data = request.json
+        parameter_required("tlid")
+        logger.debug('get del task level data, %s', data)
+        tasklevel = self.stask.get_task_level_by_tlid(data.get("tlid"))
+        if not tasklevel:
+            return SYSTEM_ERROR(u'该任务等级不存在或已删除')
+        self.stask.update_task_by_tlid(tasklevel.TLid, {"TAstatus": 4})
+        self.stask.update_task_level(data.get("tlid"), {"TLisdelete": True})
+
+        return import_status("delete_success", "OK")

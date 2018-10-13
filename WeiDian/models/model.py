@@ -728,6 +728,7 @@ class TaskLevel(BaseModel):
     TAlevel = Column(Integer)                 # 设置任务等级
     TArole  = Column(Text)                    # 当前任务等级的规则弹框
     TAcomplateNotifications = Column(Text)    # 当前等级下任务完成的提示图片
+    TLisdelete = Column(Boolean, default=False)              # 是否删除当前任务等级
     # TRid = Column(String(64))                 # 当前等级下的奖励
 
     @orm.reconstructor

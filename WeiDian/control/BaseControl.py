@@ -484,7 +484,8 @@ class BaseTask():
             return
 
         task.RAward = " + ".join(rawards)
-        task.add("RAward")
+        task.RAwardParams = task_raward_list
+        task.add("RAward", "RAwardParams")
         return task
 
     def fill_task_params(self, task):
