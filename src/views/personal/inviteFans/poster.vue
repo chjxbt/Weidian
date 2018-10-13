@@ -69,8 +69,8 @@
         components: {},
         mounted(){
             let that = this;
-          that.getCode();
-          this.getInfo();
+
+
           that.getRule();
           common.changeTitle('邀请海报');
           this.interval = window.setInterval(that.animation,3000);
@@ -98,6 +98,7 @@
             }).then(res => {
               if(res.data.status == 200){
                 this.person_info = res.data.data.user;
+                this.getCode();
               }else{
                 Toast({ message: res.data.message, className: 'm-toast-fail' });
               }
@@ -250,7 +251,8 @@
                   one.name = i;
                   arr.push(one);
                 }
-                this.slider_list = [].concat(arr)
+                this.slider_list = [].concat(arr);
+                this.getInfo();
                 if(this.slider_list.length == 0){
                   this.slider_index = -1;
                 }
