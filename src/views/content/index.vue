@@ -17,7 +17,7 @@
             <template slot-scope="scope">
               <div @click="rowClick(scope.$index, 'img')">
                 <el-upload class="avatar-uploader" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false"
-                           :on-success="uploadPicture" :before-upload="beforeAvatarUpload" :disabled="scope.row.disabled">
+                           :on-success="uploadPicture" :disabled="scope.row.disabled">
                   <img v-if="scope.row.baimage" :src="scope.row.baimage" class="avatar">
                   <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                 </el-upload>
@@ -42,10 +42,10 @@
           <el-table-column prop="product" label="图片" width="220">
             <template slot-scope="scope">
               <div @click="rowClick(scope.$index, 'img')" v-if="scope.row.showPicture">
-                <el-upload class="avatar-uploader" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false"
+                <el-upload class="jump-uploader" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false"
                            :on-success="uploadLongPicture" :disabled="scope.row.disabled">
-                  <img v-if="scope.row.balongimg" :src="scope.row.balongimg" class="long-picture">
-                  <i v-else class="long-picture"></i>
+                  <img v-if="scope.row.balongimg" :src="scope.row.balongimg" class="jump-img">
+                  <i v-else class="el-icon-plus jump-img"></i>
                 </el-upload>
               </div>
             </template>
@@ -1173,7 +1173,7 @@
         });
       },
       // 上传图片前的限制方法
-      beforeAvatarUpload(file) {
+      /*beforeAvatarUpload(file) {
         this.$message({ type: 'warning', message: "上传中，请等待" });
         const isJPG = file.type === 'image/jpeg' || 'image/png';
         const isLt2M = file.size / 1024 / 1024 < 20;
@@ -1185,7 +1185,7 @@
           this.$message({ type: 'error', message: "上传图片大小不能超过 20MB", duration: 1500 });
         }
         return isJPG && isLt2M;
-      },
+      },*/
       // 获取管理员
       getAdmin(){
         this.authorList = [];
@@ -1247,10 +1247,6 @@
 <style lang="less" rel="stylesheet/less" scoped>
   @import "../../common/css/weidian";
 
-  .long-picture {
-    width: 0.3rem;
-    height: 0.5rem;
-  }
   .save-btn {
     width: 0.5rem;
     text-align: center;
