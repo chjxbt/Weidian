@@ -235,7 +235,7 @@
           }else{
             this.is_vip = false;
           }
-          if(localStorage.getItem('is_first')){
+          if(localStorage.getItem('is_first')  == 'true' || localStorage.getItem('is_first')  == '1'){
             this.show_course = true;
           }
           let that =this;

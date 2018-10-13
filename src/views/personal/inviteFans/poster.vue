@@ -353,7 +353,7 @@
             /*z-index:-1;*/
             width: 100%;
             height: 100%;
-            background-color: #cfcfcf;
+            /*background-color: #cfcfcf;*/
           }
           .m-poster-content{
             position: absolute;
