@@ -59,23 +59,7 @@
         data() {
             return {
               slider_index:1,
-                slider_list:[{
-                  src:'',
-                  url:'',
-                  name:1
-                },{
-                  src:'',
-                  url:'',
-                  name:2
-                },{
-                  src:'',
-                  url:'',
-                  name:3
-                },{
-                  src:'',
-                  url:'',
-                  name:4
-                }],
+                slider_list:[],
               startX:0,//开始触摸的位置
               endX:0,//结束触摸的位置
               interval:'',
@@ -123,10 +107,12 @@
           /*动画*/
           animation(v){
             v = v || 1;
-            if(this.slider_index == this.slider_list.length -1){
-              this.slider_index = 0;
+            if(this.slider_list.length == 0 ){
+              this.slider_index = -1;
             }else if(this.slider_index == 0 && v == -1){
               this.slider_index = this.slider_list.length -1;
+            }else if(this.slider_index == this.slider_list.length -1){
+              this.slider_index = 0;
             }else{
               this.slider_index = this.slider_index + v;
             }
@@ -175,7 +161,6 @@
             bgImg.crossOrigin = 'Anonymous';
             // bgImg.src = "/static/images/poster/bg.jpg";
             bgImg.src= src;
-
             bgImg.onload = function () {
               context.drawImage(bgImg, 0, 0,580,870);
               context.fillStyle="#c3c3c3";
@@ -199,7 +184,6 @@
               avatarImg.crossOrigin = 'Anonymous';
               // avatarImg.src = "/static/images/poster/fans_img.png";
               avatarImg.src=that.person_info.usheader;
-
               avatarImg.onload = function () {
                 context.save(); // 保存当前ctx的状态
                 context.arc(85,80,45,Math.PI*2,0,true); //画出圆
@@ -212,7 +196,6 @@
                 let logoImg = new Image();
                 logoImg.crossOrigin = 'Anonymous';
                 logoImg.src = "/static/images/poster/fans_img.png";
-
                 logoImg.onload = function () {
                   context.drawImage(logoImg, 90, 580, 200, 200);
 
@@ -268,6 +251,9 @@
                   arr.push(one);
                 }
                 this.slider_list = [].concat(arr)
+                if(this.slider_list.length == 0){
+                  this.slider_index = -1;
+                }
               }else{
                 Toast({ message: res.data.message, className: 'm-toast-fail' });
               }
