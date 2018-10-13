@@ -21,8 +21,8 @@ class SActivityComment(SBase):
 
     @close_session
     def get_comment_by_acid_two(self, acid):
-        """通过活动id获取下面的评论和回复，只显示最近时间前两条"""
-        comment_list = self.session.query(ActivityComment).filter_by(ACid=acid, ACisdelete=False).order_by(ActivityComment.ACOcreatetime.desc()).limit(2).all()
+        """通过活动id获取下面的评论和回复，只显示最近时间前两条(改为6条)"""
+        comment_list = self.session.query(ActivityComment).filter_by(ACid=acid, ACisdelete=False).order_by(ActivityComment.ACOcreatetime.desc()).limit(6).all()
         return comment_list
 
     @close_session
@@ -56,6 +56,11 @@ class SActivityComment(SBase):
     def delete_comment_by_acoid(self, acoid):
         """删除单条评论"""
         return self.session.query(ActivityComment).filter_by(ACOid=acoid).update({ActivityComment.ACisdelete: True})
+
+    @close_session
+    def del_robot_comment_by_acid(self, acid):
+        """删除该条推文下的小马甲评论"""
+        return self.session.query(ActivityComment).filter(ActivityComment.ACid == acid, ActivityComment.USid == 'robot').delete()
 
     @close_session
     def add_comment(self, comment):

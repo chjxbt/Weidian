@@ -61,8 +61,9 @@ class BaseActivityControl():
 
     def fill_like_num(self, activity):
         """添加点赞相关字段"""
-        if hasattr(request, 'user'):
-            alreadylike = self.salike.is_like(request.user.id, activity.ACid)
+        if not is_tourist():
+            from WeiDian.service.SActivityLike import SActivityLike
+            alreadylike = SActivityLike().is_like(request.user.id, activity.ACid)
             activity.alreadylike = True if alreadylike else False
         activity.likenum = activity.AClikeFakeNum or activity.AClikenum
         activity.add('likenum', 'alreadylike')
@@ -106,10 +107,11 @@ class BaseActivityControl():
         acid = act.ACid
         comments = self.sacomment.get_comment_by_acid_two(acid)
         for comment in comments:
-            usid = comment.USid
-            user = self.suser.get_user_by_user_id(usid)
-            comment.user = user
-            comment.add('user').hide('USid')
+            BaseActivityCommentControl().fill_user(comment)
+            # usid = comment.USid
+            # user = self.suser.get_user_by_user_id(usid)
+            # comment.user = user
+            # comment.add('user').hide('USid')
         act.comment = comments
         act.add('comment')
         # map(self.fill_comment_apply_for, act.comment)
@@ -392,8 +394,9 @@ class BaseActivityCommentControl():
             }
         else:
             usid = comment.USid
-            user = self.suser.get_user_by_user_id(usid)  # 对象的用户
-            user.fill(False, 'robot')
+            from WeiDian.service.SUser import SUser
+            user = SUser().get_user_by_user_id(usid)  # 对象的用户
+            user.fill(False, 'robot').hide('USid')
         comment.user = user  # 对象的用户
         comment.add('user').hide('USid')
         return comment

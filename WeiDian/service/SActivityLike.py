@@ -34,7 +34,7 @@ class SActivityLike(SBase):
         else:
             cur_activity.AClikenum += 1
         self.session.add(cur_activity)
-        self.session.commit()
+        # self.session.commit()
 
     @close_session
     def is_like(self, usid, acid):
@@ -55,7 +55,7 @@ class SActivityLike(SBase):
         else:
             cur_activity.AClikenum -= 1
         self.session.add(cur_activity)
-        self.session.commit()
+        # self.session.commit()
         # return self.session.query(Activity).filter(Activity.ACid == acid).update({
         #     'AClikeFakeNum': Activity.AClikeFakeNum - 1,
         #     'AClikenum': Activity.AClikenum - 1
