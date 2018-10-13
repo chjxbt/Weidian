@@ -58,6 +58,11 @@ class SActivityComment(SBase):
         return self.session.query(ActivityComment).filter_by(ACOid=acoid).update({ActivityComment.ACisdelete: True})
 
     @close_session
+    def del_robot_comment_by_acid(self, acid):
+        """删除该条推文下的小马甲评论"""
+        return self.session.query(ActivityComment).filter(ActivityComment.ACid == acid, ActivityComment.USid == 'robot').delete()
+
+    @close_session
     def add_comment(self, comment):
         """添加评论"""
         self.session.add(comment)

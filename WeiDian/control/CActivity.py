@@ -285,8 +285,6 @@ class CActivity(BaseActivityControl, BaseTask):
         ACendtime = get_db_time_str(data.get('ACendtime', three_days_later))                    # 活动结束时间, 默认3天以后
         TopnavId = data.get('TopnavId')       # 导航页面
         ACtext = data.get('ACtext')           # 文字内容
-        # BAid = data.get('BAid', '0')          # 专题id
-        # PRid = data.get('PRid', '0')          # 商品id
         media = data.get('media')             # 多媒体
         tags = data.get('tags')               # 右上角tag标签
         ACistop = data.get('ACistop', 0)
@@ -295,14 +293,13 @@ class CActivity(BaseActivityControl, BaseTask):
         SUid = data.get('SUid')
         SUid = request.user.id if not SUid else str(SUid)
         ACSkipType = int(data.get('ACSkipType', 0))   # 跳转类型
-        # ACProductsSoldFakeNum = data.get('acproductssoldfakenum')
-        # ACforwardFakenum = data.get('acforwardfakenum')
-        # ACbrowsenum = data.get('acbrowsenum')
-        # AClikeFakeNum = data.get('AClikeFakeNum')
         ACProductsSoldFakeNum = str(data.get('ACProductsSoldFakeNum', '')).strip() or 0
         ACforwardFakenum = str(data.get('ACforwardFakenum', '')).strip() or 0
         ACbrowsenum = str(data.get('ACbrowsenum', '')).strip() or 0
         AClikeFakeNum = str(data.get('AClikeFakeNum', '')).strip() or 0
+        accomments = data.get('accomments')
+
+
 
         if str(ACistop) == 'True':
             istop = self.sactivity.get_top_activity(TopnavId)
@@ -351,6 +348,18 @@ class CActivity(BaseActivityControl, BaseTask):
                     'ACid': ACid,
                     'ATname': tag.get('ATname'),
                 })
+
+        if accomments:
+            for comments in accomments:
+                self.sacomment.add_model('ActivityComment', **{
+                    'ACOid': str(uuid.uuid4()),
+                    'ACid': ACid,
+                    'USid': 'robot',
+                    'ACOrobot': comments.get('acorobot'),
+                    'ACtext': comments.get('acotext'),
+                    'ACOcreatetime': get_db_time_str()
+                })
+
 
         # 是否添加进入专题
         baid = data.get('BAid')
@@ -415,6 +424,7 @@ class CActivity(BaseActivityControl, BaseTask):
         ACforwardFakenum = data.get('acforwardFakenum')
         ACbrowsenum = data.get('acbrowsenum')
         AClikeFakeNum = data.get('aclikeFakeNum')
+        accomments = data.get('accomments')
 
         if str(ACistop) == 'True':
             istop = self.sactivity.get_top_activity(TopnavId)
@@ -458,6 +468,18 @@ class CActivity(BaseActivityControl, BaseTask):
                     'ATid': str(uuid.uuid1()),
                     'ACid': acid,
                     'ATname': tag.get('atname'),
+                })
+
+        if accomments:
+            self.sacomment.del_robot_comment_by_acid(acid)
+            for comments in accomments:
+                self.sacomment.add_model('ActivityComment', **{
+                    'ACOid': str(uuid.uuid4()),
+                    'ACid': acid,
+                    'USid': 'robot',
+                    'ACOrobot': comments.get('acorobot'),
+                    'ACtext': comments.get('acotext'),
+                    'ACOcreatetime': get_db_time_str()
                 })
 
         # 是否添加进入专题
