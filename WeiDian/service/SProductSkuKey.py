@@ -15,6 +15,11 @@ class SProductSkuKey(SBase):
         return self.session.query(ProductSkuKey).filter(ProductSkuKey.PRid == prid, ProductSkuKey.PSisdelete != 0).all()
 
     @close_session
+    def get_psk_by_psskuid(self, psskuid, prid):
+        """通过prid获取所有的skukey"""
+        return self.session.query(ProductSkuKey).filter(ProductSkuKey.PSskuid == psskuid, ProductSkuKey.PSisdelete != 0).all()
+
+    @close_session
     def get_psk_by_pskid(self, pskid):
         """通过pskid获取"""
         return self.session.query(ProductSkuKey).filter(
@@ -30,7 +35,7 @@ class SProductSkuKey(SBase):
         return psk.PSKprice
 
     @close_session
-    def update_product_sku(self, skuid, ps):
-        return self.session.query(ProductSkuKey).filter(ProductSkuKey.PSskuid == skuid).update(ps)
+    def update_product_sku(self, skuid, prid, ps):
+        return self.session.query(ProductSkuKey).filter(ProductSkuKey.PSskuid == skuid, ProductSkuKey. PRid == prid).update(ps)
 
 

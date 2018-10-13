@@ -511,7 +511,6 @@ class BaseTask():
         )
         return task
 
-
     def do_shoppingtask_or_forwardtask(self, task_type):
         if not re.match(r'^[0-4]$', str(task_type)):
             return

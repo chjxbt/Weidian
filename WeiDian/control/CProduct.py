@@ -4,7 +4,7 @@ import os
 from flask import request
 import re
 import json
-
+import uuid
 from WeiDian import logger
 from WeiDian.common.params_require import parameter_required
 from WeiDian.common.token_required import verify_token_decorator, is_admin, is_tourist, is_ordirnaryuser, is_customerservice
@@ -134,9 +134,18 @@ class CProduct(BaseProductControl):
         if skukey.get("PSKproperkey"):
             skukey['_PSKproperkey'] = json.dumps(skukey.pop('PSKproperkey'))
 
-        update_result = self.sproductskukey.update_product_sku(data.get("psskuid"), skukey)
-        if not update_result:
-            raise SYSTEM_ERROR(u'服务器繁忙')
+        productsku = self.sproductskukey.get_psk_by_psskuid(data.get("psskuid"), product.PRid)
+        if not productsku:
+            psv = self.sproductskuvalue.get_skvalue_by_prid(product.PRid)
+            skukey['PSKid'] = str(uuid.uuid1())
+            skukey['PRid'] = product.PRid
+            skukey['PSVid'] = psv.PSVid
+            skukey['PSskuid'] = data.get("psskuid")
+            self.sproductskukey.add_model("ProductSkuKey", **skukey)
+        else:
+            update_result = self.sproductskukey.update_product_sku(data.get("psskuid"), product.PRid, skukey)
+            if not update_result:
+                raise SYSTEM_ERROR(u'服务器繁忙')
 
         if pskpropervalue and product:
             update_result = self.sproductskuvalue.update_skuvalue(product.PRid, {"_PSVpropervalue": json.dumps(pskpropervalue)})

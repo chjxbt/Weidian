@@ -280,7 +280,9 @@ class CTask(BaseTask):
 
         task_list = self.stask.get_task_all()
         map(self.fill_reward, task_list)
-        map(self.fill_task_params, task_list)
+        # map(self.fill_task_params, task_list)
+        task_list = [self.fill_task_params(_task) for _task in task_list]
+        task_list = [_task for _task in task_list if _task]
         response = import_status("get_task_success", "OK")
         response['data'] = task_list
         return response
@@ -353,7 +355,10 @@ class CTask(BaseTask):
         if not is_admin():
             raise AUTHORITY_ERROR(u'权限不足')
         data = request.json
+        parameter_required("TAid")
         logger.debug('get del task data, %s', data)
         update_result = self.stask.update_task(data.get("TAid"), {"TAstatus": 4})
+        if not update_result:
+            raise SYSTEM_ERROR(u'数据库异常')
         return import_status("delete_success", "OK")
 
