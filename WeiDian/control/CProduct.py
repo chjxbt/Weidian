@@ -72,6 +72,7 @@ class CProduct(BaseProductControl):
             return AUTHORITY_ERROR  # 权限不足
         json_data = request.json
         product_list = json_data.get('products')
+        logger.debug('get product list %s', product_list)
         product_list = self.fix_product_list(product_list)
         list_add_models('Product', product_list)
         data = import_status('add_product_list_success', 'OK')
@@ -84,6 +85,7 @@ class CProduct(BaseProductControl):
         if not is_admin():
             return AUTHORITY_ERROR(u'权限不足')
         data = parameter_required('productid')
+        logger.debug('get delete_product data %s', data)
         product = self.sproduct.get_product_by_productid(data.get('productid'))
         if not product:
             return import_status('no_product', 'OK')
@@ -97,15 +99,19 @@ class CProduct(BaseProductControl):
     # 上下架商品
     @verify_token_decorator
     def shelves_product(self):
+        """状态改成0 上架  1下架"""
         if not is_admin():
             return AUTHORITY_ERROR(u'权限不足')
         data = parameter_required('productid')
         prstatus = data.get("prstatus", 1)
-
+        logger.debug('get prestatus. %s', prstatus)
+        logger.debug('get productid. %s', data.get('productid'))
         if not re.match(r'^[0-2]$', str(prstatus)):
             raise PARAMS_MISS(u'prstatus, 参数异常')
         prstatus = int(prstatus)
+        prstatus = 0 if int(prstatus) else 1
         product = self.sproduct.get_product_by_productid(data.get('productid'))
+        logger.debug('get product %s', product)
         if not product and prstatus != 1:
             return import_status('no_product', 'OK')
         update_result = self.sproduct.update_product_by_productid(data.get('productid'), {
@@ -120,6 +126,7 @@ class CProduct(BaseProductControl):
         if not is_admin():
             return AUTHORITY_ERROR(u'权限不足')
         data = parameter_required('psskuid', 'productid')
+        logger.debug('get update_sku data %s', data)
         pskpropervalue = data.get('pskpropervalue')
         skukey = {}
         product = self.sproduct.get_product_by_productid(data.get('productid'))
@@ -160,6 +167,7 @@ class CProduct(BaseProductControl):
             raise AUTHORITY_ERROR(u'权限不足')
 
         data = parameter_required('productid')
+        logger.debug('get update_product data %s', data)
         productid = data.get('productid')
         product = self.sproduct.get_product_by_productid(productid)
         if not product:

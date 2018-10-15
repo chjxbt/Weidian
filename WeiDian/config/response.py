@@ -20,7 +20,7 @@ class PARAMS_REDUNDANCE(BaseError):
 
 class TOKEN_ERROR(BaseError):
     status = 405
-    status_code = 405001
+    status_code = 403001
     message = "未登录"
 
 
@@ -30,9 +30,7 @@ class MethodNotAllowed(BaseError):
     message = "方法不支持"
 
 
-class AUTHORITY_ERROR(BaseError):
-    status = 405
-    status_code = 405001
+class AUTHORITY_ERROR(TOKEN_ERROR):
     message = "无权限"
 
 

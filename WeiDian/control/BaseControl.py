@@ -466,8 +466,18 @@ class BaseTask():
         task_raward_list = self.sraward.get_raward_by_tlid(task.TLid)
         if not task_raward_list:
             return
+        rawards = self.fill_reward_detail(task_raward_list)
+        if not rawards:
+            return
+
+        task.RAward = " + ".join(rawards)
+        task.RAwardParams = task_raward_list
+        task.add("RAward", "RAwardParams")
+        return task
+
+    def fill_reward_detail(self, rewardlist):
         rawards = []
-        for task_raward in task_raward_list:
+        for task_raward in rewardlist:
             raward = self.sraward.get_raward_by_id(task_raward.RAid)
             if raward.RAtype == 0:
                 reward_str = self.filter_str.format(int(task_raward.RAnumber), int(raward.RAfilter), int(raward.RAamount))
@@ -482,14 +492,7 @@ class BaseTask():
             # raward.add("RAnumber")
 
             rawards.append(reward_str)
-
-        if not rawards:
-            return
-
-        task.RAward = " + ".join(rawards)
-        task.RAwardParams = task_raward_list
-        task.add("RAward", "RAwardParams")
-        return task
+        return rawards
 
     def fill_task_params(self, task):
         task_detail = self.stask.get_task_by_taid(task.TAid)

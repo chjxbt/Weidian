@@ -296,6 +296,7 @@ class CTask(BaseTask):
             raise AUTHORITY_ERROR(u"权限不足")
 
         raward_list = self.sraward.get_all_reward()
+        raward_list = self.fill_reward_detail(raward_list)
         res = import_status('get_task_success', 'OK')
         res['data'] = raward_list
         return res

@@ -82,3 +82,18 @@ class SProduct(SBase):
     @close_session
     def get_product_target_by_productid(self, productid):
         return self.session.query(ProductTarget).filter(ProductTarget.PRid == productid).all()
+
+
+if __name__ == '__main__':
+    productid = '10417'
+    sp = SProduct()
+    from WeiDian.models import model
+    product = sp.session.query(Product).filter(Product.PRoductId==productid).first()
+    sp.session.query(model.ProductSkuKey).filter(model.ProductSkuKey.PRid == product.PRid).delete()
+    sp.session.query(model.ProductSkuValue).filter(model.ProductSkuValue.PRid == product.PRid).delete()
+    sp.session.query(model.Product).filter(model.Product.PRid == product.PRid).delete()
+    sp.session.query(model.ProductImage).filter(model.ProductImage.PRid == product.PRid).delete()
+    sp.session.query(model.ProductTarget).filter(model.ProductTarget.PRid == product.PRid).delete()
+    sp.session.commit()
+
+
