@@ -279,8 +279,8 @@ class CActivity(BaseActivityControl, BaseTask):
         now_time = datetime.strftime(datetime.now(), format_for_web_second)
         ACstarttime = get_db_time_str(data.get('ACstarttime', now_time))                         # 活动开始时间, 默认当前时间
         ACstarttime_str_to_time = datetime.strptime(ACstarttime, format_for_db)
-        three_days_later = datetime.strftime(ACstarttime_str_to_time + timedelta(days=3), format_for_web_second)
-        ACendtime = get_db_time_str(data.get('ACendtime', three_days_later))                    # 活动结束时间, 默认3天以后
+        three_days_later = datetime.strftime(ACstarttime_str_to_time + timedelta(days=3650), format_for_web_second)
+        ACendtime = get_db_time_str(data.get('ACendtime', three_days_later))  # 活动结束时间, 默认3天以后，后期需求公告教程部分非必填，默认改为十年
         TopnavId = data.get('TopnavId')       # 导航页面
         ACtext = data.get('ACtext')           # 文字内容
         media = data.get('media')             # 多媒体
@@ -417,8 +417,8 @@ class CActivity(BaseActivityControl, BaseTask):
         acid = args.get('acid')
         ACstarttime = get_db_time_str(data.get('acstarttime', now_time))  # 活动开始时间, 默认当前时间
         ACstarttime_str_to_time = datetime.strptime(ACstarttime, format_for_db)
-        three_days_later = datetime.strftime(ACstarttime_str_to_time + timedelta(days=3), format_for_db)
-        ACendtime = get_db_time_str(data.get('acendtime', get_web_time_str(three_days_later)))  # 活动结束时间, 默认3天以后
+        three_days_later = datetime.strftime(ACstarttime_str_to_time + timedelta(days=3650), format_for_db)
+        ACendtime = get_db_time_str(data.get('acendtime', get_web_time_str(three_days_later)))  # 活动结束时间, 默认3天以后，后期需求公告教程部分非必填，默认改为十年
         TopnavId = data.get('topnavid')  # 导航页面
         ACtext = data.get('actext')  # 文字内容
         media = data.get('media')  # 多媒体
