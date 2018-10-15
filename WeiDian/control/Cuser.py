@@ -8,7 +8,7 @@ import uuid
 import datetime
 import json
 import urllib2
-
+import requests
 from weixin import WeixinError
 from weixin.login import WeixinLoginError, WeixinLogin
 
@@ -19,7 +19,7 @@ from WeiDian.config.response import PARAMS_MISS, SYSTEM_ERROR, NETWORK_ERROR, TO
 from WeiDian.common.token_required import verify_token_decorator, usid_to_token
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db
-from WeiDian.config.setting import QRCODEHOSTNAME, APP_ID, APP_SECRET_KEY
+from WeiDian.config.setting import QRCODEHOSTNAME, APP_ID, APP_SECRET_KEY, LinuxUserHead
 from WeiDian.config.urlconfig import get_subscribe
 from WeiDian.service.SUser import SUser
 from WeiDian.service.STask import STask
@@ -191,7 +191,7 @@ class CUser():
 
         upperd_id = upperd.USid if upperd else None
         user_level = 0 if is_first else user.USlevel
-
+        ushead = self.get_local_head(user_info.get("headimgurl"), openid)
         if is_first:
             usid = str(uuid.uuid1())
             self.suser.add_model("User", **{
@@ -228,9 +228,10 @@ class CUser():
 
         else:
             usid = user.USid
+
             update_result = self.suser.update_user(usid, {
                 "USlastlogin": datetime.datetime.now().strftime(format_for_db),
-                "USheader": user_info.get("headimgurl"),
+                "USheader": ushead,
                 "USgender": user_info.get("sex"),
                 "USname": user_info.get("nickname"),
                 "unionid": user_info.get("unionid"),
@@ -357,3 +358,17 @@ class CUser():
         except:
             logger.exception("%s error", urltype)
             raise NETWORK_ERROR
+
+    def get_local_head(self, headurl, openid):
+        data = requests.get(headurl)
+        filename = openid + '.png'
+        filepath = os.path.join(LinuxUserHead, filename)
+        with open(filepath, 'wb') as head:
+            head.write(data.content)
+
+        url = QRCODEHOSTNAME + "/imgs/head/" + filename
+        return url
+
+
+
+
