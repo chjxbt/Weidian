@@ -322,22 +322,15 @@
             return false;
           }
           common.changeTitle('首页');
-          if(common.GetQueryString('UPPerd')){
-            localStorage.setItem('UPPerd',common.GetQueryString('UPPerd'));
-            alert(common.GetQueryString('UPPerd'))
-            if(localStorage.getItem('token')){
-              this.$router.push('/login');
-            }
-          }
-          this.getSwipe();
-          this.getHot();
+          // if(common.GetQueryString('UPPerd')){
+          //   localStorage.setItem('UPPerd',common.GetQueryString('UPPerd'));
+          //   alert(common.GetQueryString('UPPerd'))
+          //   if(localStorage.getItem('token')){
+          //     this.$router.push('/login');
+          //   }
+          // }
           this.getTopnav();
-          if(localStorage.getItem('level') == 'partner'){
-            this.is_vip = true;
-            this.getTask();
-          }else{
-            this.is_vip = false;
-          }
+
 
           if(localStorage.getItem('is_first')  == 'true' || localStorage.getItem('is_first')  == '1'){
             this.show_course = true;
@@ -542,6 +535,14 @@
                 }
                 this.nav_list[0].click =true;
                 this.getActivity(this.nav_list[0].tnid);
+                this.getSwipe();
+                this.getHot();
+                if(localStorage.getItem('level') == 'partner'){
+                  this.is_vip = true;
+                  this.getTask();
+                }else{
+                  this.is_vip = false;
+                }
               }else{
                 Toast({ message: res.data.message, className: 'm-toast-fail' });
               }
@@ -564,7 +565,7 @@
               if(res.data.status == 200){
                 this.swipe_items = res.data.data;
               }else{
-                Toast({ message: res.data.message, className: 'm-toast-fail' });
+                // Toast({ message: res.data.message, className: 'm-toast-fail' });
               }
             })
           },
@@ -577,7 +578,7 @@
               if(res.data.status == 200){
                 this.hot_list = res.data.data;
               }else{
-                Toast({ message: res.data.message, className: 'm-toast-fail' });
+                // Toast({ message: res.data.message, className: 'm-toast-fail' });
               }
             })
           },
@@ -619,7 +620,7 @@
                 }
                 this.activity_list = [].concat(arr)
               }else{
-                Toast({ message: res.data.message, className: 'm-toast-fail' });
+                // Toast({ message: res.data.message, className: 'm-toast-fail' });
               }
             })
           },
