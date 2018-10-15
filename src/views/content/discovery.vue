@@ -139,10 +139,11 @@
       <div class="m-form-label choose-banner">
         <div class="title">推文管理</div>
         <div class="choose-box tr">
-          <el-input v-model="activitySearch" placeholder="请输入推文内容搜索" style="width: 3rem; margin-right: 0.3rem"></el-input>
+          <el-input v-model="activitySearch" placeholder="请输入推文内容搜索" style="width: 3rem; margin-right: 0.2rem"></el-input>
         </div>
         <div class="banner-btn" @click="searchActivity(0, 5)" v-if="!searching">搜 索</div>
-        <div class="banner-btn" @click="searchActivity(0, 5)" v-if="searching">取消搜索</div>
+        <div class="banner-btn" @click="searchActivity(0, 5)" v-if="searching">搜 索</div>
+        <div class="banner-btn" @click="cancelSearch" v-if="searching">取 消</div>
       </div>
       <div class="content-table">
         <el-table :data="activityList" border style="width: 100%" v-loading="activityLoading" @selection-change="selectionChange">
@@ -850,8 +851,6 @@
       cancelProduct() {
         this.productEdit = false;
         this.productDisabled = true;
-        // this.addBannerBtn = true;
-        // this.bannerList.splice(scope.$index, 1);    // 刷新视图
       },
 
       // 删除轮播图/专题
@@ -1254,40 +1253,45 @@
       // 搜索推文
       searchActivity(start, page_size) {
         if(this.activitySearch) {
-          if(this.searching) {
-            this.searching = false;
-            this.activitySearch = "";
-            this.getActivity(0, this.page_size);
-          }else if(!this.searching) {
-            this.searching = true;
+          // if(!this.searching) {
+          this.searching = true;
 
-            this.activityLoading = true;
-            axios.get(api.get_search + '?token=' + localStorage.getItem('token'),
-              { params: { PRname: this.activitySearch, start: start || 0, count: page_size || this.page_size, serachact: true, tnid: this.tnid } }).then(res => {
-              if(res.data.status == 200) {
-                this.activityLoading = false;
-                this.activityList = res.data.data;
-                this.total_page = Math.ceil(res.data.count / this.page_size);
+          this.activityLoading = true;
+          axios.get(api.get_search + '?token=' + localStorage.getItem('token'),
+            { params: { PRname: this.activitySearch, start: start || 0, count: page_size || this.page_size, serachact: true, tnid: this.tnid } }).then(res => {
+            if(res.data.status == 200) {
+              this.activityLoading = false;
+              this.activityList = res.data.data;
+              this.total_page = Math.ceil(res.data.count / this.page_size);
 
-                for(let i = 0; i < this.activityList.length; i ++) {
-                  // 推文的跳转类型
-                  if(this.activityList[i].acskiptype == "0") {
-                    this.activityList[i].acSkiptype = "全部";
-                  }else if(this.activityList[i].acskiptype == "1") {
-                    this.activityList[i].acSkiptype = "专题页";
-                  }else if(this.activityList[i].acskiptype == "2") {
-                    this.activityList[i].acSkiptype = "商品";
-                  }
-                  // this.activityList[i].activityTime = [this.activityList[i].acstarttime, this.activityList[i].acendtime];
-                  this.activityList[i].time = this.activityList[i].acstarttime + " 至 " + this.activityList[i].acendtime;
-                  this.activityList[i].disabled = true;
+              for(let i = 0; i < this.activityList.length; i ++) {
+                // 推文的跳转类型
+                if(this.activityList[i].acskiptype == "0") {
+                  this.activityList[i].acSkiptype = "全部";
+                }else if(this.activityList[i].acskiptype == "1") {
+                  this.activityList[i].acSkiptype = "专题页";
+                }else if(this.activityList[i].acskiptype == "2") {
+                  this.activityList[i].acSkiptype = "商品";
                 }
-              }else{
-                this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+                // this.activityList[i].activityTime = [this.activityList[i].acstarttime, this.activityList[i].acendtime];
+                this.activityList[i].time = this.activityList[i].acstarttime + " 至 " + this.activityList[i].acendtime;
+                this.activityList[i].disabled = true;
               }
-            });
-          }
+            }else{
+              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+            }
+          });
+          // }
+        }else if(this.activitySearch == "") {
+          this.getActivity(0, this.page_size);
         }
+      },
+
+      // 取消搜索
+      cancelSearch() {
+        this.searching = false;
+        this.activitySearch = "";
+        this.getActivity(0, this.page_size);
       },
 
       // 当选择项发生变化时会触发该事件
@@ -1416,8 +1420,11 @@
 
       // 分页点击方法
       pageChange(v) {
-        console.log(v);
-        this.getActivity(this.page_size * (v - 1), this.page_size);
+        if(!this.searching) {
+          this.getActivity(this.page_size * (v - 1), this.page_size);
+        }else {
+          this.searchActivity(this.page_size * (v - 1), this.page_size);
+        }
       }
     },
     watch: {
@@ -1484,7 +1491,7 @@
       background-color: @mainColor;
       border-radius: 0.1rem;
       padding: 0.02rem 0.15rem;
-      margin: 0.3rem 0 0 0.3rem;
+      margin: 0.25rem 0 0 0.3rem;
     }
   }
   .choose-banner {
@@ -1504,6 +1511,7 @@
       font-size: 0.12rem;
       border-radius: 0.1rem;
       padding: 0.05rem 0.2rem;
+      margin-left: 0.1rem;
       background-color: @mainColor;
     }
   }

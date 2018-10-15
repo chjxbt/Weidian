@@ -164,10 +164,11 @@
       <div class="m-form-label choose-banner">
         <div class="title">推文管理</div>
         <div class="choose-box tr" style="margin-bottom: 0.1rem">
-          <el-input v-model="activitySearch" placeholder="请输入推文内容搜索" style="width: 3rem; margin-right: 0.3rem"></el-input>
+          <el-input v-model="activitySearch" placeholder="请输入推文内容搜索" style="width: 3rem; margin-right: 0.2rem"></el-input>
         </div>
         <div class="banner-btn" @click="searchActivity(0, 5)" v-if="!searching">搜 索</div>
-        <div class="banner-btn" @click="searchActivity(0, 5)" v-if="searching">取消搜索</div>
+        <div class="banner-btn" @click="searchActivity(0, 5)" v-if="searching">搜 索</div>
+        <div class="banner-btn" @click="cancelSearch" v-if="searching">取 消</div>
       </div>
       <div class="content-table">
         <el-table :data="activityList" border style="width: 100%" v-loading="activityLoading" @selection-change="selectionChange">
@@ -199,7 +200,7 @@
         <Pagination class="page-box" :total="total_page" @pageChange="pageChange"></Pagination>
 
         <div class="choose-box tr" style="margin-bottom: 0.1rem">
-          <el-select v-model="toBanner" class="m-input-l" placeholder="请选择专题内容页所对应的专题" style="width: 3rem; margin-right: 0.3rem">
+          <el-select v-model="toBanner" class="m-input-l" placeholder="请选择专题内容页所对应的专题" style="width: 3rem; margin-right: 0.2rem">
             <el-option v-for="item in toBannerList" :key="item.value" :label="item.value" :value="item.id"></el-option>
           </el-select>
         </div>
@@ -731,11 +732,7 @@
       // 搜索推文
       searchActivity(start, page_size) {
         if(this.activitySearch) {
-          if(this.searching) {
-            this.searching = false;
-            this.activitySearch = "";
-            this.getActivity(0, this.page_size);
-          }else if(!this.searching) {
+          // if(!this.searching) {
             this.searching = true;
 
             this.activityLoading = true;
@@ -763,8 +760,17 @@
                 this.$message({ type: 'error', message: res.data.message, duration: 1500 });
               }
             });
-          }
+          // }
+        }else if(this.activitySearch == "") {
+          this.getActivity(0, this.page_size);
         }
+      },
+
+      // 取消搜索
+      cancelSearch() {
+        this.searching = false;
+        this.activitySearch = "";
+        this.getActivity(0, this.page_size);
       },
 
       // 编辑推文 - 取消
@@ -1255,8 +1261,11 @@
 
       // 分页点击方法
       pageChange(v) {
-        console.log(v);
-        this.getActivity(this.page_size * (v - 1), this.page_size);
+        if(!this.searching) {
+          this.getActivity(this.page_size * (v - 1), this.page_size);
+        }else {
+          this.searchActivity(this.page_size * (v - 1), this.page_size);
+        }
       }
     },
     watch: {
@@ -1327,7 +1336,7 @@
       flex: 1;
     }
     .banner-btn {
-      width: 0.5rem;
+      /*width: 0.5rem;*/
       text-align: center;
       color: #ffffff;
       height: 0.2rem;
@@ -1335,7 +1344,8 @@
       white-space: nowrap;
       font-size: 0.12rem;
       border-radius: 0.1rem;
-      padding: 0.05rem 0.2rem;
+      padding: 0.05rem 0.15rem;
+      margin-left: 0.1rem;
       background-color: @mainColor;
     }
     .page-box {
