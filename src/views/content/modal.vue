@@ -8,12 +8,12 @@
        <!--<h3 class="m-title">浮窗管理</h3>-->
 
        <div class="title-img-box">
-         <h3 class="m-title">任务等级管理</h3>
+         <h3 class="m-title">任务等级奖励管理</h3>
          <img v-if="levelTableClose" class="table-close-img" src="../../assets/images/table_close.png" @click="tableOpen">
          <img v-if="!levelTableClose" class="table-close-img" src="../../assets/images/table_open.png" @click="tableOpen">
        </div>
 
-       <div v-if="!levelTableClose" class="content-table">
+       <div v-if="!levelTableClose" class="content-table" style="margin-bottom: 0.2rem">
          <el-table :data="levelList" border style="width: 100%" v-loading="levelLoading">
            <el-table-column prop="talevel" label="任务等级" width="120"></el-table-column>
            <el-table-column prop="raward" label="奖励方式"></el-table-column>
@@ -43,6 +43,10 @@
              </template>
            </el-table-column>
          </el-table>
+
+         <el-tooltip class="item" effect="light" content="添加任务等级奖励" placement="right">
+           <span class="m-item-add" style="left: 3.5rem; margin-top: 0.05rem">+</span>
+         </el-tooltip>
        </div>
 
        <h3 class="m-title">任务管理</h3>
@@ -391,7 +395,7 @@
           { name:'发现', url:'', active:false },
           { name:'我的', url:'', active:false }
         ],
-        levelTableClose: true,      // 任务等级管理隐藏
+        levelTableClose: false,      // 任务等级管理隐藏
         levelList: [],              // 任务等级list
         rowNum: "",                 // 确定点击的图片是第几行的
         levelLoading: true,         // 任务表格加载中
@@ -475,6 +479,38 @@
               }
             }
             this.taskLoading = false;
+          }else{
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+          }
+        });
+      },
+
+      // 获取所有任务奖励
+      getAllRaward(){
+        // this.taskLoading = true;
+        axios.get(api.get_all_raward + '?token=' + localStorage.getItem('token')).then(res => {
+          if(res.data.status == 200){
+            // this.taskList = res.data.data;
+            console.log(res.data.data);
+
+            /*for(let i = 0; i < this.taskList.length; i ++) {
+              // 判断任务类型   0: "满减", 1: "佣金加成", 2: "无门槛"
+              switch (this.taskList[i].tatype){
+                case 0:
+                  this.taskList[i].tatype = this.taskTypeList[0].label;
+                  break;
+                case 1:
+                  this.taskList[i].tatype = this.taskTypeList[1].label;
+                  break;
+                case 2:
+                  this.taskList[i].tatype = this.taskTypeList[2].label;
+                  break;
+                case 3:
+                  this.taskList[i].tatype = this.taskTypeList[3].label;
+                  break;
+              }
+            }*/
+            // this.taskLoading = false;
           }else{
             this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
@@ -820,7 +856,7 @@
 
         // 获取已有的各种图片
         if(i == 1) {
-          axios.get(api.get_image_by_aitype + '?token=' + localStorage.getItem('token') + "&aitype=3").then(res => {
+          axios.get(api.get_img_by_aitype + '?token=' + localStorage.getItem('token') + "&aitype=3").then(res => {
             if(res.data.status == 200) {
               this.ownerImg = res.data.data.aiimage;
             }else{
@@ -828,7 +864,7 @@
             }
           });
         }else if(i == 2) {
-          axios.get(api.get_image_by_aitype + '?token=' + localStorage.getItem('token') + "&aitype=[0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]").then(res => {
+          axios.get(api.get_img_by_aitype + '?token=' + localStorage.getItem('token') + "&aitype=[0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]").then(res => {
             if(res.data.status == 200) {
 
               for(let i = 0; i <res.data.data.length; i ++) {
@@ -901,9 +937,10 @@
       }
     },
     mounted() {
-      this.getAllTaskLevel();   // 获取所有任务等级
       this.getAllTaskType();    // 获取任务类型
       this.getAllTask();        // 获取所有任务
+      this.getAllTaskLevel();   // 获取所有任务等级奖励内容
+      // this.getAllRaward();      // 获取所有奖励
     }
   }
 </script>
