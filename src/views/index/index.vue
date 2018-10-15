@@ -219,6 +219,31 @@
           imgModal
         },
       mounted(options){
+        if(this.$route.query.linkUrl && localStorage.getItem('is_click') != '1'){
+          switch (this.$route.query.linkUrl){
+            case 'activityContent':
+              this.$router.push({path:'/'+this.$route.query.linkUrl,query:{
+                  baid:this.$route.query.baid,
+                }});
+              localStorage.setItem('is_click','1')
+              break;
+            case 'productDetail':
+              this.$router.push({path:'/'+this.$route.query.linkUrl,query:{
+                  prid:this.$route.query.prid,
+                }})
+              localStorage.setItem('is_click','1')
+              break;
+            case 'discover/index':
+              this.$router.push({path:'/'+this.$route.query.linkUrl,query:{
+                  acid:this.$route.query.acid,
+                  name:this.$route.query.name
+                }});
+              localStorage.setItem('is_click','1')
+              break;
+
+          }
+          return false;
+        }
         //判断是否登录
         if(!localStorage.getItem('token') &&!common.GetQueryString('code')){
           this.login();
