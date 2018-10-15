@@ -9,6 +9,7 @@ import requests
 
 from WeiDian import logger
 from WeiDian.common.divide import Partner
+from WeiDian.common.get_model_return_list import get_model_return_dict
 from WeiDian.common.import_status import import_status
 from WeiDian.common.params_require import parameter_required
 from WeiDian.common.token_required import verify_token_decorator, is_tourist, is_partner, is_admin
@@ -598,12 +599,21 @@ class CMyCenter(BaseMyCenterControl):
 
     @verify_token_decorator
     def get_share_params(self):
-        if not is_admin():
-            raise AUTHORITY_ERROR(u'请使用管理员登录')
-        settings = Partner()
-        title = settings.get_item('share', 'title')
-        content = settings.get_item('share', 'content')
-        img = settings.get_item('share', 'img')
+
+        args = request.args.to_dict()
+        prid = args.get('prid')
+        logger.debug("get share params args is %s", args)
+        if prid:
+            from WeiDian.service.SActivity import SActivity
+            actext_by_prid = get_model_return_dict(SActivity().get_one_act_by_prid(prid))['ACtext']
+            title = actext_by_prid.split(u'。')[0]
+            content = actext_by_prid.split(u'。')[-1]
+            img = get_model_return_dict(self.sproduct.get_prmainpic_by_prid(prid))['PRmainpic']
+        else:
+            settings = Partner()
+            title = settings.get_item('share', 'title')
+            content = settings.get_item('share', 'content')
+            img = settings.get_item('share', 'img')
         response = import_status("messages_get_item_ok", "OK")
         response['data'] = {'title': title,
                             'content': content,

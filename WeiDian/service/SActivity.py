@@ -90,6 +90,10 @@ class SActivity(SBase):
         return self.session.query(Activity).filter_by(ACSkipType=2, AClinkvalue=prid, ACisdelete=False).all()
 
     @close_session
+    def get_one_act_by_prid(self, prid):
+        return self.session.query(Activity.ACtext).filter_by(ACSkipType=2, AClinkvalue=prid, ACisdelete=False).order_by(Activity.ACcreatetime.desc()).first()
+
+    @close_session
     def get_activity_list_by_actext(self, actext, tnid):
         """根据actext获取"""
         return self.session.query(Activity).filter(Activity.ACtext.like("%{0}%".format(actext)), Activity.TopnavId == tnid, Activity.ACisdelete == False).all()

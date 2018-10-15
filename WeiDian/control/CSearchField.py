@@ -141,4 +141,5 @@ class CSearchField():
         map(cactivity.fill_product, activity_list)
         data = import_status("get_activity_list_success", "OK")
         data["data"] = activity_list
+        data["count"] = len_aclist
         return data

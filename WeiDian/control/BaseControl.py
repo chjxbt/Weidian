@@ -26,7 +26,10 @@ class BaseActivityControl():
         # tnid = act.TopnavId
         act.suuser = self.ssuperuser.get_one_super_by_suid(act.SUid)  # 超级用户
         act.media = self.smedia.get_media_by_acid(acid)  # 图片或视频
-        act.tags = self.stags.get_show_tags_by_acid(acid)  # 右上角tag
+        if request.user.SUid:
+            act.tags = self.stags.get_show_tags_by_acid({'ACid': acid})  # 右上角tag
+        else:
+            act.tags = self.stags.get_show_tags_by_acid({'ACid': acid, 'ATstate': 1})  # 右上角tag
         act.foward = self.foward.get_fowardnum_by_acid(acid)  # 转发数
         # act.likenum = self.salike.get_likenum_by_acid(acid)  # 喜欢数
         # if hasattr(request, 'user'):

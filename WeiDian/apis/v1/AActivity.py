@@ -22,7 +22,6 @@ class AActivity(Resource):
             "get_all_tags": "self.control_activity.get_exist_tags()"
         }
         res = eval(apis[activity])
-        # res = {7777:"666"}
         return jsonify(res)
 
     def post(self, activity):
@@ -33,9 +32,11 @@ class AActivity(Resource):
             "del_one": "self.control_activity.delete_one()",
             "stop_one": "self.control_activity.stop_one()",
             "update_act": "self.control_activity.update_activity()",
+            "upload_tags": "self.control_activity.upload_tags()",
             "share_qrcode": "self.control_activity.share_activity()",
-            "generate_poster": "self.control_activity.generate_poster()",
             "set_show_type": "self.control_activity.set_show_type()",
+            "del_exist_tags": "self.control_activity.del_exist_tags()",
+            "generate_poster": "self.control_activity.generate_poster()",
             "upload_home_images": "self.control_activity.upload_home_images()",
         }
         res = eval(apis[activity])
