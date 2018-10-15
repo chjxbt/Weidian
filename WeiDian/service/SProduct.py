@@ -21,6 +21,12 @@ class SProduct(SBase):
         return product
 
     @close_session
+    def get_prmainpic_by_prid(self, prid):
+        """根据商品id获取商品主图"""
+        product = self.session.query(Product.PRmainpic).filter_by(PRid=prid).first()
+        return product
+
+    @close_session
     def get_all(self):
         """获取所有商品"""
         product_list = self.session.query(Product).filter_by(

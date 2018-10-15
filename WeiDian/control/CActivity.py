@@ -538,6 +538,37 @@ class CActivity(BaseActivityControl, BaseTask):
             raise SYSTEM_ERROR(u"数据错误")
 
     @verify_token_decorator
+    def upload_tags(self):
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'非管理员权限')
+        data = request.json
+        logger.debug("upload tags data is %s", data)
+        tags = data.get('tags')
+        try:
+            for tag in tags:
+                atid = str(uuid.uuid1())
+                self.stags.add_model('ActivityTag', **{
+                    'ATid': atid,
+                    'ACid': 'customupload',
+                    'ATname': tag.get('atimg'),
+                })
+                atid_list = atid_list.extend(atid)
+            res = import_status("save_photo_success", "OK")
+            res['data'] = atid_list
+        except Exception as e:
+            logger.exception("upload tags error")
+            raise SYSTEM_ERROR(u"上传数据错误")
+
+    @verify_token_decorator
+    def del_exist_tags(self):
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'非管理员权限')
+        # del_info = self.stags
+        # todo 56464
+
+
+
+    @verify_token_decorator
     def share_activity(self):
         if is_tourist():
             raise TOKEN_ERROR(u'未登录')
