@@ -14,6 +14,7 @@ LinuxRoot = '/opt/WeiDian/'
 LinuxImgs = 'imgs'
 WindowsRoot = 'D:/'
 LinuxStaticImgs = '/opt/WeiDian/imgs/icon'
+LinuxUserHead = '/opt/WeiDian/imgs/head'
 
 # weidian
 APP_ID = 'wx8206635590c9cc0e'
