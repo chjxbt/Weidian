@@ -48,6 +48,10 @@ const api={
   add_image: title + 'adimage/add_image',                   // 弹框管理的添加图片
   get_img_by_aitype: title + 'adimage/get_image_by_aitype', // 通过类型获取弹框图
 
+  get_all_tags: title + 'activity/get_all_tags',            // 获取推文角标
+  upload_tags: title + 'activity/upload_tags',              // 上传角标
+  del_exist_tags: title + 'activity/del_exist_tags',        // 删除角标
+
 
 
 

@@ -213,7 +213,7 @@
 
       <div>
         <div class="m-form-item">
-          <p class="m-form-label required" style="width: 0.8rem;">推文内容</p>
+          <p class="m-form-label required" style="width: 0.9rem;">推文内容：</p>
           <div class="m-item-content">
             <div class=" m-item-row">
               <el-input type="textarea" :autosize="{ minRows: 3, maxRows: 6 }" placeholder="请输入推文内容" v-model="activityACtext" style="width: 4rem" ref="actext"></el-input>
@@ -221,7 +221,7 @@
           </div>
         </div>
         <div class="m-form-item" style="min-height: 1.6rem; max-height: 1.8rem">
-          <p class="m-form-label required" style="width: 0.8rem;">推文图片</p>
+          <p class="m-form-label required" style="width: 0.9rem;">推文图片：</p>
           <div class="m-item-content" style="width: 6rem;" :class="activityMediaSort > 4 ? 'five':''" id="abcd">
             <div class=" m-item-row">
               <el-upload action="string" :http-request="uploadActivityPicture" list-type="picture-card" :file-list="activityPictureList"
@@ -234,7 +234,7 @@
             </div>
           </div>
         </div>
-        <p class="m-form-label required" style="width: 0.8rem;">跳转类型</p>
+        <p class="m-form-label required" style="width: 0.9rem;">跳转类型：</p>
         <div class="m-item-content">
           <div class=" m-item-row">
             <el-select v-model="activityJumpValue" class="m-input-l" placeholder="请选择" :disabled="editActivity" style="width: 1.75rem">
@@ -253,7 +253,7 @@
           </div>
         </div>
         <div class="m-form-item">
-          <p class="m-form-label required" style="width: 0.8rem;">活动类型</p>
+          <p class="m-form-label required" style="width: 0.9rem;">活动类型：</p>
           <div class="m-item-content">
             <div class=" m-item-row">
               <el-select v-model="activityType" class="m-input-l" placeholder="请选择">
@@ -262,7 +262,7 @@
             </div>
           </div>
         </div>
-        <p class="m-form-label required" style="width: 0.8rem;">活动时间</p>
+        <p class="m-form-label required" style="width: 0.9rem;">活动时间：</p>
         <div class="m-item-content">
           <el-date-picker v-model="activityActivityTime" type="datetimerange" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
                           start-placeholder="开始日期" end-placeholder="结束日期" style="width: 4rem;">
@@ -270,24 +270,43 @@
         </div>
         <div class="num-list">
           <div class="num-box">
-            <p class="m-form-label required" style="width: 0.9rem;">虚拟点赞数</p>
+            <p class="m-form-label" style="width: 1rem;">虚拟点赞数：</p>
             <div class="m-item-content">
               <div class=" m-item-row">
                 <el-input v-model="likeNum" class="m-input-s" placeholder="请输入"></el-input>
               </div>
             </div>
           </div>
-          <div class="num-box">
-            <p class="m-form-label required" style="width: 0.8rem;">活动角标</p>
+          <div class="num-box box-display">
+            <div class="m-form-label" style="margin-top: 0.28rem">活动角标：</div>
             <div class="m-item-content">
               <div class=" m-item-row">
-                <el-input v-model="activityBadge" class="m-input-s" placeholder="限两个字" maxlength="2"></el-input>
+                <img class="at-img" v-if="activityBadge" :src="activityBadge" @click="getTags">
+                <div v-if="!activityBadge" class="at-text" @click="getTags">请点此选择</div>
               </div>
             </div>
           </div>
+          <el-dialog title="活动角标" :visible.sync="badgeDialog" width="4.8rem">
+            <div class="dialog-img">
+              <div class="img-box" v-for="(item, index) in badgeList">
+                <img class="badge-img" :src="item.atname" @click="chooseImg(index)">
+                <img class="choose-ok-img" v-if="item.choose" src="../../common/images/tag_ok.png">
+                <div class="delete-tags" @click="deleteTag(item, index)">X</div>
+              </div>
+              <el-upload class="badge-uploader" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false"
+                         :on-success="uploadBadgeImg">
+                <img v-if="activityBadgeTemp" :src="activityBadgeTemp" style="width: 0.5rem; height: 0.5rem;">
+                <i v-else class="el-icon-plus badge-icon"></i>
+              </el-upload>
+            </div>
+            <span slot="footer" class="dialog-footer">
+              <el-button class="at-img-dialog-btn btn-color" type="primary" @click="chooseOK">确 定</el-button>
+            </span>
+          </el-dialog>
+
         </div>
         <div class="m-form-item">
-          <p class="m-form-label" style="width: 0.65rem; margin-top: 0.1rem">发布者</p>
+          <p class="m-form-label" style="width: 0.65rem; margin-top: 0.1rem">发布者：</p>
           <div class="m-item-content">
             <div class=" m-item-row">
               <el-select v-model="author" class="m-input-l" placeholder="请选择发布者" @focus="focusselect('author')">
@@ -385,6 +404,10 @@
         authorList: [],             // 推文-发布者list
         activityType: '',           // 添加推文/活动时的活动类型选择的值
         activityBadge: '',          // 推文-活动角标
+        activityBadgeTemp: '',      // 推文-活动角标暂存
+        badgeDialog: false,         // 推文-活动角标-dialog
+        badgeList: [],              // 推文-活动角标list
+        badgeIndex: "",             // 推文-活动角标序号暂存
         activityACtext: '',         // 推文-活动内容
         activityEditScope: '',      // 确定编辑的推文行数据，便于后续存回该行
         activityJumpValue: '',      // 推文-跳转类型选择的值
@@ -611,7 +634,7 @@
           if(this.activityMediaSort != 4 && this.activityMediaSort != 6 && this.activityMediaSort != 9) {
             this.$message({ message: "上传推文图片时，数量需为4张、6张或9张", type: 'warning', duration: 1500 });
           }else {
-            if(this.activityACtext == "" || this.activityJumpValue == "" || this.activityType == "" || this.activityBadge == "" || this.likeNum == ""
+            if(this.activityACtext == "" || this.activityJumpValue == "" || this.activityType == ""
             // if(this.activityACtext == "" || this.activityJumpValue == "" || this.activityJumpToValue == "" || this.activityType == "" || this.activityBadge == "" || this.likeNum == ""
               || this.activityActivityTime.length != 2) {
               this.$message({ message: "请完整填写", type: 'warning', duration: 1500 });
@@ -1037,8 +1060,7 @@
         if(this.activityMediaSort != 4 && this.activityMediaSort != 6 && this.activityMediaSort != 9) {
           this.$message({ message: "上传推文图片时，数量需为4张、6张或9张", type: 'warning', duration: 1500 });
         }else {
-          if(this.activityACtext == "" || this.activityJumpValue == "" || this.activityJumpToValue == "" || this.activityType == "" || this.activityBadge == "" || this.likeNum == ""
-            || this.activityActivityTime.length != 2) {
+          if(this.activityACtext == "" || this.activityJumpValue == "" || this.activityJumpToValue == "" || this.activityType == "" || this.activityActivityTime.length != 2) {
             this.$message({ message: "请完整填写", type: 'warning', duration: 1500 });
             if(this.tnid == "") {
               this.$message({ message: "请刷新页面后重试", type: 'warning', duration: 1500 });
@@ -1218,14 +1240,12 @@
         axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token') + "&filetype = banner", form).then(res => {
           if(res.data.status == 200){
             // console.log(res, file);
+            this.bannerList[this.rowNum].baimage = res.data.data;
+            this.bannerList = this.bannerList.concat();
             this.$message({ type: 'success', message: res.data.message, duration: 1500 });
           }else{
             this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
-
-          this.bannerList[this.rowNum].baimage = res.data.data;
-          this.bannerList = this.bannerList.concat();
-          // this.imageUrl = res.data.data;
         });
       },
 
@@ -1257,6 +1277,76 @@
             this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         });
+      },
+
+      // 上传活动角标图片
+      uploadBadgeImg(res, file) {
+        let form = new FormData();
+        form.append("file", file.raw);
+        form.append("FileType", 'NewsPic');
+        form.append("index", 1);
+        axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token') + "&filetype = badge", form).then(res => {
+          if(res.data.status == 200){
+            let atname = res.data.data;
+            // 上传活动角标图片到api
+            axios.post(api.upload_tags + '?token=' + localStorage.getItem('token'), { tags: [{ atname: atname }] }).then(res => {
+              if(res.data.status == 200){
+                this.$message({ type: 'success', message: "上传成功", duration: 1500 });
+                this.badgeList.push({ atid: res.data.data.atid_list[0], atname: atname });
+              }else{
+                this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+              }
+            });
+          }else{
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+          }
+        });
+      },
+
+      // 获取推文角标
+      getTags(){
+        this.badgeDialog = true;
+        axios.get(api.get_all_tags + "?token=" + localStorage.getItem("token")).then(res => {
+          if(res.data.status == 200) {
+            this.badgeList = res.data.data.tags_list;
+            for(let i = 0; i < this.badgeList.length; i ++) {
+              this.badgeList[i].choose = false;
+            }
+          }else{
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+          }
+        });
+      },
+
+      // 删除推文角标
+      deleteTag(item, index){
+        this.$confirm('此操作将删除该专题, 是否继续?', '提示',
+          {confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'}).then(() => {
+          axios.post(api.del_exist_tags + '?token=' + localStorage.getItem('token'), { atid: item.atid }).then(res => {
+            if(res.data.status == 200){
+              this.$message({ type: 'success', message: res.data.message, duration: 1500 });
+              this.badgeList.splice(index, 1);
+            }else{
+              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+            }
+          });
+        }).catch(() => {  });
+      },
+
+      // 选择该推文角标
+      chooseImg(index){
+        for(let i = 0; i < this.badgeList.length; i ++) {
+          this.badgeList[i].choose = false;
+        }
+        this.badgeList[index].choose = true;
+        this.badgeIndex = index;
+        this.badgeList = this.badgeList.concat();
+      },
+
+      // 确认按钮，传回选中图片
+      chooseOK() {
+        this.badgeDialog = false;
+        this.activityBadge = this.badgeList[this.badgeIndex].atname;
       },
 
       // 分页点击方法
@@ -1325,6 +1415,9 @@
     .num-box {
       margin-right: 0.5rem;
     }
+    .box-display {
+      display: flex;
+    }
   }
   .choose-banner {
     display: flex;
@@ -1350,6 +1443,56 @@
     }
     .page-box {
       // margin: 0.1rem 0 0 -1.8rem;
+    }
+  }
+  .at-img {
+    width: 0.35rem;
+    height: 0.35rem;
+    margin: 0.13rem 0 0 0.2rem;
+    border: 1px solid #ababab;
+  }
+  .at-text {
+    color: #4169E1;
+    font-size: 0.12rem;
+    margin: 0.22rem 0 0 0.1rem;
+    border-bottom: 1px solid #4169E1;
+  }
+  .dialog-img {
+    width: 4.6rem;
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: -0.2rem;
+    .img-box {
+      position: relative;
+      .badge-img {
+        width: 0.5rem;
+        height: 0.5rem;
+        margin: 0.2rem 0 0 0.2rem;
+        border: 1px solid #ababab;
+      }
+      .choose-ok-img {
+        width: 0.182rem;
+        height: 0.13333rem;
+        position: absolute;
+        bottom: 0;
+        right: -0.02rem;
+      }
+      .delete-tags {
+        color: #ababab;
+        position: absolute;
+        top: 0.14rem;
+        right: -0.02rem;
+      }
+    }
+  }
+  .dialog-footer {
+    .at-img-dialog-btn {
+      padding: 0.05rem 0.1rem;
+      font-size: 14px;
+    }
+    .btn-color {
+      border-color: @btnActiveColor;
+      background-color: @btnActiveColor;
     }
   }
 </style>
