@@ -193,7 +193,7 @@
           </el-table-column>
         </el-table>
       </div>
-      <div class="m-form-label choose-banner" style="margin: -0.1rem 0 0.2rem 0; border-bottom: 1px solid #707070">
+      <div class="m-form-label choose-banner" style="margin: -0.1rem 0 0.1rem 0;">
         <!--<div class="title">推文管理</div>-->
         <Pagination class="page-box" :total="total_page" @pageChange="pageChange"></Pagination>
 
