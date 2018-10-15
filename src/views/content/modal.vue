@@ -395,7 +395,7 @@
           { name:'发现', url:'', active:false },
           { name:'我的', url:'', active:false }
         ],
-        levelTableClose: false,      // 任务等级管理隐藏
+        levelTableClose: true,      // 任务等级管理隐藏
         levelList: [],              // 任务等级list
         rowNum: "",                 // 确定点击的图片是第几行的
         levelLoading: true,         // 任务表格加载中
