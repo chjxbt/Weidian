@@ -448,6 +448,7 @@
           }
         });
       },
+
       // 获取所有任务
       getAllTask(){
         this.taskLoading = true;
@@ -479,6 +480,7 @@
           }
         });
       },
+
       // 获取任务类型
       getAllTaskType() {
         axios.get(api.get_all_task_type).then(res => {
@@ -491,6 +493,7 @@
           }
         });
       },
+
       // 选择任务类型
       taskTypeChange(v) {
         // 任务类型为观看视频时，视频。否则为完成度
@@ -502,10 +505,12 @@
           this.video_ratio = "完成度：";
         }
       },
+
       // 清空任务类型选择时
       clearType(v) {
         // console.log(v);
       },
+
       // 打开/关闭任务表格
       tableOpen() {
         if(this.levelTableClose) {
@@ -515,10 +520,12 @@
           this.levelTableClose = true;
         }
       },
+
       // 确定暂存是哪个img
       setWhichImg(which) {
         this.whichImg = which;
       },
+
       // 上传发现页/我的 - 各种图片
       uploadPicture(res, file) {
         let form = new FormData();
@@ -576,6 +583,7 @@
           }
         });
       },
+
       // 上传任务完成的提示图片
       uploadTaskDonePicture(res, file) {
         let form = new FormData();
@@ -592,6 +600,7 @@
           }
         });
       },
+
       // 上传任务图标图片
       uploadTaskPicture(res, file) {
         let form = new FormData();
@@ -607,11 +616,13 @@
           }
         });
       },
+
       // 确定点击的图片是第几行的
       rowClick(index, col) {
         // console.log(col);
         this.rowNum = index;
       },
+
       // 编辑按钮
       editDone(scope, where) {
         // 任务表格编辑
@@ -636,6 +647,7 @@
           this.levelList = this.levelList.concat();
         }
       },
+
       // 保存任务等级或取消
       saveTaskLevel(scope, where) {
         if(where == "cancel") {
@@ -656,6 +668,7 @@
           });*/
         }
       },
+
       // 删除按钮
       deleteDone(scope, where) {
         this.$confirm('此操作将删除该行, 是否继续?', '提示', {
@@ -677,6 +690,7 @@
           }
         }).catch();
       },
+
       // 弹框管理-首页-提交   添加任务
       submit() {
         if(this.page == "首页") {
@@ -746,6 +760,7 @@
           });
         }
       },
+
       // 保存编辑后的任务
       saveTask() {
         let params = {
@@ -785,8 +800,10 @@
           });
         }
       },
+
       // 将编辑框置空
       clearInput() {
+        this.editTask = false;
         this.formIndex.title = "";
         this.formIndex.taskLevel = "";
         this.formIndex.duration = "";
@@ -796,6 +813,7 @@
         this.taskImg = "";
         this.activityTime = [];
       },
+
       // 顶部首页、发现、我的点击切换
       wTabClick(i){
         this.clearInput();         // 将编辑框置空
@@ -869,7 +887,7 @@
         arr[i].active = true;
         this.page = arr[i].name;
         this.tab_list = [].concat(arr);
-      },
+      }
     },
     watch:{
       // 判断活动时间是否有问题
