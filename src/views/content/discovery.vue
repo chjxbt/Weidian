@@ -177,7 +177,7 @@
 
       <div>
         <div class="m-form-item" v-if="page == '公告' || page == '教程'">
-          <p class="m-form-label required" style="width: 0.8rem;">推文标题</p>
+          <p class="m-form-label required" style="width: 0.9rem;">推文标题：</p>
           <div class="m-item-content">
             <div class=" m-item-row">
               <el-input v-model="activityTitle" placeholder="请输入内容" style="width: 4rem"></el-input>
@@ -185,7 +185,7 @@
           </div>
         </div>
         <div class="m-form-item">
-          <p class="m-form-label required" style="width: 0.8rem;">推文内容</p>
+          <p class="m-form-label required" style="width: 0.9rem;">推文内容：</p>
           <div class="m-item-content">
             <div class=" m-item-row">
               <el-input type="textarea" :autosize="{ minRows: 3, maxRows: 6 }" placeholder="请输入推文内容" v-model="activityACtext" style="width: 4rem" ref="actext"></el-input>
@@ -198,7 +198,7 @@
         </div>
 
         <div class="m-form-item" style="min-height: 1.6rem; max-height: 1.8rem" v-if="page != '教程'">
-          <p class="m-form-label required" style="width: 0.8rem;">推文图片</p>
+          <p class="m-form-label required" style="width: 0.9rem;">推文图片：</p>
           <div class="m-item-content" style="width: 6rem;" :class="activityMediaSort > 4 ? 'five':''" id="abcd">
             <div class=" m-item-row">
               <el-upload action="string" :http-request="uploadActivityPicture" list-type="picture-card" :file-list="activityPictureList"
@@ -213,7 +213,7 @@
         </div>
 
         <div class="m-form-item" v-if="page == '教程' && imgVideo">
-          <p class="m-form-label required" style="width: 0.8rem;">推文图片</p>
+          <p class="m-form-label required" style="width: 0.9rem;">推文图片：</p>
           <div class="m-item-content" style="width: 6rem;">
             <div class=" m-item-row">
               <el-upload class="long-upload" action="string" :http-request="uploadActivityLong" :show-file-list="false">
@@ -224,7 +224,7 @@
           </div>
         </div>
         <div class="m-form-item" v-if="page == '教程' && !imgVideo">
-          <p class="m-form-label required" style="width: 0.8rem;">教程视频</p>
+          <p class="m-form-label required" style="width: 0.9rem;">教程视频：</p>
           <div class="m-item-content">
             <div class=" m-item-row">
               <el-upload class="video-upload" action="string" :http-request="uploadActivityVideo" :show-file-list="false">
@@ -235,7 +235,7 @@
           </div>
         </div>
         <div class="m-form-item" v-if="page == '每日10荐'">
-          <p class="m-form-label required" style="width: 0.8rem;">跳转类型</p>
+          <p class="m-form-label required" style="width: 0.9rem;">跳转类型：</p>
           <div class="m-item-content">
             <div class=" m-item-row">
               <el-select v-model="activityJumpValue" class="m-input-l" placeholder="请选择" :disabled="editActivity" style="width: 1.75rem">
@@ -255,7 +255,7 @@
           </div>
         </div>
         <div class="m-form-item" v-if="page == '每日10荐'">
-          <p class="m-form-label required" style="width: 0.8rem;">活动类型</p>
+          <p class="m-form-label required" style="width: 0.9rem;">活动类型：</p>
           <div class="m-item-content">
             <div class=" m-item-row">
               <el-select v-model="activityType" class="m-input-l" placeholder="请选择">
@@ -265,8 +265,8 @@
           </div>
         </div>
         <div class="m-form-item">
-          <p class="m-form-label required" style="width: 0.8rem;" v-if="page == '每日10荐'">活动时间</p>
-          <p class="m-form-label" style="width: 0.8rem;" v-else>活动时间</p>
+          <p class="m-form-label required" style="width: 0.9rem;" v-if="page == '每日10荐'">活动时间：</p>
+          <p class="m-form-label" style="width: 0.9rem;" v-else>活动时间：</p>
           <div class="m-item-content">
             <el-date-picker v-model="activityActivityTime" type="datetimerange" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
                             start-placeholder="开始日期" end-placeholder="结束日期" style="width: 4rem;">
@@ -275,7 +275,7 @@
         </div>
         <div class="num-list">
           <div class="num-box" v-if="page == '公告' || page == '教程'">
-            <p class="m-form-label">虚拟浏览量</p>
+            <p class="m-form-label">虚拟浏览量：</p>
             <div class="m-item-content">
               <div class=" m-item-row">
                 <el-input v-model="viewsNum" class="m-input-s" placeholder="请输入"></el-input>
@@ -283,7 +283,7 @@
             </div>
           </div>
           <div class="num-box" v-if="page == '素材圈'">
-            <p class="m-form-label">虚拟发圈数</p>
+            <p class="m-form-label">虚拟发圈数：</p>
             <div class="m-item-content">
               <div class=" m-item-row">
                 <el-input v-model="hairLapsNum" class="m-input-s" placeholder="请输入"></el-input>
@@ -291,7 +291,7 @@
             </div>
           </div>
           <div class="num-box" v-if="page != '素材圈'">
-            <p class="m-form-label">虚拟点赞数</p>
+            <p class="m-form-label">虚拟点赞数：</p>
             <div class="m-item-content">
               <div class=" m-item-row">
                 <el-input v-model="likeNum" class="m-input-s" placeholder="请输入"></el-input>
@@ -299,7 +299,7 @@
             </div>
           </div>
           <div class="num-box" v-if="page == '每日10荐'">
-            <p class="m-form-label">活动角标</p>
+            <p class="m-form-label">活动角标：</p>
             <div class="m-item-content">
               <div class=" m-item-row">
                 <el-input v-model="activityBadge" class="m-input-s" placeholder="限两个字" maxlength="2"></el-input>
@@ -308,7 +308,7 @@
           </div>
         </div>
         <div class="m-form-item">
-          <p class="m-form-label" style="width: 0.65rem; margin-top: 0.1rem">发布者</p>
+          <p class="m-form-label" style="width: 0.65rem; margin-top: 0.1rem">发布者：</p>
           <div class="m-item-content">
             <div class=" m-item-row">
               <el-select v-model="author" class="m-input-l" placeholder="请选择发布者" @focus="focusselect('', 'author')">
@@ -322,7 +322,7 @@
           </div>
         </div>
         <div class="m-form-item" v-if="page == '公告' || page == '教程'">
-          <p class="m-form-label">推文置顶</p>
+          <p class="m-form-label">推文置顶：</p>
           <el-switch style="margin: 0.1rem 0 0.2rem 0" v-model="placedTop" active-color="#91aeb5" inactive-color="#DCDCDC">
           </el-switch>
         </div>
