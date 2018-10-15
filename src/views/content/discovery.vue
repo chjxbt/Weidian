@@ -687,18 +687,21 @@
             }
           });
         }else if(where == "product") {
-          console.log(this.productList[0].prid);
-          console.log(this.productList[1].prid);
-          this.productLoading = true;
           let PRid_list = [];
           for(let i = 0; i < this.productList.length; i ++) {
-            PRid_list.push({ prid: this.productList[i].prid, prsort: i });
+            // 保存时去除空商品
+            if(this.productList[i].prid == undefined) {
+              this.productList.splice(i, 1);
+            }else if(this.productList[i].prid != "") {
+              PRid_list.push({ prid: this.productList[i].prid, prsort: i });
+            }
           }
           let params = {
             reviewnum: this.productViewNum,
             relikenum: this.productLikeNum,
             prid_list: PRid_list
           };
+          this.productLoading = true;
           axios.post(api.update + '?token=' + localStorage.getItem('token') + "&reid=" + this.productReid, params).then(res=>{
             if(res.data.status == 200){
               this.$message({ message: "保存成功", type: 'success', duration: 1500 });
@@ -851,6 +854,8 @@
       cancelProduct() {
         this.productEdit = false;
         this.productDisabled = true;
+
+        // console.log()
       },
 
       // 删除轮播图/专题
@@ -1485,13 +1490,13 @@
     }
     .product-btn {
       height: 0.2rem;
-      line-height: 0.2rem;
+      line-height: 0.21rem;
       white-space: nowrap;
       color: #ffffff;
       background-color: @mainColor;
       border-radius: 0.1rem;
       padding: 0.02rem 0.15rem;
-      margin: 0.25rem 0 0 0.3rem;
+      margin: 0.26rem 0 0 0.3rem;
     }
   }
   .choose-banner {
