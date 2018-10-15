@@ -22,18 +22,18 @@
           <!--<div class="to-reduce m-red">{{item.toReduce}}</div>-->
         <!--</div>-->
         <div class="m-order-product">
-          <div class="one-product" v-for="product in item.productList" :key="product.id">
+          <div class="one-product" v-for="(product,index) in item.productList" :key="product.id">
             <img v-if="product.choose" src="/static/images/check_box_on.png" class="check-box-img" @click="chooseProduct(product)">
             <img v-if="!product.choose" src="/static/images/check_box_un.png" class="check-box-img" @click="chooseProduct(product)">
             <img :src="product.primage" class="product-img" @click="toDetail(product)">
             <div class="one-product-three">
               <div class="product-name m-ft-24 tl m-ft-b" @click="toDetail(product)">{{product.prtitle}}</div>
               <!-- :options="product.sku_total" -->
-              <product-params  :selects="product.sku.pskproperkey" :options="sku" :quantity="product.scnums" ></product-params>
-              <product-quantity :quantity="product.scnums" @changeNum="changeNum"></product-quantity>
+              <product-params :item="index" :selects="product.current_sku.pskproperkey" :number="product.current_sku.pskproductnum" :price="product.current_sku.pskprice" :options="product.sku_value.psvpropervalue" :sku="product.sku" :quantity="product.scnums"   @carChoose="carChoose"></product-params>
+              <product-quantity :item="index" :quantity="product.scnums" @changeNum="changeNum"></product-quantity>
             </div>
             <div class="one-product-four">
-              <p class="one-product-price m-red m-ft-20 m-ft-b">￥<span class="product-price-number">{{product.sku.pskprice}}</span></p>
+              <p class="one-product-price m-red m-ft-20 m-ft-b">￥<span class="product-price-number">{{product.current_sku.pskprice}}</span></p>
               <div class="product-failure m-ft-24 m-grey"></div>
               <img src="/static/images/delete.png" class="delete-product-img" @click="deleteProduct(product)">
             </div>
@@ -47,7 +47,7 @@
               <div class="product-name m-ft-24 tl m-ft-b">{{failure.prtitle}}</div>
               <!--<div class="tl">尺寸：{{failure.size}} 颜色：{{failure.color}}</div>-->
               <div class="product-params-text m-ft-26 m-grey tl m-ml-0" >
-                <template v-for="(i,index) in failure.sku.pskproperkey">
+                <template v-for="(i,index) in failure.current_sku.pskproperkey">
                   <span class="product-params-detail  m-grey">{{i.key}}:{{i.value}} </span>
                 </template>
               </div>
@@ -55,7 +55,7 @@
               <!--<product-quantity :quantity="failure.quantity"></product-quantity>-->
             </div>
             <div class="one-product-four">
-              <p class="one-product-price m-red m-ft-20 m-ft-b">￥<span class="product-price-number">{{failure.sku.pskprice}}</span></p>
+              <p class="one-product-price m-red m-ft-20 m-ft-b">￥<span class="product-price-number">{{failure.current_sku.pskprice}}</span></p>
               <div class="product-failure m-ft-24 m-grey">失效</div>
               <img src="/static/images/delete.png" class="delete-product-img">
             </div>
@@ -124,8 +124,8 @@
         ifChooseAll: false,
         totalPrice: 0,
         order: [],
-        sku:[ {key: "颜色", values: [{id: 0, value: "黄色"}, {id: 1, value: "绿色"}, {id: 2, value: "红色"}, {id:3, value: "蓝色"}]},
-          {key: "尺寸", values: [{id: 0, value: "S"}, {id: 1, value: "M"}, {id: 2, value: "L"}, {id: 3, value: "XL"}, {id: 4, value: "2XL"}, {id: 5, value: "3XL"}]} ]
+        sku:[ {key: "颜色", values: [{vid: 349, value: "灰色"}, {vid: 1, value: "绿色"}, {vid: 2, value: "红色"}, {vid:3, value: "蓝色"}]},
+          {key: "尺寸", values: [{vid: 0, value: "S"}, {vid: 1, value: "M"}, {vid: 261, value: "L"}, {vid: 3, value: "XL"}, {vid: 4, value: "2XL"}, {vid: 5, value: "3XL"}]} ]
       }
     },
     components: { productParams, productQuantity },
@@ -133,6 +133,18 @@
       this.getShop()
     },
     methods: {
+      postCar(id,num,scid){
+        axios.post(api.update_shoppingcart + '?token=' + localStorage.getItem('token'),{
+          pskid:id,
+          num:num,
+          scid:scid
+        }).then(res => {
+          if(res.data.status == 200){
+            this.click_add = false;
+            Toast({ message: '已添加到购物车', className: 'm-toast-success' });
+          }
+        });
+      },
       /*获取购物车*/
       getShop(){
         axios.get(api.get_list_shoppingcart+'?token=' + localStorage.getItem('token')).then(res => {
@@ -168,7 +180,7 @@
               if(this.orderList[i].productList[j].choose) {
                 this.order.push(this.orderList[i].productList[j]);
                 // 计算单价商品的总价
-                this.totalPrice = this.orderList[i].productList[j].sku.pskprice * this.orderList[i].productList[j].scnums;
+                this.totalPrice = this.orderList[i].productList[j].current_sku.pskprice * this.orderList[i].productList[j].scnums;
               }
             }
           }
@@ -194,7 +206,7 @@
               this.orderList[i].productList[j].choose = true;
               // console.log(this.orderList[i].productList[j]);
               // 单价、数量
-              price = parseFloat(this.orderList[i].productList[j].sku.pskprice);
+              price = parseFloat(this.orderList[i].productList[j].current_sku.pskprice);
               quantity = parseInt(this.orderList[i].productList[j].scnums);
               // 计算总价
               this.totalPrice = this.totalPrice + price * quantity;
@@ -232,14 +244,14 @@
         let order = this.order;
         this.$router.push({path: "/submitOrder", query: { order }});
       },
-      changeNum(num){
-        console.log(this.selects)
-        // axios.post(api.update_shoppingcart + '?token=' + localStorage.getItem('token'),{
-        //   pskid:id,
-        //   changenum:num
-        // }).then(res => {
-        //
-        // });
+      changeNum(num,i){
+        this.orderList[0].productList[i].scnums = num;
+        this.postCar(this.orderList[0].productList[i].current_sku.pskid,num);
+      },
+      carChoose(v,num,i){
+        this.orderList[0].productList[i].scnums = num;
+        this.orderList[0].productList[i].current_sku = v[0];
+        this.postCar(this.orderList[0].productList[i].current_sku.pskid,num,this.orderList[0].productList[i].scid);
       }
     },
     created() {}

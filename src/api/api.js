@@ -5,6 +5,7 @@ const title = 'https://weidian.daaiti.cn';
 
 const api={
   login: title + '/user/login',//用户登录
+  wx_login:title + '/user/wx_login',//微信登录
   get_accesstoken : title + '/user/get_accesstoken',
   get_config: title + '/user/get_wx_config',//
   get_all_banner: title + '/banner/get_all',//获取首页轮播图
@@ -57,6 +58,7 @@ const api={
   get_list_shoppingcart: title + '/shoppingcart/get_list',//获取购物车
   delete_shoppingcart: title +'/shoppingcart/delete',//删除购物车
   update_shoppingcart: title + '/shoppingcart/update',///更新购物车
+  get_share_params: title + '/mycenter/get_share_params',//获取分享参数
 };
 
 export default api

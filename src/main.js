@@ -31,25 +31,11 @@ FastClick.attach(document.body);
 
 import promise from 'es6-promise';//解决axios在ie9下不生效的方法
 promise.polyfill();
+//
+// let token = "eyJhbGciOiJIUzI1NiIsImV4cCI6MTUzOTU4NjcyMSwiaWF0IjoxNTM5NTc5NTIxfQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0xMC0xNSAxMjo1ODo0MSJ9.eDxYtMhZHPYl21mKkzEA9E2ouvFIS9-ZMS4isUIBg08";
+let token = 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTUzOTU3NjI1NSwiaWF0IjoxNTM5NTY5MDU1fQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0xMC0xNSAxMDowNDoxNSJ9.joP_TR6OgFI1zmZWR9vZCru1RQoXHfpg4EqoO_mqkL8'
+localStorage.setItem('token', token);
 
-// let token = "eyJhbGciOiJIUzI1NiIsImV4cCI6MTUzOTMzMTA4NCwiaWF0IjoxNTM5MzIzODg0fQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0xMC0xMiAxMzo1ODowNCJ9.rLCPVKR04yfp8zlicErPI4bGyK5CqOORuMV84vJYX08";
-// localStorage.setItem('token', token);
-
-
-// 点击预览图片
-// document.getElementById('#app').on('click','img',function(){
-//   console.log(this)
-//   // var src = $(this).attr('src');
-//   // var imgs = $(this).parent().parent().find('img');
-//   // var list = new Array();
-//   // for (var i = 0; i < imgs.length; i++) {
-//   //   list.push($(imgs[i]).attr('src'));
-//   // }
-//   // wx.previewImage({
-//   //   current: src, // 当前显示图片的http链接
-//   //   urls: list // 需要预览的图片http链接列表
-//   // });
-// });
 
 
 Vue.prototype.$http = axios;
@@ -76,8 +62,20 @@ axios.interceptors.request.use(config => {
   return Promise.reject(error)
 })
 // http响应拦截器
+import api from './api/api'
 axios.interceptors.response.use(data => {// 响应成功关闭loading
   // loadinginstace.close()
+
+  if(data.data.status_code == 403001 ){
+    axios.post(api.wx_login,{
+      url: window.location.href
+    } ).then((res) => {
+      if(res.data.status == 302){
+        window.location.href = res.data.data.redirect_url
+      }
+    }).catch((error) => {
+    })
+  }
   Indicator.close();
   return data
 }, error => {

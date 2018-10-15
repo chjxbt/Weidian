@@ -25,16 +25,19 @@
       <span class="owner-price-one tl">店主价￥{{product_info.prkeeperprice}}</span>
       <span class="owner-price-two tr">成为店主 ></span>
     </div>
-    <div class="product-commitment" v-for="item in commitmentList">
+    <div class="product-commitment" v-if="show_commit" v-for="item in commitmentList">
       <img src="/static/images/commitment.png" class="commitment-img">
       <div class="commitment-text">{{item}}</div>
     </div>
+    <!--<div class="m-commitment">-->
+      <!--<img src="" class="m-commitment-img" alt="">-->
+    <!--</div>-->
     <!--<div class="product-activity-title">
       <div class="product-activity-name m-ft-26 m-grey">活动1</div>
       <div class="product-activity-content m-ft-28 m-grey-color m-ft-b tl">满89减5;满139减10</div>
       <img src="/static/images/icon-list-right.png" class="to-activity">
     </div>-->
-    <product-params :choose="is_choose" :quantity="quantity" :options="params_options" :price="product_info.prprice" :sku="sku" @carChoose="carChoose" @changeNum="changeNum" @closeModal="closeModal"></product-params>
+    <product-params :choose="is_choose" :quantity="quantity"  :options="params_options" :price="product_info.prprice" :sku="sku" @carChoose="carChoose"  @closeModal="closeModal"></product-params>
     <div class="rectangular"></div>
     <div class="product-evaluation">
       <div class="evaluation-title m-ft-26 m-grey-color b">商品评价（99+）</div>
@@ -126,7 +129,15 @@
   import api from '../../api/api';
   import axios from 'axios';
   import {Toast} from 'mint-ui';
-  import common from '../../common/js/common'
+  import common from '../../common/js/common';
+  // setTimeout(()=>{
+  //   location.hash="a"
+  // },100);
+  // setTimeout(()=>{
+  //   window.onhashchange = function(event) {
+  //     location.href = "https://weidianweb.daaiti.cn/#/index/index";
+  //   }
+  // },200);
   export default {
     data() {
       return {
@@ -146,7 +157,8 @@
         choose:null,
         is_choose:false,
         quantity:1,
-        click_add:false
+        click_add:false,
+        show_commit:true
       }
     },
     components: { productParams },
@@ -160,16 +172,20 @@
         }).then(res => {
           if(res.data.status == 200){
             this.product_info =  res.data.data;
-            console.log(this.product_info)
             this.params_options = res.data.data.sku_value.psvpropervalue;
             this.sku = res.data.data.sku;
+            for(let i =0;i<res.data.data.prtarget.length;i++){
+              if(res.data.data.prtarget[i] == '101'){
+                this.show_commit = false;
+              }
+            }
           }
         })
       },
       postCar(){
         axios.post(api.update_shoppingcart + '?token=' + localStorage.getItem('token'),{
           pskid:this.choose[0].pskid,
-          changenum:this.quantity
+          update_num:this.quantity
         }).then(res => {
            if(res.data.status == 200){
              this.click_add = false;
@@ -194,8 +210,9 @@
           this.collectionVisible = true;
         }
       },
-      carChoose(v){
+      carChoose(v,num){
         this.choose = v;
+        this.quantity = num;
         if(this.click_add){
           this.postCar();
         }
@@ -252,21 +269,24 @@
           console.log('error', response);   // 发生错误
         });
       },
-      changeNum(num){
-        this.quantity = num;
-      },
+      // changeNum(num){
+      //   this.quantity = num;
+      // },
       toCart(){
         this.$router.push('/shopping/index');
       }
     },
     mounted() {
+      if(this.$route.query.openid){
+
+      }
       this.imgsDone();
       this.getInfo();
       common.changeTitle('商品详情');
-      if(localStorage.getItem('level') == 'partner'){
-        this.is_vip = true;
-      }else{
+      if(localStorage.getItem('user_level') == 0){
         this.is_vip = false;
+      }else{
+        this.is_vip = true;
       }
     },
     created() {
@@ -370,6 +390,13 @@
     .commitment-text {
       width: 130px;
       white-space: nowrap;
+    }
+  }
+  .m-commitment{
+    .m-commitment-img{
+      display: block;
+      width: 100%;
+      height: 68px;
     }
   }
   .product-activity-title {

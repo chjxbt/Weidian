@@ -26,12 +26,21 @@
       id:{
         type:String,
         default:null
+      },
+      item:{
+        type:Number,
+        default:null
       }
     },
     methods: {
       //修改购物车
       postQuantity(){
-        this.$emit('changeNum',this.quantitys)
+        if(this.item != null){
+          this.$emit('changeNum',this.quantitys,this.item)
+        }else{
+          this.$emit('changeNum',this.quantitys)
+        }
+
       },
       // 产品数量减 1
       deductQuantity() {

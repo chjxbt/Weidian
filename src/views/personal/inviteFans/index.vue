@@ -22,9 +22,10 @@
     <div class="m-fans-details" @click="getRule(14)"></div>
     <div class="m-fans-fans-details" @click="fansClick"></div>
     <div class="m-fans-share-poster" @click="sharePoster"></div>
-    <div class="m-fans-share-link" @click="copyText"></div>
+    <div class="m-fans-share-link" @click="share"></div>
 
     <img-modal v-if="show_img" :src="img_src" @closeModal="closeModal"></img-modal>
+    <img src="/static/images/invite.png" v-if="show_invite" @click.stop="closeModal('show_invite')"  class="m-invite-course" alt="">
   </div>
 
 </template>
@@ -35,19 +36,24 @@
   import {Toast} from 'mint-ui';
   import common from '../../../common/js/common';
   import imgModal from '../../../components/common/imgModal';
+  import wxapi from '../../../common/js/mixins';
   export default {
+    mixins: [wxapi],
     data() {
       return {
         name: '',
         show_modal:false,
         show_img:false,
         img_src:'',
-        bg_img:''
+        bg_img:'',
+        show_invite:false
       }
     },
     components: {imgModal},
     mounted(){
       this.getRule(9);
+      wxapi.wxRegister(this.wxRegCallback);
+      common.changeTitle('邀请专属粉丝');
     },
     methods: {
       fansClick(){
@@ -55,6 +61,29 @@
       },
       sharePoster(){
         this.$router.push('/poster')
+      },
+      /*分享*/
+      wxRegCallback () {
+        this.wxShare()
+      },
+      wxShare () {
+        const url = window.location.origin + '/#/index?UPPerd=' + localStorage.getItem('openid');
+        let opstion = {
+          title: '微点13213', // 分享标题
+          link: url,      // 分享链接
+          // imgUrl: 'http://www.jzdlink.com/wordpress/wp-content/themes/wordpress_thems/images/lib/logo.png',// 分享图标
+          success: function () {
+            alert('分享成功')
+          },
+          error: function () {
+            alert('分享失败')
+          }
+        }
+        wxapi.ShareTimeline(opstion);
+        this.show_invite = true;
+      },
+      share(){
+        this.wxShare();
       },
       copyText(){
         let that =this;
@@ -98,6 +127,13 @@
 <style lang="less" rel="stylesheet/less" scoped>
   @import "../../../common/css/index";
   @import "../../../common/css/modal";
+  .m-invite-course{
+    position: fixed;
+    top:0;
+    left:0;
+    width: 100%;
+    height: 100%;
+  }
   .m-fans{
     .m-fans-bg{
       display: block;

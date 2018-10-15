@@ -1,8 +1,8 @@
 <template>
   <div class="m-label">
-    <span class="m-triangle"></span>
-    <span class="m-text">{{name}}</span>
-    <!--<img src="" alt="">-->
+    <!--<span class="m-triangle"></span>-->
+    <!--<span class="m-text">{{name}}</span>-->
+    <img :src="name" alt="">
   </div>
 </template>
 

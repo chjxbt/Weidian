@@ -93,7 +93,7 @@
         </div>
       </div>
       <attention v-if="show_fixed" :src="code_src" :components_src="components_src" :shareParams="shareParams" @closeModal="closeModal('show_fixed')"></attention>
-      <!--<img :src="'/static/images/course/course-'+ course + '.png'" v-if="show_course" class="m-course-img" alt="" @click.stop="courseClick">-->
+      <img :src="'/static/images/course/course-'+ course + '.png'" v-if="show_course" class="m-course-img" alt="" @click.stop="courseClick">
       <!--<img src="/static/images/fen.png" v-if="show_fen" class="m-course-img" alt="" @click.stop="fenClick">-->
       <m-video v-if="show_video" :src="video_src" @videoClose="videoClose"></m-video>
       <img-modal v-if="show_img" :src="img_src" @closeModal="closeModal"></img-modal>
@@ -140,6 +140,7 @@
         data() {
             return {
               title: 'https://weidianweb.daaiti.cn/#/',
+              // title:'http://www.daaiti.cn:8080/#/',
               course:1,
               count:5,
               total_count:0,
@@ -218,6 +219,31 @@
           imgModal
         },
       mounted(options){
+        if(this.$route.query.linkUrl && localStorage.getItem('is_click') != '1'){
+          switch (this.$route.query.linkUrl){
+            case 'activityContent':
+              this.$router.push({path:'/'+this.$route.query.linkUrl,query:{
+                  baid:this.$route.query.baid,
+                }});
+              localStorage.setItem('is_click','1')
+              break;
+            case 'productDetail':
+              this.$router.push({path:'/'+this.$route.query.linkUrl,query:{
+                  prid:this.$route.query.prid,
+                }})
+              localStorage.setItem('is_click','1')
+              break;
+            case 'discover/index':
+              this.$router.push({path:'/'+this.$route.query.linkUrl,query:{
+                  acid:this.$route.query.acid,
+                  name:this.$route.query.name
+                }});
+              localStorage.setItem('is_click','1')
+              break;
+
+          }
+          return false;
+        }
         common.changeTitle('首页');
         if(common.GetQueryString('UPPerd')){
           localStorage.setItem('UPPerd',common.GetQueryString('UPPerd'));
@@ -236,7 +262,10 @@
             this.is_vip = false;
           }
 
-
+          if(localStorage.getItem('is_first')  == 'true' || localStorage.getItem('is_first')  == '1'){
+            this.show_course = true;
+            localStorage.setItem("is_first", "0");
+          }
           let that =this;
         this.interval = window.setInterval(that.animation,3000);
 
@@ -321,23 +350,27 @@
            this.changeRoute(item.hmskiptype,item.hmcontent);
           },
           changeRoute(type,list,name){
-            let _url = '';
+            let _url = '';let params ='';
             if(name){
               switch (type){
                 case 0:
                   return false;
                   break;
                 case 1:
-                  _url = this.title +'activityContent?openid=' + localStorage.getItem('openid') + '&baid=' + (name?this.activity_list[list].aclinkvalue : list);
+                  // _url = this.title +'activityContent?openid=' + localStorage.getItem('openid') + '&baid=' + (name?this.activity_list[list].aclinkvalue : list);
+                   params = this.title +'activityContent&openid=' + localStorage.getItem('openid') + '&baid=' + (name?this.activity_list[list].aclinkvalue : list);
+                  _url = this.title + 'index/index?linkUrl="' + params+'"';
                   break;
                 case 2:
-                  _url = this.title + 'productDetail?openid=' + localStorage.getItem('openid')+ '&prid=' + (name?this.activity_list[list].product.prid : list);
+                  // _url = this.title + 'productDetail?openid=' + localStorage.getItem('openid')+ '&prid=' + (name?this.activity_list[list].product.prid : list);
+                   params =  'productDetail&openid=' + localStorage.getItem('openid')+ '&prid=' + (name?this.activity_list[list].product.prid : list);
+                  _url = this.title + 'index/index?linkUrl='+params;
                   break;
                 case 3:
-                  _url = this.title + 'discover/index?openid=' + localStorage.getItem('openid') + '&acid=' + (name?this.activity_list[list].acid : list)+'&name=赚钱学院';
+                  _url = this.title + 'index/index?linkUrl=discover/index&openid=' + localStorage.getItem('openid') + '&acid=' + (name?this.activity_list[list].acid : list)+'&name=赚钱学院';
                   break;
                 case 4:
-                  _url = this.title + 'discover/index/index?openid=' + localStorage.getItem('openid')+ '&acid=' + (name?this.activity_list[list].acid : list) +'&name=公告';
+                  _url = this.title + 'index/index?linkUrl=discover/index&openid=' + localStorage.getItem('openid')+ '&acid=' + (name?this.activity_list[list].acid : list) +'&name=公告';
                   break;
               }
               return _url;
@@ -585,6 +618,7 @@
             }
             arr[v].click = true;
             this.nav_list = [].concat(arr);
+            this.activity_list = [];
             this.getActivity(this.nav_list[v].tnid);
           },
           /*每个活动icon点击*/
@@ -659,7 +693,7 @@
             // this.$refs.loadmore.onBottomLoaded();
           },
           courseClick(){
-            if(this.course <6){
+            if(this.course <3){
               this.course += 1;
             }else{
               this.show_course = false;

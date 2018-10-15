@@ -329,6 +329,7 @@
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/css/discover";
   /*@import "../../../common/css/modal";*/
+
   .img {
     border-radius: 20px;
   }
