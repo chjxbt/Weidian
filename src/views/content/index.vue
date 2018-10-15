@@ -171,12 +171,12 @@
       <div class="content-table">
         <el-table :data="activityList" border style="width: 100%" v-loading="activityLoading" @selection-change="selectionChange">
           <el-table-column fixed="left" type="selection" width="55" v-if="activityToBanner"></el-table-column>
-          <el-table-column prop="num" label="推文时间" width="480">
-            <template slot-scope="scope">
+          <el-table-column prop="time" label="推文时间" width="320">
+            <!--<template slot-scope="scope">
               <el-date-picker v-model="scope.row.activityTime" type="datetimerange" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
                               start-placeholder="开始日期" end-placeholder="结束日期" style="width: 3.5rem;" @blur="activityTimeClick(scope)" :disabled="scope.row.disabled">
               </el-date-picker>
-            </template>
+            </template>-->
           </el-table-column>
           <el-table-column prop="actext" label="推文内容">
             <template slot-scope="scope">
@@ -320,10 +320,6 @@
     data(){
       return{
         name:'首页管理',
-        /*options: [
-          { value: '1', label: '商品' },
-          { value: '2', label: '专题' }
-        ],*/
         hotJump: [          // 添加热文时的热文分类
           { value: '1', label: '商品' },
           { value: '2', label: '专题' },
@@ -336,17 +332,6 @@
         jumpToValue: '',    // 热文分类选择-后面选择器的值
         jumpToList: [],     //  热文分类选择-后面选择器的选择项
         hotTime: [],        // 热文分类的活动时间
-        /*value: '',
-        value1: '',
-        value2: '',
-        value3: '',
-        value4: '',
-        value5: '',
-        value6: '',
-        value7: '',
-        value8: '',
-        value9: '',
-        value10: '',*/
         bannerList: [],       // 专题/banner的list
         bannerLoading: true,  // 专题表格加载中
         selectionList: [],    // 筛选推文时盛放acid的list
@@ -379,7 +364,6 @@
         dialogVisible: false,     // 推文上传图片后预览的允许与否
         editActivity: false,      // 是否在编辑activity
         activityList: [],         // 推文 - 活动list
-        total_page: 1,            // 推文 - 总页数
         activityTypeList: [       // 添加推文/活动时的活动类型选择项
           { value: "0", label: "普通动态" },
           { value: "1", label: "满减" },
@@ -408,20 +392,16 @@
         activityJumpToValue: '',    // 推文-跳转类型选择后具体的跳转id
         activityJumpToList: [],     // 推文-跳转类型选择后可选择的跳转项
         activityActivityTime: [],   // 推文-活动时间
-        /*activityJumpToBannerList: [
-          { value: '1', label: '商品' },
-          { value: '2', label: '专题' }
-        ],*/
         acidTemp: "",             // 用来暂存acid
         bannerToList: [           // 专题跳转去向的可选择项
           { value: '0', label: '长图' },
           { value: '1', label: '专题页' }
         ],
         activityProductSales: '', // 虚拟销量
-        // imageUrl: '',
         show_div: false,  // 显示添加热文的div
         tab_list: [],     // 顶部导航的list
-        count: 5,         // 推文每页请求的数量
+        page_size: 5,     // 推文每页请求的数量
+        total_page: 1,    // 推文 - 总页数
         tnid: "",         // 暂存导航栏的tnid
       }
     },
@@ -445,21 +425,25 @@
           }
         });
       },
+
       // 点击推文图片时执行的方法 - 预览
       handlePictureCardPreview(file, fileList) {
         this.dialogImageUrl = file.url;
         this.dialogVisible = true;
       },
+
       // 移除推文图片时执行的方法
       pictureRemove(file, fileList) {
         // console.log(file, fileList);
         this.activityMediaSort = this.activityMediaSort - 1;
         // this.activityMedia = [];
       },
+
       // 超过文件数量限制时执行的方法
       onExceed(file, fileList) {
         this.$message({ type: 'warning', message: "最多上传9张图片", duration: 1500 });
       },
+
       // select选择器获得焦点时执行
       focusselect(where) {
         // console.log(where)
@@ -468,15 +452,18 @@
           this.getAdmin();      // 获取管理员
         }
       },
+
       // 轮播图管理-确定点击的图片是第几行
       rowClick(index, col) {
         // console.log(col);
         this.rowNum = index;
       },
+
       // 点击编辑后-点击时间选择器时清空时间
       timeClick(scope) {
         this.bannerList = this.bannerList.concat();
       },
+
       // 当选择项发生变化时会触发该事件
       selectionChange(selection) {
         this.selectionList = [];
@@ -485,10 +472,12 @@
           this.selectionList.push(selection[i].acid);
         }
       },
+
       // 点击编辑后-点击时间选择器时清空时间
       activityTimeClick(scope) {
         this.activityList = this.activityList.concat();
       },
+
       // 添加banner的 + 号按钮
       addBanner() {
         this.addBannerBtn = false;
@@ -506,6 +495,7 @@
         this.bannerList[index].addSaveEdit = "1";
         this.bannerList = this.bannerList.concat();
       },
+
       // 显示添加热文的div
       showDiv() {
         // 防止未添加的专题影响
@@ -520,6 +510,7 @@
           this.show_div = true;
         }
       },
+
       // 列表的编辑方法
       editClick(scope, where) {
         if(where == "banner") {
@@ -572,6 +563,7 @@
           this.author = activity.suuser.suname;
         }
       },
+
       // 保存编辑后的banner、热文、推文
       saveClick(scope, where) {
         // console.log(scope, where);
@@ -676,11 +668,13 @@
           }
         }
       },
+
       // 取消添加banner
       cancelAdd(scope) {
         this.addBannerBtn = true;
         this.bannerList.splice(scope.$index, 1);    // 刷新视图
       },
+
       // 删除轮播图/专题
       deleteBanner(scope) {
         this.$confirm('此操作将删除该专题, 是否继续?', '提示',
@@ -699,6 +693,7 @@
           });
         }).catch(() => {  });
       },
+
       // 删除热文
       deleteHotMessage(scope) {
         this.$confirm('此操作将删除该热文, 是否继续?', '提示',
@@ -713,6 +708,7 @@
           });
         }).catch(() => {  });
       },
+
       // 编辑/删除活动/推文
       deleteActivityClick(scope) {
         this.$confirm('此操作将删除该推文, 是否继续?', '提示',
@@ -729,10 +725,12 @@
           });
         }).catch(() => {  });
       },
+
       // 搜索推文
       searchActivity() {
 
       },
+
       // 编辑推文 - 取消
       cancelActivity() {
         // 点击取消按钮清空编辑框
@@ -749,6 +747,7 @@
 
         this.editActivity = false;      // 隐藏取消按钮
       },
+
       // 上移banner/专题
       upBanner(scope) {
         this.bannerLoading = true;
@@ -763,6 +762,7 @@
           }
         });
       },
+
       // 上移热文
       upHotMessage(scope) {
         this.hotLoading = true;
@@ -778,6 +778,7 @@
           }
         });
       },
+
       // 获取banner滚动图
       getBanner() {
         axios.get(api.get_bigactivitys + '?lasting=false&token=' + localStorage.getItem('token')).then(res => {
@@ -817,6 +818,7 @@
           }
         })
       },
+
       // 获取热文
       getHotMessage() {
         axios.get(api.get_all_hot_message + '?lasting=false&token=' + localStorage.getItem('token')).then(res => {
@@ -852,6 +854,7 @@
           }
         })
       },
+
       // 模糊搜索-获取所有可选项
       getJumpTo(to, where) {
         // 搜索商品
@@ -904,6 +907,7 @@
           })
         }
       },
+
       // 添加banner
       addBannerClick(scope) {
         let banner = this.bannerList[scope.$index];
@@ -940,6 +944,7 @@
           }
         }
       },
+
       // 添加热文
       addHotMessage () {
         if(this.hotValue == "" || this.hotTime.length != 2 || this.hotJumpValue == "" || this.jumpToValue == "" || this.hotReader == "") {
@@ -983,6 +988,7 @@
           });
         }
       },
+
       // 添加推文/活动
       addActivity () {
         // 推文图片的数量需为0、4、6、9
@@ -1019,7 +1025,7 @@
             axios.post(api.add_one_activity + '?token=' + localStorage.getItem('token'), params).then(res => {
               if(res.data.status == 200){
                 this.$message({ type: 'success', message: res.data.message, duration: 1500 });
-                this.getActivity(0, this.count);     // 获取推文/内容
+                this.getActivity(0, this.page_size);     // 获取推文/内容
 
                 // 保存成功后将input等置空
                 this.activityACtext = "";
@@ -1030,6 +1036,7 @@
                 this.activityActivityTime = "";
                 this.likeNum = "";
                 this.activityBadge = "";
+                this.activityMedia = [];
                 this.activityPictureList = [];   // 上传成功后图片list置为[]
                 this.activityMediaSort = 0;   // 上传成功后图片数量置为0
                 this.author = "";
@@ -1040,6 +1047,7 @@
           }
         }
       },
+
       // 获取首页顶部导航nav
       getTopNav() {
         axios.get(api.get_home).then(res => {
@@ -1051,19 +1059,22 @@
               this.tab_list[0].active = true;
               this.tnid = this.tab_list[0].tnid;
             }
-            this.getActivity(0, this.count);   // 获取首页活动/推文内容列表
+            this.getActivity(0, this.page_size);   // 获取首页活动/推文内容列表
           }else{
             this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         })
       },
+
       // 获取首页活动/推文内容列表
-      getActivity(start, count, skiptype) {
+      getActivity(start, page_size, skiptype) {
+        this.activityLoading = true;
         axios.get(api.get_all_activity + '?lasting=false&token=' + localStorage.getItem('token'),
-          { params: { lasting: false, start: start || 0, count: count || this.count, tnid: this.tnid, skiptype: skiptype || "all" }}).then(res => {
+          { params: { lasting: false, start: start || 0, count: page_size || this.page_size, tnid: this.tnid, skiptype: skiptype || "all" }}).then(res => {
           if(res.data.status == 200) {
             this.activityLoading = false;
             this.activityList = res.data.data;
+            this.total_page = Math.ceil(res.data.count/this.page_size);
 
             for(let i = 0; i < this.activityList.length; i ++) {
               // 推文的跳转类型
@@ -1074,7 +1085,8 @@
               }else if(this.activityList[i].acskiptype == "2") {
                 this.activityList[i].acSkiptype = "商品";
               }
-              this.activityList[i].activityTime = [this.activityList[i].acstarttime, this.activityList[i].acendtime];
+              // this.activityList[i].activityTime = [this.activityList[i].acstarttime, this.activityList[i].acendtime];
+              this.activityList[i].time = this.activityList[i].acstarttime + " 至 " + this.activityList[i].acendtime;
               this.activityList[i].disabled = true;
             }
           }else{
@@ -1082,12 +1094,12 @@
           }
         })
       },
+
       // 绑定专题并筛选推文
       toBannerClick(v) {
         if(v == "1") {
           // 只获取能跳转商品的推文，即acskiptype=2
-          this.activityLoading = true;
-          this.getActivity(0, this.count, "2");
+          this.getActivity(0, this.page_size, "2");
 
           this.activityToBanner = true;
         }else if(v == "2") {
@@ -1118,6 +1130,7 @@
           }
         }
       },
+
       wTabClick(i){
         let arr = [].concat(this.tab_list);
         for(let a =0;a<arr.length;a++){
@@ -1126,14 +1139,14 @@
         arr[i].active = true;
         this.tab_list = [].concat(arr);
 
-        this.activityLoading = true;
         this.tnid = this.tab_list[i].tnid;
-        this.getActivity(0, this.count);   // 获取首页活动/推文内容列表
+        this.getActivity(0, this.page_size);   // 获取首页活动/推文内容列表
       },
+
       bannerToValueChange(v) {
         // console.log(v);
-
       },
+
       // 上传banner长图
       uploadLongPicture(res, file) {
         let form = new FormData();
@@ -1153,6 +1166,7 @@
           // this.imageUrl = res.data.data;
         });
       },
+
       // 上传banner图片
       uploadPicture(res, file) {
         let form = new FormData();
@@ -1172,6 +1186,7 @@
           // this.imageUrl = res.data.data;
         });
       },
+
       // 上传图片前的限制方法
       /*beforeAvatarUpload(file) {
         this.$message({ type: 'warning', message: "上传中，请等待" });
@@ -1186,6 +1201,7 @@
         }
         return isJPG && isLt2M;
       },*/
+
       // 获取管理员
       getAdmin(){
         this.authorList = [];
@@ -1200,9 +1216,11 @@
           }
         });
       },
+
       // 分页点击方法
       pageChange(v) {
         console.log(v);
+        this.getActivity(this.page_size * (v - 1), this.page_size);
       }
     },
     watch: {
@@ -1221,6 +1239,7 @@
           this.getJumpTo("4", "hot");     // 获取所有公告
         }
       },
+
       // 推文/活动跳转类型的值发生变化
       activityJumpValue(newValue, oldValue) {
         this.activityJumpToList = [];
@@ -1234,7 +1253,7 @@
         }else if(newValue == "") {
 
         }
-      },
+      }
     },
     mounted() {
       this.getBanner();                 // 获取首页专题
@@ -1281,8 +1300,8 @@
       padding: 0.05rem 0.2rem;
       background-color: @mainColor;
     }
-  }
-  .page-box {
-
+    .page-box {
+      // margin: 0.1rem 0 0 -1.8rem;
+    }
   }
 </style>

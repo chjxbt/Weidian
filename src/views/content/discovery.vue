@@ -114,7 +114,7 @@
               <el-table-column prop="prname" label="商品名称">
                 <template slot-scope="scope">
                   <el-select v-model="scope.row.prname" @focus="focusselect(scope.$index, 'product')" filterable placeholder="请输入关键词搜索商品" :disabled="productDisabled" @change="productChange">
-                    <el-option v-for="item in activityJumpToList" :key="item.value" :label="item.label" :value="item.value" :disabled="item.disabled"></el-option>
+                    <el-option v-for="item in activityJumpToList" :key="item.id" :label="item.label" :value="item.value" :disabled="item.disabled"></el-option>
                   </el-select>
                 </template>
               </el-table-column>
@@ -146,14 +146,14 @@
       <div class="content-table">
         <el-table :data="activityList" border style="width: 100%" v-loading="activityLoading" @selection-change="selectionChange">
           <el-table-column fixed="left" type="selection" width="55" v-if="activityToBanner"></el-table-column>
-          <el-table-column prop="num" label="推文时间" width="480">
-            <template slot-scope="scope">
+          <el-table-column prop="time" label="推文时间" width="320">
+            <!--<template slot-scope="scope">
               <el-date-picker v-model="scope.row.activityTime" type="datetimerange" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
                               start-placeholder="开始日期" end-placeholder="结束日期" style="width: 3.5rem;" @blur="activityTimeClick(scope)" :disabled="scope.row.disabled">
               </el-date-picker>
-            </template>
+            </template>-->
           </el-table-column>
-          <el-table-column prop="actitle" label="推文标题" width="150"></el-table-column>
+          <el-table-column prop="actitle" label="推文标题" width="150" v-if="page == '公告' || page == '教程'"></el-table-column>
           <el-table-column prop="actext" label="推文内容">
             <template slot-scope="scope">
               <el-input type="textarea" :autosize="{ minRows: 1, maxRows: 3 }" placeholder="请输入推文内容" v-model="scope.row.actext" :disabled="scope.row.disabled"></el-input>
@@ -168,6 +168,8 @@
             </template>
           </el-table-column>
         </el-table>
+
+        <Pagination class="page-box" :total="total_page" @pageChange="pageChange"></Pagination>
       </div>
 
 
@@ -353,6 +355,7 @@
 
 <script>
   import pageTitle from '../../components/common/title';
+  import Pagination from "../../components/common/page";
   import wTab from '../../components/common/wTab';
   import axios from 'axios';
   import api from '../../api/api';
@@ -365,19 +368,6 @@
           { value: '1', label: '商品' },
           { value: '2', label: '专题' }
         ],
-        value: '',
-        value2: '',
-        value11: '',
-        value12: '',
-        value13: '',
-        value14: '',
-        value15: '',
-        value17: '',
-        value18: '',
-        value19: '',
-        value20: '',
-        value21: '',
-        value22: '',
         longImg: "",              // 长图url
         imgVideo: true,           // 选择视频或长图
         videoUrl:'',              // 教程页的视频链接
@@ -388,8 +378,8 @@
           { value: '0', label: '长图' },
           { value: '1', label: '专题页' }
         ],
-        author: "",                 // 推文-发布者
-        authorList: [],             // 推文-发布者list
+        author: "",               // 推文-发布者
+        authorList: [],           // 推文-发布者list
         selectionList: [],        // 筛选推文时盛放acid的list
         toBanner: "",             // 筛选推文时专题的选择值
         toBannerList: [],         // 筛选推文时专题的可选择项
@@ -442,9 +432,7 @@
           { value: "9", label: "限时抢" },
           { value: "10", label: "5 元 10 件" }
         ],
-        // views: '',
-        // activityTime: [],
-        page: "公告",      // 默认显示的页面
+        page: "每日10荐",  // 默认显示的页面
         tab_list1:[],     // 导航栏
         tab_list2:[],     // 素材圈的导航栏
         tableData: [
@@ -453,11 +441,12 @@
           { object: '新鲜出炉的周周奖现已发放，还不快去查收！', who: '张三', time: '2018-09-15 18:56:21', content: '评论测试评论测试评论测试评论测试评论测试评论测试评论测试' },
           { object: '新鲜出炉的周周奖现已发放，还不快去查收！', who: '张三', time: '2018-09-15 18:56:21', content: '评论测试评论测试评论测试评论测试评论测试评论测试评论测试' }
         ],
-        count: 5,         // 推文每页请求的数量
+        page_size: 5,     // 推文每页请求的数量
+        total_page: 1,    // 推文 - 总页数
         tnid: "",         // 暂存导航栏的tnid
       }
     },
-    components:{ pageTitle, wTab },
+    components:{ pageTitle, Pagination, wTab },
     methods:{
       // 上传推文图片
       uploadActivityPicture(item) {
@@ -477,6 +466,7 @@
           }
         });
       },
+
       // 上传教程长图
       uploadActivityLong(item) {
         let media = {};
@@ -498,6 +488,7 @@
           }
         });
       },
+
       // 上传教程视频
       uploadActivityVideo(item) {
         let media = {};
@@ -519,36 +510,44 @@
           }
         });
       },
+
       // 点击推文图片时执行的方法 - 预览
       handlePictureCardPreview(file, fileList) {
         this.dialogImageUrl = file.url;
         this.dialogVisible = true;
       },
+
       // 移除推文图片时执行的方法
       pictureRemove(file, fileList) {
         // console.log(file, fileList);
         this.activityMediaSort = this.activityMediaSort - 1;
       },
+
       // 超过文件数量限制时执行的方法
       onExceed(file, fileList) {
         this.$message({ type: 'warning', message: "最多上传9张图片", duration: 1500 });
       },
+
       handleRemove(file, fileList) {
         console.log(file, fileList);
       },
+
       // 轮播图管理-确定点击的是第几行
       rowClick(index, col) {
         // console.log(col);
         this.rowNum = index;
       },
+
       // 点击编辑后-点击时间选择器时清空时间
       timeClick(scope) {
         this.bannerList = this.bannerList.concat();
       },
+
       // 点击编辑后-点击时间选择器时清空时间
       activityTimeClick(scope) {
         this.activityList = this.activityList.concat();
       },
+
       // 列表的编辑方法
       editClick(scope, where) {
         if(where == "banner") {
@@ -615,6 +614,7 @@
           }
         }
       },
+
       // 编辑推文 - 取消
       cancelActivity() {
         // 点击取消按钮清空编辑框
@@ -633,6 +633,7 @@
 
         this.editActivity = false;      // 隐藏取消按钮
       },
+
       // select选择器获得焦点时执行
       focusselect(index, where) {
         if(where == "product") {
@@ -644,6 +645,7 @@
           this.getAdmin();
         }
       },
+
       // select选择器获得焦点时执行
       productChange(value) {
         this.productChoose = value;
@@ -657,6 +659,7 @@
         }
         this.productList = this.productList.concat();
       },
+
       // 保存编辑后的banner、热文、推文
       saveClick(scope, where) {
         // console.log(scope, where);
@@ -777,6 +780,7 @@
           // }
         }
       },
+
       // 清空from的编辑框
       clearFrom() {
         // 清空推文的编辑框
@@ -796,6 +800,7 @@
         this.activityPictureList = [];  // 图片list置为[]
         this.activityMediaSort = 0;   // 上传成功后图片数量置为0
       },
+
       // 添加banner
       addBannerClick(scope) {
         let banner = this.bannerList[scope.$index];
@@ -832,11 +837,13 @@
           }
         }
       },
+
       // 取消添加banner
       cancelAdd(scope) {
         this.addBannerBtn = true;
         this.bannerList.splice(scope.$index, 1);    // 刷新视图
       },
+
       // 取消添加Product
       cancelProduct() {
         this.productEdit = false;
@@ -844,6 +851,7 @@
         // this.addBannerBtn = true;
         // this.bannerList.splice(scope.$index, 1);    // 刷新视图
       },
+
       // 删除轮播图/专题
       deleteBanner(scope) {
         this.$confirm('此操作将删除该专题, 是否继续?', '提示',
@@ -862,6 +870,7 @@
           });
         }).catch(() => {  });
       },
+
       // 编辑/删除活动/推文
       deleteActivityClick(scope) {
         this.$confirm('此操作将删除该推文, 是否继续?', '提示',
@@ -878,6 +887,7 @@
           });
         }).catch(() => {  });
       },
+
       // 上移banner/专题
       upBanner(scope) {
         this.bannerLoading = true;
@@ -892,6 +902,7 @@
           }
         });
       },
+
       // 添加banner的 + 号按钮
       addBanner() {
         this.addBannerBtn = false;
@@ -909,6 +920,7 @@
         this.bannerList[index].addSaveEdit = "1";
         this.bannerList = this.bannerList.concat();
       },
+
       // 推荐商品 - 添加商品
       addProduct() {
         this.productEdit = true;
@@ -919,6 +931,7 @@
         this.productList[index].prname = "";
         this.productList = this.productList.concat();
       },
+
       // 添加推文/活动 - 判空
       addActivity () {
         if(this.tnid == "") {
@@ -965,7 +978,7 @@
                       ACstarttime: this.activityActivityTime[0],
                       ACendtime: this.activityActivityTime[1]
                     };
-                    console.log(params);
+                    // console.log(params);
                     this.activityParams(params);
                   }else if(this.page == "公告") {
                     if(this.activityTitle == "") {
@@ -982,7 +995,7 @@
                         ACendtime: this.activityActivityTime[1],
                         ACistop: this.placedTop
                       };
-                      console.log(params);
+                      // console.log(params);
                       this.activityParams(params);
                     }
                   }
@@ -999,7 +1012,7 @@
                   ACendtime: this.activityActivityTime[1],
                   ACistop: this.placedTop
                 };
-                console.log(params);
+                // console.log(params);
                 if(this.author != "") { // 发布者不为空时
                   params.SUid = this.author;
                 }
@@ -1009,6 +1022,7 @@
           }
         }
       },
+
       // 拼装activity参数
       activityParams(params) {
         if(this.activityProductSales != "") {
@@ -1019,7 +1033,7 @@
         axios.post(api.add_one_activity + '?token=' + localStorage.getItem('token'), params).then(res => {
           if(res.data.status == 200){
             this.$message({ type: 'success', message: res.data.message, duration: 1500 });
-            this.getActivity(0, this.count);     // 获取推文/内容
+            this.getActivity(0, this.page_size);     // 获取推文/内容
 
             // 保存成功后将input等置空
             this.activityTitle = "";
@@ -1036,6 +1050,7 @@
             this.longImg = "";
             this.videoImgUrl = "";
             this.placedTop = false;
+            this.activityMedia = [];
             this.activityPictureList = [];   // 上传成功后图片list置为[]
             this.activityMediaSort = 0;   // 上传成功后图片数量置为0
           }else{
@@ -1043,6 +1058,7 @@
           }
         });
       },
+
       // 获取banner滚动图
       getBanner() {
         axios.get(api.get_bigactivitys + '?lasting=false&token=' + localStorage.getItem('token')).then(res => {
@@ -1082,6 +1098,7 @@
           }
         })
       },
+
       // 获取首页顶部导航nav
       getTopNav() {
         axios.get(api.get_dp).then(res => {
@@ -1101,19 +1118,22 @@
               this.tnid = this.tab_list2[0].tnid;
             }
 
-            this.getActivity(0, 5);      // 获取首页活动/推文内容列表
+            this.getActivity(0, this.page_size);      // 获取首页活动/推文内容列表
           }else{
             this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         })
       },
+
       // 获取首页活动/推文内容列表
-      getActivity(start, count, skiptype) {
+      getActivity(start, page_size, skiptype) {
+        this.activityLoading = true;
         axios.get(api.get_all_activity + '?token=' + localStorage.getItem('token'),
-          { params: { lasting: false, start: start || 0, count: count || this.count, tnid: this.tnid, skiptype: skiptype || "all" }}).then(res => {
+          { params: { lasting: false, start: start || 0, count: page_size || this.page_size, tnid: this.tnid, skiptype: skiptype || "all" }}).then(res => {
           if(res.data.status == 200) {
             this.activityLoading = false;
             this.activityList = res.data.data;
+            this.total_page = Math.ceil(res.data.count/this.page_size);
 
             for(let i = 0; i < this.activityList.length; i ++) {
               // 推文的跳转类型
@@ -1124,7 +1144,8 @@
               }else if(this.activityList[i].acskiptype == "2") {
                 this.activityList[i].acSkiptype = "商品";
               }
-              this.activityList[i].activityTime = [this.activityList[i].acstarttime, this.activityList[i].acendtime];
+              // this.activityList[i].activityTime = [this.activityList[i].acstarttime, this.activityList[i].acendtime];
+              this.activityList[i].time = this.activityList[i].acstarttime + " 至 " + this.activityList[i].acendtime;
               this.activityList[i].disabled = true;
             }
           }else{
@@ -1132,10 +1153,11 @@
           }
         })
       },
+
       bannerToValueChange(v) {
         // console.log(v);
-
       },
+
       // 上传banner长图
       uploadLongPicture(res, file) {
         let form = new FormData();
@@ -1154,6 +1176,7 @@
           this.bannerList = this.bannerList.concat();
         });
       },
+
       // 上传banner图
       uploadPicture(res, file) {
         let form = new FormData();
@@ -1172,6 +1195,7 @@
           this.bannerList = this.bannerList.concat();
         });
       },
+
       // 模糊搜索-获取所有可选项
       getJumpTo(to, where) {
         this.activityJumpToList = [];     // 先将可选择项置为空
@@ -1224,10 +1248,12 @@
           }
         }
       },
+
       // 搜索推文
       searchActivity() {
 
       },
+
       // 当选择项发生变化时会触发该事件
       selectionChange(selection) {
         this.selectionList = [];
@@ -1236,10 +1262,12 @@
           this.selectionList.push(selection[i].acid);
         }
       },
+
       // 评论列表的操作方法
       handleClick(row) {
         console.log(row);
       },
+
       // 导航栏
       wTabClick1(i){
         let arr = [].concat(this.tab_list1);
@@ -1250,14 +1278,14 @@
         this.page = arr[i].name;
         this.tab_list1 = [].concat(arr);
 
-        this.activityLoading = true;
         this.tnid = this.tab_list1[i].tnid;
         this.clearFrom();         // 清空输入框
-        this.getActivity(0, 5);   // 获取首页活动/推文内容列表
+        this.getActivity(0, this.page_size);   // 获取首页活动/推文内容列表
         if(this.page == "每日10荐") {
           this.getProduct();  // 获取推荐商品
         }
       },
+
       // 素材圈的导航栏
       wTabClick2(i){
         let arr = [].concat(this.tab_list2);
@@ -1267,11 +1295,11 @@
         arr[i].active = true;
         this.tab_list2 = [].concat(arr);
 
-        this.activityLoading = true;
         this.tnid = this.tab_list2[i].tnid;
         this.clearFrom();         // 清空输入框
-        this.getActivity(0, 5);   // 获取首页活动/推文内容列表
+        this.getActivity(0, this.page_size);   // 获取首页活动/推文内容列表
       },
+
       // 获取推荐商品
       getProduct() {
         this.productList = [];
@@ -1294,6 +1322,7 @@
           }
         })
       },
+
       // 上移推荐商品
       upProduct(scope) {
         let params = {
@@ -1311,6 +1340,7 @@
           }
         });
       },
+
       // 删除推荐商品
       deleteProduct(scope) {
         this.$confirm('此操作将删除该推荐, 是否继续?', '提示',
@@ -1332,6 +1362,7 @@
           });
         }).catch(() => {  });
       },
+
       // 获取管理员
       getAdmin(){
         this.authorList = [];
@@ -1345,6 +1376,12 @@
             this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         });
+      },
+
+      // 分页点击方法
+      pageChange(v) {
+        console.log(v);
+        this.getActivity(this.page_size * (v - 1), this.page_size);
       }
     },
     watch: {
@@ -1362,6 +1399,7 @@
 
         }
       },
+
       // productList的值发生变化
       productList(newValue, oldValue) {
         // console.log(newValue, oldValue);
@@ -1386,6 +1424,9 @@
   }
   .content-table {
     padding-top: 0.1rem;
+    .page-box {
+      margin-top: 0.1rem;
+    }
   }
   .el-table .cell {
     text-align: left;
@@ -1404,7 +1445,7 @@
       line-height: 0.2rem;
       white-space: nowrap;
       color: #ffffff;
-      background-color: #9fd0bf;
+      background-color: @mainColor;
       border-radius: 0.1rem;
       padding: 0.02rem 0.15rem;
       margin: 0.3rem 0 0 0.3rem;
