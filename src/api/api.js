@@ -26,6 +26,7 @@ const api={
   get_all_activity: title + 'activity/get_all',             // 获取首页/发现页活动/推文内容列表
   add_one_activity: title + 'activity/add_one',             // 添加首页活动/推文（测试）
   update_act: title + 'activity/update_act',                // 修改/删除活动/推文 - 首页/发现页
+  get_search: title + 'searchfield/get_search',             // 搜索推文内容
   add_to_bigact: title + 'bigactivity/add_to_bigact',       // 将推文批量添加到专题
   get_info: title + 'recommend/get_info',                   // 获取每日推荐商品部分 - 发现页
   update: title + 'recommend/update',                       // 添加/修改/删除每日推荐商品 - 发现页

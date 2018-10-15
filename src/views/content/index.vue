@@ -164,9 +164,10 @@
       <div class="m-form-label choose-banner">
         <div class="title">推文管理</div>
         <div class="choose-box tr" style="margin-bottom: 0.1rem">
-          <el-input v-model="activitySearch" placeholder="请输入推文内容搜索" style="width: 3rem; margin-right: 0.4rem"></el-input>
+          <el-input v-model="activitySearch" placeholder="请输入推文内容搜索" style="width: 3rem; margin-right: 0.3rem"></el-input>
         </div>
-        <div class="banner-btn" style="margin-right: 0.1rem" @click="searchActivity">搜 索</div>
+        <div class="banner-btn" @click="searchActivity(0, 5)" v-if="!searching">搜 索</div>
+        <div class="banner-btn" @click="searchActivity(0, 5)" v-if="searching">取消搜索</div>
       </div>
       <div class="content-table">
         <el-table :data="activityList" border style="width: 100%" v-loading="activityLoading" @selection-change="selectionChange">
@@ -360,6 +361,7 @@
         activityMediaSort: 0,     // 添加推文时图片的顺序编号
         activityPictureList: [],  // 推文上传/编辑时的图片墙list
         activitySearch: "",       // 搜索推文时输入的内容
+        searching: false,         // 是否正在搜索推文
         dialogImageUrl: '',       // 推文上传图片后预览的url
         dialogVisible: false,     // 推文上传图片后预览的允许与否
         editActivity: false,      // 是否在编辑activity
@@ -727,8 +729,42 @@
       },
 
       // 搜索推文
-      searchActivity() {
+      searchActivity(start, page_size) {
+        if(this.activitySearch) {
+          if(this.searching) {
+            this.searching = false;
+            this.activitySearch = "";
+            this.getActivity(0, this.page_size);
+          }else if(!this.searching) {
+            this.searching = true;
 
+            this.activityLoading = true;
+            axios.get(api.get_search + '?token=' + localStorage.getItem('token'),
+              { params: { PRname: this.activitySearch, start: start || 0, count: page_size || this.page_size, serachact: true, tnid: this.tnid } }).then(res => {
+              if(res.data.status == 200) {
+                this.activityLoading = false;
+                this.activityList = res.data.data;
+                this.total_page = Math.ceil(res.data.count / this.page_size);
+
+                for(let i = 0; i < this.activityList.length; i ++) {
+                  // 推文的跳转类型
+                  if(this.activityList[i].acskiptype == "0") {
+                    this.activityList[i].acSkiptype = "全部";
+                  }else if(this.activityList[i].acskiptype == "1") {
+                    this.activityList[i].acSkiptype = "专题页";
+                  }else if(this.activityList[i].acskiptype == "2") {
+                    this.activityList[i].acSkiptype = "商品";
+                  }
+                  // this.activityList[i].activityTime = [this.activityList[i].acstarttime, this.activityList[i].acendtime];
+                  this.activityList[i].time = this.activityList[i].acstarttime + " 至 " + this.activityList[i].acendtime;
+                  this.activityList[i].disabled = true;
+                }
+              }else{
+                this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+              }
+            });
+          }
+        }
       },
 
       // 编辑推文 - 取消
@@ -1074,7 +1110,7 @@
           if(res.data.status == 200) {
             this.activityLoading = false;
             this.activityList = res.data.data;
-            this.total_page = Math.ceil(res.data.count/this.page_size);
+            this.total_page = Math.ceil(res.data.count / this.page_size);
 
             for(let i = 0; i < this.activityList.length; i ++) {
               // 推文的跳转类型
@@ -1291,6 +1327,8 @@
       flex: 1;
     }
     .banner-btn {
+      width: 0.5rem;
+      text-align: center;
       color: #ffffff;
       height: 0.2rem;
       line-height: 0.22rem;
