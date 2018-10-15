@@ -6,7 +6,6 @@ import base64
 from datetime import datetime, timedelta
 from WeiDian import logger
 from WeiDian.common.divide import Partner
-from WeiDian.common.get_model_return_list import get_model_return_list
 from WeiDian.common.loggers import generic_log
 from WeiDian.common.make_qrcode import make_qrcode
 from WeiDian.common.params_require import parameter_required
@@ -15,7 +14,6 @@ from flask import request
 import math
 import uuid
 from WeiDian.common.token_required import verify_token_decorator, is_admin, is_tourist, is_partner
-from WeiDian.common.TransformToList import add_model
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db, get_db_time_str, get_web_time_str, format_for_web_second
 from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR, NOT_FOUND, PARAMS_ERROR
@@ -301,7 +299,7 @@ class CActivity(BaseActivityControl, BaseTask):
 
 
 
-        if str(ACistop) == 'True':
+        if str(ACistop) == 'true':
             istop = self.sactivity.get_top_activity(TopnavId)
             if istop:
                 self.sactivity.change_top_act_status(istop.ACid, {'ACistop': False})
@@ -342,11 +340,22 @@ class CActivity(BaseActivityControl, BaseTask):
                         break
         # 创建tag
         if tags:
+            count = 0
             for tag in tags:
+                state = tag.get('ATstate', 0)
+                if str(state) not in ['0', '1']:
+                    raise PARAMS_ERROR(u'atstate参数错误')
+                if state == 1:
+                    count += 1
+                if count > 1:
+                    raise PARAMS_ERROR(u'默认显示角标只能有一个')
+            for tag in tags:
+                atstate = tag.get('ATstate', 0)
                 self.stags.add_model('ActivityTag', **{
                     'ATid': str(uuid.uuid1()),
                     'ACid': ACid,
                     'ATname': tag.get('ATname'),
+                    'ATstate': atstate
                 })
 
         if accomments:
@@ -462,12 +471,23 @@ class CActivity(BaseActivityControl, BaseTask):
                         break
         # 创建tag
         if tags:
+            count = 0
             for tag in tags:
+                state = tag.get('atstate', 0)
+                if str(state) not in ['0', '1']:
+                    raise PARAMS_ERROR(u'atstate参数错误')
+                if state == 1:
+                    count += 1
+                elif count > 1:
+                    raise PARAMS_ERROR(u'默认显示角标只能有一个')
+            for tag in tags:
+                atstate = tag.get('atstate', 0)
                 self.stags.del_tags_by_acid(acid)
                 self.stags.add_model('ActivityTag', **{
                     'ATid': str(uuid.uuid1()),
                     'ACid': acid,
                     'ATname': tag.get('atname'),
+                    'ATstate': atstate
                 })
 
         if accomments:
@@ -521,17 +541,10 @@ class CActivity(BaseActivityControl, BaseTask):
         args = request.args.to_dict()
         logger.debug("get tags args is %s", args)
         try:
-            # tags_list = set(get_model_return_list(self.stags.get_exist_tags())['ATname'])
             tags_list = self.stags.get_exist_tags()
-            originallist = []
-            for tag in tags_list:
-                originallist.append(tag[0])
-            setlist = set(originallist)
-            changelist = list(setlist)
-
             logger.info("try to get tags")
             response = import_status("messages_get_item_ok", "OK")
-            response['date'] = {"tags_list": changelist}
+            response['date'] = {"tags_list": tags_list}
             return response
         except Exception as e:
             logger.exception("get exist tags error")
@@ -544,17 +557,19 @@ class CActivity(BaseActivityControl, BaseTask):
         data = request.json
         logger.debug("upload tags data is %s", data)
         tags = data.get('tags')
+        atid_list = []
         try:
             for tag in tags:
                 atid = str(uuid.uuid1())
                 self.stags.add_model('ActivityTag', **{
                     'ATid': atid,
                     'ACid': 'customupload',
-                    'ATname': tag.get('atimg'),
+                    'ATname': tag.get('atname'),
                 })
-                atid_list = atid_list.extend(atid)
+                atid_list.append(atid)
             res = import_status("save_photo_success", "OK")
-            res['data'] = atid_list
+            res['data'] = {'atid_list': atid_list}
+            return res
         except Exception as e:
             logger.exception("upload tags error")
             raise SYSTEM_ERROR(u"上传数据错误")
@@ -563,10 +578,14 @@ class CActivity(BaseActivityControl, BaseTask):
     def del_exist_tags(self):
         if not is_admin():
             raise AUTHORITY_ERROR(u'非管理员权限')
-        # del_info = self.stags
-        # todo 56464
-
-
+        atid = request.json.get('atid')
+        logger.debug("del exist tags data is %s", request.data)
+        del_info = self.stags.del_exist_tags(atid)
+        if not del_info:
+            raise NOT_FOUND(u"无删除内容")
+        response = import_status("delete_success", "OK")
+        response['data'] = {'atid': atid}
+        return response
 
     @verify_token_decorator
     def share_activity(self):
