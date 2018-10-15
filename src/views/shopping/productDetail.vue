@@ -129,7 +129,15 @@
   import api from '../../api/api';
   import axios from 'axios';
   import {Toast} from 'mint-ui';
-  import common from '../../common/js/common'
+  import common from '../../common/js/common';
+  // setTimeout(()=>{
+  //   location.hash="a"
+  // },100);
+  // setTimeout(()=>{
+  //   window.onhashchange = function(event) {
+  //     location.href = "https://weidianweb.daaiti.cn/#/index/index";
+  //   }
+  // },200);
   export default {
     data() {
       return {
@@ -269,6 +277,9 @@
       }
     },
     mounted() {
+      if(this.$route.query.openid){
+
+      }
       this.imgsDone();
       this.getInfo();
       common.changeTitle('商品详情');

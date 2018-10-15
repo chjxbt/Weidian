@@ -50,40 +50,49 @@ const wxApi = {
     }).catch((error) => {
       console.log(error ,'1111')
     })
+    axios.get(api.get_share_params+'?token='+localStorage.getItem('token')).then(res => {
+      if(res.data.status == 200){
+      }
+    });
     wx.ready((res) => {
       // 如果需要定制ready回调方法
-      wx.onMenuShareTimeline({
-        title: '微点', // 分享标题
-        link: window.location.href + '?UPPerd=' + localStorage.getItem('openid'),      // 分享链接
-        // imgUrl: 'http://www.jzdlink.com/wordpress/wp-content/themes/wordpress_thems/images/lib/logo.png',// 分享图标
-        success () {
-          // 用户成功分享后执行的回调函数
-          Toast({ message: '分享成功', className: 'm-toast-success' });
-        },
-        cancel () {
-          // 用户取消分享后执行的回调函数
+      axios.get(api.get_share_params+'?token='+localStorage.getItem('token')).then(res => {
+        if(res.data.status == 200){
+          wx.onMenuShareTimeline({
+            title: res.data.data.title, // 分享标题
+            link: window.location.href + '?UPPerd=' + localStorage.getItem('openid'),      // 分享链接
+            imgUrl: res.data.data.img,// 分享图标
+            success () {
+              // 用户成功分享后执行的回调函数
+              Toast({ message: '分享成功', className: 'm-toast-success' });
+            },
+            cancel () {
+              // 用户取消分享后执行的回调函数
 
 
-        },error(){
-          Toast({ message: '分享失败，请稍后再试', className: 'm-toast-fail' });
+            },error(){
+              Toast({ message: '分享失败，请稍后再试', className: 'm-toast-fail' });
+            }
+          });
+          wx.onMenuShareAppMessage({
+            title: res.data.data.title, // 分享标题
+            link: window.location.href + '?UPPerd=' + localStorage.getItem('openid'),      // 分享链接
+            imgUrl: res.data.data.img,// 分享图标
+            success () {
+              // 用户成功分享后执行的回调函数
+              Toast({ message: '分享成功', className: 'm-toast-success' });
+            },
+            cancel () {
+              // 用户取消分享后执行的回调函数
+
+
+            },error(){
+              Toast({ message: '分享失败，请稍后再试', className: 'm-toast-fail' });
+            }
+          })
         }
+
       });
-      wx.onMenuShareAppMessage({
-        title: '微点', // 分享标题
-        link: window.location.href + '?UPPerd=' + localStorage.getItem('openid'),       // 分享链接
-        // imgUrl: 'http://www.jzdlink.com/wordpress/wp-content/themes/wordpress_thems/images/lib/logo.png',// 分享图标
-        success () {
-          // 用户成功分享后执行的回调函数
-          Toast({ message: '分享成功', className: 'm-toast-success' });
-        },
-        cancel () {
-          // 用户取消分享后执行的回调函数
-
-
-        },error(){
-          Toast({ message: '分享失败，请稍后再试', className: 'm-toast-fail' });
-        }
-      })
 
     })
   },

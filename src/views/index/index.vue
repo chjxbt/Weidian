@@ -139,7 +139,8 @@
       mixins: [wxapi],
         data() {
             return {
-              title: 'https://weidianweb.daaiti.cn/#/',
+              // title: 'https://weidianweb.daaiti.cn/#/',
+              title:'http://www.daaiti.cn:8080/#/',
               course:1,
               count:5,
               total_count:0,
@@ -218,6 +219,37 @@
           imgModal
         },
       mounted(options){
+        console.log(localStorage.getItem('is_click'),this.$route.query.linkUrl)
+        if(this.$route.query.linkUrl && localStorage.getItem('is_click') != '1'){
+          switch (this.$route.query.linkUrl){
+            case 'activityContent':
+              // _url = this.title +'activityContent?openid=' + localStorage.getItem('openid') + '&baid=' + (name?this.activity_list[list].aclinkvalue : list);
+              // params = this.title +'activityContent?openid=' + localStorage.getItem('openid') + '&baid=' + (name?this.activity_list[list].aclinkvalue : list);
+              this.$router.push({path:'/'+this.$route.query.linkUrl,query:{
+                  baid:this.$route.query.baid,
+                }});
+              localStorage.setItem('is_click','1')
+              break;
+            case 'productDetail':
+              // _url = this.title + 'productDetail?openid=' + localStorage.getItem('openid')+ '&prid=' + (name?this.activity_list[list].product.prid : list);
+              // params =  'productDetail&openid=' + localStorage.getItem('openid')+ '&prid=' + (name?this.activity_list[list].product.prid : list);
+              this.$router.push({path:'/'+this.$route.query.linkUrl,query:{
+                  prid:this.$route.query.prid,
+                }})
+              localStorage.setItem('is_click','1')
+              break;
+            case 'discover/index':
+              // _url = this.title + 'discover/index?openid=' + localStorage.getItem('openid') + '&acid=' + (name?this.activity_list[list].acid : list)+'&name=赚钱学院';
+              this.$router.push({path:'/'+this.$route.query.linkUrl,query:{
+                  acid:this.$route.query.acid,
+                  name:this.$route.query.name
+                }});
+              localStorage.setItem('is_click','1')
+              break;
+
+          }
+          return false;
+        }
         common.changeTitle('首页');
         if(common.GetQueryString('UPPerd')){
           localStorage.setItem('UPPerd',common.GetQueryString('UPPerd'));
@@ -324,23 +356,27 @@
            this.changeRoute(item.hmskiptype,item.hmcontent);
           },
           changeRoute(type,list,name){
-            let _url = '';
+            let _url = '';let params ='';
             if(name){
               switch (type){
                 case 0:
                   return false;
                   break;
                 case 1:
-                  _url = this.title +'activityContent?openid=' + localStorage.getItem('openid') + '&baid=' + (name?this.activity_list[list].aclinkvalue : list);
+                  // _url = this.title +'activityContent?openid=' + localStorage.getItem('openid') + '&baid=' + (name?this.activity_list[list].aclinkvalue : list);
+                   params = this.title +'activityContent&openid=' + localStorage.getItem('openid') + '&baid=' + (name?this.activity_list[list].aclinkvalue : list);
+                  _url = this.title + 'index/index?linkUrl="' + params+'"';
                   break;
                 case 2:
-                  _url = this.title + 'productDetail?openid=' + localStorage.getItem('openid')+ '&prid=' + (name?this.activity_list[list].product.prid : list);
+                  // _url = this.title + 'productDetail?openid=' + localStorage.getItem('openid')+ '&prid=' + (name?this.activity_list[list].product.prid : list);
+                   params =  'productDetail&openid=' + localStorage.getItem('openid')+ '&prid=' + (name?this.activity_list[list].product.prid : list);
+                  _url = this.title + 'index/index?linkUrl='+params;
                   break;
                 case 3:
-                  _url = this.title + 'discover/index?openid=' + localStorage.getItem('openid') + '&acid=' + (name?this.activity_list[list].acid : list)+'&name=赚钱学院';
+                  _url = this.title + 'index/index?linkUrl=discover/index&openid=' + localStorage.getItem('openid') + '&acid=' + (name?this.activity_list[list].acid : list)+'&name=赚钱学院';
                   break;
                 case 4:
-                  _url = this.title + 'discover/index/index?openid=' + localStorage.getItem('openid')+ '&acid=' + (name?this.activity_list[list].acid : list) +'&name=公告';
+                  _url = this.title + 'index/index?linkUrl=discover/index&openid=' + localStorage.getItem('openid')+ '&acid=' + (name?this.activity_list[list].acid : list) +'&name=公告';
                   break;
               }
               return _url;

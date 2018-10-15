@@ -57,6 +57,7 @@ const api={
   get_list_shoppingcart: title + '/shoppingcart/get_list',//获取购物车
   delete_shoppingcart: title +'/shoppingcart/delete',//删除购物车
   update_shoppingcart: title + '/shoppingcart/update',///更新购物车
+  get_share_params: title + '/mycenter/get_share_params',//获取分享参数
 };
 
 export default api

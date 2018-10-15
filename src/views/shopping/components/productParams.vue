@@ -402,9 +402,9 @@
       }
       span {
         display: inline-block;
-        width: 90px;
+        /*width: 90px;*/
         float: left;
-        padding: 8px 0;
+        padding: 8px 20px;
         font-size: 26px;
         border-radius: 10px;
         margin: 0 -20px 0 40px;
