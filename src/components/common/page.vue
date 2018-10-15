@@ -1,14 +1,14 @@
 
 <template>
   <div class="m-age" v-if="total != 0">
-    <div v-if="num">
+    <!--<div v-if="num">
       <div class="page-total">
         记录数 {{num}} 个
       </div>
       <div class="page-pages">
         共 {{total}} 页
       </div>
-    </div>
+    </div>-->
 
     <div class="page-button">
       <!--<span @click="change(1)">首页</span>-->
@@ -68,13 +68,13 @@
     margin: 0 0 55px 0;
   }
   .page-button {
-    width: 4rem;
-    float: right;
+    /*width: 4rem;
+    float: left;
     margin-top: -10px;
     display: flex;
     flex-flow: row;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: flex-end;*/
     span{
       color: @sidebarChildColor;
       cursor: pointer;
