@@ -5,6 +5,7 @@ const title = 'https://weidian.daaiti.cn';
 
 const api={
   login: title + '/user/login',//用户登录
+  wx_login:title + '/user/wx_login',//微信登录
   get_accesstoken : title + '/user/get_accesstoken',
   get_config: title + '/user/get_wx_config',//
   get_all_banner: title + '/banner/get_all',//获取首页轮播图

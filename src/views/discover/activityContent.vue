@@ -180,23 +180,27 @@
         this.getEr(this.activity_list[list].acskiptype,list);
       },
       changeRoute(type,list,name){
-        let _url = '';
+        let _url = '';let params = '';
         if(name){
           switch (type){
             case 0:
               return false;
               break;
             case 1:
-              _url = this.title +'activityContent?openid=' + localStorage.getItem('openid') + '&baid=' + (name?this.activity_list[list].baid : list);
-              break;
-            case 3:
-              _url = this.title + 'productDetail?openid=' + localStorage.getItem('openid')+ '&prid=' + (name?this.activity_list[list].prid : list) ;
+              // _url = this.title +'activityContent?openid=' + localStorage.getItem('openid') + '&baid=' + (name?this.activity_list[list].aclinkvalue : list);
+              params = this.title +'activityContent&openid=' + localStorage.getItem('openid') + '&baid=' + (name?this.activity_list[list].aclinkvalue : list);
+              _url = this.title + 'index/index?linkUrl="' + params+'"';
               break;
             case 2:
-              _url = this.title + 'discover/index?openid=' + localStorage.getItem('openid') + '&acid=' + (name?this.activity_list[list].acid : list)+'&name=赚钱学院';
+              // _url = this.title + 'productDetail?openid=' + localStorage.getItem('openid')+ '&prid=' + (name?this.activity_list[list].product.prid : list);
+              params =  'productDetail&openid=' + localStorage.getItem('openid')+ '&prid=' + (name?this.activity_list[list].product.prid : list);
+              _url = this.title + 'index/index?linkUrl='+params;
+              break;
+            case 3:
+              _url = this.title + 'index/index?linkUrl=discover/index&openid=' + localStorage.getItem('openid') + '&acid=' + (name?this.activity_list[list].acid : list)+'&name=赚钱学院';
               break;
             case 4:
-              _url = this.title + 'discover/index/index?openid=' + localStorage.getItem('openid')+ '&acid=' + (name?this.activity_list[list].acid : list) +'&name=公告';
+              _url = this.title + 'index/index?linkUrl=discover/index&openid=' + localStorage.getItem('openid')+ '&acid=' + (name?this.activity_list[list].acid : list) +'&name=公告';
               break;
           }
           return _url;
