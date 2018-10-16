@@ -25,7 +25,8 @@ class AMyCenter(Resource):
             "get_area": "self.control_mycenter.get_area_by_citynum()",
             "get_today_total": "self.control_mycenter.get_today_total()",
             "get_schedual_show": "self.control_mycenter.get_schedual_show()",  # 获取显示或隐藏
-            "get_share_params": "self.control_mycenter.get_share_params()"
+            "get_share_params": "self.control_mycenter.get_share_params()",
+            "get_one_address": "self.control_mycenter.get_one_or_default_address()",
         }
         res = eval(apis[myinfo])
         return jsonify(res)

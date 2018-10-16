@@ -54,5 +54,9 @@ class SUserAddress(SBase):
         return self.session.query(UserAddress).filter_by(UAid=uaid, UAisdelete=False).first()
 
     @close_session
+    def get_one_or_default_address(self, uafilter):
+        return self.session.query(UserAddress).filter_by(**uafilter).first()
+
+    @close_session
     def get_addressinfo_by_areaid(self, areaid):
         return self.session.query(Area, City, Province).filter(Area.cityid == City.cityid, City.provinceid == Province.provinceid).filter(Area.areaid == areaid).all()
