@@ -246,6 +246,7 @@ class CProduct(BaseProductControl):
         logger.info(request.detail)
         args = request.args.to_dict()
         prid = args.get('prid')
+        usid = request.user.id
         if not prid:
             return PARAMS_MISS
         product = self.sproduct.get_product_by_prid(prid)
@@ -265,7 +266,7 @@ class CProduct(BaseProductControl):
                 product = self.trans_product_for_shopkeeper(product)
             product = self.fill_product_nums(product)
         # 填充一些都需要的信息
-        self.fill_product_alreadylike(product)
+        self.fill_product_alreadylike(product, usid)
         self.fill_images(product)
         self.fill_prtarget(product)
         self.fill_product_sku_key(product)
