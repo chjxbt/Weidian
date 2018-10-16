@@ -28,7 +28,8 @@ class AProduct(Resource):
         print product
         apis = {
             "get_all": 'self.cproduct.get_product_list()',
-            'get_one': 'self.cproduct.get_product_one()'
+            'get_one': 'self.cproduct.get_product_one()',
+            "get_one_by_productid": "self.cproduct.get_one_by_productid()"
         }
         res = eval(apis[product])
         return jsonify(res)
