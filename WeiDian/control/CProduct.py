@@ -248,10 +248,10 @@ class CProduct(BaseProductControl):
         prid = args.get('prid')
         usid = request.user.id
         if not prid:
-            return PARAMS_MISS
+            raise PARAMS_MISS()
         product = self.sproduct.get_product_by_prid(prid)
         if not product:
-            return NOT_FOUND()
+            raise NOT_FOUND(u'无此商品')
         # 是管理员或客服则显示全部信息
         if is_admin() or is_customerservice():
             product.fields = product.all
@@ -283,10 +283,10 @@ class CProduct(BaseProductControl):
         prid = args.get('productid')
         usid = request.user.id
         if not prid:
-            return PARAMS_MISS
+            raise PARAMS_MISS()
         product = self.sproduct.get_product_by_productid(prid)
         if not product:
-            return NOT_FOUND()
+            raise NOT_FOUND(u"无此商品")
         # 是管理员或客服则显示全部信息
         if is_admin() or is_customerservice():
             product.fields = product.all
@@ -306,7 +306,7 @@ class CProduct(BaseProductControl):
         self.fill_prtarget(product)
         self.fill_product_sku_key(product)
         self.fill_product_sku_value(product)
-        self.sproduct.update_view_num(prid)
+        self.sproduct.update_view_num(product.PRid)
         data = import_status('get_product_success', 'OK')
         data['data'] = product
         return data
