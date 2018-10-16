@@ -191,6 +191,7 @@ class CProduct(BaseProductControl):
             raise AUTHORITY_ERROR(u'权限不足')
 
         data = parameter_required('productid', 'images')
+        logger.debug('get update_product_image data %s', data)
         product = self.sproduct.get_product_by_productid(data.get("productid"))
         if not product:
             raise PARAMS_MISS(u"商品不存在或已删除")
