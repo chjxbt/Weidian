@@ -108,6 +108,7 @@ class CTask(BaseTask):
                     "TAlevel": data.get("TAlevel"),
                     "TArole": data.get("TArole"),
                     "TAcomplateNotifications": data.get("TAcomplateNotifications"),
+                    "TLisdelete": 0
                 })
 
                 for reward in reward_list:
