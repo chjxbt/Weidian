@@ -7,11 +7,11 @@ from flask import request, redirect
 import uuid
 import datetime
 import json
-import urllib2, urllib
+import urllib2
 import requests
 from weixin import WeixinError
 from weixin.login import WeixinLoginError, WeixinLogin
-
+from WeiDian.common.get_url_params import GetUrlParams
 from WeiDian import logger
 from WeiDian import mp
 from WeiDian.common.params_require import parameter_required
@@ -181,10 +181,10 @@ class CUser():
             if key not in args:
                 return PARAMS_MISS
 
-        from WeiDian.config.urlconfig import get_access_toke, get_user_info, get_subscribe
+        # from WeiDian.config.urlconfig import get_access_toke, get_user_info, get_subscribe
         # 获取access_token openid
 
-        request_url = get_access_toke.format(APP_ID, APP_SECRET_KEY, args["code"])
+        # request_url = get_access_toke.format(APP_ID, APP_SECRET_KEY, args["code"])
         # strResult = None
         # try:
         #
@@ -197,12 +197,16 @@ class CUser():
         #     print(e)
         #     return NETWORK_ERROR
 
-        jsonResult = self.get_wx_response(request_url, "get access_token")
-        if "access_token" not in jsonResult or "openid" not in jsonResult:
-            logger.error("get access token and openid error %s", jsonResult)
-            return jsonResult
-        access_token = jsonResult["access_token"]
-        openid = jsonResult['openid']
+        # jsonResult = self.get_wx_response(request_url, "get access_token")
+        # if "access_token" not in jsonResult or "openid" not in jsonResult:
+        #     logger.error("get access token and openid error %s", jsonResult)
+        #     return jsonResult
+        # access_token = jsonResult["access_token"]
+        # openid = jsonResult['openid']
+        wxlogin = WeixinLogin(APP_ID, APP_SECRET_KEY)
+        data = wxlogin.access_token(args["code"])
+        openid = data.openid
+        access_token = data.access_token
         user = self.suser.get_user_by_openid(openid)
 
         is_first = not bool(user)
@@ -213,11 +217,12 @@ class CUser():
             return wx_subscribe
         subscribe = wx_subscribe.get("subscribe", 0)
 
-        user_info = self.get_wx_response(get_user_info.format(access_token, openid), "get user info")
-        if "errcode" in user_info or "errmsg" in user_info:
-            response = import_status("get_user_info_error", "WD_ERROR", "error_get_user_info")
-            response['data'] = user_info
-            return response
+        # user_info = self.get_wx_response(get_user_info.format(access_token, openid), "get user info")
+        # if "errcode" in user_info or "errmsg" in user_info:
+        #     response = import_status("get_user_info_error", "WD_ERROR", "error_get_user_info")
+        #     response['data'] = user_info
+        #     return response
+        user_info = wxlogin.userinfo(access_token, openid)
         upperd = self.suser.get_user_by_openid(args.get("UPPerd", ""))
 
         upperd_id = upperd.USid if upperd else None
