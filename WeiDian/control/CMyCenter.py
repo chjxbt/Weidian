@@ -331,18 +331,23 @@ class CMyCenter(BaseMyCenterControl):
         if not hasattr(request, 'user'):
             return TOKEN_ERROR(u"未登录, 或token错误")
         args = request.args.to_dict()
-        logger.info("this is address args %s", args)
+        logger.debug("this is address args %s", args)
         data = request.json
-        logger.info("this is address data %s", data)
+        logger.debug("this is address data %s", data)
         try:
             exist_default = self.suesraddress.get_default_address_by_usid(request.user.id)
             parameter_required("uaid", "areaid", "UAname", "UAphone", "UAtext", "UAdefault")
             if data.get("UAdefault") is True and exist_default:
                 self.suesraddress.change_default_address_status(exist_default.UAid, {'UAdefault': False})
-            update_address = self.suesraddress.update_address(args["uaid"], data)
-            logger.debug("update address accress ")
+            update_address = self.suesraddress.update_address(args["uaid"], {"areaid": data.get("areaid"),
+                                                                             "UAname": data.get("UAname"),
+                                                                             "UAphone": data.get("UAphone"),
+                                                                             "UAtext": data.get("UAtext"),
+                                                                             "UAdefault":data.get("UAdefault")
+                                                                             })
+            logger.info("update address succress ")
             if not update_address:
-                return SYSTEM_ERROR
+                raise SYSTEM_ERROR(u'数据更新错误')
             response = import_status("update_useraddress_success", "OK")
             response['data'] = {"uaid": args["uaid"]}
             return response
