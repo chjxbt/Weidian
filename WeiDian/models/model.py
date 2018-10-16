@@ -266,9 +266,10 @@ class ProductImage(BaseModel):
     """商品展示图片"""
     __tablename__ = 'productimage'
     PIid = Column(String(64), primary_key=True)
-    PRid = Column(String(64), nullable=False)  # 商品id
+    PRid = Column(String(64), nullable=False)    # 商品id
     PIurl = Column(String(255), nullable=False)  # 图片链接(七牛云)
-    PIsort = Column(Integer)  # 图片顺序
+    PIsort = Column(Integer)                     # 图片顺序
+    PIexist = Column(Boolean, default=True)   # 图片是否存在 {0:不存在， 1:存在}
 
     @orm.reconstructor
     def __init__(self):
@@ -421,7 +422,6 @@ class OrderProductInfo(BaseModel):
     def __init__(self):
         self.fields = self.all
         self.add('PSKproperkey').hide('_PSKproperkey')
-
 
 
 class ProductCategory(BaseModel):
