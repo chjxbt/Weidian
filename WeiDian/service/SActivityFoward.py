@@ -12,6 +12,6 @@ class SActivityFoward(SBase):
     def get_fowardnum_by_acid(self, acid):
         """活动的转发量"""
         cur_activity = self.session.query(Activity).filter_by(ACid=acid).first()
-        if cur_activity.ACProductsSoldFakeNum:
-            return cur_activity.ACProductsSoldFakeNum
+        if cur_activity.ACforwardFakenum:
+            return cur_activity.ACforwardFakenum
         return self.session.query(ActivityFoward).filter_by(ACid=acid).count()

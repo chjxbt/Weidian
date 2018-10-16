@@ -67,8 +67,10 @@ class CProductLike():
             logger.info("get product like")
             map(self.fill_productinfo, productlike_list)
             # TODO 暂存的虚假发圈数
+            from WeiDian.service.SActivity import SActivity
             for prlike in productlike_list:
-                prlike.forwardnum = 99
+                # SActivity().get_acid_by_filterid({})
+                prlike.forwardnum ='99'
                 prlike.add("forwardnum")
             prlikecount = self.sproductlike.get_prlike_count_by_usid(request.user.id)
             data = import_status("get_product_like_success", "OK")

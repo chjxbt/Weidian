@@ -635,7 +635,7 @@ class SuperUser(BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['SUname', 'SUheader']
+        self.fields = ['SUid', 'SUname', 'SUheader']
 
 
 class SearchField(BaseModel):

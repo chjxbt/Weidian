@@ -15,7 +15,8 @@ from WeiDian.common.params_require import parameter_required
 from WeiDian.common.token_required import verify_token_decorator, is_tourist, is_partner, is_admin
 from WeiDian.config.enums import BANK_MAP, finished_pay_status
 from WeiDian.config.messages import get_success
-from WeiDian.config.response import AUTHORITY_ERROR, SYSTEM_ERROR, TOKEN_ERROR, PARAMS_ERROR, TIME_ERROR, PARAMS_MISS
+from WeiDian.config.response import AUTHORITY_ERROR, SYSTEM_ERROR, TOKEN_ERROR, PARAMS_ERROR, TIME_ERROR, PARAMS_MISS, \
+    NOT_FOUND
 from WeiDian.control.BaseControl import BaseMyCenterControl
 from flask import request
 
@@ -267,6 +268,31 @@ class CMyCenter(BaseMyCenterControl):
         return address_list
 
     @verify_token_decorator
+    def get_one_or_default_address(self):
+        if is_tourist():
+            raise TOKEN_ERROR(u'未登录')
+        uaid = request.args.to_dict().get('uaid')
+        usid = request.user.id
+        logger.debug("get uaid is %s", uaid)
+        if uaid:
+            uafilter = {'UAid': uaid}
+        else:
+            uafilter = {'USid': usid,
+                        'UAdefault': True
+                        }
+        address = self.suesraddress.get_one_or_default_address(uafilter)
+        if not address:
+            raise NOT_FOUND(u'该用户无默认地址信息')
+        logger.info("get address success, now to fill detail")
+        addressinfoes = self.suesraddress.get_addressinfo_by_areaid(address.areaid)
+        for addressinfo in addressinfoes:
+            address.addressinfo = addressinfo
+            address.add("addressinfo")
+        response = import_status("messages_get_item_ok", "OK")
+        response['data'] = address
+        return response
+
+    @verify_token_decorator
     def add_useraddress(self):
         if not hasattr(request, 'user'):
             return TOKEN_ERROR(u"未登录, 或token错误")
@@ -305,18 +331,23 @@ class CMyCenter(BaseMyCenterControl):
         if not hasattr(request, 'user'):
             return TOKEN_ERROR(u"未登录, 或token错误")
         args = request.args.to_dict()
-        logger.info("this is address args %s", args)
+        logger.debug("this is address args %s", args)
         data = request.json
-        logger.info("this is address data %s", data)
+        logger.debug("this is address data %s", data)
         try:
             exist_default = self.suesraddress.get_default_address_by_usid(request.user.id)
             parameter_required("uaid", "areaid", "UAname", "UAphone", "UAtext", "UAdefault")
             if data.get("UAdefault") is True and exist_default:
                 self.suesraddress.change_default_address_status(exist_default.UAid, {'UAdefault': False})
-            update_address = self.suesraddress.update_address(args["uaid"], data)
-            logger.debug("update address accress ")
+            update_address = self.suesraddress.update_address(args["uaid"], {"areaid": data.get("areaid"),
+                                                                             "UAname": data.get("UAname"),
+                                                                             "UAphone": data.get("UAphone"),
+                                                                             "UAtext": data.get("UAtext"),
+                                                                             "UAdefault":data.get("UAdefault")
+                                                                             })
+            logger.info("update address succress ")
             if not update_address:
-                return SYSTEM_ERROR
+                raise SYSTEM_ERROR(u'数据更新错误')
             response = import_status("update_useraddress_success", "OK")
             response['data'] = {"uaid": args["uaid"]}
             return response
@@ -578,6 +609,7 @@ class CMyCenter(BaseMyCenterControl):
             raise SYSTEM_ERROR(u'卡号无效')
         return bank
 
+    """设置获取微信分享参数"""
     @verify_token_decorator
     def set_share_params(self):
         if not is_admin():
