@@ -19,6 +19,6 @@ class SProductImage(SBase):
             ProductImage.PIsort).first()
 
     @close_session
-    def update_image(self, piid, piimage):
-        return self.session.query(ProductImage).filter(ProductImage.PIid == piid, ProductImage.PIexist == True).update(
+    def update_image_by_prid(self, prid, piimage):
+        return self.session.query(ProductImage).filter(ProductImage.PRid == prid, ProductImage.PIexist == True).update(
             piimage)

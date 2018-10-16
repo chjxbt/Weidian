@@ -195,22 +195,32 @@ class CProduct(BaseProductControl):
         product = self.sproduct.get_product_by_productid(data.get("productid"))
         if not product:
             raise PARAMS_MISS(u"商品不存在或已删除")
-        for image in data.get("images"):
-            primage = self.sproductimage.get_images_by_prid_pisort(product.PRid, image.get('pisort', 0))
-            if primage:
-                update_result = self.sproductimage.update_image(
-                    primage.PIid, {"PIurl": image.get("piurl"), "PIexist": image.get("piexist", 1)})
-                if not update_result:
-                    logger.error('update product image error, sort is %s', image.get("pisort", 0))
-                    raise SYSTEM_ERROR(u"数据库异常")
-            else:
-                self.sproductimage.add_model("ProductImage", **{
-                    "PIid": str(uuid.uuid1()),
-                    "PRid": product.PRid,
-                    "PIurl": image.get("piurl"),
-                    "PIsort": image.get("pisort", 0),
-                    "PIexist": image.get("piexist", 1),
-                })
+        # for image in data.get("images"):
+        #     primage = self.sproductimage.get_images_by_prid_pisort(product.PRid, image.get('pisort', 0))
+        #     if primage:
+        #         update_result = self.sproductimage.update_image(
+        #             primage.PIid, {"PIurl": image.get("piurl"), "PIexist": image.get("piexist", 1)})
+        #         if not update_result:
+        #             logger.error('update product image error, sort is %s', image.get("pisort", 0))
+        #             raise SYSTEM_ERROR(u"数据库异常")
+        #     else:
+        #         self.sproductimage.add_model("ProductImage", **{
+        #             "PIid": str(uuid.uuid1()),
+        #             "PRid": product.PRid,
+        #             "PIurl": image.get("piurl"),
+        #             "PIsort": image.get("pisort", 0),
+        #             "PIexist": image.get("piexist", 1),
+        #         })
+        self.sproductimage.update_image_by_prid(product.PRid, {"PIexist": 0})
+        for image in data.get('images'):
+            self.sproductimage.add_model("ProductImage", **{
+                "PIid": str(uuid.uuid1()),
+                "PRid": product.PRid,
+                "PIurl": image.get("piurl"),
+                "PIsort": image.get("pisort", 0),
+                "PIexist": image.get("piexist", 1),
+            })
+
         return import_status('update_product_image_success', 'OK')
 
     def get_product_list(self):
