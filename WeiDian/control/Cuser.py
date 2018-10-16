@@ -220,7 +220,13 @@ class CUser():
         wx_subscribe = self.get_wx_response(get_subscribe.format(mp.accesstoken(), openid), "get subscribe")
         if "subscribe" not in wx_subscribe:
             logger.error("get subscribe error %s", wx_subscribe)
-            return wx_subscribe
+            # return wx_subscribe
+            mp.update_access_token_and_jsticket(refresh=True)
+            wx_subscribe = self.get_wx_response(get_subscribe.format(mp.accesstoken(), openid), "get subscribe retry")
+            if "subscribe" not in wx_subscribe:
+                logger.error("get subscribe retry error %s", wx_subscribe)
+                return wx_subscribe
+
         subscribe = wx_subscribe.get("subscribe", 0)
 
         # user_info = self.get_wx_response(get_user_info.format(access_token, openid), "get user info")
