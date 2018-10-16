@@ -56,12 +56,12 @@
          <div v-if="rewardEdit">
            <div></div>
            <div class="level-reward-box" v-for="item in rewardBoxList">
-             <!--<el-input v-model="rewardNum" placeholder="数量" class="reward-num">
+             <el-input v-model="item.ranumber" placeholder="数量" class="reward-num">
                <template slot="append">张</template>
              </el-input>
-             <el-select v-model="rewardValue" clearable placeholder="请选择任务等级奖励内容" class="reward-content">
+             <el-select v-model="item.raid" clearable placeholder="请选择任务等级奖励内容" class="reward-content">
                <el-option v-for="item in rewardList" :key="item.raid" :label="item.rewardstr" :value="item.raid"></el-option>
-             </el-select>-->
+             </el-select>
            </div>
          </div>
        </div>

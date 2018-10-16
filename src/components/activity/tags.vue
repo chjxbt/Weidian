@@ -105,7 +105,6 @@
 
       // 确认按钮，传回选中图片
       chooseOK() {
-        console.log(this.badgeIndex);
         this.$emit("getData", this.badgeList[this.badgeIndex].atname);
         this.badgeDialog = false;
       }
