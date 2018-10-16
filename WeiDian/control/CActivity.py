@@ -586,29 +586,26 @@ class CActivity(BaseActivityControl, BaseTask):
             url = data_url.split('#')[-1]
             from WeiDian.common.get_url_params import GetUrlParams
             parse_dict = GetUrlParams.url_params_to_dict(url)
+            if 'baid' in parse_dict or 'prid' in parse_dict:
+                # 分享时更改转发数
+                paramstype = bool(not 'baid' in parse_dict)
+                filter_parameter = {'AClinkvalue': parse_dict['prid'] if paramstype else parse_dict['baid'],
+                                    'ACSkipType': 2 if paramstype else 1,
+                                    'ACisdelete': False}
+                act_list = self.sactivity.get_acid_by_filterid(filter_parameter)
+                for act in act_list:
+                    if act.ACforwardFakenum != 0:
+                        self.sactivity.update_forward_fakenum(act.ACid)
+                    else:
+                        self.sactivity.add_model('ActivityFoward', **{
+                            'AFid': str(uuid.uuid1()),
+                            'USid': request.user.id,
+                            'ACid': act.ACid
+                        })
 
-            # 分享时更改转发数
-            if 'baid' in parse_dict.keys():
-                act_list = self.sactivity.get_acid_by_filterid({'AClinkvalue': parse_dict['baid'],
-                                                           'ACSkipType': 1,
-                                                           'ACisdelete': False})
-            if 'prid' in parse_dict.keys():
-                act_list = self.sactivity.get_acid_by_filterid({'AClinkvalue': parse_dict['prid'],
-                                                           'ACSkipType': 2,
-                                                           'ACisdelete': False})
-            for act in act_list:
-                if act.ACforwardFakenum != 0:
-                    self.sactivity.update_forward_fakenum(act.ACid)
-                else:
-                    self.sactivity.add_model('ActivityFoward', **{
-                        'AFid': str(uuid.uuid1()),
-                        'USid': request.user.id,
-                        'ACid': act.ACid
-                    })
+                if is_partner():
 
-            if is_partner():
-
-                self.do_shoppingtask_or_forwardtask(1)
+                    self.do_shoppingtask_or_forwardtask(1)
             return response
         except:
             logger.exception("make qrcode error")
