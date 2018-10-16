@@ -283,7 +283,7 @@
               <div class="m-item-row">
                 <div style="position: relative">
                   <img class="at-img" v-if="activityBadge" :src="activityBadge" @click="tagsDialog">
-                  <div class="delete-tags" v-if="activityBadge" @click="activityBadge = ''">X</div>
+                  <div class="delete-tags" v-if="activityBadge" @click="activityBadge = ''">x</div>
                   <div class="at-text" v-if="!activityBadge" @click="tagsDialog">请点此选择</div>
                 </div>
               </div>
@@ -295,7 +295,7 @@
           <p class="m-form-label" style="width: 0.65rem; margin-top: 0.1rem">发布者：</p>
           <div class="m-item-content">
             <div class="m-item-row">
-              <el-select v-model="author" class="m-input-l" placeholder="请选择发布者" @focus="focusselect('author')">
+              <el-select v-model="author.name" class="m-input-l" placeholder="请选择发布者" @focus="focusselect('author')">
                 <!--<el-option v-for="item in authorList" :key="item.value" :label="item.label" :value="item.value"></el-option>-->
                 <el-option v-for="item in authorList" :key="item.value" :label="item.label" :value="item.value">
                   <div style="float: left; width: 3.4rem">{{ item.label }}</div>
@@ -387,7 +387,7 @@
           { value: "10", label: "5 元 10 件" }
         ],
         likeNum: '',                // 推文-虚拟点赞数
-        author: "",                 // 推文-发布者
+        author: { name: "", id: "" },                 // 推文-发布者
         authorList: [],             // 推文-发布者list
         activityType: '',           // 添加推文/活动时的活动类型选择的值
         activityBadge: '',          // 推文-活动角标
@@ -569,7 +569,8 @@
           this.activityActivityTime = [activity.acstarttime, activity.acendtime];
           this.likeNum = activity.likenum;
           this.activityBadge = activity.tags[0].atname;
-          this.author = activity.suuser.suname;
+          this.author.name = activity.suuser.suname;
+          this.author.id = activity.suuser.suid;
         }
       },
 
@@ -642,7 +643,7 @@
                 aclikeFakeNum: this.likeNum,
                 acstarttime: this.activityActivityTime[0],
                 acendtime: this.activityActivityTime[1],
-                suid: this.author
+                suid: this.author.id
               };
 
               if(this.activityProductSales != "") {
@@ -666,7 +667,7 @@
                   this.activityActivityTime = "";
                   this.likeNum = "";
                   this.activityBadge = "";
-                  this.author = "";
+                  this.author = {};
                   this.activityPictureList = [];  // 图片list置为[]
                   this.activityMediaSort = 0;   // 上传成功后图片数量置为0
                 }else{
@@ -790,7 +791,7 @@
         this.activityActivityTime = "";
         this.likeNum = "";
         this.activityBadge = "";
-        this.author = "";
+        this.author = {};
         this.activityPictureList = [];  // 图片list置为[]
 
         this.editActivity = false;      // 隐藏取消按钮
@@ -1064,8 +1065,8 @@
             if(this.activityProductSales != "") { // 虚拟销量不为空时
               params.ACProductsSoldFakeNum = this.activityProductSales;
             }
-            if(this.author != "") { // 发布者不为空时
-              params.SUid = this.author;
+            if(this.author.id != "") { // 发布者不为空时
+              params.SUid = this.author.id;
             }
             this.activityLoading = true;
             console.log(params);
@@ -1086,7 +1087,7 @@
                 this.activityMedia = [];
                 this.activityPictureList = [];   // 上传成功后图片list置为[]
                 this.activityMediaSort = 0;   // 上传成功后图片数量置为0
-                this.author = "";
+                this.author = {};
               }else{
                 this.$message({ type: 'error', message: res.data.message, duration: 1500 });
               }
@@ -1377,8 +1378,8 @@
   .delete-tags {
     color: #ababab;
     position: absolute;
-    top: 0.06rem;
-    right: -0.04rem;
+    top: 0.05rem;
+    right: -0.03rem;
   }
   .at-text {
     color: #4169E1;

@@ -304,7 +304,7 @@
               <div class=" m-item-row">
                 <div style="position: relative">
                   <img class="at-img" v-if="activityBadge" :src="activityBadge" @click="tagsDialog">
-                  <div class="delete-tags" v-if="activityBadge" @click="activityBadge = ''">X</div>
+                  <div class="delete-tags" v-if="activityBadge" @click="activityBadge = ''">x</div>
                   <div class="at-text" v-if="!activityBadge" @click="tagsDialog">请点此选择</div>
                 </div>
               </div>
@@ -313,10 +313,10 @@
           </div>
         </div>
         <div class="m-form-item">
-          <p class="m-form-label" style="width: 0.65rem; margin-top: 0.1rem">发布者：</p>
+          <p class="m-form-label" style="width: 0.65rem;">发布者：</p>
           <div class="m-item-content">
             <div class=" m-item-row">
-              <el-select v-model="author" class="m-input-l" placeholder="请选择发布者" @focus="focusselect('', 'author')">
+              <el-select v-model="author.name" class="m-input-l" placeholder="请选择发布者" @focus="focusselect('', 'author')">
                 <!--<el-option v-for="item in authorList" :key="item.value" :label="item.label" :value="item.value"></el-option>-->
                 <el-option v-for="item in authorList" :key="item.value" :label="item.label" :value="item.value">
                   <div style="float: left; width: 3.4rem">{{ item.label }}</div>
@@ -325,6 +325,26 @@
               </el-select>
             </div>
           </div>
+        </div>
+        <div class="num-list" v-for="(item, index) in commentsList" v-if="page == '公告' || page == '教程'">
+          <div class="num-box">
+            <p class="m-form-label" style="width: 0.9rem;">评论人：</p>
+            <div class="m-item-content">
+              <div class=" m-item-row">
+                <el-input v-model="item.acorobot" style="width: 1.2rem"></el-input>
+              </div>
+            </div>
+          </div>
+          <div class="num-box">
+            <p class="m-form-label" style="width: 0.8rem;">评论内容：</p>
+            <div class="m-item-content">
+              <div class=" m-item-row">
+                <el-input v-model="item.acotext" style="width: 2.3rem"></el-input>
+              </div>
+            </div>
+          </div>
+          <div class="num-box add-btn" v-if="index == (commentsList.length - 1)" @click="addComments()">+</div>
+          <div class="num-box add-btn" v-else @click="addComments(index)">-</div>
         </div>
         <div class="m-form-item" v-if="page == '公告' || page == '教程'">
           <p class="m-form-label">推文置顶：</p>
@@ -386,7 +406,7 @@
           { value: '0', label: '长图' },
           { value: '1', label: '专题页' }
         ],
-        author: "",               // 推文-发布者
+        author: { id: "", name: "" },               // 推文-发布者
         authorList: [],           // 推文-发布者list
         selectionList: [],        // 筛选推文时盛放acid的list
         toBanner: "",             // 筛选推文时专题的选择值
@@ -428,6 +448,9 @@
         productViewNum: "",       // 虚拟查看数
         productLikeNum: "",       // 虚拟喜欢数
         activityActivityTime: [], // 推文-活动时间
+        commentsList: [             // 自行添加评论
+          { acorobot: "", acotext: "" }
+        ],
         activityTypeList: [       // 添加推文/活动时的活动类型选择项
           { value: "0", label: "普通动态" },
           { value: "1", label: "满减" },
@@ -467,7 +490,6 @@
         form.append("index", 1);
         axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token') + "&filetype = activity", form).then(res => {
           if(res.data.status == 200){
-            console.log(form);
             media = { amimage: res.data.data, amsort: this.activityMediaSort };
             this.activityMedia.push(media);
           }else{
@@ -586,7 +608,8 @@
           }
           this.activityMediaSort = activity.media.length;
           this.activityActivityTime = [activity.acstarttime, activity.acendtime];
-          this.author = activity.suuser.suname;
+          this.author.name = activity.suuser.suname;
+          this.author.id = activity.suuser.suid;
 
           if(this.page == "每日10荐") {
             // 商品
@@ -610,10 +633,16 @@
             this.activityBadge = activity.tags[0].atname;
           }else if(this.page == "素材圈") {
             this.hairLapsNum = activity.foward;
+            this.activityMedia = activity.media;
           }else if(this.page == "公告" || this.page == "教程") {
             this.activityTitle = activity.actitle;
+            this.activityMedia = activity.media;
             this.likeNum = activity.likenum;
             this.viewsNum = activity.acbrowsenum;
+            this.commentsList = [];
+            for(let i = 0; i < activity.comment.length; i ++) {
+              this.commentsList.push({ acorobot: activity.comment[i].user.usname, acotext: activity.comment[i].actext });
+            }
             this.placedTop = activity.acistop;
             if(this.page == "教程" && this.imgVideo) {
               this.longImg = activity.media[0].amimage;
@@ -744,13 +773,14 @@
                 topnavid: this.tnid,
                 actext: this.activityACtext,
                 media: this.activityMedia,
+                accomments: this.commentsList,
                 tags: [{ atname: this.activityBadge }],
                 aclikeFakeNum: this.likeNum,
                 acbrowsenum: this.viewsNum,
                 acforwardFakenum: this.hairLapsNum,
                 acstarttime: this.activityActivityTime[0],
                 acendtime: this.activityActivityTime[1],
-                suid: this.author,
+                suid: this.author.id,
                 acistop: this.placedTop
               };
 
@@ -781,7 +811,8 @@
                   this.longImg = "";
                   this.placedTop = false;
                   this.activityTitle = "";
-                  this.author = "";
+                  this.author = {};
+                  this.commentsList = [{ acorobot: "", acotext: "" }];  // 自行添加评论
                   this.activityPictureList = [];  // 图片list置为[]
                   this.activityMediaSort = 0;   // 上传成功后图片数量置为0
                 }else{
@@ -808,7 +839,7 @@
         this.activityBadge = "";
         this.placedTop = false;
         this.activityTitle = "";
-        this.author = "";
+        this.author = {};
         this.activityPictureList = [];  // 图片list置为[]
         this.activityMediaSort = 0;   // 上传成功后图片数量置为0
       },
@@ -1001,6 +1032,7 @@
                         ACtitle: this.activityTitle,
                         ACtext: this.activityACtext,
                         media: this.activityMedia,
+                        accomments: this.commentsList,
                         AClikeFakeNum: this.likeNum,
                         ACbrowsenum: this.viewsNum,
                         ACstarttime: this.activityActivityTime[0],
@@ -1018,6 +1050,7 @@
                   ACtitle: this.activityTitle,
                   ACtext: this.activityACtext,
                   media: this.activityMedia,
+                  accomments: this.commentsList,
                   AClikeFakeNum: this.likeNum,
                   ACbrowsenum: this.viewsNum,
                   ACstarttime: this.activityActivityTime[0],
@@ -1025,8 +1058,8 @@
                   ACistop: this.placedTop
                 };
                 // console.log(params);
-                if(this.author != "") { // 发布者不为空时
-                  params.SUid = this.author;
+                if(this.author.id != "") { // 发布者不为空时
+                  params.SUid = this.author.id;
                 }
                 this.activityParams(params);
               }
@@ -1063,6 +1096,7 @@
             this.videoImgUrl = "";
             this.placedTop = false;
             this.activityMedia = [];
+            this.commentsList = [{ acorobot: "", acotext: "" }];  // 自行添加评论
             this.activityPictureList = [];   // 上传成功后图片list置为[]
             this.activityMediaSort = 0;   // 上传成功后图片数量置为0
           }else{
@@ -1441,6 +1475,19 @@
         this.activityBadge = atname;
       },
 
+      // 添加一行评论
+      addComments(i) {
+        if(i == undefined) {
+          let index = this.commentsList.length;
+          this.commentsList[index] = {};
+          this.commentsList[index].acorobot = "";
+          this.commentsList[index].acotext = "";
+          this.commentsList = this.commentsList.concat();
+        }else {
+          this.commentsList.splice(i, 1);
+        }
+      },
+
       // 分页点击方法
       pageChange(v) {
         if(!this.searching) {
@@ -1509,6 +1556,10 @@
     .box-display {
       display: flex;
     }
+    .add-btn {
+      font-size: 0.2rem;
+      margin: 0.3rem 0 0 -0.3rem;
+    }
     .product-btn {
       height: 0.2rem;
       line-height: 0.21rem;
@@ -1550,8 +1601,8 @@
   .delete-tags {
     color: #ababab;
     position: absolute;
-    top: 0.06rem;
-    right: -0.04rem;
+    top: 0.05rem;
+    right: -0.03rem;
   }
   .at-text {
     color: #4169E1;
