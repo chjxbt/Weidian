@@ -15,6 +15,7 @@
             </template>
           </el-table-column>
         </el-table>
+        <Pagination class="page-box" :total="total_page" @pageChange="pageChange"></Pagination>
 
         <el-dialog :title="this.activity.actitle" append-to-body :visible.sync="replyComments" width="6rem">
           <div class="comment-box">
@@ -24,7 +25,7 @@
             </div>
             <div class="comment-row">
               <div class="title-text">评论内容：</div>
-              <div class="content-text">{{comment.actext}}{{comment.actext}}{{comment.actext}}{{comment.actext}}{{comment.actext}}{{comment.actext}}</div>
+              <div class="content-text">{{comment.actext}}</div>
             </div>
             <div class="comment-row">
               <div class="title-text">评论时间：</div>
@@ -46,7 +47,6 @@
             <el-button class="at-img-dialog-btn btn-color" type="primary" @click="addComment">确 定</el-button>
           </div>
         </el-dialog>
-        <Pagination class="page-box" :total="total_page" @pageChange="pageChange"></Pagination>
       </div>
     </el-dialog>
   </div>
@@ -150,7 +150,7 @@
     margin: -0.1rem 0.2rem 0 0.2rem;
   }
   .page-box {
-    margin-top: 0.1rem;
+    margin-top: 0.2rem;
     text-align: right;
   }
   .comment-box {
