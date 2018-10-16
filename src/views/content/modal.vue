@@ -415,7 +415,7 @@
           { name:'发现', url:'', active:false },
           { name:'我的', url:'', active:false }
         ],
-        levelTableClose: false,      // 任务等级管理隐藏
+        levelTableClose: true,      // 任务等级管理隐藏
         levelList: [],              // 任务等级list
         levelIndex: "",             // 正在编辑的任务等级行号
         rewardEdit: false,          // 任务奖励编辑中
