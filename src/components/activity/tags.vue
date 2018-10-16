@@ -80,7 +80,7 @@
 
       // 删除推文角标
       deleteTag(item, index){
-        this.$confirm('此操作将删除该专题, 是否继续?', '提示',
+        this.$confirm('此操作将删除该活动角标, 是否继续?', '提示',
           {confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'}).then(() => {
           axios.post(api.del_exist_tags + '?token=' + localStorage.getItem('token'), { atid: item.atid }).then(res => {
             if(res.data.status == 200){
