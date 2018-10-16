@@ -302,8 +302,11 @@
             <div class="m-form-label" style="margin-top: 0.28rem">活动角标：</div>
             <div class="m-item-content">
               <div class=" m-item-row">
-                <img class="at-img" v-if="activityBadge" :src="activityBadge" @click="tagsDialog">
-                <div v-if="!activityBadge" class="at-text" @click="tagsDialog">请点此选择</div>
+                <div style="position: relative">
+                  <img class="at-img" v-if="activityBadge" :src="activityBadge" @click="tagsDialog">
+                  <div class="delete-tags" v-if="activityBadge" @click="activityBadge = ''">X</div>
+                  <div class="at-text" v-if="!activityBadge" @click="tagsDialog">请点此选择</div>
+                </div>
               </div>
             </div>
             <tags ref="tags" @getData="getData"></tags>
@@ -1430,7 +1433,7 @@
 
       // 打开tags子组件的dialog
       tagsDialog() {
-        this.$refs.tags.getTags();
+        this.$refs.tags.getTags(this.activityBadge);
       },
 
       // 接收子组件传过来的勾选角标
@@ -1543,6 +1546,12 @@
     height: 0.35rem;
     margin: 0.13rem 0 0 0.2rem;
     border: 1px solid #ababab;
+  }
+  .delete-tags {
+    color: #ababab;
+    position: absolute;
+    top: 0.06rem;
+    right: -0.04rem;
   }
   .at-text {
     color: #4169E1;

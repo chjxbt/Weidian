@@ -61,13 +61,16 @@
       },
 
       // 获取推文角标
-      getTags(){
+      getTags(activityBadge){
         this.badgeDialog = true;
         axios.get(api.get_all_tags + "?token=" + localStorage.getItem("token")).then(res => {
           if(res.data.status == 200) {
             this.badgeList = res.data.data.tags_list;
             for(let i = 0; i < this.badgeList.length; i ++) {
               this.badgeList[i].choose = false;
+              if(this.badgeList[i].atname == activityBadge) {
+                this.badgeList[i].choose = true;
+              }
             }
           }else{
             this.$message({ type: 'error', message: res.data.message, duration: 1500 });
@@ -102,6 +105,7 @@
 
       // 确认按钮，传回选中图片
       chooseOK() {
+        console.log(this.badgeIndex);
         this.$emit("getData", this.badgeList[this.badgeIndex].atname);
         this.badgeDialog = false;
       }
