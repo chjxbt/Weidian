@@ -582,27 +582,29 @@ class CActivity(BaseActivityControl, BaseTask):
             response["qrcodeurl"] = QRCODEHOSTNAME + '/' + LinuxImgs + '/qrcode/' + user.openid + '.png'
             response["components"] = QRCODEHOSTNAME + '/' + LinuxImgs + '/components.png'
             logger.debug('response url is %s', response["qrcodeurl"])
-            #TODO 待添加转发数更新
 
-            import urlparse
             url = data_url.split('#')[-1]
-            parsed_result = urlparse.urlparse(url).query
-            parse_to_dict = dict([(k, v[0]) for k, v in urlparse.parse_qs(parsed_result).items()])
+            from WeiDian.common.get_url_params import GetUrlParams
+            parse_dict = GetUrlParams.url_params_to_dict(url)
 
-            if 'baid' in parse_to_dict.keys():
-                act_list = self.sactivity.get_acid_by_filterid({'AClinkvalue': parse_to_dict['baid'],
+            # 分享时更改转发数
+            if 'baid' in parse_dict.keys():
+                act_list = self.sactivity.get_acid_by_filterid({'AClinkvalue': parse_dict['baid'],
                                                            'ACSkipType': 1,
                                                            'ACisdelete': False})
-            if 'prid' in parse_to_dict.keys():
-                act_list = self.sactivity.get_acid_by_filterid({'AClinkvalue': parse_to_dict['prid'],
+            if 'prid' in parse_dict.keys():
+                act_list = self.sactivity.get_acid_by_filterid({'AClinkvalue': parse_dict['prid'],
                                                            'ACSkipType': 2,
                                                            'ACisdelete': False})
             for act in act_list:
-                self.sactivity.add_model('ActivityFoward', **{
-                    'AFid': str(uuid.uuid1()),
-                    'USid': request.user.id,
-                    'ACid': act.ACid
-                })
+                if act.ACforwardFakenum != 0:
+                    self.sactivity.update_forward_fakenum(act.ACid)
+                else:
+                    self.sactivity.add_model('ActivityFoward', **{
+                        'AFid': str(uuid.uuid1()),
+                        'USid': request.user.id,
+                        'ACid': act.ACid
+                    })
 
             if is_partner():
 
