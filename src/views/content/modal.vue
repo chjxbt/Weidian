@@ -15,8 +15,13 @@
 
        <div v-if="!levelTableClose" class="content-table" style="margin-bottom: 0.2rem">
          <el-table :data="levelList" border style="width: 100%" v-loading="levelLoading">
-           <el-table-column prop="talevel" label="任务等级" width="120"></el-table-column>
-           <el-table-column prop="raward" label="奖励方式"></el-table-column>
+           <el-table-column prop="taLevel" label="任务等级" width="120"></el-table-column>
+           <!--<el-table-column prop="raward" label="奖励方式" v-if="scope.row.disabled"></el-table-column>-->
+           <el-table-column prop="raward" label="奖励方式">
+             <template slot-scope="scope">
+               <p>{{scope.row.raward}}<span class="edit-reward-btn" v-if="!scope.row.disabled" @click="editReward(scope)">编辑</span></p>
+             </template>
+           </el-table-column>
            <el-table-column prop="tacomplatenotifications" label="完成提示" width="120">
              <template slot-scope="scope">
                <div @click="rowClick(scope.$index, 'img')">
@@ -30,7 +35,7 @@
            </el-table-column>
            <el-table-column prop="tarole" label="规则">
              <template slot-scope="scope">
-               <el-input v-model="scope.row.tarole" size="mini" placeholder="请输入热文内容" :disabled="scope.row.disabled"></el-input>
+               <el-input v-model="scope.row.tarole" size="mini" placeholder="请输入任务等级规则" :disabled="scope.row.disabled"></el-input>
              </template>
            </el-table-column>
            <el-table-column fixed="right" label="管理" width="150">
@@ -45,8 +50,20 @@
          </el-table>
 
          <el-tooltip class="item" effect="light" content="添加任务等级奖励" placement="right">
-           <span class="m-item-add" style="left: 3.5rem; margin-top: 0.05rem">+</span>
+           <span class="m-item-add" style="left: 3.5rem; margin-top: 0.05rem" @click="addTaskLevel">+</span>
          </el-tooltip>
+
+         <div v-if="rewardEdit">
+           <div></div>
+           <div class="level-reward-box" v-for="item in rewardBoxList">
+             <!--<el-input v-model="rewardNum" placeholder="数量" class="reward-num">
+               <template slot="append">张</template>
+             </el-input>
+             <el-select v-model="rewardValue" clearable placeholder="请选择任务等级奖励内容" class="reward-content">
+               <el-option v-for="item in rewardList" :key="item.raid" :label="item.rewardstr" :value="item.raid"></el-option>
+             </el-select>-->
+           </div>
+         </div>
        </div>
 
        <h3 class="m-title">任务管理</h3>
@@ -395,8 +412,13 @@
           { name:'发现', url:'', active:false },
           { name:'我的', url:'', active:false }
         ],
-        levelTableClose: true,      // 任务等级管理隐藏
+        levelTableClose: false,      // 任务等级管理隐藏
         levelList: [],              // 任务等级list
+        rewardEdit: false,          // 任务奖励编辑中
+        rewardNum: "",              // 任务等级奖励的数量
+        rewardValue: "",            // 任务等级奖励的选中值
+        rewardList: [],             // 任务奖励list
+        rewardBoxList: [],          // 任务奖励合集list
         rowNum: "",                 // 确定点击的图片是第几行的
         levelLoading: true,         // 任务表格加载中
         taskList: [],               // 任务表格
@@ -444,7 +466,7 @@
             this.levelList = res.data.data;
             this.levelLoading = false;
             for(let i = 0; i < this.levelList.length; i ++) {
-              this.levelList[i].talevel = '等级' + this.levelList[i].talevel;
+              this.levelList[i].taLevel = '等级' + this.levelList[i].talevel;
               this.levelList[i].disabled = true;
             }
           }else{
@@ -487,30 +509,13 @@
 
       // 获取所有任务奖励
       getAllRaward(){
-        // this.taskLoading = true;
+        this.levelLoading = true;
         axios.get(api.get_all_raward + '?token=' + localStorage.getItem('token')).then(res => {
           if(res.data.status == 200){
-            // this.taskList = res.data.data;
-            console.log(res.data.data);
+            this.rewardList = res.data.data;
+            // console.log(this.rewardList);
 
-            /*for(let i = 0; i < this.taskList.length; i ++) {
-              // 判断任务类型   0: "满减", 1: "佣金加成", 2: "无门槛"
-              switch (this.taskList[i].tatype){
-                case 0:
-                  this.taskList[i].tatype = this.taskTypeList[0].label;
-                  break;
-                case 1:
-                  this.taskList[i].tatype = this.taskTypeList[1].label;
-                  break;
-                case 2:
-                  this.taskList[i].tatype = this.taskTypeList[2].label;
-                  break;
-                case 3:
-                  this.taskList[i].tatype = this.taskTypeList[3].label;
-                  break;
-              }
-            }*/
-            // this.taskLoading = false;
+            this.levelLoading = false;
           }else{
             this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
@@ -555,6 +560,17 @@
         }else if(!this.levelTableClose) {
           this.levelTableClose = true;
         }
+      },
+
+      // 编辑任务奖励的内容和数量
+      editReward(scope) {
+        this.rewardEdit = true;
+        this.rewardBoxList = scope.row.rawardparams;
+        // this.rewardNum = scope.row.rawardparams[0].ranumber;
+        // this.rewardValue = scope.row.rawardparams[0].raid;
+        // console.log(scope.row.rawardparams[0].ranumber);
+        // console.log(this.rewardNum);
+        console.log(this.rewardBoxList);
       },
 
       // 确定暂存是哪个img
@@ -679,6 +695,8 @@
           this.formIndex.duration = scope.row.taduration;
 
         }else if(where == "taskLevel") {    // 任务等级表格编辑
+          this.getAllRaward();      // 获取所有奖励 - 用于任务等级奖励管理的编辑
+
           this.levelList[scope.$index].disabled = false;
           this.levelList = this.levelList.concat();
         }
@@ -687,6 +705,8 @@
       // 保存任务等级或取消
       saveTaskLevel(scope, where) {
         if(where == "cancel") {
+          this.rewardEdit = false;
+
           this.levelList[scope.$index].disabled = true;
           this.levelList = this.levelList.concat();
         }else if(where == "save") {
@@ -703,6 +723,20 @@
             }
           });*/
         }
+      },
+
+      // 添加任务等级的+号
+      addTaskLevel() {
+        this.getAllRaward();      // 获取所有奖励 - 用于任务等级奖励管理的编辑
+
+        // 新加一行任务等级奖励内容
+        let index = this.levelList.length;
+        this.levelList[index] = {};
+        this.levelList[index].disabled = false;
+        this.levelList[index].tacomplatenotifications = "";
+        this.levelList[index].taLevel = "等级" + (this.levelList[index - 1].talevel + 1);
+        this.levelList[index].tarole = "";
+        this.levelList = this.levelList.concat();
       },
 
       // 删除按钮
@@ -937,10 +971,9 @@
       }
     },
     mounted() {
-      this.getAllTaskType();    // 获取任务类型
-      this.getAllTask();        // 获取所有任务
-      this.getAllTaskLevel();   // 获取所有任务等级奖励内容
-      // this.getAllRaward();      // 获取所有奖励
+      this.getAllTaskType();    // 获取任务类型 - 用于任务管理
+      this.getAllTask();        // 获取所有任务 - 用于任务管理
+      this.getAllTaskLevel();   // 获取所有任务等级奖励内容 - 用于任务等级奖励管理的查看
     }
   }
 </script>
@@ -963,5 +996,21 @@
   .avatar {
     width: 0.85rem;
     height: 0.85rem;
+  }
+  .level-reward-box {
+    display: flex;
+    margin-top: 0.3rem;
+    .reward-num {
+      width: 1rem;
+    }
+    .reward-content {
+      width: 2rem !important;
+      margin-left: -2px;
+    }
+  }
+  .edit-reward-btn {
+    margin-left: 0.1rem;
+    color: #4169E1;
+    border-bottom: 1px solid #4169E1;
   }
 </style>
