@@ -5,6 +5,7 @@ import os
 import base64
 from datetime import datetime, timedelta
 from WeiDian import logger
+from WeiDian.common import get_model_return_list
 from WeiDian.common.divide import Partner
 from WeiDian.common.loggers import generic_log
 from WeiDian.common.make_qrcode import make_qrcode
@@ -162,14 +163,6 @@ class CActivity(BaseActivityControl, BaseTask):
                 activity.ACstarttime = get_web_time_str(activity.ACstarttime)
                 activity.ACendtime = get_web_time_str(activity.ACendtime)
 
-            # map(self.fill_detail, activity_list)
-            # map(self.fill_comment_two, activity_list)
-            # map(self.fill_like_num, activity_list)
-            # map(self.fill_type, activity_list)
-            # s5 = time.time()
-            # map(self.fill_product, activity_list)
-            # e5 = time.time()
-            # print "fill_product %s" %(e5 - s5)
             data = import_status("get_activity_list_success", "OK")
             data["count"] = request.all_count
             data["page_count"] = request.page_count
@@ -233,23 +226,6 @@ class CActivity(BaseActivityControl, BaseTask):
         except:
             logger.exception("get one act error")
             return SYSTEM_ERROR(u"服务器繁忙")
-
-    # @verify_token_decorator
-    # def delete_one(self):
-    #     """删除一个活动, 需要管理员的登录状态"""
-    #     if not hasattr(request, 'user'):
-    #         return TOKEN_ERROR  # 未登录, 或token错误
-    #     if not is_admin():
-    #         return AUTHORITY_ERROR  # 权限不足
-    #     data = request.json
-    #     acid = data.get('acid')
-    #     if not acid:
-    #         return PARAMS_MISS
-    #     self.sactivity.delete_activity(acid)
-    #     response_del_activity = import_status('delete_activity_success', 'OK')
-    #     response_del_activity['data'] = {}
-    #     response_del_activity['data']['acid'] = acid
-    #     return response_del_activity
 
     @verify_token_decorator
     def stop_one(self):
@@ -544,7 +520,7 @@ class CActivity(BaseActivityControl, BaseTask):
             tags_list = self.stags.get_exist_tags()
             logger.info("try to get tags")
             response = import_status("messages_get_item_ok", "OK")
-            response['date'] = {"tags_list": tags_list}
+            response['data'] = {"tags_list": tags_list}
             return response
         except Exception as e:
             logger.exception("get exist tags error")
@@ -606,6 +582,29 @@ class CActivity(BaseActivityControl, BaseTask):
             response["qrcodeurl"] = QRCODEHOSTNAME + '/' + LinuxImgs + '/qrcode/' + user.openid + '.png'
             response["components"] = QRCODEHOSTNAME + '/' + LinuxImgs + '/components.png'
             logger.debug('response url is %s', response["qrcodeurl"])
+
+            url = data_url.split('#')[-1]
+            from WeiDian.common.get_url_params import GetUrlParams
+            parse_dict = GetUrlParams.url_params_to_dict(url)
+
+            # 分享时更改转发数
+            if 'baid' in parse_dict.keys():
+                act_list = self.sactivity.get_acid_by_filterid({'AClinkvalue': parse_dict['baid'],
+                                                           'ACSkipType': 1,
+                                                           'ACisdelete': False})
+            if 'prid' in parse_dict.keys():
+                act_list = self.sactivity.get_acid_by_filterid({'AClinkvalue': parse_dict['prid'],
+                                                           'ACSkipType': 2,
+                                                           'ACisdelete': False})
+            for act in act_list:
+                if act.ACforwardFakenum != 0:
+                    self.sactivity.update_forward_fakenum(act.ACid)
+                else:
+                    self.sactivity.add_model('ActivityFoward', **{
+                        'AFid': str(uuid.uuid1()),
+                        'USid': request.user.id,
+                        'ACid': act.ACid
+                    })
 
             if is_partner():
 

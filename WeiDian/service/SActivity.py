@@ -69,6 +69,10 @@ class SActivity(SBase):
         # self.session.commit()
 
     @close_session
+    def update_forward_fakenum(self, acid):
+        return self.session.query(Activity).filter(Activity.ACid == acid).update({Activity.ACforwardFakenum: Activity.ACforwardFakenum + 1})
+
+    @close_session
     def delete_activity(self, acid):
         """删除活动"""
         return self.session.query(Activity).filter_by(ACid=acid).update({Activity.ACisdelete: True})
@@ -77,6 +81,10 @@ class SActivity(SBase):
     def stop_activity(self, acid):
         """手动停止活动"""
         return self.session.query(Activity).filter_by(ACid=acid).update({Activity.ACisended: True})
+
+    @close_session
+    def get_acid_by_filterid(self, filterid):
+        return self.session.query(Activity).filter_by(**filterid).all()
 
     @close_session
     def get_activity_by_acid(self, acid):
