@@ -298,13 +298,15 @@
               </div>
             </div>
           </div>
-          <div class="num-box" v-if="page == '每日10荐'">
-            <p class="m-form-label">活动角标：</p>
+          <div class="num-box box-display" v-if="page == '每日10荐'">
+            <div class="m-form-label" style="margin-top: 0.28rem">活动角标：</div>
             <div class="m-item-content">
               <div class=" m-item-row">
-                <el-input v-model="activityBadge" class="m-input-s" placeholder="限两个字" maxlength="2"></el-input>
+                <img class="at-img" v-if="activityBadge" :src="activityBadge" @click="tagsDialog">
+                <div v-if="!activityBadge" class="at-text" @click="tagsDialog">请点此选择</div>
               </div>
             </div>
+            <tags ref="tags" @getData="getData"></tags>
           </div>
         </div>
         <div class="m-form-item">
@@ -359,6 +361,7 @@
   import pageTitle from '../../components/common/title';
   import Pagination from "../../components/common/page";
   import wTab from '../../components/common/wTab';
+  import tags from '../../components/activity/tags';
   import axios from 'axios';
   import api from '../../api/api';
 
@@ -449,7 +452,7 @@
         tnid: "",         // 暂存导航栏的tnid
       }
     },
-    components:{ pageTitle, Pagination, wTab },
+    components:{ pageTitle, Pagination, wTab, tags },
     methods:{
       // 上传推文图片
       uploadActivityPicture(item) {
@@ -1121,14 +1124,14 @@
               this.tab_list2.push(nav);
 
               this.tab_list2[0].active = true;
-              this.tnid = this.tab_list2[0].tnid;
+              // this.tnid = this.tab_list2[0].tnid;
             }
 
             this.getActivity(0, this.page_size);      // 获取首页活动/推文内容列表
           }else{
             this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
-        })
+        });
       },
 
       // 获取首页活动/推文内容列表
@@ -1328,6 +1331,8 @@
         this.getActivity(0, this.page_size);   // 获取首页活动/推文内容列表
         if(this.page == "每日10荐") {
           this.getProduct();  // 获取推荐商品
+        }else if(this.page == "素材圈") {
+          this.tnid = this.tab_list2[0].tnid;
         }
       },
 
@@ -1423,6 +1428,16 @@
         });
       },
 
+      // 打开tags子组件的dialog
+      tagsDialog() {
+        this.$refs.tags.getTags();
+      },
+
+      // 接收子组件传过来的勾选角标
+      getData(atname) {
+        this.activityBadge = atname;
+      },
+
       // 分页点击方法
       pageChange(v) {
         if(!this.searching) {
@@ -1488,6 +1503,9 @@
     .num-box {
       margin-right: 0.5rem;
     }
+    .box-display {
+      display: flex;
+    }
     .product-btn {
       height: 0.2rem;
       line-height: 0.21rem;
@@ -1519,5 +1537,17 @@
       margin-left: 0.1rem;
       background-color: @mainColor;
     }
+  }
+  .at-img {
+    width: 0.35rem;
+    height: 0.35rem;
+    margin: 0.13rem 0 0 0.2rem;
+    border: 1px solid #ababab;
+  }
+  .at-text {
+    color: #4169E1;
+    font-size: 0.12rem;
+    margin: 0.22rem 0 0 0.1rem;
+    border-bottom: 1px solid #4169E1;
   }
 </style>
