@@ -165,6 +165,8 @@ class CTask(BaseTask):
             return SYSTEM_ERROR(u'当前没有任务')
 
         task_level = self.stask.get_task_level_by_tlid(task_list[0].TLid)
+        if not task_level:
+            raise SYSTEM_ERROR(u'任务正在更新，请稍后查看')
         logger.debug('get task list %s', dict(task_level))
         # from WeiDian.common.divide import Partner
         # pa = Partner()
