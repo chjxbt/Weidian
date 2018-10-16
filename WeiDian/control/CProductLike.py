@@ -9,7 +9,7 @@ from WeiDian.common.TransformToList import dict_add_models
 from WeiDian.common.import_status import import_status
 from WeiDian.common.params_require import parameter_required
 from WeiDian.common.token_required import verify_token_decorator, is_tourist
-from WeiDian.config.response import TOKEN_ERROR, SYSTEM_ERROR
+from WeiDian.config.response import TOKEN_ERROR, SYSTEM_ERROR, NOT_FOUND
 from WeiDian.service.SProduct import SProduct
 from WeiDian.service.SProductLike import SProductLike
 sys.path.append(os.path.dirname(os.getcwd()))
@@ -64,11 +64,23 @@ class CProductLike():
         page_size = 5 if not page_size else int(page_size)
         try:
             productlike_list = self.sproductlike.get_productlike_list_by_usid(request.user.id, page_num, page_size)
-            logger.info("get product like")
+            if not productlike_list:
+                raise NOT_FOUND(u'用户无收藏信息')
+            logger.info("get product like list success")
             map(self.fill_productinfo, productlike_list)
-            # TODO 暂存的虚假发圈数
+            # 获取转发数
+            from WeiDian.service.SActivity import SActivity
+            from WeiDian.service.SActivityFoward import SActivityFoward
+            total_forward = 0
             for prlike in productlike_list:
-                prlike.forwardnum = 99
+                forward_act = SActivity().get_acid_by_filterid({'AClinkvalue': prlike.PRid,
+                                                                'ACSkipType': 2,
+                                                                })
+                for act in forward_act:
+                    forward_num = SActivityFoward().get_fowardnum_by_acid(act.ACid)
+                    total_forward = total_forward + forward_num
+
+                prlike.forwardnum = total_forward
                 prlike.add("forwardnum")
             prlikecount = self.sproductlike.get_prlike_count_by_usid(request.user.id)
             data = import_status("get_product_like_success", "OK")
@@ -77,7 +89,7 @@ class CProductLike():
             return data
         except Exception as e:
             logger.exception("get product like error")
-            return SYSTEM_ERROR(u'收藏信息不存在')
+            raise SYSTEM_ERROR(u'收藏信息不存在')
 
     @verify_token_decorator
     def batch_delete_prlike(self):

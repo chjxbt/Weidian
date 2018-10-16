@@ -5,8 +5,8 @@ import os
 import base64
 from datetime import datetime, timedelta
 from WeiDian import logger
+from WeiDian.common import get_model_return_list
 from WeiDian.common.divide import Partner
-from WeiDian.common.get_model_return_list import get_model_return_list
 from WeiDian.common.loggers import generic_log
 from WeiDian.common.make_qrcode import make_qrcode
 from WeiDian.common.params_require import parameter_required
@@ -15,7 +15,6 @@ from flask import request
 import math
 import uuid
 from WeiDian.common.token_required import verify_token_decorator, is_admin, is_tourist, is_partner
-from WeiDian.common.TransformToList import add_model
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db, get_db_time_str, get_web_time_str, format_for_web_second
 from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR, NOT_FOUND, PARAMS_ERROR
@@ -164,14 +163,6 @@ class CActivity(BaseActivityControl, BaseTask):
                 activity.ACstarttime = get_web_time_str(activity.ACstarttime)
                 activity.ACendtime = get_web_time_str(activity.ACendtime)
 
-            # map(self.fill_detail, activity_list)
-            # map(self.fill_comment_two, activity_list)
-            # map(self.fill_like_num, activity_list)
-            # map(self.fill_type, activity_list)
-            # s5 = time.time()
-            # map(self.fill_product, activity_list)
-            # e5 = time.time()
-            # print "fill_product %s" %(e5 - s5)
             data = import_status("get_activity_list_success", "OK")
             data["count"] = request.all_count
             data["page_count"] = request.page_count
@@ -236,23 +227,6 @@ class CActivity(BaseActivityControl, BaseTask):
             logger.exception("get one act error")
             return SYSTEM_ERROR(u"服务器繁忙")
 
-    # @verify_token_decorator
-    # def delete_one(self):
-    #     """删除一个活动, 需要管理员的登录状态"""
-    #     if not hasattr(request, 'user'):
-    #         return TOKEN_ERROR  # 未登录, 或token错误
-    #     if not is_admin():
-    #         return AUTHORITY_ERROR  # 权限不足
-    #     data = request.json
-    #     acid = data.get('acid')
-    #     if not acid:
-    #         return PARAMS_MISS
-    #     self.sactivity.delete_activity(acid)
-    #     response_del_activity = import_status('delete_activity_success', 'OK')
-    #     response_del_activity['data'] = {}
-    #     response_del_activity['data']['acid'] = acid
-    #     return response_del_activity
-
     @verify_token_decorator
     def stop_one(self):
         """手动截止活动"""
@@ -281,8 +255,8 @@ class CActivity(BaseActivityControl, BaseTask):
         now_time = datetime.strftime(datetime.now(), format_for_web_second)
         ACstarttime = get_db_time_str(data.get('ACstarttime', now_time))                         # 活动开始时间, 默认当前时间
         ACstarttime_str_to_time = datetime.strptime(ACstarttime, format_for_db)
-        three_days_later = datetime.strftime(ACstarttime_str_to_time + timedelta(days=3), format_for_web_second)
-        ACendtime = get_db_time_str(data.get('ACendtime', three_days_later))                    # 活动结束时间, 默认3天以后
+        three_days_later = datetime.strftime(ACstarttime_str_to_time + timedelta(days=3650), format_for_web_second)
+        ACendtime = get_db_time_str(data.get('ACendtime', three_days_later))  # 活动结束时间, 默认3天以后，后期需求公告教程部分非必填，默认改为十年
         TopnavId = data.get('TopnavId')       # 导航页面
         ACtext = data.get('ACtext')           # 文字内容
         media = data.get('media')             # 多媒体
@@ -301,7 +275,7 @@ class CActivity(BaseActivityControl, BaseTask):
 
 
 
-        if str(ACistop) == 'True':
+        if str(ACistop) == 'true':
             istop = self.sactivity.get_top_activity(TopnavId)
             if istop:
                 self.sactivity.change_top_act_status(istop.ACid, {'ACistop': False})
@@ -342,11 +316,22 @@ class CActivity(BaseActivityControl, BaseTask):
                         break
         # 创建tag
         if tags:
+            count = 0
             for tag in tags:
+                state = tag.get('ATstate', 0)
+                if str(state) not in ['0', '1']:
+                    raise PARAMS_ERROR(u'atstate参数错误')
+                if state == 1:
+                    count += 1
+                if count > 1:
+                    raise PARAMS_ERROR(u'默认显示角标只能有一个')
+            for tag in tags:
+                atstate = tag.get('ATstate', 0)
                 self.stags.add_model('ActivityTag', **{
                     'ATid': str(uuid.uuid1()),
                     'ACid': ACid,
                     'ATname': tag.get('ATname'),
+                    'ATstate': atstate
                 })
 
         if accomments:
@@ -408,8 +393,8 @@ class CActivity(BaseActivityControl, BaseTask):
         acid = args.get('acid')
         ACstarttime = get_db_time_str(data.get('acstarttime', now_time))  # 活动开始时间, 默认当前时间
         ACstarttime_str_to_time = datetime.strptime(ACstarttime, format_for_db)
-        three_days_later = datetime.strftime(ACstarttime_str_to_time + timedelta(days=3), format_for_db)
-        ACendtime = get_db_time_str(data.get('acendtime', get_web_time_str(three_days_later)))  # 活动结束时间, 默认3天以后
+        three_days_later = datetime.strftime(ACstarttime_str_to_time + timedelta(days=3650), format_for_db)
+        ACendtime = get_db_time_str(data.get('acendtime', get_web_time_str(three_days_later)))  # 活动结束时间, 默认3天以后，后期需求公告教程部分非必填，默认改为十年
         TopnavId = data.get('topnavid')  # 导航页面
         ACtext = data.get('actext')  # 文字内容
         media = data.get('media')  # 多媒体
@@ -462,12 +447,23 @@ class CActivity(BaseActivityControl, BaseTask):
                         break
         # 创建tag
         if tags:
+            count = 0
             for tag in tags:
+                state = tag.get('atstate', 0)
+                if str(state) not in ['0', '1']:
+                    raise PARAMS_ERROR(u'atstate参数错误')
+                if state == 1:
+                    count += 1
+                elif count > 1:
+                    raise PARAMS_ERROR(u'默认显示角标只能有一个')
+            for tag in tags:
+                atstate = tag.get('atstate', 0)
                 self.stags.del_tags_by_acid(acid)
                 self.stags.add_model('ActivityTag', **{
                     'ATid': str(uuid.uuid1()),
                     'ACid': acid,
                     'ATname': tag.get('atname'),
+                    'ATstate': atstate
                 })
 
         if accomments:
@@ -521,21 +517,51 @@ class CActivity(BaseActivityControl, BaseTask):
         args = request.args.to_dict()
         logger.debug("get tags args is %s", args)
         try:
-            # tags_list = set(get_model_return_list(self.stags.get_exist_tags())['ATname'])
             tags_list = self.stags.get_exist_tags()
-            originallist = []
-            for tag in tags_list:
-                originallist.append(tag[0])
-            setlist = set(originallist)
-            changelist = list(setlist)
-
             logger.info("try to get tags")
             response = import_status("messages_get_item_ok", "OK")
-            response['date'] = {"tags_list": changelist}
+            response['data'] = {"tags_list": tags_list}
             return response
         except Exception as e:
             logger.exception("get exist tags error")
             raise SYSTEM_ERROR(u"数据错误")
+
+    @verify_token_decorator
+    def upload_tags(self):
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'非管理员权限')
+        data = request.json
+        logger.debug("upload tags data is %s", data)
+        tags = data.get('tags')
+        atid_list = []
+        try:
+            for tag in tags:
+                atid = str(uuid.uuid1())
+                self.stags.add_model('ActivityTag', **{
+                    'ATid': atid,
+                    'ACid': 'customupload',
+                    'ATname': tag.get('atname'),
+                })
+                atid_list.append(atid)
+            res = import_status("save_photo_success", "OK")
+            res['data'] = {'atid_list': atid_list}
+            return res
+        except Exception as e:
+            logger.exception("upload tags error")
+            raise SYSTEM_ERROR(u"上传数据错误")
+
+    @verify_token_decorator
+    def del_exist_tags(self):
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'非管理员权限')
+        atid = request.json.get('atid')
+        logger.debug("del exist tags data is %s", request.data)
+        del_info = self.stags.del_exist_tags(atid)
+        if not del_info:
+            raise NOT_FOUND(u"无删除内容")
+        response = import_status("delete_success", "OK")
+        response['data'] = {'atid': atid}
+        return response
 
     @verify_token_decorator
     def share_activity(self):
@@ -557,9 +583,29 @@ class CActivity(BaseActivityControl, BaseTask):
             response["components"] = QRCODEHOSTNAME + '/' + LinuxImgs + '/components.png'
             logger.debug('response url is %s', response["qrcodeurl"])
 
-            if is_partner():
+            url = data_url.split('#')[-1]
+            from WeiDian.common.get_url_params import GetUrlParams
+            parse_dict = GetUrlParams.url_params_to_dict(url)
+            if 'baid' in parse_dict or 'prid' in parse_dict:
+                # 分享时更改转发数
+                paramstype = bool(not 'baid' in parse_dict)
+                filter_parameter = {'AClinkvalue': parse_dict['prid'] if paramstype else parse_dict['baid'],
+                                    'ACSkipType': 2 if paramstype else 1,
+                                    'ACisdelete': False}
+                act_list = self.sactivity.get_acid_by_filterid(filter_parameter)
+                for act in act_list:
+                    if act.ACforwardFakenum != 0:
+                        self.sactivity.update_forward_fakenum(act.ACid)
+                    else:
+                        self.sactivity.add_model('ActivityFoward', **{
+                            'AFid': str(uuid.uuid1()),
+                            'USid': request.user.id,
+                            'ACid': act.ACid
+                        })
 
-                self.do_shoppingtask_or_forwardtask(1)
+                if is_partner():
+
+                    self.do_shoppingtask_or_forwardtask(1)
             return response
         except:
             logger.exception("make qrcode error")

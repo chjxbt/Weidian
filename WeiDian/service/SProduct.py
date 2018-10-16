@@ -21,6 +21,12 @@ class SProduct(SBase):
         return product
 
     @close_session
+    def get_prmainpic_by_prid(self, prid):
+        """根据商品id获取商品主图"""
+        product = self.session.query(Product.PRmainpic).filter_by(PRid=prid).first()
+        return product
+
+    @close_session
     def get_all(self):
         """获取所有商品"""
         product_list = self.session.query(Product).filter_by(
@@ -82,3 +88,18 @@ class SProduct(SBase):
     @close_session
     def get_product_target_by_productid(self, productid):
         return self.session.query(ProductTarget).filter(ProductTarget.PRid == productid).all()
+
+
+if __name__ == '__main__':
+    productid = '914'
+    sp = SProduct()
+    from WeiDian.models import model
+    product = sp.session.query(Product).filter(Product.PRoductId==productid).first()
+    sp.session.query(model.ProductSkuKey).filter(model.ProductSkuKey.PRid == product.PRid).delete()
+    sp.session.query(model.ProductSkuValue).filter(model.ProductSkuValue.PRid == product.PRid).delete()
+    sp.session.query(model.Product).filter(model.Product.PRid == product.PRid).delete()
+    sp.session.query(model.ProductImage).filter(model.ProductImage.PRid == product.PRid).delete()
+    sp.session.query(model.ProductTarget).filter(model.ProductTarget.PRid == product.PRid).delete()
+    sp.session.commit()
+
+

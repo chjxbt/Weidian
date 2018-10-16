@@ -108,6 +108,7 @@ class CTask(BaseTask):
                     "TAlevel": data.get("TAlevel"),
                     "TArole": data.get("TArole"),
                     "TAcomplateNotifications": data.get("TAcomplateNotifications"),
+                    "TLisdelete": 0
                 })
 
                 for reward in reward_list:
@@ -138,13 +139,13 @@ class CTask(BaseTask):
     #     })
 
     def add_task_raward(self, tlid, raward):
-        if not raward.get("RAid") or not raward.get("RAnumber"):
+        if not raward.get("raid") or not raward.get("ranumber"):
             return
         self.sraward.add_model("TaskRaward", **{
             "TRid": str(uuid.uuid1()),
             "TLid": tlid,
-            "RAid": raward.get("RAid"),
-            "RAnumber": raward.get("RAnumber")
+            "RAid": raward.get("raid"),
+            "RAnumber": raward.get("ranumber")
         })
 
     @verify_token_decorator
@@ -165,6 +166,8 @@ class CTask(BaseTask):
             return SYSTEM_ERROR(u'当前没有任务')
 
         task_level = self.stask.get_task_level_by_tlid(task_list[0].TLid)
+        if not task_level:
+            raise SYSTEM_ERROR(u'任务正在更新，请稍后查看')
         logger.debug('get task list %s', dict(task_level))
         # from WeiDian.common.divide import Partner
         # pa = Partner()
@@ -296,6 +299,7 @@ class CTask(BaseTask):
             raise AUTHORITY_ERROR(u"权限不足")
 
         raward_list = self.sraward.get_all_reward()
+        raward_list = self.fill_reward_detail(raward_list)
         res = import_status('get_task_success', 'OK')
         res['data'] = raward_list
         return res

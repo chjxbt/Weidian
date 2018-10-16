@@ -72,6 +72,7 @@ class CProduct(BaseProductControl):
             return AUTHORITY_ERROR  # 权限不足
         json_data = request.json
         product_list = json_data.get('products')
+        logger.debug('get product list %s', product_list)
         product_list = self.fix_product_list(product_list)
         list_add_models('Product', product_list)
         data = import_status('add_product_list_success', 'OK')
@@ -84,6 +85,7 @@ class CProduct(BaseProductControl):
         if not is_admin():
             return AUTHORITY_ERROR(u'权限不足')
         data = parameter_required('productid')
+        logger.debug('get delete_product data %s', data)
         product = self.sproduct.get_product_by_productid(data.get('productid'))
         if not product:
             return import_status('no_product', 'OK')
@@ -97,15 +99,19 @@ class CProduct(BaseProductControl):
     # 上下架商品
     @verify_token_decorator
     def shelves_product(self):
+        """状态改成0 上架  1下架"""
         if not is_admin():
             return AUTHORITY_ERROR(u'权限不足')
         data = parameter_required('productid')
         prstatus = data.get("prstatus", 1)
-
+        logger.debug('get prestatus. %s', prstatus)
+        logger.debug('get productid. %s', data.get('productid'))
         if not re.match(r'^[0-2]$', str(prstatus)):
             raise PARAMS_MISS(u'prstatus, 参数异常')
         prstatus = int(prstatus)
+        prstatus = 0 if int(prstatus) else 1
         product = self.sproduct.get_product_by_productid(data.get('productid'))
+        logger.debug('get product %s', product)
         if not product and prstatus != 1:
             return import_status('no_product', 'OK')
         update_result = self.sproduct.update_product_by_productid(data.get('productid'), {
@@ -120,6 +126,7 @@ class CProduct(BaseProductControl):
         if not is_admin():
             return AUTHORITY_ERROR(u'权限不足')
         data = parameter_required('psskuid', 'productid')
+        logger.debug('get update_sku data %s', data)
         pskpropervalue = data.get('pskpropervalue')
         skukey = {}
         product = self.sproduct.get_product_by_productid(data.get('productid'))
@@ -160,6 +167,7 @@ class CProduct(BaseProductControl):
             raise AUTHORITY_ERROR(u'权限不足')
 
         data = parameter_required('productid')
+        logger.debug('get update_product data %s', data)
         productid = data.get('productid')
         product = self.sproduct.get_product_by_productid(productid)
         if not product:
@@ -175,6 +183,45 @@ class CProduct(BaseProductControl):
             raise SYSTEM_ERROR(u'服务器繁忙')
 
         return import_status('update_product_success', 'OK')
+
+    # 更新商品
+    @verify_token_decorator
+    def update_product_image(self):
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'权限不足')
+
+        data = parameter_required('productid', 'images')
+        logger.debug('get update_product_image data %s', data)
+        product = self.sproduct.get_product_by_productid(data.get("productid"))
+        if not product:
+            raise PARAMS_MISS(u"商品不存在或已删除")
+        # for image in data.get("images"):
+        #     primage = self.sproductimage.get_images_by_prid_pisort(product.PRid, image.get('pisort', 0))
+        #     if primage:
+        #         update_result = self.sproductimage.update_image(
+        #             primage.PIid, {"PIurl": image.get("piurl"), "PIexist": image.get("piexist", 1)})
+        #         if not update_result:
+        #             logger.error('update product image error, sort is %s', image.get("pisort", 0))
+        #             raise SYSTEM_ERROR(u"数据库异常")
+        #     else:
+        #         self.sproductimage.add_model("ProductImage", **{
+        #             "PIid": str(uuid.uuid1()),
+        #             "PRid": product.PRid,
+        #             "PIurl": image.get("piurl"),
+        #             "PIsort": image.get("pisort", 0),
+        #             "PIexist": image.get("piexist", 1),
+        #         })
+        self.sproductimage.update_image_by_prid(product.PRid, {"PIexist": 0})
+        for image in data.get('images'):
+            self.sproductimage.add_model("ProductImage", **{
+                "PIid": str(uuid.uuid1()),
+                "PRid": product.PRid,
+                "PIurl": image.get("piurl"),
+                "PIsort": image.get("pisort", 0),
+                "PIexist": image.get("piexist", 1),
+            })
+
+        return import_status('update_product_image_success', 'OK')
 
     def get_product_list(self):
         args = request.args.to_dict()
@@ -199,11 +246,12 @@ class CProduct(BaseProductControl):
         logger.info(request.detail)
         args = request.args.to_dict()
         prid = args.get('prid')
+        usid = request.user.id
         if not prid:
-            return PARAMS_MISS
+            raise PARAMS_MISS()
         product = self.sproduct.get_product_by_prid(prid)
         if not product:
-            return NOT_FOUND()
+            raise NOT_FOUND(u'无此商品')
         # 是管理员或客服则显示全部信息
         if is_admin() or is_customerservice():
             product.fields = product.all
@@ -218,6 +266,7 @@ class CProduct(BaseProductControl):
                 product = self.trans_product_for_shopkeeper(product)
             product = self.fill_product_nums(product)
         # 填充一些都需要的信息
+        self.fill_product_alreadylike(product, usid)
         self.fill_images(product)
         self.fill_prtarget(product)
         self.fill_product_sku_key(product)
@@ -227,3 +276,37 @@ class CProduct(BaseProductControl):
         data['data'] = product
         return data
 
+    @verify_token_decorator
+    def get_one_by_productid(self):
+        logger.info(request.detail)
+        args = request.args.to_dict()
+        prid = args.get('productid')
+        usid = request.user.id
+        if not prid:
+            raise PARAMS_MISS()
+        product = self.sproduct.get_product_by_productid(prid)
+        if not product:
+            raise NOT_FOUND(u"无此商品")
+        # 是管理员或客服则显示全部信息
+        if is_admin() or is_customerservice():
+            product.fields = product.all
+            print '是管理员或客服'
+        else:
+            # 如果是游客, 或者是未购买开店大礼包的普通用户
+            if is_tourist() or is_ordirnaryuser():
+                print '是游客或者普通用户'
+                product = self.trans_product_for_fans(product)
+            else:  # 合伙人(即已购买开店大礼包的用户)
+                print '合伙人'
+                product = self.trans_product_for_shopkeeper(product)
+            product = self.fill_product_nums(product)
+        # 填充一些都需要的信息
+        self.fill_product_alreadylike(product, usid)
+        self.fill_images(product)
+        self.fill_prtarget(product)
+        self.fill_product_sku_key(product)
+        self.fill_product_sku_value(product)
+        self.sproduct.update_view_num(product.PRid)
+        data = import_status('get_product_success', 'OK')
+        data['data'] = product
+        return data

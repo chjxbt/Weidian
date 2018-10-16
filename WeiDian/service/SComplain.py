@@ -16,3 +16,11 @@ class SComplain(SBase):
     @close_session
     def get_complain_by_oiid(self, oiid):
         return self.session.query(Complain).filter(Complain.OIid == oiid).first()
+
+    @close_session
+    def get_complain_by_coid(self, coid):
+        return self.session.query(Complain).filter(Complain.COid == coid).first()
+
+    @close_session
+    def update_complain(self, coid, complain):
+        return self.session.query(Complain).filter(Complain.COid == coid).update(complain)

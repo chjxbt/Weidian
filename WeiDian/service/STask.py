@@ -14,7 +14,7 @@ class STask(SBase):
 
     @close_session
     def get_tasklevel_by_level(self, level):
-        return self.session.query(TaskLevel).filter(TaskLevel.TAlevel == level).order_by(
+        return self.session.query(TaskLevel).filter(TaskLevel.TAlevel == level, TaskLevel.TLisdelete == 0).order_by(
             TaskLevel.TAlevel.desc()).first()
 
     @close_session
@@ -39,7 +39,7 @@ class STask(SBase):
 
     @close_session
     def get_task_level_by_tlid(self, tlid):
-        return self.session.query(TaskLevel).filter(TaskLevel.TLid == tlid, TaskLevel.TLisdelete == False).first()
+        return self.session.query(TaskLevel).filter(TaskLevel.TLid == tlid, TaskLevel.TLisdelete == 0).first()
 
     @close_session
     def get_task_by_tlid(self, tlid):
@@ -47,7 +47,7 @@ class STask(SBase):
 
     @close_session
     def get_task_level_all(self):
-        return self.session.query(TaskLevel).order_by(TaskLevel.TAlevel, TaskLevel.TLisdelete == False).all()
+        return self.session.query(TaskLevel).filter(TaskLevel.TLisdelete == 0).order_by(TaskLevel.TAlevel).all()
 
     @close_session
     def get_all_user_task(self):
