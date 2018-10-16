@@ -60,6 +60,8 @@ const api={
   delete_shoppingcart: title +'/shoppingcart/delete',//删除购物车
   update_shoppingcart: title + '/shoppingcart/update',///更新购物车
   get_share_params: title + '/mycenter/get_share_params',//获取分享参数
+  create_order: title +'/order/create',//创建订单
+  get_one_address: title + '/mycenter/get_one_address',//获取单个地址信息
 };
 
 export default api

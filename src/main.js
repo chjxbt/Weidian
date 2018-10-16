@@ -33,7 +33,7 @@ import promise from 'es6-promise';//解决axios在ie9下不生效的方法
 promise.polyfill();
 //
 // let token = "eyJhbGciOiJIUzI1NiIsImV4cCI6MTUzOTYwMjMyOCwiaWF0IjoxNTM5NTk1MTI4fQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0xMC0xNSAxNzoxODo0OCJ9.GPSNz79JnUbsXOQ3BwD-e-Q5_XFrqPE__X2PYQ9XMGc";
-// let token = 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTUzOTY3MzU5MywiaWF0IjoxNTM5NjY2MzkzfQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6ImEwMWM2ZDY2LWNmYjUtMTFlOC04OGJjLTAwMTYzZTBjYzAyNCIsInRpbWUiOiIyMDE4LTEwLTE2IDEzOjA2OjMzIn0.7G3wMpSzUyV5q4fRqANgKvwZNcWa5oDdzW0aDcrEP_c'
+// let token = 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTUzOTY5MDcwOCwiaWF0IjoxNTM5NjgzNTA4fQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0xMC0xNiAxNzo1MTo0OCJ9.fdoCWO0YVacvwnSWnsP5iBThnZMp9pMPxPjpk89gu08'
 // localStorage.setItem('token', token);
 
 

@@ -107,20 +107,26 @@
         <img src="/static/images/produc_detail_shopping_cart.png" class="to-buy-icon m-ft-20">
         <p class="to-buy-text m-ft-20">购物车</p>
       </span>
-      <div class="m-vip-btn m-normal m-ft-36 "  v-if="!is_vip" @click="addCart">
-        <p>加入购物车</p>
-      </div>
-      <div class="m-vip-btn m-normal m-ft-36 active" v-if="!is_vip" @click="buyNow">
-        <p>立即购买</p>
+      <template v-if="!is_vip">
+        <div class="m-vip-btn m-ft-36 "   @click.stop="addCart">
+          <p>买</p>
+          <p class="m-ft-24">省￥{{product_info.prsavemonty}}</p>
+        </div>
+        <div class="m-vip-btn m-ft-36 active" >
+          <p>卖</p>
+          <p class="m-ft-24">赚￥{{product_info.prsavemonty}}</p></div>
+
+      </template>
+      <template v-else>
+        <div class="m-vip-btn m-normal m-ft-36 "  @click="addCart">
+          <p>加入购物车</p>
+        </div>
+        <div class="m-vip-btn m-normal m-ft-36 active" @click="buyNow">
+          <p>立即购买</p>
+        </div>
+      </template>
+
     </div>
-      <div class="m-vip-btn m-ft-36 "  v-if="is_vip" @click="addCart">
-        <p>买</p>
-        <p class="m-ft-24">省￥{{product_info.prsavemonty}}</p>
-      </div>
-      <div class="m-vip-btn m-ft-36 active" v-if="is_vip" @click="buyNow">
-        <p>卖</p>
-        <p class="m-ft-24">赚￥{{product_info.prsavemonty}}</p></div>
-      </div>
   </div>
 </template>
 
@@ -160,7 +166,8 @@
         is_choose:false,
         quantity:1,
         click_add:false,
-        show_commit:true
+        show_commit:true,
+        click_buy:false
       }
     },
     components: { productParams },
@@ -222,6 +229,15 @@
            }
         });
       },
+      buyCar(){
+        let arr = this.product_info;
+        arr.current_sku = this.choose[0];
+        arr.scnums = this.quantity;
+        let order = [];
+        order.push(arr);
+        order = JSON.stringify(order);
+        this.$router.push({path: "/submitOrder", query: { order: order }});
+      },
       // 返回上一页
       backPage() {
         // if(this.$route.query.last == 'activity' && this.$route.query.baid){
@@ -233,8 +249,6 @@
       },
       // 收藏
       collection() {
-
-        console.log(this.product_info.alreadylike)
           axios.post(api.add_one_productlike + '?token=' + localStorage.getItem('token'),{
             prid:this.$route.query.prid
           }).then(res => {
@@ -249,6 +263,9 @@
         this.quantity = num;
         if(this.click_add){
           this.postCar();
+        }
+        if(this.click_buy){
+          this.buyCar()
         }
       },
       // 分享商品
@@ -269,9 +286,17 @@
       },
 
       // 立即购买
-      buyNow() {
+      buyNow(){
+        console.log(this.product_info,'awdqweqw')
         let order = "";
-        this.$router.push({path: "/submitOrder", query: { order }});
+        // this.$router.push({path: "/submitOrder", query: { order }});
+        if(!this.choose){
+          this.is_choose = true;
+          this.click_buy = true;
+        }else{
+          this.buyCar();
+        }
+
       },
       // 添加购物车
       addCart(){
