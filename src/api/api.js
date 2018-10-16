@@ -11,6 +11,7 @@ const api={
   get_all_raward: title + 'task/get_all_raward',            // 获取所有奖励
   add_task: title + 'task/add_task',                        // 添加或更新任务
   del_task: title + 'task/del_task',                        // 删除任务
+  del_task_level: title + 'task/del_task_level',            // 删除任务等级
 
   get_bigactivitys: title + 'bigactivity/get_bigactivitys', //获取专题列表-后台
   get_all_hot_message: title + 'hotmessage/get_all',        //获取全部热文 - 首页

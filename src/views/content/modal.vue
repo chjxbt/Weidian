@@ -92,7 +92,7 @@
            </el-form-item>
            <el-form-item label="任务等级：" class="required">
              <el-select v-model="formIndex.taskLevel" clearable placeholder="请选择任务等级">
-               <el-option v-for="item in taskLevelList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+               <el-option v-for="item in levelList" :key="item.talevel" :label="item.taLevel" :value="item.talevel"></el-option>
              </el-select>
            </el-form-item>
            <el-form-item label="任务类型：" class="required">
@@ -452,9 +452,6 @@
         bigAdImg: "",               // 我的 - 大静态广告
         whichImg: "",               // 用来暂存是哪个img
         fansNum: 0,                 // 用来暂存已经上传多少个专属粉丝分享海报
-        taskLevelList: [            // 任务等级list
-          { value: "1", label: "等级 1" }, { value: "2", label: "等级 2" }, { value: "3", label: "等级 3" }, { value: "4", label: "等级 4" }
-        ],
         taskType: '',               // 任务类型
         taskTypeList: [{ value: "", label: "" }],   // 任务类型list
         taskImg:'',                 // 任务图标
@@ -654,7 +651,6 @@
         axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token') + "&filetype = task", form).then(res => {
           if(res.data.status == 200){
             this.levelList[this.rowNum].tacomplatenotifications = res.data.data;
-            console.log(this.levelList[this.rowNum].tacomplatenotifications);
             this.$message({ type: 'success', message: res.data.message, duration: 1500 });
           }else{
             this.$message({ type: 'error', message: res.data.message, duration: 1500 });
@@ -706,7 +702,13 @@
         }else if(where == "taskLevel") {    // 任务等级表格编辑
           this.rewardEdit = false;
           this.levelIndex = scope.$index;
-          this.rewardBoxList = scope.row.rawardparams;
+
+          // 可以没有奖励
+          if(scope.row.rawardparams == undefined) {
+            this.rewardBoxList = [];
+          }else {
+            this.rewardBoxList = scope.row.rawardparams;
+          }
 
           this.levelList[scope.$index].disabled = false;
           this.levelList = this.levelList.concat();
@@ -721,12 +723,25 @@
           this.levelList[scope.$index].disabled = true;
           this.levelList = this.levelList.concat();
         }else if(where == "save") {
-          let params = {
-            TAlevel: this.levelList[this.levelIndex].talevel,
-            TArole: this.levelList[this.levelIndex].tarole,
-            TAcomplateNotifications: this.levelList[this.levelIndex].tacomplatenotifications,
-            reward: this.rewardBoxList
-          };
+          // console.log(this.levelList[this.levelList.length - 1]);
+          let params = {};
+          // 新增的任务等级奖励信息
+          if(this.levelIndex == "") {
+            this.levelIndex = this.levelList.length - 1;
+            params = {
+              TAlevel: this.levelList[this.levelIndex].talevel,
+              TArole: this.levelList[this.levelIndex].tarole,
+              TAcomplateNotifications: this.levelList[this.levelIndex].tacomplatenotifications,
+              reward: this.rewardBoxList
+            };
+          }else {     // 编辑任务等级奖励信息
+            params = {
+              TAlevel: this.levelList[this.levelIndex].talevel,
+              TArole: this.levelList[this.levelIndex].tarole,
+              TAcomplateNotifications: this.levelList[this.levelIndex].tacomplatenotifications,
+              reward: this.rewardBoxList
+            };
+          }
           this.levelLoading = false;
           axios.post(api.edit_task_level + '?token=' + localStorage.getItem('token'), params).then(res=>{
             if(res.data.status == 200){
@@ -748,6 +763,7 @@
         this.levelList[index].disabled = false;
         this.levelList[index].tacomplatenotifications = "";
         this.levelList[index].taLevel = "等级" + (this.levelList[index - 1].talevel + 1);
+        this.levelList[index].talevel = this.levelList[index - 1].talevel + 1;
         this.levelList[index].tarole = "";
         this.levelList = this.levelList.concat();
       },
@@ -787,7 +803,17 @@
               }
             });
           }else if(where == "level") {    // 删除任务等级
-            console.log(this.levelList[scope.$index]);
+            this.levelLoading = true;
+            axios.post(api.del_task_level + '?token=' + localStorage.getItem('token'),
+              { tlid: scope.row.tlid }).then(res=>{
+              if(res.data.status == 200){
+                this.$message({ message: res.data.message, type: 'success', duration: 1500 });
+                this.levelList.splice(scope.$index, 1);
+                this.levelLoading = false;
+              }else{
+                this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+              }
+            });
           }
         }).catch();
       },
