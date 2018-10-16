@@ -117,6 +117,18 @@ export const constantRouterMap = [
     ],
   },
   {
+    path: '/service',
+    component: Layout,
+    redirect: 'service/index',
+    children: [{
+      path: 'index',
+      component: () => import('../views/service/index'),
+      name: 'service',
+      meta: { title: 'service', icon: 'service', noCache: true }
+    }
+    ],
+  },
+  {
     path: '/commission',
     component: Layout,
     redirect: 'commission/index',

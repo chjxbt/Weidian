@@ -96,6 +96,18 @@
           "MNicon":"none"
         }
       ]
+    },
+    {
+      "MNname":"客服中心",
+      "MNurl":"/service",
+      "MNicon":"icon-commission",
+      "children":[
+        {
+          "MNname":"客服中心",
+          "MNurl":"index",
+          "MNicon":"none"
+        }
+      ]
     }
   ]
 }
