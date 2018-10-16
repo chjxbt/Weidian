@@ -209,6 +209,13 @@ class BaseProductControl():
         product.add('images')
         return product
 
+    def fill_product_alreadylike(self, product):
+        prid = product.PRid
+        alreadylike = self.sproductlike.get_product_is_like_by_prid(request.user.id, prid)
+        product.alreadylike = 'true' if alreadylike else 'false'
+        product.add('alreadylike')
+        return product
+
     def fill_prtarget(self, product):
         prid = product.PRid
         target_list = [target.PRtarget for target in self.sproduct.get_product_target_by_productid(prid)]
