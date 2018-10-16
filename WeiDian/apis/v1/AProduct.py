@@ -19,6 +19,7 @@ class AProduct(Resource):
             'shelves_product': 'self.cproduct.shelves_product()',
             'update_sku': 'self.cproduct.update_sku()',
             'update_product': 'self.cproduct.update_product()',
+            'update_product_image': 'self.cproduct.update_product_image()',
         }
         res = eval(apis[product])
         return jsonify(res)

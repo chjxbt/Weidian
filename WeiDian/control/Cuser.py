@@ -7,7 +7,7 @@ from flask import request, redirect
 import uuid
 import datetime
 import json
-import urllib2
+import urllib2, urllib
 import requests
 from weixin import WeixinError
 from weixin.login import WeixinLoginError, WeixinLogin
@@ -19,12 +19,13 @@ from WeiDian.config.response import PARAMS_MISS, SYSTEM_ERROR, NETWORK_ERROR, TO
 from WeiDian.common.token_required import verify_token_decorator, usid_to_token
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db
-from WeiDian.config.setting import QRCODEHOSTNAME, APP_ID, APP_SECRET_KEY, LinuxUserHead
+from WeiDian.config.setting import QRCODEHOSTNAME, APP_ID, APP_SECRET_KEY, LinuxUserHead, wximg
 from WeiDian.config.urlconfig import get_subscribe
 from WeiDian.service.SUser import SUser
 from WeiDian.service.STask import STask
 from WeiDian.service.SMyCenter import SMyCenter
 from WeiDian.common.loggers import generic_log
+from WeiDian.config.enums import icon
 sys.path.append(os.path.dirname(os.getcwd()))
 
 
@@ -63,23 +64,25 @@ class CUser():
         try:
             args = request.args.to_dict()
             code = args.get('code')
-            state = args.get('state')
-            state = state.replace('$', '#').replace('~', '?').replace('+', '=')
+            state = args.get('url')
+            # state = state.replace('$', '#').replace('~', '?').replace('+', '=')
 
             wxlogin = WeixinLogin(APP_ID, APP_SECRET_KEY)
             data = wxlogin.access_token(code)
             # 这是本人的openid
             openid = data.openid
+            access_token = data.access_token
             user = self.suser.get_user_by_openid(openid)
             # 是否关注 todo
-            wx_subscribe = self.get_wx_response(get_subscribe.format(data.access_token, openid), "get subscribe")
+            wx_subscribe = self.get_wx_response(get_subscribe.format(access_token, openid), "get subscribe")
             generic_log(wx_subscribe)
             # if "subscribe" not in wx_subscribe:
             #     logger.error("get subscribe error %s", wx_subscribe)
             #     raise WeixinError(u'get subscribe error')
-            wx_subscribe = dict()
+            # wx_subscribe = dict()
             subscribe = wx_subscribe.get("subscribe", 0)
             data = wxlogin.user_info(data.access_token, data.openid)
+            head = self.get_local_head(data.get('headimgurl'), openid)
             if not user:
                 # 新用户
                 # 这是上级openid, 而非本人openid, 根据openid获取上级身份
@@ -98,7 +101,7 @@ class CUser():
                     "USid": usid,
                     "openid": openid,
                     "USlastlogin": datetime.datetime.now().strftime(format_for_db),
-                    "USheader": data.get('headimgurl'),
+                    "USheader": head,
                     "USlevel": 0,
                     "USgender": data.get('sex'),
                     "USname": data.get('nickname'),
@@ -112,7 +115,7 @@ class CUser():
                 print(usid)
                 update_dict = {
                     "USlastlogin": datetime.datetime.now().strftime(format_for_db),
-                    "USheader": data.get("headimgurl"),
+                    "USheader": head,
                     "USgender": data.get("sex"),
                     "USname": data.get("nickname"),
                     "unionid": data.get("unionid"),
@@ -123,17 +126,46 @@ class CUser():
                     raise SYSTEM_ERROR()
             # 生成token
             token = usid_to_token(usid)
-            redirect_url = state + "?newtoken=" + token
-            return redirect(redirect_url)
+            userlogintime = self.suser.get_user_login_time(usid)
+            now = datetime.datetime.now().strftime(format_for_db)
+
+            is_today_first = True
+            if userlogintime:
+                is_today_first = bool(userlogintime.USTcreatetime[:-6] < now[:-6])
+            self.suser.add_model("UserLoginTime", **{
+                "ULTid": str(uuid.uuid1()),
+                "USid": usid,
+                "USTip": request.remote_addr,
+                "USTcreatetime": now,
+            })
+            params_data = {
+                "is_first": int(bool(user)),
+                "subscribe": subscribe,
+                "newtoken": token,
+                "openid": openid,
+                "access_token": access_token,
+                "wximg": wximg,
+                'user_level': 0 if bool(user) else user.USlevel,
+                "is_today_first": int(is_today_first),
+                "token": usid_to_token(usid),
+                "icon": icon}
+            # params_str = urllib.urlencode(params_data, doseq=True)
+
+            # redirect_url = state + "?"+params_str
+            # logger.debug("get loggin redirect_url %s", redirect_url)
+            # return redirect(redirect_url)
+            return params_data
         except WeixinError as e:
             generic_log(e)
-            return redirect(QRCODEHOSTNAME)
+            return SYSTEM_ERROR(u'code error')
 
     def wx_login(self):
         data = request.json
         state_url = data.get('url') or request.url
+        logger.debug('get state url %s', state_url)
         state_url = state_url.replace('#', '$').replace('?', '~').replace('=', '+')
         state = str(state_url)
+        logger.debug('get state %s, len(state) %s', state, len(state))
         login = WeixinLogin(APP_ID, APP_SECRET_KEY)
         redirect_url = login.authorize(QRCODEHOSTNAME + "/user/wechat_callback", 'snsapi_userinfo', state=state)
         return {"data":
@@ -149,7 +181,6 @@ class CUser():
             if key not in args:
                 return PARAMS_MISS
 
-        from WeiDian.config.setting import APP_ID, APP_SECRET_KEY, wximg
         from WeiDian.config.urlconfig import get_access_toke, get_user_info, get_subscribe
         # 获取access_token openid
 
@@ -253,7 +284,7 @@ class CUser():
             "USTcreatetime": now,
         })
         response = import_status("SUCCESS_GET_OPENID", "OK")
-        from WeiDian.config.enums import icon
+        # from WeiDian.config.enums import icon
         response["data"] = {
             "is_first": int(is_first),
             "subscribe": subscribe,
