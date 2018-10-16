@@ -120,11 +120,13 @@ class CActivityComment(BaseActivityCommentControl):
                 reply = self.sactivitycomment.get_apply_by_acoid(comment.ACOid)
                 if reply:
                     comment.fill(reply, 'reply')
+                    reply.hide('USid')
                     # 改: 所有的回复都是管理员回复
                     admin_user = self.ssuperuser.get_one_super_by_suid(reply.USid)
                     if admin_user:
                         user = admin_user
                         admin_user.fill(0, 'robot')
+                        user.hide('SUid')
                     else:
                         user = {
                             'name': u'运营人员',

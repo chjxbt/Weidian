@@ -111,10 +111,24 @@ class BaseActivityControl():
         comments = self.sacomment.get_comment_by_acid_two(acid)
         for comment in comments:
             BaseActivityCommentControl().fill_user(comment)
-            # usid = comment.USid
-            # user = self.suser.get_user_by_user_id(usid)
-            # comment.user = user
-            # comment.add('user').hide('USid')
+            comment.ACOcreatetime = get_web_time_str(comment.ACOcreatetime)
+            reply = self.sacomment.get_apply_by_acoid(comment.ACOid)
+            if reply:
+                comment.fill(reply, 'reply')
+                reply.hide('USid')
+                admin_user = self.ssuperuser.get_one_super_by_suid(reply.USid)
+                if admin_user:
+                    user = admin_user
+                    admin_user.fill(0, 'robot')
+                    user.hide('SUid')
+                else:
+                    user = {
+                        'name': u'运营人员',
+                        'robot': 1
+                    }
+                reply.ACOcreatetime = get_web_time_str(reply.ACOcreatetime)
+                reply.fill(user, 'user')
+
         act.comment = comments
         act.add('comment')
         # map(self.fill_comment_apply_for, act.comment)
@@ -405,8 +419,16 @@ class BaseActivityCommentControl():
         else:
             usid = comment.USid
             from WeiDian.service.SUser import SUser
-            user = SUser().get_user_by_user_id(usid)  # 对象的用户
-            user.fill(False, 'robot').hide('USid')
+            from WeiDian.service.SSuperUser import SSuperUser
+            if comment.ACOparentid:
+                user = SSuperUser().get_one_super_by_suid(usid)
+                user.fill(0, 'robot')
+                user.hide('SUid')
+            else:
+                user = SUser().get_user_by_user_id(usid)  # 对象的用户
+                user.fill(0, 'robot')
+                user.hide('USid')
+                user.hide('USphone')
         comment.user = user  # 对象的用户
         comment.add('user').hide('USid')
         return comment
