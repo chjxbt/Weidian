@@ -666,7 +666,10 @@
         this.viewsNum = "";
         this.hairLapsNum = "";
         this.activityBadge = "";
+        this.longImg = "";
+        this.videoImgUrl = "";
         this.placedTop = false;
+        this.commentsList = [{ acorobot: "", acotext: "" }];
         this.activityPictureList = [];  // 图片list置为[]
 
         this.editActivity = false;      // 隐藏取消按钮
