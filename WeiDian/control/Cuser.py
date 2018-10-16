@@ -204,7 +204,10 @@ class CUser():
         # access_token = jsonResult["access_token"]
         # openid = jsonResult['openid']
         wxlogin = WeixinLogin(APP_ID, APP_SECRET_KEY)
-        data = wxlogin.access_token(args["code"])
+        try:
+            data = wxlogin.access_token(args["code"])
+        except WeixinLoginError:
+            return import_status('welcome', 'OK')
         openid = data.openid
         access_token = data.access_token
         user = self.suser.get_user_by_openid(openid)

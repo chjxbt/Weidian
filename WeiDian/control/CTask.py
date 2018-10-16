@@ -138,13 +138,13 @@ class CTask(BaseTask):
     #     })
 
     def add_task_raward(self, tlid, raward):
-        if not raward.get("RAid") or not raward.get("RAnumber"):
+        if not raward.get("raid") or not raward.get("ranumber"):
             return
         self.sraward.add_model("TaskRaward", **{
             "TRid": str(uuid.uuid1()),
             "TLid": tlid,
-            "RAid": raward.get("RAid"),
-            "RAnumber": raward.get("RAnumber")
+            "RAid": raward.get("raid"),
+            "RAnumber": raward.get("ranumber")
         })
 
     @verify_token_decorator
