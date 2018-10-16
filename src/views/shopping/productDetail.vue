@@ -14,8 +14,8 @@
       <span class="old-price m-grey m-ft-28">￥{{product_info.proldprice}}</span>
       <span class="make-money m-ft-38 m-red m-ft-b tl" v-if="is_vip">赚{{product_info.prsavemonty}}</span>
       <span class="make-money m-ft-38 m-red m-ft-b tl" v-else></span>
-      <img v-if="collectionVisible" src="/static/images/icon-unlike.png" class="collection-share-img" @click="collection">
-      <img v-if="!collectionVisible" src="/static/images/icon-like.png" class="collection-share-img" @click="collection">
+      <img v-if="!product_info.alreadylike" src="/static/images/icon-like.png" class="collection-share-img" @click="collection">
+      <img v-else src="/static/images/icon-like-active.png" class="collection-share-img" @click="collection">
       <img src="/static/images/icon-share.png" class="collection-share-img" @click="shareProduct">
     </div>
     <div class="product-name m-ft-32 tl">{{product_info.prtitle}}</div>
@@ -115,11 +115,11 @@
     </div>
       <div class="m-vip-btn m-ft-36 "  v-if="is_vip" @click="addCart">
         <p>买</p>
-        <p class="m-ft-24">省￥6.5</p>
+        <p class="m-ft-24">省￥{{product_info.prsavemonty}}</p>
       </div>
       <div class="m-vip-btn m-ft-36 active" v-if="is_vip" @click="buyNow">
         <p>卖</p>
-        <p class="m-ft-24">赚￥6.5</p></div>
+        <p class="m-ft-24">赚￥{{product_info.prsavemonty}}</p></div>
       </div>
   </div>
 </template>
@@ -130,6 +130,7 @@
   import axios from 'axios';
   import {Toast} from 'mint-ui';
   import common from '../../common/js/common';
+  import wxapi from '../../common/js/mixins';
   // setTimeout(()=>{
   //   location.hash="a"
   // },100);
@@ -139,6 +140,7 @@
   //   }
   // },200);
   export default {
+    mixins: [wxapi],
     data() {
       return {
         name: "productDetail",
@@ -163,6 +165,33 @@
     },
     components: { productParams },
     methods: {
+      /*分享*/
+      wxRegCallback () {
+        this.wxShare()
+      },
+      wxShare () {
+        const url =window.location.origin + '/#/index/index?linkUrl=productDetail&prid'+ this.$route.query.prid;
+        axios.get(api.get_share_params+'?token='+localStorage.getItem('token'),{params:{
+          prid:this.$route.query.prid
+          }}).then(res => {
+          if(res.data.status == 200){
+            let opstion = {
+              title: res.data.data.title, // 分享标题
+              link:  url,      // 分享链接
+              imgUrl: res.data.data.img,// 分享图标
+              success: function () {
+                alert('分享成功')
+              },
+              error: function () {
+                alert('分享失败')
+              }
+            }
+            wxapi.ShareTimeline(opstion);
+            // this.show_invite = true;
+          }
+        })
+
+      },
       getInfo(){
         axios.get(api.get_one_product,{
           params:{
@@ -204,11 +233,16 @@
       },
       // 收藏
       collection() {
-        if(this.collectionVisible) {
-          this.collectionVisible = false;
-        }else if(!this.collectionVisible) {
-          this.collectionVisible = true;
-        }
+
+        console.log(this.product_info.alreadylike)
+          axios.post(api.add_one_productlike + '?token=' + localStorage.getItem('token'),{
+            prid:this.$route.query.prid
+          }).then(res => {
+              if(res.data.status == 200){
+                this.product_info.alreadylike = !this.product_info.alreadylike;
+                Toast({ message: res.data.message, duration: 800, className: 'm-toast-success' });
+              }
+          })
       },
       carChoose(v,num){
         this.choose = v;
@@ -288,6 +322,7 @@
       }else{
         this.is_vip = true;
       }
+      wxapi.wxRegister(this.wxRegCallback)
     },
     created() {
       let prid = this.$route.query.prid;

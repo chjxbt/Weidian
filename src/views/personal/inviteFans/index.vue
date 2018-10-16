@@ -67,20 +67,24 @@
         this.wxShare()
       },
       wxShare () {
-        const url = window.location.origin + '/#/index?UPPerd=' + localStorage.getItem('openid');
-        let opstion = {
-          title: '微点13213', // 分享标题
-          link: url,      // 分享链接
-          // imgUrl: 'http://www.jzdlink.com/wordpress/wp-content/themes/wordpress_thems/images/lib/logo.png',// 分享图标
-          success: function () {
-            alert('分享成功')
-          },
-          error: function () {
-            alert('分享失败')
+        const url = window.location.origin + '/#/index/index?UPPerd=' + localStorage.getItem('openid') +'&isFans = 1';
+        axios.get(api.get_share_params+'?token='+localStorage.getItem('token')).then(res => {
+          if(res.data.status == 200){
+            let opstion = {
+              title: res.data.data.title, // 分享标题
+              link:  url,      // 分享链接
+              imgUrl: res.data.data.img,// 分享图标
+              success: function () {
+                alert('分享成功')
+              },
+              error: function () {
+                alert('分享失败')
+              }
+            }
+            wxapi.ShareTimeline(opstion);
+            this.show_invite = true;
           }
-        }
-        wxapi.ShareTimeline(opstion);
-        this.show_invite = true;
+        })
       },
       share(){
         this.wxShare();

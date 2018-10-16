@@ -183,6 +183,7 @@
         </div>
       </div>
       <img-modal v-if="show_img" :src="img_src" @closeModal="closeModal"></img-modal>
+      <img src="/static/images/invite.png" v-if="show_invite" @click.stop="closeModal('show_invite')"  class="m-invite-course" alt="">
     </div>
 
 </template>
@@ -194,7 +195,9 @@
   import {Toast} from 'mint-ui';
   import common from '../../../common/js/common';
   import imgModal from '../../../components/common/imgModal';
+  import wxapi from '../../../common/js/mixins';
     export default {
+      mixins: [wxapi],
       data() {
         return {
           now:{
@@ -219,13 +222,39 @@
           show_rule: false,
           show_img:false,
           img_src:'',
-          bg_src:''
+          bg_src:'',
+          show_invite:false
         }
       },
       components: {
         discountCoupon,
         imgModal},
       methods: {
+        /*分享*/
+        wxRegCallback () {
+          this.wxShare()
+        },
+        wxShare () {
+          const url = window.location.origin + '/#/index/index?UPPerd=' + localStorage.getItem('openid') +'&linkUrl=invitationLetter';
+          axios.get(api.get_share_params+'?token='+localStorage.getItem('token')).then(res => {
+            if(res.data.status == 200){
+              let opstion = {
+                title: res.data.data.title, // 分享标题
+                link:  url,      // 分享链接
+                imgUrl: res.data.data.img,// 分享图标
+                success: function () {
+                  alert('分享成功')
+                },
+                error: function () {
+                  alert('分享失败')
+                }
+              }
+              wxapi.ShareTimeline(opstion);
+              this.show_invite = true;
+            }
+          })
+
+        },
         navChange(v){
           this.now = v
         },
@@ -262,11 +291,13 @@
         },
         inviteClick(){
           this.show_modal = false;
+          this.wxShare();
         }
       },
       mounted(){
         common.changeTitle('邀请开店');
         // this.getRule();
+        wxapi.wxRegister(this.wxRegCallback);
         this.getRule(8);
       },
       created() {
@@ -277,6 +308,13 @@
 <style lang="less" rel="stylesheet/less" scoped>
   @import "../../../common/css/index";
   @import "../../../common/css/modal";
+  .m-invite-course{
+    position: fixed;
+    top:0;
+    left:0;
+    width: 100%;
+    height: 100%;
+  }
 .m-inviteStore{
   background-color: #C8433B;
   .m-inviteStore-rule {

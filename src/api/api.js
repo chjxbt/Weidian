@@ -55,6 +55,7 @@ const api={
   do_task: title +'/task/do_task',//做任务
   get_bigactivity : title + '/bigactivity/get_bigactivity',//专题页
   get_one_product: title + '/product/get_one',//获取商品详情
+  add_one_productlike:title + '/productlike/add_one',//商品点赞
   get_list_shoppingcart: title + '/shoppingcart/get_list',//获取购物车
   delete_shoppingcart: title +'/shoppingcart/delete',//删除购物车
   update_shoppingcart: title + '/shoppingcart/update',///更新购物车

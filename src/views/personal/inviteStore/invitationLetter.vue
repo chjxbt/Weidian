@@ -28,7 +28,36 @@
           <p class="m-flex-between"> <span class="m-red">￥139</span><span class="m-red-border">购买</span></p>
         </div>
       </div>
-      <img-modal v-if="show_img" :src="img_src" @closeModal="closeModal"></img-modal>
+      <!--<img-modal v-if="show_img" :src="img_src" @closeModal="closeModal"></img-modal>-->
+      <div class="m-fans-img-modal" @click="closeFansModal" v-if="show_fans_img">
+        <div class="m-modal-state" @click.stop="selectImg">
+          <!--<span class="m-close" @click="closeModal">X</span>-->
+          <!--<img :src="src"  alt="">-->
+          <div class="m-headPortrait-name">
+            <span class="m-head-name">xxccccx</span>
+            <img src="" class="m-head-portrait" />
+          </div>
+          <mt-popup
+            class="help-popup"
+            v-model="helpPopupVisible"
+            popup-transition="popup-fade">
+            <img class="close-img" @click="closeFansModal" src="static/images/delete.png" alt="">
+            <img style="width: 100%;height: 100%;" src="" alt="" >
+          </mt-popup>
+        </div>
+      </div>
+      <div class="m-fans-modal" v-if="show_fans" @click="closeModal('show_fans')">
+        <div class="m-modal-state">
+          <div class="m-modal-content">
+            <p>86%的店主都收入过万了，
+              您不试试吗？</p>
+            <div class="m-fans-btn">
+              <span @click="closeModal('show_fans')">残忍拒绝</span>
+              <span class="active" @click="closeModal('show_fans')">好的</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
 </template>
@@ -42,12 +71,15 @@
         data() {
             return {
                 img_src:'',
-                show_img:false
+              show_fans_img:false,
+              show_fans:false,
+              helpPopupVisible:false
             }
         },
         components: {imgModal},
       mounted(){
-
+        this.show_fans_img =true;
+        this.helpPopupVisible = true;
       },
         methods: {
           getRule(type){
@@ -69,6 +101,16 @@
           /*关闭模态框*/
           closeModal(v){
             this[v]  = false;
+          },
+          closeFansModal(){
+            this.show_fans_img = false;
+            this.helpPopupVisible =false;
+            this.show_fans = true;
+          },
+          selectImg(){
+            this.show_fans_img = false;
+            this.helpPopupVisible =false;
+            Toast({ message: '领取成功', duration: 800, className: 'm-toast-success' });
           }
         },
         created() {
@@ -169,6 +211,127 @@
         }
 
       }
+    }
+  }
+  .m-fans-modal{
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0,0,0,0.2);
+    z-index: 1001;
+    transition: opacity .5s;
+    .m-modal-state{
+      background-color: #fff;
+      position: absolute;
+      width: 500px;
+      height: 279px;
+      top: 0;
+      left: 0;
+      right:0;
+      bottom:0;
+      margin: auto;
+      border: 1px solid #eeeeee;
+      border-radius: 10px;
+      -webkit-transition: height 0.88s;
+      transition: height 0.88s;
+      .m-modal-content{
+        text-align: center;
+        p{
+          margin: 30px 50px 56px;
+          font-size: 33px;
+          color: #666;
+          line-height: 1.39;
+          letter-spacing: normal;
+        }
+        .m-fans-btn{
+          display: flex;
+          flex-flow: row;
+          align-items: center;
+          justify-content: space-around;
+          span{
+            display: block;
+            width: 205px;
+            height: 79px;
+            color: #fff;
+            background-color: #c6c6c6;
+            line-height: 79px;
+            border-radius: 4px;
+            font-size: 28px;
+            &.active{
+              background-color: #f43b51;
+            }
+          }
+        }
+      }
+    }
+  }
+  .m-fans-img-modal{
+    position: fixed;
+    top:0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0,0,0,0.4);
+    z-index: 10001;
+    .m-modal-state{
+      position: absolute;
+      width: 500px;
+      height: 750px;
+      top:50%;
+      left: 50%;
+      transform: translate(-250px,-375px);
+      background-color: #fff;
+      border-radius: 10px;
+      .m-close{
+        position: absolute;
+        top: 20px;
+        right: 20px;
+      }
+    }
+  }
+  .help-popup{
+    height: 750px;
+    width: 500px;
+    border-radius: 10px;
+    .close-img{
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 25px;
+      height: 25px;
+    }
+    img{
+      border-radius: 10px;
+    }
+  }
+  .m-headPortrait-name{
+    position: relative;
+    top:-85px;
+    left: -60px;
+    .m-head-portrait{
+      position: absolute;
+      top:0;
+      left:0;
+      width: 95px;
+      height: 95px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      z-index: 200;
+      background-color: #a4a4a4;
+    }
+    .m-head-name{
+      position: absolute;
+      top:22px;
+      left:70px;
+      z-index: 100;
+      padding: 0 40px;
+      height: 52px;
+      line-height: 52px;
+      background-color: #c3c3c3;
+      border-radius: 25.3px;
+      font-size: 26px;
     }
   }
 </style>
