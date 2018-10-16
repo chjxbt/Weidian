@@ -157,11 +157,16 @@
           </el-table-column>
           <el-table-column prop="actitle" label="推文标题" width="150" v-if="page == '公告' || page == '教程'"></el-table-column>
           <el-table-column prop="actext" label="推文内容">
-            <template slot-scope="scope">
+            <!--<template slot-scope="scope">
               <el-input type="textarea" :autosize="{ minRows: 1, maxRows: 3 }" placeholder="请输入推文内容" v-model="scope.row.actext" :disabled="scope.row.disabled"></el-input>
-            </template>
+            </template>-->
           </el-table-column>
           <el-table-column prop="acSkiptype" label="跳转类型" width="100"></el-table-column>
+          <el-table-column prop="product" label="评论管理" width="100" v-if="page == '公告' || page == '教程'">
+            <template slot-scope="scope">
+              <div class="comments-text" @click="commentsDialog(scope)">查看</div>
+            </template>
+          </el-table-column>
           <el-table-column fixed="right" label="管理" width="180">
             <template slot-scope="scope">
               <el-button @click="editClick(scope, 'activity')" type="text" size="small">编辑</el-button>
@@ -172,6 +177,7 @@
         </el-table>
 
         <Pagination class="page-box" :total="total_page" @pageChange="pageChange"></Pagination>
+        <comments ref="comments"></comments>
       </div>
 
 
@@ -385,6 +391,7 @@
   import Pagination from "../../components/common/page";
   import wTab from '../../components/common/wTab';
   import tags from '../../components/activity/tags';
+  import comments from '../../components/activity/comments';
   import axios from 'axios';
   import api from '../../api/api';
 
@@ -478,7 +485,7 @@
         tnid: "",         // 暂存导航栏的tnid
       }
     },
-    components:{ pageTitle, Pagination, wTab, tags },
+    components:{ pageTitle, Pagination, wTab, tags, comments },
     methods:{
       // 上传推文图片
       uploadActivityPicture(item) {
@@ -1473,6 +1480,11 @@
         this.$refs.tags.getTags(this.activityBadge);
       },
 
+      // 打开comments子组件的dialog
+      commentsDialog(scope) {
+        this.$refs.comments.getComments(scope.row);
+      },
+
       // 接收子组件传过来的勾选角标
       getData(atname) {
         this.activityBadge = atname;
@@ -1542,6 +1554,10 @@
     padding-top: 0.1rem;
     .page-box {
       margin-top: 0.1rem;
+    }
+    .comments-text {
+      color: #4169E1;
+      font-size: 0.11rem;
     }
   }
   .el-table .cell {

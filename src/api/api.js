@@ -18,7 +18,7 @@ const api={
   add_one_hot_message: title + 'hotmessage/add_one',        //添加热文 - 首页
   update_one_hot_message: title + 'hotmessage/update_one',  //编辑热文 - 首页
   get_product: title + 'product/get_all',                   //模糊搜索商品
-  get_activity_list_by_actitle: title + 'activity/get_activity_list_by_actitle',//模糊搜索公告/教程
+  get_activity_list_by_actitle: title + 'activity/get_activity_list_by_actitle',  //模糊搜索公告/教程
   create_hbact: title + 'bigactivity/create_hbact',         // 添加首页专题（轮播图）
   create_dbact: title + 'bigactivity/create_dbact',         // 添加发现页专题（轮播图）
   update_bact: title + 'bigactivity/update_bact',           // 修改专题/删除轮播图（测试）
@@ -31,6 +31,8 @@ const api={
   add_to_bigact: title + 'bigactivity/add_to_bigact',       // 将推文批量添加到专题
   get_info: title + 'recommend/get_info',                   // 获取每日推荐商品部分 - 发现页
   update: title + 'recommend/update',                       // 添加/修改/删除每日推荐商品 - 发现页
+  get_comment_with_apply: title + 'activitycomment/get_comment_with_apply',   // 获取推文下的评论-嵌套回复
+  add_comment: title + 'activitycomment/add_comment',       // 回复评论
 
   update_info: title + 'super/update_info',                 // 修改管理员自身基本信息
   get_all_suser: title + 'super/get_all_suser',             // 获取管理员列表
