@@ -246,11 +246,12 @@ class CProduct(BaseProductControl):
         logger.info(request.detail)
         args = request.args.to_dict()
         prid = args.get('prid')
+        usid = request.user.id
         if not prid:
-            return PARAMS_MISS
+            raise PARAMS_MISS()
         product = self.sproduct.get_product_by_prid(prid)
         if not product:
-            return NOT_FOUND()
+            raise NOT_FOUND(u'无此商品')
         # 是管理员或客服则显示全部信息
         if is_admin() or is_customerservice():
             product.fields = product.all
@@ -265,7 +266,7 @@ class CProduct(BaseProductControl):
                 product = self.trans_product_for_shopkeeper(product)
             product = self.fill_product_nums(product)
         # 填充一些都需要的信息
-        self.fill_product_alreadylike(product)
+        self.fill_product_alreadylike(product, usid)
         self.fill_images(product)
         self.fill_prtarget(product)
         self.fill_product_sku_key(product)
@@ -275,3 +276,37 @@ class CProduct(BaseProductControl):
         data['data'] = product
         return data
 
+    @verify_token_decorator
+    def get_one_by_productid(self):
+        logger.info(request.detail)
+        args = request.args.to_dict()
+        prid = args.get('productid')
+        usid = request.user.id
+        if not prid:
+            raise PARAMS_MISS()
+        product = self.sproduct.get_product_by_productid(prid)
+        if not product:
+            raise NOT_FOUND(u"无此商品")
+        # 是管理员或客服则显示全部信息
+        if is_admin() or is_customerservice():
+            product.fields = product.all
+            print '是管理员或客服'
+        else:
+            # 如果是游客, 或者是未购买开店大礼包的普通用户
+            if is_tourist() or is_ordirnaryuser():
+                print '是游客或者普通用户'
+                product = self.trans_product_for_fans(product)
+            else:  # 合伙人(即已购买开店大礼包的用户)
+                print '合伙人'
+                product = self.trans_product_for_shopkeeper(product)
+            product = self.fill_product_nums(product)
+        # 填充一些都需要的信息
+        self.fill_product_alreadylike(product, usid)
+        self.fill_images(product)
+        self.fill_prtarget(product)
+        self.fill_product_sku_key(product)
+        self.fill_product_sku_value(product)
+        self.sproduct.update_view_num(product.PRid)
+        data = import_status('get_product_success', 'OK')
+        data['data'] = product
+        return data

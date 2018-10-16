@@ -69,7 +69,9 @@ class CProductLike():
             # TODO 暂存的虚假发圈数
             from WeiDian.service.SActivity import SActivity
             for prlike in productlike_list:
-                # SActivity().get_acid_by_filterid({})
+                forward_act = SActivity().get_acid_by_filterid({'AClinkvalue': 2,
+                                                                'ACSkipType': 2,
+                                                                })
                 prlike.forwardnum ='99'
                 prlike.add("forwardnum")
             prlikecount = self.sproductlike.get_prlike_count_by_usid(request.user.id)

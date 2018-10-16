@@ -209,9 +209,9 @@ class BaseProductControl():
         product.add('images')
         return product
 
-    def fill_product_alreadylike(self, product):
+    def fill_product_alreadylike(self, product, usid):
         prid = product.PRid
-        alreadylike = self.sproductlike.get_product_is_like_by_prid(request.user.id, prid)
+        alreadylike = self.sproductlike.get_product_is_like_by_prid(usid, prid)
         product.alreadylike = True if alreadylike else False
         product.add('alreadylike')
         return product
