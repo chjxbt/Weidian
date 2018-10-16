@@ -3,22 +3,24 @@ import re
 import sys
 import os
 from flask import request, redirect
-# import logging
 import uuid
 import datetime
 import json
 import urllib2
 import requests
+import string
+import random
 from weixin import WeixinError
 from weixin.login import WeixinLoginError, WeixinLogin
 from WeiDian.common.get_url_params import GetUrlParams
 from WeiDian import logger
-from WeiDian import mp
+# from WeiDian.common.weixinmp import mp
 from WeiDian.common.params_require import parameter_required
 from WeiDian.config.response import PARAMS_MISS, SYSTEM_ERROR, NETWORK_ERROR, TOKEN_ERROR
 from WeiDian.common.token_required import verify_token_decorator, usid_to_token
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db
+from WeiDian.common.weixinmp import mp
 from WeiDian.config.setting import QRCODEHOSTNAME, APP_ID, APP_SECRET_KEY, LinuxUserHead, wximg
 from WeiDian.config.urlconfig import get_subscribe
 from WeiDian.service.SUser import SUser
@@ -204,17 +206,27 @@ class CUser():
         # access_token = jsonResult["access_token"]
         # openid = jsonResult['openid']
         wxlogin = WeixinLogin(APP_ID, APP_SECRET_KEY)
-        data = wxlogin.access_token(args["code"])
+        try:
+            data = wxlogin.access_token(args["code"])
+        except WeixinLoginError as e:
+            logger.error('login error %s', e.message)
+            return import_status('welcome', 'OK')
         openid = data.openid
         access_token = data.access_token
+        logger.debug('get openid %s, access_token %s', openid, access_token)
         user = self.suser.get_user_by_openid(openid)
-
         is_first = not bool(user)
-
-        wx_subscribe = self.get_wx_response(get_subscribe.format(mp.access_token, openid), "get subscribe")
+        print get_subscribe.format(mp.accesstoken(), openid)
+        wx_subscribe = self.get_wx_response(get_subscribe.format(mp.accesstoken(), openid), "get subscribe")
         if "subscribe" not in wx_subscribe:
             logger.error("get subscribe error %s", wx_subscribe)
-            return wx_subscribe
+            # return wx_subscribe
+            mp.update_access_token_and_jsticket(refresh=True)
+            wx_subscribe = self.get_wx_response(get_subscribe.format(mp.accesstoken(), openid), "get subscribe retry")
+            if "subscribe" not in wx_subscribe:
+                logger.error("get subscribe retry error %s", wx_subscribe)
+                return wx_subscribe
+
         subscribe = wx_subscribe.get("subscribe", 0)
 
         # user_info = self.get_wx_response(get_user_info.format(access_token, openid), "get user info")
@@ -304,83 +316,53 @@ class CUser():
         logger.debug("get loggin response %s", response)
         return response
 
-    # # @verify_token_decorator
-    # def get_wx_config_accesstoken(self):
-    #     from WeiDian.config.urlconfig import get_jsapi, get_server_access_token, signature_str
-    #     from WeiDian.config.setting import APP_ID
-    #     import random
-    #     import string
-    #     import time
-    #     import hashlib
-    #     # if not hasattr(request, 'user'):
-    #     #     return TOKEN_ERROR  # 未登录, 或token错误
-    #     url = request.args.to_dict().get("url")
-    #     # user = self.suser.get_user_by_user_id(request.user.id)
-    #     # logger.info('get user accesstoken: %s', user.accesstoken)
-    #     # logger.info('get user id : %s', request.user.id)
-    #     # if not user:
-    #     #     return SYSTEM_ERROR
-    #     from WeiDian.common.divide import Partner
-    #     pt = Partner()
-    #     access_token_server, ticket, access_time = pt.access_token
-    #     access_time = datetime.datetime.strptime(access_time, format_for_db) if access_time else datetime.datetime.now()
-    #     now = datetime.datetime.now()
-    #     delta_time = (now - access_time).seconds
-    #     if not ticket or delta_time > 60 * 60 * 2:
-    #         access_token_server_res = self.get_wx_response(get_server_access_token, "get server access token")
-    #         if "access_token" not in access_token_server_res:
-    #             logger.error("get access token server error : %s", access_token_server_res)
-    #             return NETWORK_ERROR
-    #         access_token_server = access_token_server_res.get("access_token")
-    #
-    #         jsapiticket = self.get_wx_response(get_jsapi.format(access_token_server), "get jsapi_ticket")
-    #
-    #         if jsapiticket.get("errcode") == 0 and jsapiticket.get("errmsg") == "ok":
-    #             ticket = jsapiticket.get("ticket")
-    #         else:
-    #             logger.error("get jsapi error :  %s", jsapiticket)
-    #             return import_status("get_jsapi_error", "WD_ERROR", "error_get_jsapi")
-    #
-    #         pt.access_token = (access_token_server, ticket, now.strftime(format_for_db))
-    #     # update_result = self.suser.update_user(user.USid, {"jsapiticket": ticket})
-    #     # if not update_result:
-    #     #     return SYSTEM_ERROR
-    #
-    #     noncestr = ''.join(random.sample(string.ascii_letters + string.digits, 8))
-    #     data = {
-    #         "url": url,
-    #         "jsapi_ticket": ticket,
-    #         'timestamp': int(time.time()),
-    #         "noncestr": noncestr,
-    #
-    #         # "secret": APP_SECRET_KEY
-    #     }
-    #     logger.info("get wx config %s", data)
-    #     try:
-    #         # response_str = "&".join([str(k)+'='+str(v) for k, v in data.items()])
-    #         response_str = signature_str.format(**data)
-    #         logger.debug("get response: %s", response_str)
-    #         signature = hashlib.sha1(response_str).hexdigest()
-    #         logger.debug('get signature: %s', signature)
-    #         data['signature'] = signature
-    #         data['appid'] = APP_ID
-    #     except:
-    #         logger.exception("Get wx config error")
-    #         return SYSTEM_ERROR
-    #     response = import_status("SUCCESS_GET_CONFIG", "OK")
-    #     response['data'] = data
-    #     return response
+    # @verify_token_decorator
+    def get_wx_config_accesstoken(self, url):
+        import time
+        import hashlib
+
+        noncestr = self.__create_nonce_str()
+        data = {
+            "url": url,
+            "jsapi_ticket": mp.jsticket(),
+            'timestamp': int(time.time()),
+            "noncestr": noncestr
+        }
+        logger.info("get wx config %s", data)
+        try:
+            # response_str = "&".join([str(k)+'='+str(v) for k, v in data.items()])
+            # response_str = signature_str.format(**data)
+            response_str = '&'.join(['%s=%s' % (key.lower(), data[key]) for key in sorted(data)])
+            logger.debug("get response: %s", response_str)
+            signature = hashlib.sha1(response_str.encode('utf-8')).hexdigest()
+            logger.debug('get signature: %s', signature)
+            data['sign'] = signature
+            data['appid'] = APP_ID
+        except:
+            logger.exception("Get wx config error")
+            return SYSTEM_ERROR
+        # response = import_status("SUCCESS_GET_CONFIG", "OK")
+        # response['data'] = data
+        # return response
+        return data
+
+    def __create_nonce_str(self):
+        return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(15))  # 创建随机字符串
 
     def get_wx_config(self):
 
         url = request.args.get("url", request.url)
         # url = request.json.get("url", request.url)
         logger.debug('get url %s', url)
-        data = mp.jsapi_sign(url=url)
-        data['ticket'] = mp.jsapi_ticket
+        # data = mp.jsapi_sign(url=url)
+        # data['ticket'] = mp.jsapi_ticket
+        data = self.get_wx_config_accesstoken(url)
+        data['ticket'] = data.pop('jsapi_ticket')
+        data['appId'] = data.pop('appid')
         logger.debug("get wx config %s", data)
         response = import_status("SUCCESS_GET_CONFIG", "OK")
         response['data'] = data
+
         return response
 
     def get_wx_response(self, url, urltype):

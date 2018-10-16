@@ -458,6 +458,7 @@ class BaseOrder():
 
 class BaseTask():
     reward_number = '{0}张'
+    reward_number_ratio = '前{0}单'
     filter_str = '满{0}-{1}新衣币'
     ratio_str = '佣金上涨{0}%'
     amout_str = '{0}元无门槛新衣币'
@@ -495,8 +496,9 @@ class BaseTask():
                     int(raward.RAfilter), int(raward.RAamount))
             elif raward.RAtype == 1:
                 reward_str = self.ratio_str.format(int(raward.RAratio))
-                if task_raward.RAnumber == 1:
-                    reward_str = "售出首单" + reward_str
+                reward_number = self.reward_number_ratio.format(
+                    task_raward.RAnumber) if task_raward.RAnumber != 1 else "首单"
+                reward_str = reward_number + reward_str
             else:
                 reward_str = self.reward_number.format(int(task_raward.RAnumber)) + self.amout_str.format(
                     int(raward.RAamount))
