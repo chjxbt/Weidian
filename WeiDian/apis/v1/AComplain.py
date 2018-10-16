@@ -24,6 +24,7 @@ class AComplain(Resource):
         print complain
         apis = {
             "add_one": "self.control_complain.add_complain()",
+            "update_status": "self.control_complain.update_status()",
         }
         res = eval(apis[complain])
         return jsonify(res)

@@ -91,7 +91,7 @@ class SProduct(SBase):
 
 
 if __name__ == '__main__':
-    productid = '10417'
+    productid = '914'
     sp = SProduct()
     from WeiDian.models import model
     product = sp.session.query(Product).filter(Product.PRoductId==productid).first()

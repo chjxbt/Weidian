@@ -64,8 +64,8 @@ class CUser():
         try:
             args = request.args.to_dict()
             code = args.get('code')
-            state = args.get('state')
-            state = state.replace('$', '#').replace('~', '?').replace('+', '=')
+            state = args.get('url')
+            # state = state.replace('$', '#').replace('~', '?').replace('+', '=')
 
             wxlogin = WeixinLogin(APP_ID, APP_SECRET_KEY)
             data = wxlogin.access_token(code)
@@ -79,7 +79,7 @@ class CUser():
             # if "subscribe" not in wx_subscribe:
             #     logger.error("get subscribe error %s", wx_subscribe)
             #     raise WeixinError(u'get subscribe error')
-            wx_subscribe = dict()
+            # wx_subscribe = dict()
             subscribe = wx_subscribe.get("subscribe", 0)
             data = wxlogin.user_info(data.access_token, data.openid)
             head = self.get_local_head(data.get('headimgurl'), openid)
@@ -149,12 +149,15 @@ class CUser():
                 "is_today_first": int(is_today_first),
                 "token": usid_to_token(usid),
                 "icon": icon}
-            params_str = urllib.urlencode(params_data, doseq=True)
-            redirect_url = state + "?"+params_str
-            return redirect(redirect_url)
+            # params_str = urllib.urlencode(params_data, doseq=True)
+
+            # redirect_url = state + "?"+params_str
+            # logger.debug("get loggin redirect_url %s", redirect_url)
+            # return redirect(redirect_url)
+            return params_data
         except WeixinError as e:
             generic_log(e)
-            return redirect(QRCODEHOSTNAME)
+            return SYSTEM_ERROR(u'code error')
 
     def wx_login(self):
         data = request.json

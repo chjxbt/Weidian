@@ -184,6 +184,32 @@ class CProduct(BaseProductControl):
 
         return import_status('update_product_success', 'OK')
 
+    # 更新商品
+    @verify_token_decorator
+    def update_product_image(self):
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'权限不足')
+
+        data = parameter_required('productid', 'images')
+        product = self.sproduct.get_product_by_productid(data.get("productid"))
+        if not product:
+            raise PARAMS_MISS(u"商品不存在或已删除")
+        for image in data.get("images"):
+            primage = self.sproductimage.get_images_by_prid_pisort(product.PRid, image.get('pisort', 0))
+            if primage:
+                update_result = self.sproductimage.update_image(primage.PIid, {"PIurl": image.get("piurl")})
+                if not update_result:
+                    logger.error('update product image error, sort is %s', image.get("pisort", 0))
+                    raise SYSTEM_ERROR(u"数据库异常")
+            else:
+                self.sproductimage.add_model("ProductImage", **{
+                    "PIid": str(uuid.uuid1()),
+                    "PRid": product.PRid,
+                    "PIurl": image.get("piurl"),
+                    "PIsort": image.get("pisort", 0),
+                })
+        return import_status('update_product_image_success', 'OK')
+
     def get_product_list(self):
         args = request.args.to_dict()
         page = int(args.get('page', 1))  # 页码

@@ -98,4 +98,5 @@ no_product = '商品不存在或已下架'
 
 update_success = '设置成功'
 get_success = '获取成功'
-
+update_complain_success = '更新投诉成功'
+update_product_image_success = '更新商品图片成功'
