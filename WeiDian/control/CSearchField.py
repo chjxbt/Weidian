@@ -7,7 +7,7 @@ from WeiDian import logger
 from flask import request
 from datetime import datetime
 from WeiDian.common.TransformToList import add_model
-from WeiDian.common.timeformat import format_for_db
+from WeiDian.common.timeformat import format_for_db, get_db_time_str, get_web_time_str
 from WeiDian.common.token_required import is_admin, verify_token_decorator
 from WeiDian.config.response import TOKEN_ERROR, AUTHORITY_ERROR, PARAMS_MISS, SYSTEM_ERROR
 from WeiDian.common.import_status import import_status
@@ -120,6 +120,7 @@ class CSearchField():
             prid_list = SProduct().get_products_by_prname(prname)
             for prid in prid_list:
                 activity_list.extend(sactivity.get_activity_by_prid(prid.PRid))
+            activity_list = filter(lambda act: act.ACstarttime < get_db_time_str() < act.ACendtime, activity_list)
 
         if count > 30:
             count = 30
@@ -132,6 +133,8 @@ class CSearchField():
         for activity in activity_list:
             activity.fill(activity.AClinkvalue, 'aclinkvalue')
             sactivity.update_view_num(activity.ACid)
+            activity.ACstarttime = get_web_time_str(activity.ACstarttime)
+            activity.ACendtime = get_web_time_str(activity.ACendtime)
 
         activity_list = activity_list[start:end]
         # map(cactivity.fill_comment_two, activity_list)

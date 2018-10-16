@@ -79,6 +79,10 @@ class SActivity(SBase):
         return self.session.query(Activity).filter_by(ACid=acid).update({Activity.ACisended: True})
 
     @close_session
+    def get_acid_by_filterid(self, filterid):
+        return self.session.query(Activity).filter_by(**filterid).all()
+
+    @close_session
     def get_activity_by_acid(self, acid):
         """根据id获取活动"""
         return self.session.query(Activity).filter_by(ACid=acid, ACisdelete=False).first()
