@@ -123,14 +123,14 @@
       <div class="m-form-item" v-if="show_div" style="margin: 0.2rem 0 0.3rem 0">
         <p class="m-form-label">热文内容</p>
         <div class="m-item-content">
-          <div class=" m-item-row">
+          <div class="m-item-row">
             <el-input v-model="hotValue" placeholder="请输入热文内容" maxlength="25" class="hot-message-input"></el-input>
           </div>
           <p class="m-item-alert" style="margin-top: 0.05rem; font-size: 0.12rem"><span style="color: red">* </span>字数控制在25字以内</p>
         </div>
         <p class="m-form-label">热文分类</p>
         <div class="m-item-content">
-          <div class=" m-item-row">
+          <div class="m-item-row">
             <el-select v-model="hotJumpValue" class="m-input-l" placeholder="商品/专题/教程/公告">
               <el-option v-for="item in hotJump" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
@@ -148,7 +148,7 @@
         </div>
         <p class="m-form-label">热文读者</p>
         <div class="m-item-content">
-          <div class=" m-item-row">
+          <div class="m-item-row">
             <el-select v-model="hotReader" class="m-input-l" placeholder="请选择可看到该热文的对象">
               <el-option v-for="item in hotReaderList" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
@@ -215,7 +215,7 @@
         <div class="m-form-item">
           <p class="m-form-label required" style="width: 0.9rem;">推文内容：</p>
           <div class="m-item-content">
-            <div class=" m-item-row">
+            <div class="m-item-row">
               <el-input type="textarea" :autosize="{ minRows: 3, maxRows: 6 }" placeholder="请输入推文内容" v-model="activityACtext" style="width: 4rem" ref="actext"></el-input>
             </div>
           </div>
@@ -223,7 +223,7 @@
         <div class="m-form-item" style="min-height: 1.6rem; max-height: 1.8rem">
           <p class="m-form-label required" style="width: 0.9rem;">推文图片：</p>
           <div class="m-item-content" style="width: 6rem;" :class="activityMediaSort > 4 ? 'five':''" id="abcd">
-            <div class=" m-item-row">
+            <div class="m-item-row">
               <el-upload action="string" :http-request="uploadActivityPicture" list-type="picture-card" :file-list="activityPictureList"
                          :on-preview="handlePictureCardPreview" :limit="9" :on-remove="pictureRemove" id="activityPicture" :on-exceed="onExceed">
                 <i class="el-icon-plus"></i>
@@ -236,7 +236,7 @@
         </div>
         <p class="m-form-label required" style="width: 0.9rem;">跳转类型：</p>
         <div class="m-item-content">
-          <div class=" m-item-row">
+          <div class="m-item-row">
             <el-select v-model="activityJumpValue" class="m-input-l" placeholder="请选择" :disabled="editActivity" style="width: 1.75rem">
               <el-option v-for="item in activityJumpList" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
@@ -255,7 +255,7 @@
         <div class="m-form-item">
           <p class="m-form-label required" style="width: 0.9rem;">活动类型：</p>
           <div class="m-item-content">
-            <div class=" m-item-row">
+            <div class="m-item-row">
               <el-select v-model="activityType" class="m-input-l" placeholder="请选择">
                 <el-option v-for="item in activityTypeList" :key="item.value" :label="item.label" :value="item.value"></el-option>
               </el-select>
@@ -272,7 +272,7 @@
           <div class="num-box">
             <p class="m-form-label" style="width: 1rem;">虚拟点赞数：</p>
             <div class="m-item-content">
-              <div class=" m-item-row">
+              <div class="m-item-row">
                 <el-input v-model="likeNum" class="m-input-s" placeholder="请输入"></el-input>
               </div>
             </div>
@@ -280,35 +280,18 @@
           <div class="num-box box-display">
             <div class="m-form-label" style="margin-top: 0.28rem">活动角标：</div>
             <div class="m-item-content">
-              <div class=" m-item-row">
-                <img class="at-img" v-if="activityBadge" :src="activityBadge" @click="getTags">
-                <div v-if="!activityBadge" class="at-text" @click="getTags">请点此选择</div>
+              <div class="m-item-row">
+                <img class="at-img" v-if="activityBadge" :src="activityBadge" @click="tagsDialog">
+                <div v-if="!activityBadge" class="at-text" @click="tagsDialog">请点此选择</div>
               </div>
             </div>
+            <tags ref="tags" @getData="getData"></tags>
           </div>
-          <el-dialog title="活动角标" :visible.sync="badgeDialog" width="4.8rem">
-            <div class="dialog-img">
-              <div class="img-box" v-for="(item, index) in badgeList">
-                <img class="badge-img" :src="item.atname" @click="chooseImg(index)">
-                <img class="choose-ok-img" v-if="item.choose" src="../../common/images/tag_ok.png">
-                <div class="delete-tags" @click="deleteTag(item, index)">X</div>
-              </div>
-              <el-upload class="badge-uploader" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false"
-                         :on-success="uploadBadgeImg">
-                <img v-if="activityBadgeTemp" :src="activityBadgeTemp" style="width: 0.5rem; height: 0.5rem;">
-                <i v-else class="el-icon-plus badge-icon"></i>
-              </el-upload>
-            </div>
-            <span slot="footer" class="dialog-footer">
-              <el-button class="at-img-dialog-btn btn-color" type="primary" @click="chooseOK">确 定</el-button>
-            </span>
-          </el-dialog>
-
         </div>
         <div class="m-form-item">
           <p class="m-form-label" style="width: 0.65rem; margin-top: 0.1rem">发布者：</p>
           <div class="m-item-content">
-            <div class=" m-item-row">
+            <div class="m-item-row">
               <el-select v-model="author" class="m-input-l" placeholder="请选择发布者" @focus="focusselect('author')">
                 <!--<el-option v-for="item in authorList" :key="item.value" :label="item.label" :value="item.value"></el-option>-->
                 <el-option v-for="item in authorList" :key="item.value" :label="item.label" :value="item.value">
@@ -334,6 +317,7 @@
   import pageTitle from '../../components/common/title';
   import Pagination from "../../components/common/page";
   import wTab from '../../components/common/wTab';
+  import tags from '../../components/activity/tags';
   import axios from 'axios';
   import api from '../../api/api';
 
@@ -404,10 +388,6 @@
         authorList: [],             // 推文-发布者list
         activityType: '',           // 添加推文/活动时的活动类型选择的值
         activityBadge: '',          // 推文-活动角标
-        activityBadgeTemp: '',      // 推文-活动角标暂存
-        badgeDialog: false,         // 推文-活动角标-dialog
-        badgeList: [],              // 推文-活动角标list
-        badgeIndex: "",             // 推文-活动角标序号暂存
         activityACtext: '',         // 推文-活动内容
         activityEditScope: '',      // 确定编辑的推文行数据，便于后续存回该行
         activityJumpValue: '',      // 推文-跳转类型选择的值
@@ -431,7 +411,7 @@
         tnid: "",         // 暂存导航栏的tnid
       }
     },
-    components:{ pageTitle, Pagination, wTab },
+    components:{ pageTitle, Pagination, wTab, tags },
     methods:{
 
       // 上传推文图片
@@ -1279,74 +1259,14 @@
         });
       },
 
-      // 上传活动角标图片
-      uploadBadgeImg(res, file) {
-        let form = new FormData();
-        form.append("file", file.raw);
-        form.append("FileType", 'NewsPic');
-        form.append("index", 1);
-        axios.post(api.upload_task_img + '?token=' + localStorage.getItem('token') + "&filetype = badge", form).then(res => {
-          if(res.data.status == 200){
-            let atname = res.data.data;
-            // 上传活动角标图片到api
-            axios.post(api.upload_tags + '?token=' + localStorage.getItem('token'), { tags: [{ atname: atname }] }).then(res => {
-              if(res.data.status == 200){
-                this.$message({ type: 'success', message: "上传成功", duration: 1500 });
-                this.badgeList.push({ atid: res.data.data.atid_list[0], atname: atname });
-              }else{
-                this.$message({ type: 'error', message: res.data.message, duration: 1500 });
-              }
-            });
-          }else{
-            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
-          }
-        });
+      // 打开tags子组件的dialog
+      tagsDialog() {
+        this.$refs.tags.getTags();
       },
 
-      // 获取推文角标
-      getTags(){
-        this.badgeDialog = true;
-        axios.get(api.get_all_tags + "?token=" + localStorage.getItem("token")).then(res => {
-          if(res.data.status == 200) {
-            this.badgeList = res.data.data.tags_list;
-            for(let i = 0; i < this.badgeList.length; i ++) {
-              this.badgeList[i].choose = false;
-            }
-          }else{
-            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
-          }
-        });
-      },
-
-      // 删除推文角标
-      deleteTag(item, index){
-        this.$confirm('此操作将删除该专题, 是否继续?', '提示',
-          {confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'}).then(() => {
-          axios.post(api.del_exist_tags + '?token=' + localStorage.getItem('token'), { atid: item.atid }).then(res => {
-            if(res.data.status == 200){
-              this.$message({ type: 'success', message: res.data.message, duration: 1500 });
-              this.badgeList.splice(index, 1);
-            }else{
-              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
-            }
-          });
-        }).catch(() => {  });
-      },
-
-      // 选择该推文角标
-      chooseImg(index){
-        for(let i = 0; i < this.badgeList.length; i ++) {
-          this.badgeList[i].choose = false;
-        }
-        this.badgeList[index].choose = true;
-        this.badgeIndex = index;
-        this.badgeList = this.badgeList.concat();
-      },
-
-      // 确认按钮，传回选中图片
-      chooseOK() {
-        this.badgeDialog = false;
-        this.activityBadge = this.badgeList[this.badgeIndex].atname;
+      // 接收子组件传过来的勾选角标
+      getData(atname) {
+        this.activityBadge = atname;
       },
 
       // 分页点击方法
@@ -1456,43 +1376,5 @@
     font-size: 0.12rem;
     margin: 0.22rem 0 0 0.1rem;
     border-bottom: 1px solid #4169E1;
-  }
-  .dialog-img {
-    width: 4.6rem;
-    display: flex;
-    flex-wrap: wrap;
-    margin-top: -0.2rem;
-    .img-box {
-      position: relative;
-      .badge-img {
-        width: 0.5rem;
-        height: 0.5rem;
-        margin: 0.2rem 0 0 0.2rem;
-        border: 1px solid #ababab;
-      }
-      .choose-ok-img {
-        width: 0.182rem;
-        height: 0.13333rem;
-        position: absolute;
-        bottom: 0;
-        right: -0.02rem;
-      }
-      .delete-tags {
-        color: #ababab;
-        position: absolute;
-        top: 0.14rem;
-        right: -0.02rem;
-      }
-    }
-  }
-  .dialog-footer {
-    .at-img-dialog-btn {
-      padding: 0.05rem 0.1rem;
-      font-size: 14px;
-    }
-    .btn-color {
-      border-color: @btnActiveColor;
-      background-color: @btnActiveColor;
-    }
   }
 </style>
