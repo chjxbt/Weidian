@@ -9,12 +9,12 @@ from weixin import WeixinPay
 
 from WeiDian import logger
 from WeiDian.common.params_require import parameter_required
-from WeiDian.config.enums import ORDER_STATUS
+from WeiDian.config.enums import ORDER_STATUS, order_product_info_status
 from WeiDian.config.setting import QRCODEHOSTNAME, APP_ID, MCH_ID, MCH_KEY, notify_url
 from flask import request
 from WeiDian.common.TransformToList import dict_add_models, list_add_models
 from WeiDian.common.timeformat import format_for_db
-from WeiDian.common.token_required import verify_token_decorator, is_partner
+from WeiDian.common.token_required import verify_token_decorator, is_partner, is_admin
 from WeiDian.common.import_status import import_status
 from WeiDian.service.SOrder import SOrder
 from WeiDian.service.SProductImage import SProductImage
@@ -255,7 +255,7 @@ class COrder():
         return data
 
     def pay_callback(self):
-        """回调"""
+        """支付回调"""
         data = self.pay.to_dict(request.data)
         from WeiDian.common.loggers import generic_log
         generic_log(data)
@@ -305,9 +305,38 @@ class COrder():
         updated = self.sorder.update_orderinfo_by_oisn(sn, update_dict)
         return self.pay.reply("OK", True)
 
+    @verify_token_decorator
+    def send_order(self):
+        """发货"""
+        if not is_admin():
+            raise TOKEN_ERROR()
 
+    @verify_token_decorator
+    def confim_order(self):
+        """确认收货"""
+        if is_tourist():
+            raise TOKEN_ERROR()
+        data = parameter_required(u'oiid')
+        oiid = data.get('oiid')
+        order = self.sorder.get_order_by_oiid(oiid)
+        if not order or order.USid != request.user.id or order.OIpaystatus != 5:
+            raise NOT_FOUND()
 
+    @verify_token_decorator
+    def apply_refund(self):
+        """申请退货"""
 
+    @verify_token_decorator
+    def agree_refund(self):
+        """同意退货"""
+
+    @verify_token_decorator
+    def apply_change(self):
+        """申请换货"""
+
+    @verify_token_decorator
+    def agree_change(self):
+        """同意换货"""
 
     def fix_orderproduct_info(self, sku_list, oiid):
         """
@@ -345,8 +374,16 @@ class COrder():
  
     def fill_productinfo(self, order):
         oiid = order.OIid
-        order.productinfo = self.sorder.get_orderproductinfo_by_oiid(oiid)
-        order.productinfo.fields = ['OPIproductname', 'OPIproductimages']
+        productinfo = self.sorder.get_orderproductinfo_by_oiid(oiid)
+        order.productinfo = productinfo
+        if productinfo.OPIstatus in [0, 1, 2]:  # 0: 待发货, 1 待收货, 2 交易成功,
+            productinfo.fields = ['OPIproductname', 'OPIproductimages', 'OPIstatus', 'OPIlogisticsSn', 'OPIlogisticsText']
+        else:
+            productinfo.fields = ['OPIproductname', 'OPIproductimages', 'OPIstatus', 'OPIlogisticsSn',
+                                  'OPIlogisticsText', 'OPIresendLogisticSn', 'OPIresendLogisticText']
+        productinfo.fill(order_product_info_status.get(productinfo.OPIstatus, u'异常'), 'zh_status')
+
+
         order.add('productinfo')
         return order
 
