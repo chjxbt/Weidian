@@ -12,7 +12,7 @@
             <template slot-scope="scope">
               <el-button type="text" size="small" @click="replyComment(scope)" :disabled="scope.row.robot == '小马甲用户'">回复</el-button>
               <el-button type="text" size="small">|</el-button>
-              <el-button type="text" size="small" @click="">删除</el-button>
+              <el-button type="text" size="small" @click="deleteComment(scope)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -129,7 +129,7 @@
       // 打开回复评论的dialog
       replyComment(scope) {
         this.comment = scope.row;
-        console.log(this.comment)
+        console.log(this.comment);
         this.replyComments = true;
       },
 
@@ -143,10 +143,32 @@
           if(res.data.status == 200){
             this.$message({ message: "回复成功", type: 'success', duration: 1500 });
             this.replyComments = false;
+
+            // 回复成功后更新数据
+            this.replyText = "";
+            this.getComments();
           }else{
             this.$message({ message: res.data.message, type: 'error', duration: 1500 });
           }
         });
+      },
+
+      // 删除评论
+      deleteComment(scope) {
+        this.$confirm('此操作将删除该评论, 是否继续?', '提示',
+          {confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'}).then(() => {
+          /*this.commentLoading = true;
+          axios.post(api.update_bact + '?token=' + localStorage.getItem('token') + '&baid=' + this.bannerList[scope.$index].baid,
+            { baisdelete: true }).then(res=>{
+            if(res.data.status == 200){
+              this.commentLoading = false;
+              this.$message({ message: "删除成功", type: 'success', duration: 1500 });
+              this.bannerList.splice(scope.$index, 1);    // 刷新视图
+            }else{
+              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+            }
+          });*/
+        }).catch(() => {  });
       },
 
       // 分页点击方法
