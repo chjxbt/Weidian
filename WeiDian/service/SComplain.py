@@ -14,6 +14,14 @@ class SComplain(SBase):
         return self.session.query(Complain).filter(Complain.USid == usid).order_by(Complain.COcreatetime).all()
 
     @close_session
+    def admin_get_all_complain(self, page_size, page_num):
+        return self.session.query(Complain).order_by(Complain.COcreatetime.desc()).offset(page_size * (page_num - 1)).limit(page_size).all()
+
+    @close_session
+    def admin_get_complain_count(self):
+        return self.session.query(Complain).count()
+
+    @close_session
     def get_complain_by_oiid(self, oiid):
         return self.session.query(Complain).filter(Complain.OIid == oiid).first()
 

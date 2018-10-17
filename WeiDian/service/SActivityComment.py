@@ -34,7 +34,7 @@ class SActivityComment(SBase):
     @close_session
     def get_apply_by_acoid(self, acoid):
         """获取评论的回复"""
-        return self.session.query(ActivityComment).filter(ActivityComment.ACOparentid == acoid).first()
+        return self.session.query(ActivityComment).filter(ActivityComment.ACOparentid == acoid, ActivityComment.ACisdelete == False).order_by(ActivityComment.ACOcreatetime.desc()).all()
 
     @close_session
     def get_apply_for_by_acoid(self, acoid):
@@ -55,7 +55,7 @@ class SActivityComment(SBase):
     @close_session
     def delete_comment_by_acoid(self, acoid):
         """删除单条评论"""
-        return self.session.query(ActivityComment).filter_by(ACOid=acoid).update({ActivityComment.ACisdelete: True})
+        return self.session.query(ActivityComment).filter_by(ACOid=acoid).update({'ACisdelete': True})
 
     @close_session
     def del_robot_comment_by_acid(self, acid):
