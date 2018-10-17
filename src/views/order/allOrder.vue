@@ -6,13 +6,13 @@
         <div class="order-search">
           <div class="search-text-input">
             <div class="search-text">订单类型：</div>
-            <el-input v-model="OMidSearch" size="mini" placeholder="请输入订单类型" clearable></el-input>
+            <el-input v-model="OMidSearch" size="mini" clearable></el-input>
           </div>
           <div class="search-text-input" style="width: 48%">
             <div class="search-text">下单时间：</div>
             <div class="block">
               <el-date-picker v-model="OMtime" type="daterange" unlink-panels range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"
-                              :picker-options="pickerOptions2" size="mini" value-format="yyyy-MM-dd">
+                              size="mini" value-format="yyyy-MM-dd">
               </el-date-picker>
             </div>
           </div>
@@ -47,7 +47,7 @@
         <el-tabs v-model="activeName" @tab-click="handleClick">
           <div v-for="item in tabList">
             <el-tab-pane :label="item" :name="item.slice(0, 3)" :lazy="lazyStatus">
-              <all-order-table ref="child" :order="order" @toPage="getData" @returnClick="returnClick"></all-order-table>
+              <all-order-table ref="child" :order="order" @toPage="getData" @detailClick="detailClick" @returnClick="returnClick"></all-order-table>
             </el-tab-pane>
           </div>
         </el-tabs>
@@ -267,45 +267,14 @@
   import pageTitle from '../../components/common/title';
   import allOrderTable from '../../components/common/order-table';
   import api from '../../api/api';
-  import {Message} from 'element-ui';
   import axios from 'axios';
   import index from "../../router";
+
   export default {
     data() {
         return {
           name: '所有订单',
           activeName: '全 部',
-          pickerOptions2: {
-            shortcuts: [
-              {
-                text: '最近一周',
-                onClick(picker) {
-                  const end = new Date();
-                  const start = new Date();
-                  start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-                  picker.$emit('pick', [start, end]);
-                }
-              },
-              {
-                text: '最近一个月',
-                onClick(picker) {
-                  const end = new Date();
-                  const start = new Date();
-                  start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-                  picker.$emit('pick', [start, end]);
-                }
-              },
-              {
-                text: '最近三个月',
-                onClick(picker) {
-                  const end = new Date();
-                  const start = new Date();
-                  start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-                  picker.$emit('pick', [start, end]);
-                }
-              }
-            ]
-          },
           OMtime: null,
           OMlogisticsNameSearch: '',
           OMlogisticsNameList: [],
@@ -321,8 +290,8 @@
           OMendTime: '',
           tabList: ['全 部', '已取消','未支付','支付中', '已支付','已发货','已收货', '已完成','已评价','退款中'],
           index: 0,
-          show_return:false,
-          show_details:true,
+          show_return: false,
+          show_details: false,
           options: [{
             value: '选项1',
             label: '黄金糕'
@@ -344,6 +313,9 @@
     },
     components: { pageTitle, allOrderTable },
     methods: {
+      detailClick(){
+        this.show_details = true;
+      },
       returnClick(){
         this.show_return = true;
       },
@@ -453,9 +425,9 @@
         })
       }
     },
-    created() {
-      this.getData(1)
-      this.getOMlogisticsNameList()
+    mounted() {
+      // this.getData(1);
+      // this.getOMlogisticsNameList();
     },
     watch: {
       // 依据order变化来传递对应的新的order给对应的this.index的子组件，并调用该子组件的getOrderList方法

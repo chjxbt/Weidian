@@ -37,7 +37,7 @@
         <td>商品</td>
         <td>商品</td>
         <td>
-          <span class="m-table-link">详情</span>
+          <span class="m-table-link" @click="detailClick">详情</span>
           <span class="m-table-link" @click="returnClick">退款</span>
         </td>
       </tr>
@@ -100,6 +100,9 @@
     },
     components: { Pagination },
     methods: {
+      detailClick(){
+        this.$emit('detailClick')
+      },
       returnClick(){
         this.$emit('returnClick')
       },

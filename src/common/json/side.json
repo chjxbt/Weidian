@@ -45,18 +45,8 @@
       "MNicon":"icon-order",
       "children":[
         {
-          "MNname":"订单概况",
-          "MNurl":"orderIndex",
-          "MNicon":"none"
-        },
-        {
           "MNname":"所有订单",
           "MNurl":"allOrder",
-          "MNicon":"none"
-        },
-        {
-          "MNname":"退款维权",
-          "MNurl":"refund",
           "MNicon":"none"
         }
       ]
