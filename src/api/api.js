@@ -33,6 +33,7 @@ const api={
   update: title + 'recommend/update',                       // 添加/修改/删除每日推荐商品 - 发现页
   get_comment_with_apply: title + 'activitycomment/get_comment_with_apply',   // 获取推文下的评论-嵌套回复
   add_comment: title + 'activitycomment/add_comment',       // 回复评论
+  del_comment: title + 'activitycomment/del_comment',       // 删除评论
 
   update_info: title + 'super/update_info',                 // 修改管理员自身基本信息
   get_all_suser: title + 'super/get_all_suser',             // 获取管理员列表
