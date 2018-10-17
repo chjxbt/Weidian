@@ -97,6 +97,34 @@
       <!--<img src="/static/images/fen.png" v-if="show_fen" class="m-course-img" alt="" @click.stop="fenClick">-->
       <m-video v-if="show_video" :src="video_src" @videoClose="videoClose"></m-video>
       <img-modal v-if="show_img" :src="img_src" @closeModal="closeModal"></img-modal>
+      <div class="m-fans-img-modal" @click="closeFansModal" v-if="show_fans_img">
+        <div class="m-modal-state">
+          <!--<span class="m-close" @click="closeModal">X</span>-->
+          <!--<img :src="src"  alt="">-->
+          <div class="m-headPortrait-name">
+            <span class="m-head-name">xxccccx</span>
+            <img src="" class="m-head-portrait" />
+          </div>
+          <mt-popup
+            class="help-popup"
+            v-model="helpPopupVisible"
+            popup-transition="popup-fade">
+            <img class="close-img" @click="closeFansModal" src="static/images/delete.png" alt="">
+            <img style="width: 100%;height: 100%;" src="" alt="">
+          </mt-popup>
+        </div>
+      </div>
+      <div class="m-fans-modal" v-if="show_fans" @click="closeModal('show_fans')">
+        <div class="m-modal-state">
+          <div class="m-modal-content">
+            <p>机会仅此一次，您确定不要吗？</p>
+            <div class="m-fans-btn">
+              <span @click="closeModal('show_fans')">残忍拒绝</span>
+              <span class="active" @click="closeModal('show_fans')">好的</span>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="bottom-prompt" v-if="bottom_show">
         <div class="bottom-line"></div>
         <div class="m-grey-color">我是有底线的</div>
@@ -206,7 +234,10 @@
               code_src:'',
               components_src:'',
               task_reward:null,
-              is_vip:true
+              is_vip:true,
+              show_fans:false,
+              helpPopupVisible:false,
+              show_fans_img:false
             }
         },
         components: {
@@ -219,58 +250,43 @@
           imgModal
         },
       mounted(options){
-        if(this.$route.query.linkUrl && localStorage.getItem('is_click') != '1'){
-          switch (this.$route.query.linkUrl){
-            case 'activityContent':
-              this.$router.push({path:'/'+this.$route.query.linkUrl,query:{
-                  baid:this.$route.query.baid,
-                }});
-              localStorage.setItem('is_click','1')
-              break;
-            case 'productDetail':
-              this.$router.push({path:'/'+this.$route.query.linkUrl,query:{
-                  prid:this.$route.query.prid,
-                }})
-              localStorage.setItem('is_click','1')
-              break;
-            case 'discover/index':
-              this.$router.push({path:'/'+this.$route.query.linkUrl,query:{
-                  acid:this.$route.query.acid,
-                  name:this.$route.query.name
-                }});
-              localStorage.setItem('is_click','1')
-              break;
-
-          }
-          return false;
+        //判断是否登录
+        if(!localStorage.getItem('token') &&!common.GetQueryString('code')){
+          this.login();
         }
-        common.changeTitle('首页');
-        if(common.GetQueryString('UPPerd')){
-          localStorage.setItem('UPPerd',common.GetQueryString('UPPerd'));
-          alert(common.GetQueryString('UPPerd'))
-          if(localStorage.getItem('token')){
-            this.$router.push('/login');
+        if(localStorage.getItem('token')){
+          this.init();
+        }
+        if(this.isWeiXin()){    //是来自微信内置浏览器
+          // 获取微信信息，如果之前没有使用微信登陆过，将进行授权登录
+          if(common.GetQueryString('code')){
+            // alert(common.GetQueryString('code'))
+            window.localStorage.setItem("code",common.GetQueryString('code'));
+            axios.get(api.get_accesstoken,{
+              params:{
+                code: common.GetQueryString('code'),
+                UPPerd:localStorage.getItem('UPPerd') || ''
+              }
+            }).then(res => {
+              if(res.data.status == 200){
+                window.localStorage.setItem("access_token",res.data.data.access_token);
+                window.localStorage.setItem("token",res.data.data.token);
+                window.localStorage.setItem("openid",res.data.data.openid);
+                window.localStorage.setItem("is_first",String(res.data.data.is_first));
+                window.localStorage.setItem("wximg",res.data.data.wximg);
+                window.localStorage.setItem("subscribe",res.data.data.subscribe);
+                window.localStorage.setItem("is_today_first",res.data.data.is_today_first);
+                window.localStorage.setItem("user_level",res.data.data.user_level);
+                this.$store.state.tabbar = [].concat(res.data.data.icon);
+                this.$store.state.tabbar_select = res.data.data.icon[0].name;
+                this.init();
+                // this.$router.push('/index/index');
+              }else{
+                Toast({ message: res.data.message, className: 'm-toast-fail' });
+              }
+            });
           }
         }
-          this.getSwipe();
-          this.getHot();
-          this.getTopnav();
-          if(localStorage.getItem('level') == 'partner'){
-            this.is_vip = true;
-            this.getTask();
-          }else{
-            this.is_vip = false;
-          }
-
-          if(localStorage.getItem('is_first')  == 'true' || localStorage.getItem('is_first')  == '1'){
-            this.show_course = true;
-            localStorage.setItem("is_first", "0");
-          }
-          let that =this;
-        this.interval = window.setInterval(that.animation,3000);
-
-        // this.$nextTick(function () {
-          wxapi.wxRegister(this.wxRegCallback)
         // })
       },
       watch:{
@@ -283,6 +299,90 @@
         }
       },
         methods: {
+        init(){
+          if(this.$route.query.linkUrl && localStorage.getItem('is_click') != '1'){
+            switch (this.$route.query.linkUrl){
+              case 'activityContent':
+                this.$router.push({path:'/'+this.$route.query.linkUrl,query:{
+                    baid:this.$route.query.baid,
+                  }});
+                localStorage.setItem('is_click','1')
+                break;
+              case 'productDetail':
+                this.$router.push({path:'/'+this.$route.query.linkUrl,query:{
+                    prid:this.$route.query.prid,
+                  }})
+                localStorage.setItem('is_click','1')
+                break;
+              case 'discover/index':
+                this.$router.push({path:'/'+this.$route.query.linkUrl,query:{
+                    acid:this.$route.query.acid,
+                    name:this.$route.query.name
+                  }});
+                localStorage.setItem('is_click','1')
+                break;
+              case 'invitationLetter':
+                this.$router.push({path:'/'+this.$route.query.linkUrl,query:{
+
+                  }});
+                localStorage.setItem('is_click','1');
+                break;
+            }
+            return false;
+          }
+          /*邀请专粉*/
+          if(this.$route.query.isFans == '1' && localStorage.getItem('is_click') != '1' ){
+            this.show_fans_img = true;
+            this.helpPopupVisible =true;
+            localStorage.setItem('is_click','1')
+          }
+          common.changeTitle('首页');
+          // if(common.GetQueryString('UPPerd')){
+          //   localStorage.setItem('UPPerd',common.GetQueryString('UPPerd'));
+          //   alert(common.GetQueryString('UPPerd'))
+          //   if(localStorage.getItem('token')){
+          //     this.$router.push('/login');
+          //   }
+          // }
+          this.getTopnav();
+          if(localStorage.getItem('is_first')  == 'true' || localStorage.getItem('is_first')  == '1'){
+            this.show_course = true;
+            localStorage.setItem("is_first", "0");
+          }
+          let that =this;
+          this.interval = window.setInterval(that.animation,3000);
+
+          // this.$nextTick(function () {
+          wxapi.wxRegister(this.wxRegCallback)
+        },
+          login(){
+            axios.get(api.get_config,{
+              params:{
+                url: window.location.href
+              }
+            } ).then((res) => {
+              if(res.data.status == 200){
+                const id = res.data.data.appId;
+                const url = window.location.href;
+                // const  url = 'https://daaiti.cn/WeiDian/#/login';
+                window.location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid='
+                  +  id + '&redirect_uri='+ encodeURIComponent(url) + '&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect'
+              }
+
+            }).catch((error) => {
+              console.log(error ,'1111')
+            })
+          },
+          isWeiXin() {
+            let ua = window.navigator.userAgent.toLowerCase();
+            console.log(ua);//mozilla/5.0 (iphone; cpu iphone os 9_1 like mac os x) applewebkit/601.1.46 (khtml, like gecko)version/9.0 mobile/13b143 safari/601.1
+            if (ua.match(/MicroMessenger/i) == 'micromessenger') {
+              return true;
+            } else {
+              return false;
+            }
+
+          },
           /*手指滑动显示隐藏*/
           touchStart(e){
 
@@ -358,8 +458,8 @@
                   break;
                 case 1:
                   // _url = this.title +'activityContent?openid=' + localStorage.getItem('openid') + '&baid=' + (name?this.activity_list[list].aclinkvalue : list);
-                   params = this.title +'activityContent&openid=' + localStorage.getItem('openid') + '&baid=' + (name?this.activity_list[list].aclinkvalue : list);
-                  _url = this.title + 'index/index?linkUrl="' + params+'"';
+                   params = 'activityContent&openid=' + localStorage.getItem('openid') + '&baid=' + (name?this.activity_list[list].aclinkvalue : list);
+                  _url = this.title + 'index/index?linkUrl=' + params+'';
                   break;
                 case 2:
                   // _url = this.title + 'productDetail?openid=' + localStorage.getItem('openid')+ '&prid=' + (name?this.activity_list[list].product.prid : list);
@@ -448,6 +548,14 @@
                 }
                 this.nav_list[0].click =true;
                 this.getActivity(this.nav_list[0].tnid);
+                this.getSwipe();
+                this.getHot();
+                if(localStorage.getItem('level') == 'partner'){
+                  this.is_vip = true;
+                  this.getTask();
+                }else{
+                  this.is_vip = false;
+                }
               }else{
                 Toast({ message: res.data.message, className: 'm-toast-fail' });
               }
@@ -470,7 +578,7 @@
               if(res.data.status == 200){
                 this.swipe_items = res.data.data;
               }else{
-                Toast({ message: res.data.message, className: 'm-toast-fail' });
+                // Toast({ message: res.data.message, className: 'm-toast-fail' });
               }
             })
           },
@@ -483,7 +591,7 @@
               if(res.data.status == 200){
                 this.hot_list = res.data.data;
               }else{
-                Toast({ message: res.data.message, className: 'm-toast-fail' });
+                // Toast({ message: res.data.message, className: 'm-toast-fail' });
               }
             })
           },
@@ -525,7 +633,7 @@
                 }
                 this.activity_list = [].concat(arr)
               }else{
-                Toast({ message: res.data.message, className: 'm-toast-fail' });
+                // Toast({ message: res.data.message, className: 'm-toast-fail' });
               }
             })
           },
@@ -725,6 +833,11 @@
             let rbimage = activity.baimage;
             this.$router.push({path: "/activityContent", query: { rbimage:rbimage,baid:activity.baid }});
           },
+          closeFansModal(){
+            this.show_fans_img = false;
+            this.helpPopupVisible =false;
+            this.show_fans = true;
+          }
         }
     }
 </script>
@@ -914,5 +1027,122 @@
 
   }
 }
-
+.m-fans-modal{
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0,0,0,0.2);
+  z-index: 1001;
+  transition: opacity .5s;
+  .m-modal-state{
+    background-color: #fff;
+    position: absolute;
+    width: 500px;
+    height: 279px;
+    top: 0;
+    left: 0;
+    right:0;
+    bottom:0;
+    margin: auto;
+    border: 1px solid @borderColor;
+    border-radius: 10px;
+    -webkit-transition: height 0.88s;
+    transition: height 0.88s;
+    .m-modal-content{
+      text-align: center;
+      p{
+        margin: 50px 10px 86px;
+        font-size: 33px;
+        color: #666;
+        line-height: 1.39;
+        letter-spacing: normal;
+      }
+      .m-fans-btn{
+        .flex-row(space-around);
+        span{
+          display: block;
+          width: 205px;
+          height: 79px;
+          color: #fff;
+          background-color: #c6c6c6;
+          line-height: 79px;
+          border-radius: 4px;
+          font-size: 28px;
+          &.active{
+            background-color: #f43b51;
+          }
+        }
+      }
+    }
+  }
+}
+  .m-fans-img-modal{
+    position: fixed;
+    top:0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0,0,0,0.4);
+    z-index: 10001;
+    .m-modal-state{
+      position: absolute;
+      width: 500px;
+      height: 750px;
+      top:50%;
+      left: 50%;
+      transform: translate(-250px,-375px);
+      background-color: #fff;
+      border-radius: 10px;
+      .m-close{
+        position: absolute;
+        top: 20px;
+        right: 20px;
+      }
+    }
+  }
+  .help-popup{
+    height: 750px;
+    width: 500px;
+    border-radius: 10px;
+    .close-img{
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 25px;
+      height: 25px;
+    }
+    img{
+      border-radius: 10px;
+    }
+  }
+  .m-headPortrait-name{
+    position: relative;
+    top:-85px;
+    left: -60px;
+    .m-head-portrait{
+      position: absolute;
+      top:0;
+      left:0;
+      width: 95px;
+      height: 95px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      z-index: 200;
+      background-color: #a4a4a4;
+    }
+    .m-head-name{
+      position: absolute;
+      top:22px;
+      left:70px;
+      z-index: 100;
+      padding: 0 40px;
+      height: 52px;
+      line-height: 52px;
+      background-color: #c3c3c3;
+      border-radius: 25.3px;
+      font-size: 26px;
+    }
+  }
 </style>

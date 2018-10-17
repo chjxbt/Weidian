@@ -30,11 +30,14 @@
           }
         },
       mounted(){
-
+        console.log(this.$store.state.tabbar,'asdasdasd');
       },
       computed:{
         select(){
           return this.$store.state.tabbar_select
+        },
+        tabbars(){
+          return this.$store.state.tabbar;
         }
       },
       watch: {
@@ -95,6 +98,9 @@
           },
           // 深度观察监听
           deep: true
+        },
+        tabbars:function () {
+          this.tabbar =this.$store.state.tabbar;
         }
       },
 

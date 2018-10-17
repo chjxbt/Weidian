@@ -2,7 +2,7 @@
   <div>
     <img src="/static/images/order_pay_OK.png" class="m-ok-img">
     <p class="m-ft-40 m-black m-ft-b">订单支付成功</p>
-    <p class="price-text m-black m-ft-b">￥<span class="m-ft-34">159.00</span></p>
+    <p class="price-text m-black m-ft-b">￥<span class="m-ft-34">{{price}}</span></p>
     <p class="order-text m-ft-30 m-grey">仓库正为您备货中</p>
     <div class="m-btn">
       <div class="m-btn-text m-ft-28 m-grey-color" @click="orderDetail">查看订单</div>
@@ -16,15 +16,19 @@
     data() {
       return {
         name: "orderPayOK",
-        order: {}
+        order: {},
+        price:0
       }
     },
     // components: {  },
+    mounted(){
+      this.price = this.$route.query.price;
+    },
     methods: {
       // 查看订单
       orderDetail() {
-        let order = this.order;
-        this.$router.push({path: "/orderStatus", query: { order }});
+        let oiid = this.oiid;
+        this.$router.push({path: "/orderStatus", query: { oiid }});
       },
       // 返回首页
       returnHome() {
@@ -32,7 +36,7 @@
       }
     },
     created() {
-      this.order = this.$route.query.order;
+      this.oiid = this.$route.query.oiid;
       // console.log("order", this.order);
     }
   }

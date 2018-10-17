@@ -55,10 +55,13 @@ const api={
   do_task: title +'/task/do_task',//做任务
   get_bigactivity : title + '/bigactivity/get_bigactivity',//专题页
   get_one_product: title + '/product/get_one',//获取商品详情
+  add_one_productlike:title + '/productlike/add_one',//商品点赞
   get_list_shoppingcart: title + '/shoppingcart/get_list',//获取购物车
   delete_shoppingcart: title +'/shoppingcart/delete',//删除购物车
   update_shoppingcart: title + '/shoppingcart/update',///更新购物车
   get_share_params: title + '/mycenter/get_share_params',//获取分享参数
+  create_order: title +'/order/create',//创建订单
+  get_one_address: title + '/mycenter/get_one_address',//获取单个地址信息
 };
 
 export default api

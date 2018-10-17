@@ -78,7 +78,7 @@
         methods: {
           getCode(){
               let _url = '';
-              _url = window.location.origin + '/#/index';
+              _url = window.location.origin + '/#/index/index?isFans = 1';
               axios.post(api.share_qrcode +'?token=' + localStorage.getItem('token'),{
                 dataurl:_url
               }).then(res => {

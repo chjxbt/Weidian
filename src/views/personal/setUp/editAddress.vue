@@ -176,13 +176,17 @@
         saveClick(){
           this.form.UAdefault = Boolean(this.form.UAdefault);
           this.form.areaid = this.address_id.areaid;
-
+          console.log(this.$route.query)
           if(this.form.UAname && this.form.UAphone != '' && this.form.UAtext && this.form.areaid) {
             if(this.form.UAid){
               axios.post(api.update_address +'?token='+localStorage.getItem('token') + '&uaid=' + this.form.UAid,this.form).then(res => {
                 if(res.data.status == 200 ){
                   Toast({ message: '修改成功', className: 'm-toast-success' });
-                  this.$router.push('/receiverAddress');
+                  if(this.$route.query.linkUrl){
+                    this.$router.push({path:'/' +this.$route.query.linkUrl ,query:{UAid:res.data.data.UAid,order:this.$route.query.order}});
+                  }else{
+                    this.$router.push('/receiverAddress');
+                  }
                 }else{
                   Toast({ message: res.data.message, className: 'm-toast-warning' });
                 }
@@ -191,7 +195,11 @@
               axios.post(api.add_address +'?token='+localStorage.getItem('token'),this.form).then(res => {
                 if(res.data.status == 200 ){
                   Toast({ message: '添加成功', className: 'm-toast-success' });
-                  this.$router.push('/receiverAddress');
+                  if(this.$route.query.linkUrl){
+                    this.$router.push({path:'/' +this.$route.query.linkUrl ,query:{UAid:res.data.data.UAid,order:this.$route.query.order}});
+                  }else{
+                    this.$router.push('/receiverAddress');
+                  }
                 }else{
                   Toast({ message: res.data.message, className: 'm-toast-warning' });
                 }

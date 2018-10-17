@@ -185,6 +185,11 @@
             }
           }
         }
+        if(this.order.length == this.orderList[0].productList.length){
+          this.ifChooseAll = true;
+        }else{
+          this.ifChooseAll = false;
+        }
       },
       // 结算时的全选
       chooseAll() {
@@ -241,8 +246,8 @@
       },
       // 去结算
       toOrder() {
-        let order = this.order;
-        this.$router.push({path: "/submitOrder", query: { order }});
+        let order =JSON.stringify(this.order);
+        this.$router.push({path: "/submitOrder", query: { order: order }});
       },
       changeNum(num,i){
         this.orderList[0].productList[i].scnums = num;

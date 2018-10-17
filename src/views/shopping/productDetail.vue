@@ -14,8 +14,8 @@
       <span class="old-price m-grey m-ft-28">￥{{product_info.proldprice}}</span>
       <span class="make-money m-ft-38 m-red m-ft-b tl" v-if="is_vip">赚{{product_info.prsavemonty}}</span>
       <span class="make-money m-ft-38 m-red m-ft-b tl" v-else></span>
-      <img v-if="collectionVisible" src="/static/images/icon-unlike.png" class="collection-share-img" @click="collection">
-      <img v-if="!collectionVisible" src="/static/images/icon-like.png" class="collection-share-img" @click="collection">
+      <img v-if="!product_info.alreadylike" src="/static/images/icon-like.png" class="collection-share-img" @click="collection">
+      <img v-else src="/static/images/icon-like-active.png" class="collection-share-img" @click="collection">
       <img src="/static/images/icon-share.png" class="collection-share-img" @click="shareProduct">
     </div>
     <div class="product-name m-ft-32 tl">{{product_info.prtitle}}</div>
@@ -107,20 +107,26 @@
         <img src="/static/images/produc_detail_shopping_cart.png" class="to-buy-icon m-ft-20">
         <p class="to-buy-text m-ft-20">购物车</p>
       </span>
-      <div class="m-vip-btn m-normal m-ft-36 "  v-if="!is_vip" @click="addCart">
-        <p>加入购物车</p>
-      </div>
-      <div class="m-vip-btn m-normal m-ft-36 active" v-if="!is_vip" @click="buyNow">
-        <p>立即购买</p>
+      <template v-if="!is_vip">
+        <div class="m-vip-btn m-ft-36 "   @click.stop="addCart">
+          <p>买</p>
+          <p class="m-ft-24">省￥{{product_info.prsavemonty}}</p>
+        </div>
+        <div class="m-vip-btn m-ft-36 active" >
+          <p>卖</p>
+          <p class="m-ft-24">赚￥{{product_info.prsavemonty}}</p></div>
+
+      </template>
+      <template v-else>
+        <div class="m-vip-btn m-normal m-ft-36 "  @click="addCart">
+          <p>加入购物车</p>
+        </div>
+        <div class="m-vip-btn m-normal m-ft-36 active" @click="buyNow">
+          <p>立即购买</p>
+        </div>
+      </template>
+
     </div>
-      <div class="m-vip-btn m-ft-36 "  v-if="is_vip" @click="addCart">
-        <p>买</p>
-        <p class="m-ft-24">省￥6.5</p>
-      </div>
-      <div class="m-vip-btn m-ft-36 active" v-if="is_vip" @click="buyNow">
-        <p>卖</p>
-        <p class="m-ft-24">赚￥6.5</p></div>
-      </div>
   </div>
 </template>
 
@@ -130,6 +136,7 @@
   import axios from 'axios';
   import {Toast} from 'mint-ui';
   import common from '../../common/js/common';
+  import wxapi from '../../common/js/mixins';
   // setTimeout(()=>{
   //   location.hash="a"
   // },100);
@@ -139,6 +146,7 @@
   //   }
   // },200);
   export default {
+    mixins: [wxapi],
     data() {
       return {
         name: "productDetail",
@@ -158,11 +166,39 @@
         is_choose:false,
         quantity:1,
         click_add:false,
-        show_commit:true
+        show_commit:true,
+        click_buy:false
       }
     },
     components: { productParams },
     methods: {
+      /*分享*/
+      wxRegCallback () {
+        this.wxShare()
+      },
+      wxShare () {
+        const url =window.location.origin + '/#/index/index?linkUrl=productDetail&prid'+ this.$route.query.prid;
+        axios.get(api.get_share_params+'?token='+localStorage.getItem('token'),{params:{
+          prid:this.$route.query.prid
+          }}).then(res => {
+          if(res.data.status == 200){
+            let opstion = {
+              title: res.data.data.title, // 分享标题
+              link:  url,      // 分享链接
+              imgUrl: res.data.data.img,// 分享图标
+              success: function () {
+                alert('分享成功')
+              },
+              error: function () {
+                alert('分享失败')
+              }
+            }
+            wxapi.ShareTimeline(opstion);
+            // this.show_invite = true;
+          }
+        })
+
+      },
       getInfo(){
         axios.get(api.get_one_product,{
           params:{
@@ -193,6 +229,15 @@
            }
         });
       },
+      buyCar(){
+        let arr = this.product_info;
+        arr.current_sku = this.choose[0];
+        arr.scnums = this.quantity;
+        let order = [];
+        order.push(arr);
+        order = JSON.stringify(order);
+        this.$router.push({path: "/submitOrder", query: { order: order }});
+      },
       // 返回上一页
       backPage() {
         // if(this.$route.query.last == 'activity' && this.$route.query.baid){
@@ -204,17 +249,23 @@
       },
       // 收藏
       collection() {
-        if(this.collectionVisible) {
-          this.collectionVisible = false;
-        }else if(!this.collectionVisible) {
-          this.collectionVisible = true;
-        }
+          axios.post(api.add_one_productlike + '?token=' + localStorage.getItem('token'),{
+            prid:this.$route.query.prid
+          }).then(res => {
+              if(res.data.status == 200){
+                this.product_info.alreadylike = !this.product_info.alreadylike;
+                Toast({ message: res.data.message, duration: 800, className: 'm-toast-success' });
+              }
+          })
       },
       carChoose(v,num){
         this.choose = v;
         this.quantity = num;
         if(this.click_add){
           this.postCar();
+        }
+        if(this.click_buy){
+          this.buyCar()
         }
       },
       // 分享商品
@@ -235,9 +286,17 @@
       },
 
       // 立即购买
-      buyNow() {
+      buyNow(){
+        console.log(this.product_info,'awdqweqw')
         let order = "";
-        this.$router.push({path: "/submitOrder", query: { order }});
+        // this.$router.push({path: "/submitOrder", query: { order }});
+        if(!this.choose){
+          this.is_choose = true;
+          this.click_buy = true;
+        }else{
+          this.buyCar();
+        }
+
       },
       // 添加购物车
       addCart(){
@@ -288,6 +347,7 @@
       }else{
         this.is_vip = true;
       }
+      wxapi.wxRegister(this.wxRegCallback)
     },
     created() {
       let prid = this.$route.query.prid;
