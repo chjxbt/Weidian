@@ -275,12 +275,7 @@
         return {
           name: '所有订单',
           activeName: '全 部',
-          OMtime: null,
-          OMlogisticsNameSearch: '',
-          OMlogisticsNameList: [],
           lazyStatus: false,
-          PRnameSearch: '',
-          OMidSearch: '',
           orderList: [],
           search: {},
           order: {},
@@ -298,15 +293,6 @@
           }, {
             value: '选项2',
             label: '双皮奶'
-          }, {
-            value: '选项3',
-            label: '蚵仔煎'
-          }, {
-            value: '选项4',
-            label: '龙须面'
-          }, {
-            value: '选项5',
-            label: '北京烤鸭'
           }],
           value: ''
         }
@@ -390,26 +376,7 @@
       },
       // 头部查询条件
       topSearch() {
-        this.OMstatus = ''
-        // 完善头部查询条件去除后获取数据的逻辑
-        if(this.OMtime != null || this.PRnameSearch != '' || this.OMidSearch != '' || this.OMlogisticsNameSearch != '') {
-          if(this.OMtime != null) {
-            this.OMstartTime = this.OMtime[0]+' 00:00:00'
-            this.OMendTime = this.OMtime[1]+' 23:59:59'
-          }else if (this.OMtime == null) {
-            this.OMstartTime = ''
-            this.OMendTime = ''
-          }
-        }
-        this.search = {
-          OMid: this.OMidSearch,
-          OMlogisticsName: this.OMlogisticsNameSearch,
-          PRname: this.PRnameSearch,
-          OMstartTime: this.OMstartTime,
-          OMendTime: this.OMendTime
-        }
-        this.tabList = ['全 部', '已取消','未支付','支付中', '已支付','已发货','已收货', '已完成','已评价','退款中']
-        this.getData(1)
+
       },
       getOMlogisticsNameList() {
         axios.get(api.get_omfilter).then(res => {
@@ -451,14 +418,12 @@
         background-color: @borderColor;
         .order-search{
           display: flex;
-          flex-flow: row;
           flex-wrap: wrap;
           align-items: center;
         }
         .search-buttons {
           /*margin-top: -0.3rem;*/
           display: flex;
-          flex-flow: row;
           flex-wrap: wrap;
           align-items: center;
           justify-content: flex-end;
