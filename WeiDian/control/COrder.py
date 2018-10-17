@@ -6,13 +6,13 @@ import random
 from datetime import datetime
 
 from weixin import WeixinPay
+from flask import request
 
 from WeiDian import logger
 from WeiDian.common.params_require import parameter_required
 from WeiDian.config.enums import ORDER_STATUS, order_product_info_status
 from WeiDian.config.kd import kd_list
 from WeiDian.config.setting import QRCODEHOSTNAME, APP_ID, MCH_ID, MCH_KEY, notify_url
-from flask import request
 from WeiDian.common.TransformToList import dict_add_models, list_add_models
 from WeiDian.common.timeformat import format_for_db
 from WeiDian.common.token_required import verify_token_decorator, is_partner, is_admin
@@ -306,6 +306,25 @@ class COrder():
                 generic_log(e, 'paycall_back_error')
         updated = self.sorder.update_orderinfo_by_oisn(sn, update_dict)
         return self.pay.reply("OK", True)
+
+    def get_kd_list(self):
+        data = request.args.to_dict()
+        response = import_status('get_success', 'OK')
+        from WeiDian.config.kd import kd_list
+        kw = data.get('kw', '').strip()
+        if not kw:
+            response['kd_list'] = kd_list
+            return response
+        if not isinstance(kw, basestring):
+            kw = str(kw).encode('utf8')
+        elif isinstance(kw, unicode):
+            kw = kw.encode('utf8')
+        res = filter(lambda x: kw in x.get('expressname'), kd_list)
+        response['kd_list'] = res
+        return response
+
+
+
 
     @verify_token_decorator
     def send_order(self):
