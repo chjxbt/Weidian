@@ -35,6 +35,9 @@ const api={
   add_comment: title + 'activitycomment/add_comment',       // 回复评论
   del_comment: title + 'activitycomment/del_comment',       // 删除评论
 
+  get_order_count: title + 'order/get_count',               // 获取订单预览数
+  get_order_list: title + 'order/get_list',                 // 获取各状态下的订单
+
   update_info: title + 'super/update_info',                 // 修改管理员自身基本信息
   get_all_suser: title + 'super/get_all_suser',             // 获取管理员列表
   add_admin: title + 'super/add_admin',                     // 添加普通管理员
