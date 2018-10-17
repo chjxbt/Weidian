@@ -6,7 +6,7 @@
 
       <div class="content-table">
         <el-table :data="complainList" border style="width: 100%" v-loading="complainLoading">
-          <el-table-column prop="oiid" label="订单编号" width="280"></el-table-column>
+          <el-table-column prop="oiid" label="订单编号" width="290"></el-table-column>
           <el-table-column prop="cotype" label="投诉类型" width="230"></el-table-column>
           <el-table-column prop="usname" label="投诉人" width="120"></el-table-column>
           <el-table-column prop="cocontent" label="描述内容"></el-table-column>
