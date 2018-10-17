@@ -7,9 +7,10 @@
           <el-table-column property="acocreatetime" label="评论时间" width="170"></el-table-column>
           <el-table-column property="actext" label="评论内容"></el-table-column>
           <el-table-column property="robot" label="用户身份" width="100"></el-table-column>
+          <el-table-column property="replyStatus" label="回复状态" width="100"></el-table-column>
           <el-table-column fixed="right" label="管理" width="150">
             <template slot-scope="scope">
-              <el-button type="text" size="small" @click="replyComment(scope)">回复</el-button>
+              <el-button type="text" size="small" @click="replyComment(scope)" :disabled="scope.row.robot == '小马甲用户'">回复</el-button>
               <el-button type="text" size="small">|</el-button>
               <el-button type="text" size="small" @click="">删除</el-button>
             </template>
@@ -35,8 +36,21 @@
               <div class="title-text">用户身份：</div>
               <div class="content-text">{{comment.robot}}</div>
             </div>
+            <div class="comment-row" style="margin-top: 0.1rem" v-if="comment.reply">
+              <div class="title-text">回复人：</div>
+              <div class="content-text">{{comment.reply.user.suname}}</div>
+            </div>
+            <div class="comment-row" v-if="comment.reply">
+              <div class="title-text">回复内容：</div>
+              <div class="content-text">{{comment.reply.actext}}</div>
+            </div>
+            <div class="comment-row" v-if="comment.reply">
+              <div class="title-text">回复时间：</div>
+              <div class="content-text">{{comment.reply.acocreatetime}}</div>
+            </div>
             <div class="comment-row">
-              <div class="title-text">回 复：</div>
+              <div class="title-text" v-if="comment.reply">再次回复：</div>
+              <div class="title-text" v-if="!comment.reply">回 复：</div>
               <div class="content-text">
                 <el-input type="textarea" :autosize="{ minRows: 3, maxRows: 6 }" placeholder="请输入回复" v-model="replyText" style="width: 4rem"></el-input>
               </div>
@@ -68,7 +82,7 @@
         comment: {},            // 回复的那条评论
         commentList: [],        // 评论list
         commentLoading: false,  // 评论表格加载中
-        page_size: 5,           // 每页显示的数量
+        page_size: 10,           // 每页显示的数量
         total_page: 1,          // 总页数
         page_num: 1             // 第几页
       }
@@ -78,7 +92,7 @@
     },
     components:{ Pagination },
     methods: {
-      // 获取推文下的评论-嵌套回复
+      // 获取点击的推文下的评论-嵌套回复
       getComments(activity) {
         if(activity) {
           this.activity = activity;
@@ -97,11 +111,17 @@
                 this.commentList[i].robot = "小马甲用户";
               }
               this.commentList[i].usname = this.commentList[i].user.usname;
+
+              // 处理评论的回复状态
+              this.commentList[i].replyStatus = "未回复";
+              if(this.commentList[i].reply != undefined) {
+                this.commentList[i].replyStatus = "已回复";
+              }
             }
 
             this.commentLoading = false;
           }else{
-            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+            this.$message({ message: res.data.message, type: 'error', duration: 1500 });
           }
         });
       },
@@ -109,6 +129,7 @@
       // 打开回复评论的dialog
       replyComment(scope) {
         this.comment = scope.row;
+        console.log(this.comment)
         this.replyComments = true;
       },
 
@@ -120,10 +141,10 @@
         };
         axios.post(api.add_comment + '?token=' + localStorage.getItem('token'), params).then(res=>{
           if(res.data.status == 200){
-            this.$message({ message: res.data.message, type: 'success', duration: 1500 });
+            this.$message({ message: "回复成功", type: 'success', duration: 1500 });
             this.replyComments = false;
           }else{
-            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+            this.$message({ message: res.data.message, type: 'error', duration: 1500 });
           }
         });
       },
