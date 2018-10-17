@@ -57,7 +57,7 @@
                 </el-switch>
               </template>
             </el-table-column>
-            <el-table-column fixed="right" label="管理" width="180">
+            <el-table-column fixed="right" label="管理" width="220">
               <template slot-scope="scope">
                 <el-button @click="editClick(scope, 'banner')" type="text" size="small" v-if="scope.row.addSaveEdit== '3'">编辑</el-button>
                 <el-button @click="saveClick(scope, 'banner')" type="text" size="small" v-if="scope.row.addSaveEdit == '2'">保存</el-button>
