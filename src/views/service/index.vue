@@ -6,22 +6,14 @@
 
       <div class="content-table">
         <el-table :data="complainList" border style="width: 100%" v-loading="complainLoading">
-          <el-table-column prop="time" label="推文时间" width="320">
-          </el-table-column>
-          <el-table-column prop="actitle" label="推文标题" width="150"></el-table-column>
-          <el-table-column prop="actext" label="推文内容">
-          </el-table-column>
-          <el-table-column prop="acSkiptype" label="跳转类型" width="100"></el-table-column>
-          <el-table-column prop="product" label="评论管理" width="100">
+          <el-table-column prop="oiid" label="订单编号" width="280"></el-table-column>
+          <el-table-column prop="cotype" label="投诉类型" width="130"></el-table-column>
+          <el-table-column prop="usname" label="投诉人" width="130"></el-table-column>
+          <el-table-column prop="cocontent" label="描述内容"></el-table-column>
+          <el-table-column prop="status" label="投诉状态" width="100"></el-table-column>
+          <el-table-column fixed="right" label="管理" width="100">
             <template slot-scope="scope">
-              <div class="comments-text" @click="">查看</div>
-            </template>
-          </el-table-column>
-          <el-table-column fixed="right" label="管理" width="180">
-            <template slot-scope="scope">
-              <el-button type="text" size="small" @click="">编辑</el-button>
-              <el-button type="text" size="small">|</el-button>
-              <el-button type="text" size="small" @click="">删除</el-button>
+              <el-button type="text" size="small" @click="">处理</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -57,7 +49,18 @@
         this.complainLoading = true;
         axios.get(api.get_all_complain + '?token=' + localStorage.getItem('token')).then(res => {
           if(res.data.status == 200) {
-            console.log(res.data.data);
+            this.complainList = res.data.data;
+            // this.total_page = Math.ceil(res.data.count / this.page_size);
+            for(let i = 0; i < this.complainList.length; i ++) {
+              if(this.complainList[i].cotreatstatus == 0) {
+                this.complainList[i].status = "未被投诉";
+              }else if(this.complainList[i].cotreatstatus == 1) {
+                this.complainList[i].status = "处理中";
+              }else if(this.complainList[i].cotreatstatus == 2) {
+                this.complainList[i].status = "已处理";
+              }
+              this.complainList[i].usname = "投诉人";
+            }
             this.complainLoading = false;
           }else{
             this.$message({ type: 'error', message: res.data.message, duration: 1500 });
@@ -80,11 +83,12 @@
 </script>
 
 <style lang="less" rel="stylesheet/less" scoped>
-  @import "../../common/css/index";
+  @import "../../common/css/weidian";
 
   .content-table {
     .page-box {
-
+      margin-top: 0.2rem;
+      text-align: right;
     }
   }
 </style>
