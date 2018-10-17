@@ -68,35 +68,35 @@
     font-size: 0.16rem;
     .icon{
       display: inline-block;
-      width: 0.25rem;
-      height: 0.25rem;
-      margin-right: 0.2rem;
+      width: 0.2rem;
+      height: 0.2rem;
+      margin: 0 0.2rem;
       &.icon-person-side{
-        background: url("../../../../common/images/icon-person-side.png");
-        background-size: 100% 100%;
-      }
-      &.icon-product{
-        background: url("../../../../common/images/icon-product.png");
-        background-size: 100% 100%;
-      }
-      &.icon-order{
-        background: url("../../../../common/images/icon-order.png");
-        background-size: 100% 100%;
-      }
-      &.icon-activity{
-        background: url("../../../../common/images/icon-activity.png");
+        background: url("../../../../common/images/side_icon_user.png");
         background-size: 100% 100%;
       }
       &.icon-content{
-        background: url("../../../../common/images/icon-activity.png");
+        background: url("../../../../common/images/side_icon_content.png");
+        background-size: 100% 100%;
+      }
+      &.icon-order{
+        background: url("../../../../common/images/side_icon_order.png");
+        background-size: 100% 100%;
+      }
+      &.icon-activity{
+        background: url("../../../../common/images/side_icon_activity.png");
         background-size: 100% 100%;
       }
       &.icon-commission{
-        background: url("../../../../common/images/icon-activity.png");
+        background: url("../../../../common/images/side_icon_commission.png");
         background-size: 100% 100%;
       }
-      &.icon-member{
-        background: url("../../../../common/images/icon-activity.png");
+      &.icon-control{
+        background: url("../../../../common/images/side_icon_control.png");
+        background-size: 100% 100%;
+      }
+      &.icon-service{
+        background: url("../../../../common/images/side_icon_service.png");
         background-size: 100% 100%;
       }
     }

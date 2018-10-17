@@ -88,7 +88,7 @@
     {
       "MNname":"控制中心",
       "MNurl":"/control",
-      "MNicon":"icon-commission",
+      "MNicon":"icon-control",
       "children":[
         {
           "MNname":"控制中心",
@@ -100,7 +100,7 @@
     {
       "MNname":"客服中心",
       "MNurl":"/service",
-      "MNicon":"icon-commission",
+      "MNicon":"icon-service",
       "children":[
         {
           "MNname":"客服中心",
