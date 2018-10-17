@@ -15,6 +15,7 @@ class AOrder(Resource):
         print order
         apis = {
             'create': 'self.corder.add_one()',
+            'send_order': 'self.corder.send_order()',
          }
         res = eval(apis[order])
         return jsonify(res)

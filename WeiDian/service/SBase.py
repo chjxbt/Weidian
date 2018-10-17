@@ -1,6 +1,7 @@
 # *- coding:utf8 *-
 import sys
 import os
+from contextlib import contextmanager
 import DBSession
 from WeiDian.common.weidian_error import dberror
 import WeiDian.models.model as models
@@ -52,3 +53,16 @@ class SBase(object):
             if key in kwargs:
                 setattr(model_bean, key, kwargs.get(key))
         self.session.add(model_bean)
+
+    @contextmanager
+    def auto_commit(self, func=None, args=[]):
+        try:
+            yield self.session
+            self.session.commit()
+            self.session.close()
+        except Exception as e:
+            if func is not None:
+                func(*args)
+            self.session.rollback()
+            self.session.close()
+            raise e

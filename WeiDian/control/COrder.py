@@ -10,12 +10,14 @@ from weixin import WeixinPay
 from WeiDian import logger
 from WeiDian.common.params_require import parameter_required
 from WeiDian.config.enums import ORDER_STATUS, order_product_info_status
+from WeiDian.config.kd import kd_list
 from WeiDian.config.setting import QRCODEHOSTNAME, APP_ID, MCH_ID, MCH_KEY, notify_url
 from flask import request
 from WeiDian.common.TransformToList import dict_add_models, list_add_models
 from WeiDian.common.timeformat import format_for_db
 from WeiDian.common.token_required import verify_token_decorator, is_partner, is_admin
 from WeiDian.common.import_status import import_status
+from WeiDian.models.model import OrderProductInfo, OrderInfo
 from WeiDian.service.SOrder import SOrder
 from WeiDian.service.SProductImage import SProductImage
 from WeiDian.service.SProductSkuKey import SProductSkuKey
@@ -307,20 +309,77 @@ class COrder():
 
     @verify_token_decorator
     def send_order(self):
-        """发货"""
+        """发货, 发货的的对象是订单中的商品而不是订单"""
         if not is_admin():
-            raise TOKEN_ERROR()
+            raise TOKEN_ERROR(u'使用管理员登录')
+        data = parameter_required(u'send_infos')
+        send_infos = data.get('send_infos')
+        if not isinstance(send_infos, list) or not send_infos:
+            raise PARAMS_MISS(u'发货参数格式错误')
+        order_info_list = []
+        kd_company_list = [x['expresskey'] for x in kd_list]
+        with self.sorder.auto_commit() as session:
+            for send_info in send_infos:
+                opiid = send_info.get('opiid')  # 订单中的详情id
+                opilogisticssn = send_info.get('opilogisticssn')  # 运单号
+                kdcompany = send_info.get('kdcompany')  # 物流公司
+                # 判断参数
+                if kdcompany not in kd_company_list:
+                    raise PARAMS_MISS(u'不正确的快递公司{}'.format(kdcompany))
+                if not opiid or not opilogisticssn or not kdcompany:
+                    raise PARAMS_MISS(u'缺少opiid或者opilogisticssn或者kdcompany')
+                # 改变订单商品状态
+                opilogisticssn = kdcompany + u':' + opilogisticssn
+                order_product = session.query(OrderProductInfo).filter(
+                        OrderProductInfo.OPIid == opiid
+                ).first()
+                if not order_product:
+                    raise PARAMS_MISS(u'不存在的订单商品详情: {}'.format(opiid))
+                if order_product.OPIstatus != 0:
+                    raise PARAMS_MISS(u'重复发货: {}'.format(opiid))
+                order_product.OPIlogisticsSn = opilogisticssn
+                order_product.OPIstatus = 1
+                session.add(order_product)
+                # 改变订单状态
+                oiid = order_product.OIid
+                order = session.query(OrderInfo).filter(OrderInfo.OIid == oiid).first()
+                if not order:
+                    raise PARAMS_MISS(u'不存在的订单')
+                if order.OIpaystatus == 1:
+                    raise PARAMS_MISS(u'未付款的订单')
+                if order not in order_info_list:
+                    order.OIpaystatus = 5
+                    session.add(order)
+                    order_info_list.append(order)
+        response = import_status('send_product_success', 'OK')
+        return response
 
     @verify_token_decorator
     def confim_order(self):
         """确认收货"""
         if is_tourist():
             raise TOKEN_ERROR()
-        data = parameter_required(u'oiid')
-        oiid = data.get('oiid')
+        data = parameter_required(u'opiid')
+        opiid = data.get('opiid')
+        order_product_info = self.sorder.get_orderproductinfo_by_opiid(opiid)
+        oiid = order_product_info.OPIid
         order = self.sorder.get_order_by_oiid(oiid)
-        if not order or order.USid != request.user.id or order.OIpaystatus != 5:
+        if not order or order.USid != request.user.id or order.OIpaystatus not in [5, 12]:
             raise NOT_FOUND()
+        # 确认收货后'订单商品交易完成'
+        self.sorder.update_orderproductinfo_by_opiid(opiid, {
+            'OPIstatus': 2
+        })
+        # 判断订单中的所有商品是否都已经完成, 如果已经完成则更改订单状态为交易成功
+        order_product_list = self.sorder.get_orderproductinfo_by_oiid(oiid)
+        if not len(filter(lambda x: x.OIpaystatus != 2, order_product_list)):
+            self.sorder.update_order_by_oiid(oiid, {
+                'OIpaystatus': ''
+            })
+
+
+
+
 
     @verify_token_decorator
     def apply_refund(self):
@@ -374,14 +433,15 @@ class COrder():
  
     def fill_productinfo(self, order):
         oiid = order.OIid
-        productinfo = self.sorder.get_orderproductinfo_by_oiid(oiid)
-        order.productinfo = productinfo
-        if productinfo.OPIstatus in [0, 1, 2]:  # 0: 待发货, 1 待收货, 2 交易成功,
-            productinfo.fields = ['OPIproductname', 'OPIproductimages', 'OPIstatus', 'OPIlogisticsSn', 'OPIlogisticsText']
-        else:
-            productinfo.fields = ['OPIproductname', 'OPIproductimages', 'OPIstatus', 'OPIlogisticsSn',
-                                  'OPIlogisticsText', 'OPIresendLogisticSn', 'OPIresendLogisticText']
-        productinfo.fill(order_product_info_status.get(productinfo.OPIstatus, u'异常'), 'zh_status')
+        productinfos = self.sorder.get_orderproductinfo_by_oiid(oiid)
+        order.productinfo = productinfos
+        for productinfo in productinfos:
+            if productinfo.OPIstatus in [0, 1, 2]:  # 0: 待发货, 1 待收货, 2 交易成功,
+                productinfo.fields = ['OPIproductname', 'OPIproductimages', 'OPIstatus', 'OPIlogisticsSn', 'OPIlogisticsText']
+            else:
+                productinfo.fields = ['OPIproductname', 'OPIproductimages', 'OPIstatus', 'OPIlogisticsSn',
+                                      'OPIlogisticsText', 'OPIresendLogisticSn', 'OPIresendLogisticText']
+            productinfo.fill(order_product_info_status.get(productinfo.OPIstatus, u'异常'), 'zh_status')
 
 
         order.add('productinfo')

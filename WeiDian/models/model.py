@@ -373,12 +373,12 @@ class OrderInfo(BaseModel):
     USid = Column(String(64))  # 用户
     OItradenum = Column(String(125))  # 交易号, (如果有)
     """
-    订单状态: {0:全部, 1: 待付款, 2: 支付成功, 3: 支付超时关闭（交易关闭）, 4:待发货, 5:待收货, 
-    6:已完成, 7:已取消, 8:交易失败（退货）,  10:待评价, 11:退换货, 12: 换货(买家退回中),
+    订单状态: {0:全部, 1: 待付款, 2: 支付成功, 3: 支付超时关闭（交易关闭）, 4:待发货, 5: 已发货, 
+    6:已完成, 7:已取消, 8:交易失败（退货）,  10:待评价(评价放到), 11:退换货, 12: 换货(买家退回中),
     13: 换货(卖家发货中), 14: 卖家已发货
      }
     """
-    OIpaystatus = Column(Integer, default=0)
+    OIpaystatus = Column(Integer, default=1)
     OIpaytype = Column(Integer)  # 支付类型: {0: 银行卡支付, 1: 微信支付}
     OIleavetext = Column(String(255))  # 订单留言
     OImount = Column(Float)  # 金额
@@ -409,9 +409,9 @@ class OrderProductInfo(BaseModel):
     OPIproductimages = Column(String(255))  # 商品主图
     OPIproductnum = Column(Integer, default=1)  # 购买数量
     OPIstatus = Column(Integer, default=0, comment=u'0: 待发货, 1 待收货, 2 交易成功, 3 退货, 4 换货')
-    OPIlogisticsSn = Column(String(64), comment=u'发货物流单号')
+    OPIlogisticsSn = Column(String(64), comment=u'快递公司: 发货物流单号')
     OPIlogisticsText = Column(Text, comment=u'发货物流信息')
-    OPIresendLogisticSn = Column(String(64), comment=u'退货单号')
+    OPIresendLogisticSn = Column(String(64), comment=u'快递公司: 退货单号')
     OPIresendLogisticText = Column(String(64),  comment=u'退货物流信息')
 
     @property

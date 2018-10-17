@@ -120,7 +120,7 @@ class SOrder(SBase):
     @close_session
     def get_orderproductinfo_by_oiid(self, oiid):
         return self.session.query(
-            OrderProductInfo).filter_by(OIid=oiid).first()
+            OrderProductInfo).filter_by(OIid=oiid).all()
 
     @close_session
     def get_orderproductinfo_by_oisn(self, oisn):
@@ -138,3 +138,27 @@ class SOrder(SBase):
     def update_orderinfo_by_oisn(self, oisn, data):
         """更新订单"""
         return self.session.query(OrderInfo).filter(OrderInfo.OIsn == oisn).update(data)
+
+    @close_session
+    def get_orderproductinfo_by_opiid(self, opiid):
+        """根据id获取订单中的商品"""
+        return self.session.query(OrderProductInfo).filter(OrderProductInfo.OPIid == opiid).first()
+
+    @close_session
+    def update_orderproductinfo_by_opiid(self, opiid, data):
+        """根据opiid更新订单中的商品信息"""
+        return self.session.query(OrderProductInfo).filter(
+            OrderProductInfo.OPIid == opiid
+        ).update(data)
+
+    @close_session
+    def get_order_by_opiid(self, opiid):
+        """根据订单商品的id获取所属的订单"""
+        return self.session.query(OrderInfo).join(OrderProductInfo, OrderProductInfo.OIid == OrderInfo.OIid).filter(
+            OrderProductInfo.OPIid == opiid
+        ).first()
+
+    @close_session
+    def update_order_by_oiid(self, oiid, data):
+        """根据订单ip更新订单"""
+        return self.session.query(OrderInfo).filter(OrderInfo.OIid == oiid).update(data)
