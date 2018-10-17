@@ -408,6 +408,11 @@ class OrderProductInfo(BaseModel):
     OPIproductname = Column(String(64))  # 商品的名字(购买之时的)
     OPIproductimages = Column(String(255))  # 商品主图
     OPIproductnum = Column(Integer, default=1)  # 购买数量
+    OPIstatus = Column(Integer, default=0, comment=u'0: 待发货, 1 待收货, 2 交易成功, 3 退货, 4 换货')
+    OPIlogisticsSn = Column(String(64), comment=u'发货物流单号')
+    OPIlogisticsText = Column(Text, comment=u'发货物流信息')
+    OPIresendLogisticSn = Column(String(64), comment=u'退货单号')
+    OPIresendLogisticText = Column(String(64),  comment=u'退货物流信息')
 
     @property
     def PSKproperkey(self):
