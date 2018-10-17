@@ -16,6 +16,7 @@ class AActivityComment(Resource):
         print activitycomment
         apis = {
             'add_comment': self.cactivitycomment.add_comment,
+            'del_comment': self.cactivitycomment.del_comment_admin,
         }
         res = apis[activitycomment]()
         return jsonify(res)

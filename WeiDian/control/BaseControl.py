@@ -112,22 +112,23 @@ class BaseActivityControl():
         for comment in comments:
             BaseActivityCommentControl().fill_user(comment)
             comment.ACOcreatetime = get_web_time_str(comment.ACOcreatetime)
-            reply = self.sacomment.get_apply_by_acoid(comment.ACOid)
-            if reply:
-                comment.fill(reply, 'reply')
-                reply.hide('USid')
-                admin_user = self.ssuperuser.get_one_super_by_suid(reply.USid)
-                if admin_user:
-                    user = admin_user
-                    admin_user.fill(0, 'robot')
-                    user.hide('SUid')
-                else:
-                    user = {
-                        'name': u'运营人员',
-                        'robot': 1
-                    }
-                reply.ACOcreatetime = get_web_time_str(reply.ACOcreatetime)
-                reply.fill(user, 'user')
+            replys = self.sacomment.get_apply_by_acoid(comment.ACOid)  # 获取到回复列表
+            if replys:
+                for reply in replys:
+                    comment.fill(replys, 'reply')
+                    reply.hide('USid')
+                    admin_user = self.ssuperuser.get_one_super_by_suid(reply.USid)
+                    if admin_user:
+                        user = admin_user
+                        admin_user.fill(0, 'robot')
+                        user.hide('SUid')
+                    else:
+                        user = {
+                            'name': u'运营人员',
+                            'robot': 1
+                        }
+                    reply.ACOcreatetime = get_web_time_str(reply.ACOcreatetime)
+                    reply.fill(user, 'user')
 
         act.comment = comments
         act.add('comment')
