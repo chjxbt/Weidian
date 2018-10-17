@@ -718,7 +718,7 @@ class Complain(BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['COid', 'COcontent', 'COtype', "OIid", "USid", 'COtreatstatus']
+        self.fields = ['COid', 'COcontent', 'COtype', "OIid", "USid", 'COcreatetime', 'COtreatstatus']
 
 
 # 任务等级
