@@ -1189,7 +1189,7 @@
           if(res.data.status == 200) {
             this.activityLoading = false;
             this.activityList = res.data.data;
-            this.total_page = Math.ceil(res.data.count/this.page_size);
+            this.total_page = Math.ceil(res.data.count / this.page_size);
 
             for(let i = 0; i < this.activityList.length; i ++) {
               // 推文的跳转类型
