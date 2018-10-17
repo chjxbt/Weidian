@@ -436,11 +436,11 @@ class COrder():
         productinfos = self.sorder.get_orderproductinfo_by_oiid(oiid)
         order.productinfo = productinfos
         for productinfo in productinfos:
-            if productinfo.OPIstatus in [0, 1, 2]:  # 0: 待发货, 1 待收货, 2 交易成功,
-                productinfo.fields = ['OPIproductname', 'OPIproductimages', 'OPIstatus', 'OPIlogisticsSn', 'OPIlogisticsText']
-            else:
-                productinfo.fields = ['OPIproductname', 'OPIproductimages', 'OPIstatus', 'OPIlogisticsSn',
-                                      'OPIlogisticsText', 'OPIresendLogisticSn', 'OPIresendLogisticText']
+            productinfo.fields = ['OPIproductname', 'OPIproductimages', 'OPIstatus', 'OPIid']
+            if productinfo.OPIstatus in [1, 2]:  # 0: 待发货, 1 待收货, 2 交易成功,
+                productinfo.add('OPIlogisticsSn', 'OPIlogisticsText')
+            if productinfo.OPIstatus in [4, 3]:
+                productinfo.fields = ['OPIlogisticsSn', 'OPIlogisticsText', 'OPIresendLogisticSn', 'OPIresendLogisticText']
             productinfo.fill(order_product_info_status.get(productinfo.OPIstatus, u'异常'), 'zh_status')
 
 
