@@ -663,6 +663,7 @@
       // 编辑推文 - 取消
       cancelActivity() {
         // 点击取消按钮清空编辑框
+        this.activityMediaSort = 0;
         this.activityTitle = "";
         this.activityACtext = "";
         this.activityJumpValue = "";
@@ -676,6 +677,7 @@
         this.longImg = "";
         this.videoImgUrl = "";
         this.placedTop = false;
+        this.author = {};
         this.commentsList = [{ acorobot: "", acotext: "" }];
         this.activityPictureList = [];  // 图片list置为[]
 

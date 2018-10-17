@@ -181,9 +181,9 @@
             </template>-->
           </el-table-column>
           <el-table-column prop="actext" label="推文内容">
-            <template slot-scope="scope">
+            <!--<template slot-scope="scope">
               <el-input type="textarea" :autosize="{ minRows: 1, maxRows: 3 }" placeholder="请输入推文内容" v-model="scope.row.actext" :disabled="scope.row.disabled"></el-input>
-            </template>
+            </template>-->
           </el-table-column>
           <el-table-column prop="acSkiptype" label="跳转类型" width="100"></el-table-column>
           <el-table-column fixed="right" label="管理" width="180">
