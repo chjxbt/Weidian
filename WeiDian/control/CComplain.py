@@ -42,7 +42,7 @@ class CComplain():
             for complain in complain_list:
                 colist = str(complain.COtype).split(",")
                 logger.debug('get colist %s', colist)
-                complaintype = ",".join([complain_type.get(i) for i in colist])
+                complaintype = "，".join([complain_type.get(i) for i in colist])
                 logger.debug('convert complain type %s', complaintype)
                 complain.COtype = complaintype
                 user_info = self.suser.get_user_by_user_id(complain.USid)
