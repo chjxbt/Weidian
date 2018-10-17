@@ -362,24 +362,25 @@ class COrder():
         data = parameter_required(u'opiid')
         opiid = data.get('opiid')
         order_product_info = self.sorder.get_orderproductinfo_by_opiid(opiid)
-        oiid = order_product_info.OPIid
+        oiid = order_product_info.OIid
         order = self.sorder.get_order_by_oiid(oiid)
-        if not order or order.USid != request.user.id or order.OIpaystatus not in [5, 12]:
+        if not order or order.USid != request.user.id:
             raise NOT_FOUND()
+        if order.OIpaystatus not in [5, 12] or order_product_info.OPIstatus == 0:
+            raise NOT_FOUND(u'订单未发货或已收货')
+
         # 确认收货后'订单商品交易完成'
         self.sorder.update_orderproductinfo_by_opiid(opiid, {
             'OPIstatus': 2
         })
         # 判断订单中的所有商品是否都已经完成, 如果已经完成则更改订单状态为交易成功
         order_product_list = self.sorder.get_orderproductinfo_by_oiid(oiid)
-        if not len(filter(lambda x: x.OIpaystatus != 2, order_product_list)):
+        if not len(filter(lambda x: x.OPIstatus not in [3, 2], order_product_list)):
             self.sorder.update_order_by_oiid(oiid, {
-                'OIpaystatus': ''
+                'OIpaystatus': 10  # 待评价
             })
-
-
-
-
+        response = import_status('confirm_order_success', 'OK')
+        return response
 
     @verify_token_decorator
     def apply_refund(self):
@@ -437,9 +438,10 @@ class COrder():
         order.productinfo = productinfos
         for productinfo in productinfos:
             productinfo.fields = ['OPIproductname', 'OPIproductimages', 'OPIstatus', 'OPIid']
-            if productinfo.OPIstatus in [1, 2]:  # 0: 待发货, 1 待收货, 2 交易成功,
+            # {0: '待发货', 1: '待收货', 2: '交易成功(未评价)', 3: '交易成功(已评价)', 4: '退货', 5: '换货'}
+            if productinfo.OPIstatus in [1, 2, 3]:  # 0: 待发货, 1 待收货, 2 交易成功,
                 productinfo.add('OPIlogisticsSn', 'OPIlogisticsText')
-            if productinfo.OPIstatus in [4, 3]:
+            if productinfo.OPIstatus in [4, 5]:
                 productinfo.fields = ['OPIlogisticsSn', 'OPIlogisticsText', 'OPIresendLogisticSn', 'OPIresendLogisticText']
             productinfo.fill(order_product_info_status.get(productinfo.OPIstatus, u'异常'), 'zh_status')
 
