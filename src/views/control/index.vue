@@ -164,7 +164,7 @@
         this.jumpLoading = true;
         axios.get(api.get_show_type + '?token=' + localStorage.getItem('token')).then(res => {
           if(res.data.status == 200) {
-            this.jumpTo = res.data.data.skiptype;
+            this.jumpTo = Number(res.data.data.skiptype);
             this.jumpLoading = false;
           }else{
             this.$message({ type: 'error', message: res.data.message, duration: 1500 });
