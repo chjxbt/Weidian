@@ -1,11 +1,10 @@
 <template>
   <div class="order-table">
-    <el-table :data="orderList" style="width: 100%" class="outside-table" :default-expand-all="expandAll" stripe size="mini"
-              v-loading="orderLoading" @selection-change="handleSelectionChange">
+    <el-table :data="orderList" style="width: 100%" class="outside-table" :default-expand-all="expandAll" stripe size="small" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="30"></el-table-column>
       <el-table-column type="expand" width="30">
         <template slot-scope="scope">
-          <el-table class="inside-table" :data="scope.row.productinfo" border style="width: 100%" size="mini">
+          <el-table class="inside-table" :data="scope.row.productinfo" border style="width: 100%" size="small">
             <el-table-column align="center" prop="opiproductimages" label="商品图片" width="100">
               <template slot-scope="scope">
                 <img :src="scope.row.opiproductimages" class="product-img">
@@ -33,55 +32,35 @@
       <el-table-column align="center" label="总价" prop="oimount" width="80"></el-table-column>
       <el-table-column align="center" label="下单时间" prop="oicreatetime" width="140"></el-table-column>
       <el-table-column align="center" label="收货人" prop="oirecvname" width="140"></el-table-column>
-      <el-table-column align="center" label="收货电话" prop="oirecvphone" width="100"></el-table-column>
+      <el-table-column align="center" label="收货电话" prop="oirecvphone" width="110"></el-table-column>
       <el-table-column align="center" label="留言内容" prop="oileavetext"></el-table-column>
     </el-table>
 
-    <Pagination class="page-box" :total="total_page" @pageChange="pageChange"></Pagination>
+    <div class="bottom-box">
+      <div class="export-btn" @click="exportClick">批量导出</div>
+      <Pagination class="page-box" :total="total_page" @pageChange="pageChange"></Pagination>
+    </div>
   </div>
 </template>
 
 <script>
-  // 0: "已取消", 7: "未支付", 14: "支付中", 21: "已支付",28: "已发货", 35: "已收货", 42: "已完成", 49: "已评价", 56: "退款中"
   import Pagination from "../../components/common/page";
-  import api from '../../api/api';
-  import axios from 'axios';
 
   export default {
-    props: ["order"],
     name: "all-order-table",
     data() {
       return {
         expandAll: false,       // 表格是否默认展开行
-        orderList: [],          // 订单list
-        orderLoading: false,    // 订单表格加载中
-        page_size: 10,          // 每页请求的数量
-        page_num: 1,            // 第几页
-        total_page: 1,          // 总页数
         statusnum: "",          // 暂存订单状态
         orderOutList: [],       // 要导出的订单list
       }
     },
+    props:{
+      orderList:{ type: Array, default: [] },
+      total_page:{ type: Number, default: 1 },
+    },
     components: { Pagination },
     methods: {
-      // 依据订单状态获取订单
-      getOrder(statusnum) {
-        this.statusnum = statusnum;
-        this.orderLoading = true;
-        this.orderList = [];
-        axios.get(api.get_order_list + "?token=" + localStorage.getItem("token") + "&paystatus=" + statusnum + "&page=" + this.page_num + "&count=" + this.page_size).then(res => {
-          if(res.data.status == 200) {
-            this.orderList = res.data.data;
-            this.total_page = Math.ceil(res.data.count / this.page_size);
-
-            console.log(this.orderList);
-            this.orderLoading = false;
-          }else{
-            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
-          }
-        });
-      },
-
       // 详情按钮
       detailClick(){
         this.$emit('detailClick')
@@ -97,10 +76,14 @@
         this.orderOutList = value;
       },
 
+      // 批量导出
+      exportClick(){
+        console.log(this.orderOutList);
+      },
+
       // 分页组件的提示
       pageChange(v){
-        this.page_num = v;
-        this.getOrder(this.statusnum);      // 依据订单状态获取订单
+        this.$emit('pageChange', v)
       }
     },
     mounted() {
@@ -121,9 +104,26 @@
         }
       }
     }
+  }
+  .bottom-box {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.1rem;
     .page-box {
-      text-align: right;
-      margin-top: 0.1rem;
+
+    }
+    .export-btn {
+      width: 0.5rem;
+      height: 0.2rem;
+      line-height: 0.2rem;
+      font-size: 0.12rem;
+      white-space: nowrap;
+      align-items: center;
+      text-align: center;
+      padding: 0.03rem 0.15rem;
+      border-radius: 0.05rem;
+      color: #ffffff;
+      background-color: #9fd0bf;
     }
   }
 </style>

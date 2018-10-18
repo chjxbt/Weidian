@@ -25,15 +25,14 @@
           <div class="group-title">退回单号：</div>
           <el-input class="group-content search-input" v-model="returnNo" size="mini" clearable></el-input>
         </div>
-        <div class="search-btn color-btn">搜 索</div>
+        <div class="search-btn color-btn" @click="">搜 索</div>
       </div>
 
-      <div class="out-btn color-btn">批量导出</div>
       <div class="tab-list">
         <el-tabs v-model="activeName" @tab-click="handleClick">
           <div v-for="item in tabList">
             <el-tab-pane :label="item.status" :key="item.status.slice(0, 3)" :name="item.statusnum" :lazy="lazyStatus">
-              <order-table ref="orderTable"></order-table>
+              <order-table ref="orderTable" :orderList="orderList" :total_page="total_page" @pageChange="pageChange"></order-table>
             </el-tab-pane>
           </div>
         </el-tabs>
@@ -53,6 +52,7 @@
         return {
           name: '所有订单',
           orderNo: "",                  // 订单编号
+          orderList: [],                // 订单list
           orderTime: [],                // 下单时间
           returnNo: "",                 // 退回单号
           logisticsNo: "",              // 物流单号
@@ -63,6 +63,9 @@
             { statusnum: "6", status: "已完成" }, { statusnum: "11", status: "退换货" }
           ],
           lazyStatus: false,            // 标签是否延迟渲染
+          page_size: 10,                // 每页请求的数量
+          page_num: 1,                  // 第几页
+          total_page: 1,                // 总页数
         }
     },
     components: { pageTitle, orderTable },
@@ -85,9 +88,34 @@
         })
       },
 
+      // 依据订单状态获取订单
+      getOrder(statusnum) {
+        this.statusnum = statusnum;
+        this.orderList = [];
+        axios.get(api.get_order_list + "?token=" + localStorage.getItem("token") + "&paystatus=" + statusnum + "&page=" + this.page_num + "&count=" + this.page_size).then(res => {
+          if(res.data.status == 200) {
+            this.orderList = res.data.data;
+            this.total_page = Math.ceil(res.data.count / this.page_size);
+
+            // console.log(this.orderList);
+          }else{
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+          }
+        });
+      },
+
+      // 分页组件的提示
+      pageChange(v) {
+        this.page_num = v;
+        this.getOrder(this.statusnum);      // 依据订单状态获取订单
+      },
+
       // tab标签页被选中时触发
       handleClick(tab, event) {
-        this.$refs.orderTable[tab.index].getOrder(tab.name);
+        // this.$refs.orderTable[tab.index].getOrder(tab.name);
+        this.page_num = 1;
+        this.statusnum = tab.name;
+        this.getOrder(tab.name);
       },
 
       // 详情按钮
@@ -102,7 +130,8 @@
     },
     mounted() {
       this.getOrderCount();         // 获取获取订单各种状态的预览数
-      this.$refs.orderTable[0].getOrder(0);
+      // this.$refs.orderTable[0].getOrder(0);
+      this.getOrder(0);
     }
   }
 </script>
@@ -141,14 +170,6 @@
         }
       }
     }
-  }
-  .out-btn {
-    width: 0.5rem;
-    height: 0.2rem;
-    line-height: 0.2rem;
-    position: absolute;
-    top: 2.25rem;
-    right: 1rem;
   }
   .color-btn {
     font-size: 0.12rem;
