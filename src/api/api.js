@@ -37,6 +37,8 @@ const api={
 
   get_order_count: title + 'order/admin_get_order_count',   // 后台获取订单数量
   get_order_list: title + 'order/admin_get_order_list',     // 后台获取各状态下的订单
+  get_kd_list: title + 'order/get_kd_list',                 // 获取快递列表
+  send_order: title + 'order/send_order',                   // 商品发货
 
   update_info: title + 'super/update_info',                 // 修改管理员自身基本信息
   get_all_suser: title + 'super/get_all_suser',             // 获取管理员列表

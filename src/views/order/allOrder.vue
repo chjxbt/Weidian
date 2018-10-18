@@ -59,8 +59,8 @@
           buyerTel: "",                 // 收货人电话
           activeName: "0",              // tabs标签默认选中的项
           tabList: [                    // tabs标签的list
-            { statusnum: "0", status: "全 部" }, { statusnum: "1", status: "待付款" }, { statusnum: "5", status: "待收货" },
-            { statusnum: "6", status: "已完成" }, { statusnum: "11", status: "退换货" }
+            { statusnum: "0", status: "全 部" }, { statusnum: "1", status: "待付款" }, { statusnum: "4", status: "待发货" },
+            { statusnum: "5", status: "待收货" }, { statusnum: "6", status: "已完成" }, { statusnum: "11", status: "退换货" }
           ],
           lazyStatus: false,            // 标签是否延迟渲染
           page_size: 10,                // 每页请求的数量
@@ -97,7 +97,18 @@
             this.orderList = res.data.data;
             this.total_page = Math.ceil(res.data.count / this.page_size);
 
-            // console.log(this.orderList);
+            // 拼接商品规格
+            for(let i = 0; i < this.orderList.length; i ++) {
+              for(let j = 0; j <this.orderList[i].productinfo.length; j ++) {
+                this.orderList[i].productinfo[j].pskproperKey = "";
+                for(let k = 0; k <this.orderList[i].productinfo[j].pskproperkey.length; k ++) {
+                  this.orderList[i].productinfo[j].pskproperKey = this.orderList[i].productinfo[j].pskproperKey + this.orderList[i].productinfo[j].pskproperkey[k].value;
+                  if(k <this.orderList[i].productinfo[j].pskproperkey.length - 1) {
+                    this.orderList[i].productinfo[j].pskproperKey = this.orderList[i].productinfo[j].pskproperKey + "，";
+                  }
+                }
+              }
+            }
           }else{
             this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
@@ -116,17 +127,7 @@
         this.page_num = 1;
         this.statusnum = tab.name;
         this.getOrder(tab.name);
-      },
-
-      // 详情按钮
-      detailClick(){
-
-      },
-
-      // 退款按钮
-      returnClick(){
-
-      },
+      }
     },
     mounted() {
       this.getOrderCount();         // 获取获取订单各种状态的预览数
