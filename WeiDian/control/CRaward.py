@@ -3,6 +3,7 @@ import re
 import sys
 import os
 import uuid
+
 from flask import request
 from WeiDian import logger
 from datetime import datetime, timedelta
@@ -10,7 +11,7 @@ from WeiDian.common.params_require import parameter_required
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import get_db_time_str, get_web_time_str, format_for_web_second, format_for_db
 from WeiDian.common.token_required import verify_token_decorator, is_admin, is_tourist
-from WeiDian.config.response import PARAMS_MISS, TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR, NOT_FOUND, PARAMS_ERROR
+from WeiDian.config.response import TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR, NOT_FOUND, PARAMS_ERROR
 sys.path.append(os.path.dirname(os.getcwd()))
 
 class CRaward():
@@ -29,7 +30,7 @@ class CRaward():
         raid = str(uuid.uuid1())
         ratype = data.get('ratype')
         if not re.match(r'^[0-4]$', str(ratype)):
-            raise PARAMS_MISS(u'ratype, 参数异常')
+            raise PARAMS_ERROR(u'ratype, 参数异常')
         now_time = get_db_time_str()
         nowtime_str_to_time = datetime.strptime(now_time, format_for_db)
         days_later = datetime.strftime(nowtime_str_to_time + timedelta(days=30), format_for_web_second)
@@ -74,25 +75,25 @@ class CRaward():
         parameter_required('raid', 'usid')
         usid = data.get('usid')
         raid = data.get('raid')
-        ranumber = int(data.get('ranumber'), 1)  # 该优惠券分发数量
+        ranumber = int(data.get('ranumber', 1))  # 该优惠券分发数量
         is_hold = self.sraward.is_user_hold_reward({'USid': usid, 'RAid': raid})
         if is_hold:
+            urid = is_hold.URid
             logger.info("The user already has this type of reward ")
             update_info = self.sraward.update_user_reward({'URid': is_hold.URid}, {'RAnumber': is_hold.RAnumber + ranumber})
             if not update_info:
                 raise SYSTEM_ERROR(u'更新数据错误')
         else:
             logger.info("New reward to user")
+            urid = str(uuid.uuid1())
             self.sraward.add_model('UserRaward', **{
-            'URid': str(uuid.uuid1()),
+            'URid': urid,
             'USid': usid,
             'RAid': raid,
             'RAnumber': ranumber
         })
         data = import_status("hand_out_reward_success", "OK")
-        data['data'] = {'usid': usid,
-                        'raid': raid
-                        }
+        data['data'] = {'urid': urid }
         return data
 
     @verify_token_decorator
@@ -105,6 +106,16 @@ class CRaward():
         logger.debug("user recevive data is", data)
         usid = request.user.id
         raid = data.get('raid')
+
+        # 判断发放的优惠券是否还有领取数量
+        hang_out = self.sraward.is_hand_out({'RAid': raid})
+        if hang_out:
+            if hang_out.RTcount <= 0:
+                raise NOT_FOUND(u'该优惠券已领取完毕')
+            else:
+                self.sraward.update_is_hand_out({'RAid': hang_out.RAid}, {'RTcount': hang_out.RTcount - 1})
+
+        # 判断用户是否已持有
         is_hold = self.sraward.is_user_hold_reward({'USid': usid, 'RAid': raid})
         if is_hold:
             logger.info("The user already has this type of reward ")
@@ -152,15 +163,38 @@ class CRaward():
             raise AUTHORITY_ERROR(u'非管理员权限')
         data = request.json
         logger.debug("hand out data is %s", data)
+        raid = data.get('raid')
+        rtid = str(uuid.uuid1())
+        is_hand_out = self.sraward.is_hand_out({'RAid': raid})
+        if is_hand_out:
+            raise SYSTEM_ERROR(u'该优惠券已在页面发放')
+        else:
+            self.sraward.add_model('RewardToUser', **{
+                'RTid': rtid,
+                'RAid': raid,
+                'RTcount': data.get('rtcount', 10)
+            })
+        data = import_status("hand_out_reward_success", "OK")
+        data['data'] = {'rtid': rtid}
+        return data
+
+    @verify_token_decorator
+    def get_hand_out_reward(self):
+        """获取平台发放在页面中的优惠券"""
+        if is_tourist():
+            raise TOKEN_ERROR(u'未登录')
+        horewards = self.sraward.get_all_hand_out()
+        for horeward in horewards:
+            reward = self.sraward.get_raward_by_id(horeward.RAid)
+            reward_detail = self.fill_reward_detail(reward)
+            horeward.fill(reward_detail, 'reward_detail')
+
+        data = import_status("messages_get_item_ok", "OK")
+        data['data'] = horewards
+        return data
 
 
-
-
-
-
-    # TODO 用户转赠优惠券 / 获取平台发放页面内的优惠券 / 后台获取所有优惠券(发现在Task里) /
-
-
+    # TODO 用户转赠优惠券 / 获取所有下级
 
 
     @verify_token_decorator
@@ -168,16 +202,24 @@ class CRaward():
         """用户查看优惠券"""
         if is_tourist():
             raise TOKEN_ERROR(u'未登录')
-        logger.debug("get reward usid is %s", request.user.id)
+        args = request.args.to_dict()
+        logger.debug("get reward args is %s", args)
+        topay = args.get('topay')
         reward_info = self.sraward.get_reward_by_usid(request.user.id)
         if not reward_info:
             raise NOT_FOUND(u'用户暂无优惠券')
         try:
             for reward in reward_info:
                 reward_detail = self.sraward.get_raward_by_id(reward.RAid)
+                reward_detail = self.fill_reward_detail(reward_detail)
                 reward.fill(reward_detail, 'reward_detail')
+                reward.URcreatetime = get_web_time_str(reward.URcreatetime)
+
+            if str(topay) == 'true':
+                reward_info = filter(lambda r: r.reward_detail['RAtype'] in [0, 2], reward_info)
             data = import_status('messages_get_item_ok', "OK")
             data['data'] = reward_info
+            return data
         except Exception as e:
             logger.exception("get user reward error")
             raise SYSTEM_ERROR(u'获取数据错误')
@@ -196,6 +238,9 @@ class CRaward():
                 reward_str = ratio_str.format(int(raward.RAratio))
             else:
                 reward_str = amout_str.format(int(raward.RAamount))
+            raward.RAendtime = get_web_time_str(raward.RAendtime)
+            raward.RAcreatetime = get_web_time_str(raward.RAcreatetime)
             raward.rewardstr = reward_str
             raward.add('rewardstr')
         return raward
+

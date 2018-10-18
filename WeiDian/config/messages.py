@@ -103,7 +103,7 @@ update_product_image_success = '更新商品图片成功'
 welcome = '欢迎使用本系统'
 
 create_reward_success = '创建优惠券成功'
-hand_out_reward_success = '为用户发放优惠券成功'
+hand_out_reward_success = '优惠券发放成功'
 receive_reward_success = '优惠券领取成功'
 send_product_success = '发货成功'
 confirm_order_success = '确认收货成功'

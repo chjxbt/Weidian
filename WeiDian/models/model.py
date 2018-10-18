@@ -855,7 +855,8 @@ class UserRaward(BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['TRid', "TAid", "RAid", "RAnumber"]
+        # self.fields = ['TRid', "TAid", "RAid", "RAnumber"]
+        self.fields = ["RAid", "RAnumber", "URcreatetime"]
 
 
 class AdImage(BaseModel):
