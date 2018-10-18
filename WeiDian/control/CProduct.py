@@ -246,7 +246,10 @@ class CProduct(BaseProductControl):
         logger.info(request.detail)
         args = request.args.to_dict()
         prid = args.get('prid')
-        usid = request.user.id
+        if is_tourist():
+            usid = None
+        else:
+            usid = request.user.id
         if not prid:
             raise PARAMS_MISS()
         product = self.sproduct.get_product_by_prid(prid)
