@@ -265,6 +265,7 @@ class COrder():
             raise TOKEN_ERROR(u'请使用管理员登录')
         data = request.args.to_dict()
         usid = data.get('usid', '').strip() or None
+        phone = data.get('phone', '').strip() or None
         status = data.get('paystatus')
         status = [str(i) for i in range(1, 12)] if str(status) == '0' else status
         status = ['2', '4', '5', '7', '9', '10', '11'] if str(status) == '20' else status
@@ -278,8 +279,6 @@ class COrder():
         response["page_count"] = request.page_count
         response["data"] = order_list
         return response
-
-
 
 
     @verify_token_decorator

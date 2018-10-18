@@ -51,7 +51,7 @@ class SOrder(SBase):
         return self.session.query(OrderInfo).filter(*filter_order).offset(page_size * (page_num - 1)).limit(page_size).all()
 
     @close_session
-    def get_sell_order_by_status2(self, status, page_num, page_size, usid=None):
+    def get_sell_order_by_status2(self, status, page_num, page_size, usid=None, phone=None):
         """同上"""
         filter_order = set()
         if isinstance(status, list):
@@ -59,7 +59,8 @@ class SOrder(SBase):
         else:
             filter_order.add(OrderInfo.OIpaystatus == status)
         return self.session.query(OrderInfo).filter(*filter_order).filter_without_none(
-            OrderInfo.USid == usid
+            OrderInfo.USid == usid,
+            OrderInfo.OIrecvphone == phone
         ).all_with_page(page_num, page_size)
 
     @close_session
