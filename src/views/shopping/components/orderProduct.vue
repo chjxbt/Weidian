@@ -1,58 +1,56 @@
 <template>
   <div>
     <div class="order-no-box">
-      <div class="order-no m-ft-26 m-black tl">订单号：RRK65S6R332SD654S613DF65SAD5</div>
+      <div class="order-no m-ft-26 m-black tl">订单号：{{order.oiid}}</div>
       <div class="copy-order-no m-ft-20 m-grey" @click="copyText">复制</div>
     </div>
     <div class="line-one"></div>
     <div class="order-address">
       <div class="consignee-info">
         <img src="/static/images/order_address.png" class="order-address-img">
-        <div class="consignee-name m-ft-26 m-black">收货人： 茉莉</div>
-        <div class="consignee-phone m-ft-26 m-black tr">13588718806</div>
+        <div class="consignee-name m-ft-26 m-black">收货人： {{order.oirecvname}}</div>
+        <div class="consignee-phone m-ft-26 m-black tr">{{order.oirecvphone}}</div>
       </div>
-      <div class="consignee-address m-ft-26 m-black">收货地址：北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京</div>
+      <div class="consignee-address m-ft-26 m-black">收货地址：{{order.oiaddress}}</div>
     </div>
     <div class="line-two"></div>
     <div class="store-product">
       <div class="store-title">
         <img src="/static/images/store-img.png" class="store-img">
-        <div class="store-name m-ft-28 m-black tl">衣衣旗舰店</div>
+        <div class="store-name m-ft-28 m-black tl"><span>衣百惠</span><span class="m-red">买家已付款</span></div>
       </div>
       <div class="line-one"></div>
-      <div class="order-product">
-        <img src="http://img1.imgtn.bdimg.com/it/u=661395716,3070712851&fm=214&gp=0.jpg" class="product-img">
-        <div class="product-info">
-          <div class="product-name m-ft-24 m-black">2018早秋新款显瘦秋新款显瘦款显瘦瘦2018早秋新款显瘦秋新款显瘦款显瘦瘦</div>
-          <div class="product-params m-ft-24 m-black tl">尺寸：L   颜色：红色</div>
-          <span class="product-price m-ft-24 m-red tl">￥ 149</span>
-          <span class="product-quantity m-ft-20 m-black">X1</span>
+      <template v-for="(item,index) in order.productinfo">
+        <div class="order-product">
+          <img src="http://img1.imgtn.bdimg.com/it/u=661395716,3070712851&fm=214&gp=0.jpg" class="product-img">
+          <div class="product-info">
+            <div class="product-name m-ft-24 m-black">{{item.opiproductname}}</div>
+            <div class="product-params m-ft-24 m-black tl">
+              <!--<template v-for="(i,j) in item.current_sku.pskproperkey">-->
+                <!--<span>{{i.key}}: {{i.value}}  </span>-->
+              <!--</template>-->
+            </div>
+            <span class="product-price m-ft-24 m-red tl">￥ 149</span>
+            <span class="product-quantity m-ft-20 m-black">X1</span>
+          </div>
         </div>
-      </div>
-      <div class="order-product">
-        <img src="http://img1.imgtn.bdimg.com/it/u=661395716,3070712851&fm=214&gp=0.jpg" class="product-img">
-        <div class="product-info">
-          <div class="product-name m-ft-24 m-black">2018早秋新款显瘦秋新款显瘦款显瘦瘦2018早秋新款显瘦秋新款显瘦款显瘦瘦</div>
-          <div class="product-params m-ft-24 m-black tl">尺寸：L   颜色：红色</div>
-          <span class="product-price m-ft-24 m-red tl">￥ 149</span>
-          <span class="product-quantity m-ft-20 m-black">X1</span>
-        </div>
-      </div>
+      </template>
+
       <div class="line-one"></div>
       <div class="price-detail">
         <p class="price-detail-box m-ft-26 m-grey">
           <span class="price-detail-text tl">商品总价</span>
-          <span class="price-detail-number tr">￥298.00</span>
+          <span class="price-detail-number tr">￥{{order.oimount}}</span>
         </p>
-        <p class="price-detail-box m-ft-26 m-grey">
-          <span class="price-detail-text tl">使用新衣币</span>
-          <span class="price-detail-number tr">-￥3.00</span>
-        </p>
+        <!--<p class="price-detail-box m-ft-26 m-grey">-->
+          <!--<span class="price-detail-text tl">使用新衣币</span>-->
+          <!--<span class="price-detail-number tr">-￥3.00</span>-->
+        <!--</p>-->
       </div>
       <div class="line-one"></div>
       <div class="total-price m-ft-22 m-grey-color">
-        <div class="total-price-detail tl">总计￥273 运费￥0</div>
-        <div class="total-price-total tr">共2件商品 合计￥ 2730</div>
+        <div class="total-price-detail tl">总计￥{{order.oimount}} 运费￥0</div>
+        <div class="total-price-total tr">共2件商品 合计￥{{order.oimount}}</div>
       </div>
       <div class="line-one"></div>
     </div>
@@ -65,7 +63,12 @@
     data() {
       return {
         name: "orderProduct",
-        order: {}
+      }
+    },
+    props:{
+      order:{
+        type:Object,
+        default:null
       }
     },
     // components: {  },
@@ -73,7 +76,7 @@
       // 复制
       copyText() {
         let link = "订单号";
-        this.$copyText(link).then(function (e) {
+        this.$copyText(this.order.oiid).then(function (e) {
           Toast({ message: "复制成功", className: 'm-toast-success' });
         })
       }
@@ -88,6 +91,9 @@
   @import "../../../common/css/index";
   .order-no-box {
     display: flex;
+    flex-flow: row;
+    justify-content: space-between;
+    padding: 0 20px;
     .order-no {
       margin: 35px 23px 20px 23px;
       white-space: nowrap;
@@ -137,6 +143,7 @@
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 2;
       overflow: hidden;
+      text-align: left;
     }
   }
   .store-product {
@@ -150,6 +157,10 @@
       .store-name {
         flex: 1;
         margin: 20px 0;
+        padding-right:20px;
+        display: flex;
+        flex-flow: row;
+        justify-content: space-between;
       }
     }
     .order-product {
@@ -164,6 +175,7 @@
         .product-name {
           width: 435px;
           margin: 30px 0 14px 0;
+          text-align: left;
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
