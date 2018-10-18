@@ -14,7 +14,9 @@ class AReward(Resource):
     def get(self, reward):
         print reward
         apis = {
-            "get_one_reward": "self.creward.get_one_reward()"
+            "get_one_reward": "self.creward.get_one_reward()",
+            "get_user_reward": "self.creward.get_user_reward()",
+            "get_hand_out_reward": "self.creward.get_hand_out_reward()",
         }
         res = eval(apis[reward])
         return jsonify(res)
@@ -24,6 +26,8 @@ class AReward(Resource):
         apis = {
             "create_reward": "self.creward.create_reward()",
             "receive_reward": "self.creward.user_receive_reward()",
+            "hand_out_reward": "self.creward.hand_out_reward()",
+            "admin_giving_reward": "self.creward.admin_giving_reward()",
         }
         res = eval(apis[reward])
         return jsonify(res)
