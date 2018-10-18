@@ -8,12 +8,20 @@
       </div>
       <div class="content-table">
         <el-table :data="discountsList" border style="width: 100%" v-loading="discountsLoading">
-          <el-table-column prop="type" label="优惠名称"></el-table-column>
-          <el-table-column prop="type" label="优惠类型"></el-table-column>
-          <el-table-column prop="status" label="状态"></el-table-column>
-          <el-table-column prop="discounts" label="优惠"></el-table-column>
-          <el-table-column prop="discounts" label="使用时间"></el-table-column>
-          <el-table-column prop="num" label="已领取"></el-table-column>
+          <el-table-column prop="raname" label="优惠名称"></el-table-column>
+          <el-table-column prop="raType" label="优惠类型" width="120"></el-table-column>
+          <!--<el-table-column prop="status" label="状态"></el-table-column>-->
+          <!--<el-table-column prop="discounts" label="优惠"></el-table-column>-->
+          <!--<el-table-column prop="discounts" label="使用时间"></el-table-column>-->
+          <!--<el-table-column prop="num" label="已领取"></el-table-column>-->
+          <el-table-column prop="rewardstr" label="优惠内容" width="140"></el-table-column>
+          <el-table-column prop="rafilter" label="优惠门槛" width="80"></el-table-column>
+          <el-table-column prop="raamount" label="优惠金额" width="80"></el-table-column>
+          <el-table-column prop="raratio" label="上涨比率" width="80"></el-table-column>
+          <el-table-column prop="ramaxholdnum" label="最大拥有数" width="95"></el-table-column>
+          <el-table-column prop="ramaxusenum" label="可叠加张数" width="95"></el-table-column>
+          <el-table-column prop="ratransfer" label="可否转赠" width="80"></el-table-column>
+          <el-table-column prop="ratransfereffectivetime" label="转赠有效时长" width="110"></el-table-column>
           <el-table-column prop="num" label="集合"></el-table-column>
           <el-table-column prop="num" label="管理" width="120">
             <template slot-scope="scope">
@@ -38,17 +46,17 @@
         <div class="input-box">
           <div class="box-text">优惠名称：</div>
           <div class="box-right">
-            <el-input v-model="discountsName" style="width: 2.3rem" size="small" placeholder="请输入优惠门槛" clearable></el-input>
+            <el-input v-model="discountsName" style="width: 2.3rem" size="small" placeholder="请输入优惠名称" clearable></el-input>
           </div>
         </div>
         <div class="input-box">
-          <div class="box-text">叠加张数：</div>
+          <div class="box-text">可叠加张数：</div>
           <div class="box-right">
             <el-input v-model="ramaxusenum" style="width: 2.3rem" size="small" placeholder="请输入允许叠加使用的张数" clearable></el-input>
           </div>
         </div>
         <div class="input-box">
-          <div class="box-text">最大拥有量：</div>
+          <div class="box-text">最大拥有数：</div>
           <div class="box-right">
             <el-input v-model="ramaxholdnum" style="width: 2.3rem" size="small" placeholder="请输入同种券最大可拥有数量" clearable></el-input>
           </div>
@@ -56,7 +64,7 @@
         <div class="input-box">
           <div class="box-text">可否转赠：</div>
           <div class="box-right">
-            <el-select v-model="giveToOne" placeholder="请选择优惠类型" style="width: 2.3rem" size="mini" clearable>
+            <el-select v-model="giveToOne" placeholder="请选择是否允许转赠" style="width: 2.3rem" size="mini" clearable>
               <el-option v-for="item in giveToOneList" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
           </div>
@@ -88,7 +96,7 @@
         <div class="input-box" v-if="type != 2">
           <div class="box-text">优惠门槛：</div>
           <div class="box-right">
-            <el-input v-model="threshold" style="width: 2.3rem" placeholder="请输入优惠金额" clearable>
+            <el-input v-model="threshold" style="width: 2.3rem" placeholder="请输入优惠门槛" clearable>
               <template slot="append">元</template>
             </el-input>
           </div>
@@ -112,11 +120,7 @@
     data(){
       return{
         name:'活动中心',
-        discountsList: [          // 平台优惠list
-          { type: "满减",status: "领取中", discounts: "满100-20元", time: "2018/08/05  至  2018/09/05", num: "100" },
-          { type: "佣金加成",status: "暂停", discounts: "佣金+20%", time: "2018/08/05  至  2018/09/05", num: "200" },
-          { type: "无门槛",status: "已结束", discounts: "减50元", time: "2018/08/05  至  2018/09/05", num: "300" }
-        ],
+        discountsList: [],        // 平台优惠list
         discountsLoading: false,  // 平台优惠list加载中
         discountsName: "",        // 优惠名称
         ramaxusenum: "",          // 允许叠加使用的张数
@@ -146,10 +150,28 @@
     },
     components:{ pageTitle },
     methods:{
-
+      // 获取所有优惠券
+      getAllRaward() {
+        this.discountsLoading = true;
+        axios.get(api.get_all_raward + '?token=' + localStorage.getItem('token')).then(res => {
+          if(res.data.status == 200){
+            this.discountsList = res.data.data;
+            for(let i = 0; i < this.discountsList.length; i ++ ){
+              for(let j = 0; j < this.typeList.length; j ++) {
+                if(this.discountsList[i].ratype == this.typeList[j].value) {
+                  this.discountsList[i].raType = this.typeList[j].label;
+                }
+              }
+            }
+            this.discountsLoading = false;
+          }else{
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+          }
+        });
+      },
     },
     mounted() {
-
+      this.getAllRaward();      // 获取所有优惠券
     }
   }
 </script>
