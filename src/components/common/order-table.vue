@@ -168,7 +168,7 @@
     name: "all-order-table",
     data() {
       return {
-        expandAll: true,                // 表格是否默认展开行
+        expandAll: false,               // 表格是否默认展开行
         // orderLoading: true,          // 表格加载中
         statusnum: "",                  // 暂存订单状态
         orderOutList: [],               // 要导出的订单list
