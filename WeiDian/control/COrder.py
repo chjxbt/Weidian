@@ -323,7 +323,6 @@ class COrder():
         response["data"] = order_list
         return response
 
-
     @verify_token_decorator
     def update_order(self):
         """没用"""
@@ -503,6 +502,8 @@ class COrder():
             })
         response = import_status('confirm_order_success', 'OK')
         return response
+
+
 
     @verify_token_decorator
     def apply_refund(self):

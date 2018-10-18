@@ -79,8 +79,6 @@ class SOrder(SBase):
         """获取某人今日指定状态订单"""
         today = datetime.now()
         today_str = datetime.strftime(today, format_for_db)[:8]
-        import ipdb
-        ipdb.set_trace()
         return self.session.query(OrderInfo).filter(or_(OrderInfo.OIpaystatus == s for s in status)).filter(
             OrderInfo.USid == usid,
             OrderInfo.OIpaytime.like(today_str + '%')
@@ -101,12 +99,17 @@ class SOrder(SBase):
     def get_user_ordercount_by_status(self, usid, status):
         """获取自买订单预览数"""
         return self.session.query(OrderInfo).filter(
-            OrderInfo.USid == usid, or_(OrderInfo.Sellerid != OrderInfo.USid, OrderInfo.Sellerid.in_(["", None])), OrderInfo.OIpaystatus.in_(status)).count()
+            OrderInfo.USid == usid,
+            # or_(OrderInfo.Sellerid != OrderInfo.USid, OrderInfo.Sellerid.in_(["", None])),
+            OrderInfo.OIpaystatus.in_(status)
+        ).count()
 
     @close_session
     def get_user_ordercount_by_item_status(self, usid, staus):
         return self.session.query(OrderInfo).filter(
-            OrderInfo.USid == usid, OrderInfo.Sellerid != usid, OrderInfo.OIpaystatus == staus).count()
+            OrderInfo.USid == usid,  # OrderInfo.Sellerid != usid,
+            OrderInfo.OIpaystatus == staus
+        ).count()
 
     @close_session
     def get_sell_ordercount_by_status(self, usid=None, status=[]):
