@@ -36,7 +36,7 @@ class SOrder(SBase):
             filter_order.add(OrderInfo.OIpaystatus.in_(status))
         else:
             filter_order.add(OrderInfo.OIpaystatus == status)
-        return self.session.query(OrderInfo).filter(*filter_order).offset(page_size * (page_num - 1)).limit(page_size).all()
+        return self.session.query(OrderInfo).filter(*filter_order).all_with_page(page_num, page_size)
 
     @close_session
     def get_sell_order_by_status(self, usid, status, page_num, page_size):
@@ -48,7 +48,7 @@ class SOrder(SBase):
             filter_order.add(OrderInfo.OIpaystatus.in_(status))
         else:
             filter_order.add(OrderInfo.OIpaystatus == status)
-        return self.session.query(OrderInfo).filter(*filter_order).offset(page_size * (page_num - 1)).limit(page_size).all()
+        return self.session.query(OrderInfo).filter(*filter_order).all_with_page(page_num, page_size)
 
     @close_session
     def get_sell_order_by_status2(self, status, page_num, page_size, usid=None, phone=None):
@@ -170,6 +170,12 @@ class SOrder(SBase):
         return self.session.query(OrderInfo).join(OrderProductInfo, OrderProductInfo.OIid == OrderInfo.OIid).filter(
             OrderProductInfo.OPIid == opiid
         ).first()
+
+    @close_session
+    def update_order_productinfo_by_oiid(self, oiid, data):
+        """根据订单id更新详情信息
+        """
+        return self.session.query(OrderProductInfo).filter(OrderProductInfo.OIid == oiid).update(data)
 
     @close_session
     def update_order_by_oiid(self, oiid, data):

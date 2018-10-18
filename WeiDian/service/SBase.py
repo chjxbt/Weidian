@@ -3,6 +3,7 @@ import sys
 import os
 from contextlib import contextmanager
 import DBSession
+from WeiDian.common.loggers import generic_log
 from WeiDian.common.weidian_error import dberror
 import WeiDian.models.model as models
 from WeiDian.models.base_model import BaseModel
@@ -65,4 +66,5 @@ class SBase(object):
                 func(*args)
             self.session.rollback()
             self.session.close()
+            generic_log(e)
             raise e

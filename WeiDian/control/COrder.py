@@ -105,16 +105,16 @@ class COrder():
         sell = args.get('sell', 'false')
         parameter_required("paystatus", "page_size", "page_num")
         status = args.get('paystatus')
-        status = ['1', '5', '6', '11'] if status == '0' else status
+        status = ['1', '4', '5', '6', '11'] if status == '0' else status
         status = ['2', '4', '5', '7', '9', '10', '11'] if status == '20' else status
         print status
         try:
             if sell == 'true':
                 order_list = self.sorder.get_sell_order_by_status(request.user.id, status, int(args["page_num"]), int(args["page_size"]))
-                order_list_count = self.sorder.get_sell_ordercount_by_status(request.user.id, status)
+                # order_list_count = self.sorder.get_sell_ordercount_by_status(request.user.id, status)
             else:
                 order_list = self.sorder.get_user_order_by_status(request.user.id, status, int(args["page_num"]), int(args["page_size"]))
-                order_list_count = self.sorder.get_user_ordercount_by_status(request.user.id, status)
+                # order_list_count = self.sorder.get_user_ordercount_by_status(request.user.id, status)
             for order in order_list:
                 # order.fields = ['OIid', 'OIsn', 'OIpaystatus', 'OIcreatetime']
                 order.fill(ORDER_STATUS.get(str(order.OIpaystatus)), 'oipaystatusmsg')
@@ -123,14 +123,12 @@ class COrder():
                 self.fill_complainstatus(order)
                 order.fill(ORDER_STATUS_.get(str(order.OIpaystatus)), 'order_status')
                 order.OIpaytime = get_web_time_str(order.OIpaytime, format_for_db)
-
-
             # map(self.fill_oistatusmessage, order_list)
             data = import_status('get_order_list_success', 'OK')
-            data['totalcount'] = order_list_count
+            data['totalcount'] = request.all_count
             data['data'] = order_list
             return data
-        except:
+        except Exception as e:
             logger.exception("get order list by status error")
             return SYSTEM_ERROR
 
@@ -144,7 +142,7 @@ class COrder():
         logger.info("get order count args is %s", args)
         sell = args.get('sell')
         print (request.user.id)
-        all_status = ['1', '5', '6', '10', '11']
+        all_status = ['1', '4', '5', '6', '11']
         if sell == 'true':
             json_data = [
                 {
@@ -158,6 +156,11 @@ class COrder():
                     'count': self.sorder.get_sell_ordercount_by_item_status(request.user.id, '1')
                 },
                 {
+                    'status': u'待发货',
+                    'statusnum': u'4',
+                    'count': self.sorder.get_sell_ordercount_by_item_status(request.user.id, '4')
+                },
+                {
                     'status': u'待收货',
                     'statusnum': u'5',
                     'count': self.sorder.get_sell_ordercount_by_item_status(request.user.id, '5')
@@ -165,18 +168,8 @@ class COrder():
                 {
                     'status': u'已完成',
                     'statusnum': u'6',
-                    'count': self.sorder.get_sell_ordercount_by_status(request.user.id, '7')
+                    'count': self.sorder.get_sell_ordercount_by_status(request.user.id, '6')
                 },
-                # {
-                #     'status': u'已取消',
-                #     'statusnum': u'7',
-                #     'count': self.sorder.get_sell_ordercount_by_status(request.user.id, '7')
-                # },
-                # {
-                #     'status': u'待评价',
-                #     'statusnum': u'10',
-                #     'count': self.sorder.get_sell_ordercount_by_status(request.user.id, '10')
-                # },
                 {
                     'status': u'退换货',
                     'statusnum': u'11',
@@ -194,6 +187,11 @@ class COrder():
                     'status': u'待付款',
                     'statusnum': u'1',
                     'count': self.sorder.get_user_ordercount_by_item_status(request.user.id, '1')
+                },
+                {
+                    'status': u'待发货',
+                    'statusnum': u'4',
+                    'count': self.sorder.get_user_ordercount_by_item_status(request.user.id, '4')
                 },
                 {
                     'status': u'待收货',
@@ -261,7 +259,7 @@ class COrder():
             raise TOKEN_ERROR(u'请使用管理员登录')
         data = request.args.to_dict()
         usid = data.get('usid', '').strip() or None
-        all_status = ['1', '5', '6', '11']
+        all_status = ['1', '4', '5', '6', '11']
         json_data = [
             {
                 'status': u'全部',
@@ -274,9 +272,14 @@ class COrder():
                 'count': self.sorder.get_sell_ordercount_by_item_status(usid, '1')
             },
             {
-                'status': u'待收货',
+                'status': u'待付款',
                 'statusnum': u'5',
                 'count': self.sorder.get_sell_ordercount_by_item_status(usid, '5')
+            },
+            {
+                'status': u'待发货',
+                'statusnum': u'4',
+                'count': self.sorder.get_sell_ordercount_by_item_status(usid, '4')
             },
             {
                 'status': u'已完成',
@@ -304,7 +307,7 @@ class COrder():
         page = data.get('page', '').strip() or 1
         count = data.get('count', '').strip() or 15
         status = data.get('paystatus')
-        status = ['1', '5', '6', '11'] if str(status) == '0' else status
+        status = ['1', '4', '5', '6', '11'] if str(status) == '0' else status
         status = ['2', '4', '5', '7', '9', '10', '11'] if str(status) == '20' else status
         order_list = self.sorder.get_sell_order_by_status2(status, page, count, usid, phone)
         for order in order_list:
@@ -478,24 +481,25 @@ class COrder():
         """确认收货"""
         if is_tourist():
             raise TOKEN_ERROR()
-        data = parameter_required(u'opiid')
-        opiid = data.get('opiid')
-        order_product_info = self.sorder.get_orderproductinfo_by_opiid(opiid)
-        oiid = order_product_info.OIid
+        data = parameter_required(u'oiid')
+        oiid = data.get('oiid')
+        # order_product_info = self.sorder.get_orderproductinfo_by_opiid(oiid)
+        # oiid = order_product_info.OIid
         order = self.sorder.get_order_by_oiid(oiid)
         if not order or order.USid != request.user.id:
             raise NOT_FOUND()
-        if order.OIpaystatus not in [5, 12] or order_product_info.OPIstatus == 0:
+        if order.OIpaystatus not in [5, 12]:
             raise NOT_FOUND(u'订单未发货或已收货')
-        # 确认收货后'订单商品交易完成'
-        self.sorder.update_orderproductinfo_by_opiid(opiid, {
-            'OPIstatus': 2
-        })
-        # 判断订单中的所有商品是否都已经完成, 如果已经完成则更改订单状态为交易成功
         order_product_list = self.sorder.get_orderproductinfo_by_oiid(oiid)
-        if not len(filter(lambda x: x.OPIstatus not in [3, 2], order_product_list)):
-            self.sorder.update_order_by_oiid(oiid, {
-                'OIpaystatus': 10  # 待评价
+        with self.sorder.auto_commit() as session:
+            if len(filter(lambda x: x.OPIstatus in [0], order_product_list)):
+                raise PARAMS_MISS(u'部分商品未发货')
+                # 判断订单中的所有商品是否都已经完成, 如果已经完成则更改订单状态为交易成功
+            session.query(OrderInfo).filter(OrderInfo.OIid == oiid).update({
+                'OIpaystatus': 6  # 交易完成
+            })
+            session.query(OrderProductInfo).filter(OrderProductInfo.OIid == oiid).update({
+                'OPIstatus': 2
             })
         response = import_status('confirm_order_success', 'OK')
         return response
@@ -565,7 +569,7 @@ class COrder():
                 send_time = productinfo.OPIresendLogistictime
                 if send_time:
                     productinfo.OPIresendLogistictime = get_web_time_str(send_time, format_for_db)
-                log_sn = productinfo.OPIlogisticsSn
+                log_sn = productinfo.OPIlogisticsSn or ''
                 if ':' in log_sn:
                     log_info = log_sn.split(':')
                     zh_name = filter(lambda x: x['expresskey'] == log_info[0], kd_list)
