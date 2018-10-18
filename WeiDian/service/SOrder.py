@@ -114,8 +114,8 @@ class SOrder(SBase):
         return self.session.query(OrderInfo).filter_without_none(OrderInfo.Sellerid == usid).filter(OrderInfo.OIpaystatus.in_(status)).count()
 
     @close_session
-    def get_sell_ordercount_by_item_status(self, usid, status):
-        return self.session.query(OrderInfo).filter(OrderInfo.Sellerid == usid, OrderInfo.OIpaystatus == status).count()
+    def get_sell_ordercount_by_item_status(self, usid=None, status=None):
+        return self.session.query(OrderInfo).filter_without_none(OrderInfo.Sellerid == usid, OrderInfo.OIpaystatus == status).count()
 
     @close_session
     def get_order_by_oisn(self, oisn):

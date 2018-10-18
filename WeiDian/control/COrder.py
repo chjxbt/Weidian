@@ -250,7 +250,7 @@ class COrder():
             raise TOKEN_ERROR(u'请使用管理员登录')
         data = request.args.to_dict()
         usid = data.get('usid', '').strip() or None
-        all_status = ['1', '5', '6', '10', '11']
+        all_status = ['1', '5', '6', '11']
         json_data = [
             {
                 'status': u'全部',
@@ -270,7 +270,7 @@ class COrder():
             {
                 'status': u'已完成',
                 'statusnum': u'6',
-                'count': self.sorder.get_sell_ordercount_by_status(usid, '7')
+                'count': self.sorder.get_sell_ordercount_by_status(usid, '6')
             },
             {
                 'status': u'退换货',
@@ -293,7 +293,7 @@ class COrder():
         page = data.get('page', '').strip() or 1
         count = data.get('count', '').strip() or 15
         status = data.get('paystatus')
-        status = [str(i) for i in range(1, 12)] if str(status) == '0' else status
+        status = ['1', '5', '6', '11'] if str(status) == '0' else status
         status = ['2', '4', '5', '7', '9', '10', '11'] if str(status) == '20' else status
         order_list = self.sorder.get_sell_order_by_status2(status, page, count, usid, phone)
         map(lambda x: x.fill(ORDER_STATUS.get(str(x.OIpaystatus)), 'oipaystatusmsg'), order_list)
@@ -471,7 +471,6 @@ class COrder():
             raise NOT_FOUND()
         if order.OIpaystatus not in [5, 12] or order_product_info.OPIstatus == 0:
             raise NOT_FOUND(u'订单未发货或已收货')
-
         # 确认收货后'订单商品交易完成'
         self.sorder.update_orderproductinfo_by_opiid(opiid, {
             'OPIstatus': 2
@@ -488,6 +487,10 @@ class COrder():
     @verify_token_decorator
     def apply_refund(self):
         """申请退货"""
+        if is_tourist():
+            raise TOKEN_ERROR(u'请登录')
+
+
 
     @verify_token_decorator
     def agree_refund(self):
@@ -541,7 +544,7 @@ class COrder():
         for productinfo in productinfos:
             productinfo.fields = ['OPIproductname', 'OPIproductimages', 'OPIstatus', 'OPIid']
             # {0: '待发货', 1: '待收货', 2: '交易成功(未评价)', 3: '交易成功(已评价)', 4: '退货', 5: '换货'}
-            if productinfo.OPIstatus in [1, 2, 3]:  # 0: 待发货, 1 待收货, 2 交易成功,
+            if productinfo.OPIstatus in [1, 2, 3, 4, 5]:
                 productinfo.add('OPIlogisticsSn', 'OPIlogisticsText')
                 log_sn = productinfo.OPIlogisticsSn
                 if ':' in log_sn:
@@ -550,8 +553,18 @@ class COrder():
                     productinfo.fill(zh_name, 'zh_name')
                     productinfo.fill(log_info[0], 'logistic_company')
                     setattr(productinfo, 'OPIlogisticsSn', log_info[-1])
-            if productinfo.OPIstatus in [4, 5]:
-                productinfo.fields = ['OPIlogisticsSn', 'OPIlogisticsText', 'OPIresendLogisticSn', 'OPIresendLogisticText']
+            if productinfo.OPIstatus in [4, 5]:  # 退换货
+                # productinfo.fields = ['OPIresendLogisticSn', 'OPIresendLogisticText']
+                # resend_log_sn = productinfo.OPIlogisticsSn
+                # if ':' in resend_log_sn:
+                #     log_info = resend_log_sn.split(':')
+                #     resend_zh_name = filter(lambda x: x['expresskey'] == log_info[0], kd_list)
+                #     productinfo.fill(resend_zh_name, 'resend_zh_name')
+                #     productinfo.fill(log_info[0], 'logistic_company')
+                #     setattr(productinfo, 'OPIresendLogisticSn', log_info[-1])
+                #     # todo
+                pass
+
             productinfo.fill(order_product_info_status.get(productinfo.OPIstatus, u'异常'), 'zh_status')
         order.add('productinfo')
         return order
