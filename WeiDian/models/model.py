@@ -404,11 +404,12 @@ class OrderProductInfo(BaseModel):
     PRid = Column(String(64), nullable=False)  # 商品id
     # OPIsku = Column(Text, nullable=False)  # 订单中的sku值(无需存skuid)
     _PSKproperkey = Column(Text, nullable=False)  # 商品sku属性的key, json
-    OIproductprice = Column(Float, nullable=False)   # 商品价格(购买时候的价格)
+    OIproductprice = Column(Float, nullable=False)   # 商品价格(购买时候的价格)单价
     OPIproductname = Column(String(64))  # 商品的名字(购买之时的)
     OPIproductimages = Column(String(255))  # 商品主图
     OPIproductnum = Column(Integer, default=1)  # 购买数量
     OPIstatus = Column(Integer, default=0, comment=u'0: 待发货, 1 待收货, 2 交易成功(未评价), 3 交易成功(已评价), 4 退货, 5 换货, 6 已签收, 7 ')
+    SmallTotal = Column(Float, nullable=False, comment=u'价格小计')
 
     OPIlogisticsSn = Column(String(64), comment=u'快递公司: 发货物流单号')
     OPIlogisticsText = Column(Text, comment=u'发货物流信息')

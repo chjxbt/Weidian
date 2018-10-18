@@ -122,7 +122,9 @@ class COrder():
                 self.fill_productinfo(order)
                 self.fill_complainstatus(order)
                 order.fill(ORDER_STATUS_.get(str(order.OIpaystatus)), 'order_status')
-                order.OIpaytime = get_web_time_str(order.OIpaytime, format_for_db)
+                order.OIpaytime = get_web_time_str(order.OIpaytime)
+                order.OIcreatetime = get_web_time_str(order.OIcreatetime)
+
             # map(self.fill_oistatusmessage, order_list)
             data = import_status('get_order_list_success', 'OK')
             data['totalcount'] = request.all_count
@@ -244,8 +246,28 @@ class COrder():
             self.fill_productinfo(order)
             self.fill_complainstatus(order)
             order.fill(ORDER_STATUS_.get(str(order.OIpaystatus)), 'order_status')
-            order.OIpaytime = get_web_time_str(order.OIpaytime, format_for_db)
             self.fill_productinfo(order)
+            if is_admin():
+                # 买家
+                usid = order.USid
+                user = self.suser.get_user_by_user_id(usid)
+                if user.USlevel == 0:
+                    user.level = 'ordinary'
+                if user.USlevel > 0:
+                    user.level = 'partner'
+                user.add('level')
+                order.fill(user, 'user')
+                # 卖家
+                upperusid = order.Sellerid
+                upuser = self.suser.get_user_by_user_id(upperusid)
+                if user.USlevel == 0:
+                    user.level = 'ordinary'
+                if user.USlevel > 0:
+                    user.level = 'partner'
+                user.add('level')
+                order.fill(upuser, 'upper')
+            order.OIpaytime = get_web_time_str(order.OIpaytime)
+            order.OIcreatetime = get_web_time_str(order.OIcreatetime)
             response = import_status('get_order_list_success', 'OK')
             response['data'] = order
             return response
@@ -316,7 +338,8 @@ class COrder():
             self.fill_productinfo(order)
             self.fill_complainstatus(order)
             order.fill(ORDER_STATUS_.get(str(order.OIpaystatus)), 'order_status')
-            order.OIpaytime = get_web_time_str(order.OIpaytime, format_for_db)
+            order.OIpaytime = get_web_time_str(order.OIpaytime)
+            order.OIcreatetime = get_web_time_str(order.OIcreatetime)
         response = import_status('get_order_list_success', 'OK')
         response["count"] = request.all_count
         response["page_count"] = request.page_count
@@ -554,9 +577,11 @@ class COrder():
             orderproductinfo_dict['opiproductimages'] = product.PRmainpic
             # 商品数量
             orderproductinfo_dict['opiproductnum'] = int(sku.get('num', 1))
+            # 单价
+            orderproductinfo_dict['OIproductprice'] = self.sproductskukey.get_true_price(pskid, partner=is_partner())
             # 商品价格(小计)
-            orderproductinfo_dict['OIproductprice'] = self.sproductskukey.get_true_price(pskid, partner=is_partner()) *\
-                                                           orderproductinfo_dict['opiproductnum']
+            orderproductinfo_dict['SmallTotal'] = self.sproductskukey.get_true_price(pskid, partner=is_partner()) *\
+                                                            orderproductinfo_dict['opiproductnum']
             sku_dict_list.append(orderproductinfo_dict)
         return sku_dict_list
 
@@ -565,14 +590,16 @@ class COrder():
         productinfos = self.sorder.get_orderproductinfo_by_oiid(oiid)
         order.productinfo = productinfos
         for productinfo in productinfos:
-            productinfo.fields = ['OPIproductname', 'OPIproductimages', 'OPIstatus', 'OPIid', 'PRid', 'PSKproperkey', 'OIproductprice', 'OPIproductnum']
+            productinfo.fields = ['OPIproductname', 'OPIproductimages', 'OPIstatus', 'OPIid', 'PRid', 'PSKproperkey', 'OIproductprice', 'OPIproductnum', 'SmallTotal']
+            productinfo.OPIlogisticstime = get_web_time_str(productinfo.OPIlogisticstime)
+
             productinfo.fill(order.OIsn, 'oisn')
             # {0: '待发货', 1: '待收货', 2: '交易成功(未评价)', 3: '交易成功(已评价)', 4: '退货', 5: '换货'}
             if productinfo.OPIstatus in [1, 2, 3, 4, 5]:
                 productinfo.add('OPIlogisticsSn', 'OPIlogisticsText', 'OPIlogisticstime')
                 send_time = productinfo.OPIresendLogistictime
                 if send_time:
-                    productinfo.OPIresendLogistictime = get_web_time_str(send_time, format_for_db)
+                    productinfo.OPIresendLogistictime = get_web_time_str(send_time)
                 log_sn = productinfo.OPIlogisticsSn or ''
                 if ':' in log_sn:
                     log_info = log_sn.split(':')
