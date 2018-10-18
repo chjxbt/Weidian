@@ -190,7 +190,7 @@ kd_list = [
     },
     {
         "expresskey": "huitong",
-        "expressname": "汇通快递",
+        "expressname": "百世汇通快递",
         "expresswebsite": "http://www.htky365.com",
         "expresstelephone": "021-62963636"
     },

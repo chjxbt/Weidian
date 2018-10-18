@@ -371,6 +371,7 @@ class COrder():
         if not order or order.OIpaystatus != 1:
             # 无效请求
             return self.pay.reply("OK", True)
+        # 此处可能会放到确认收货的接口中
         order_owner = self.suser.get_user_by_user_id(order.USid)
         # 修改订单状态
         paytime = data.get('time_end')
@@ -438,6 +439,7 @@ class COrder():
         order_info_list = []
         kd_company_list = [x['expresskey'] for x in kd_list]
         with self.sorder.auto_commit() as session:
+            session_list = []
             for send_info in send_infos:
                 opiid = send_info.get('opiid')  # 订单中的详情id
                 opilogisticssn = send_info.get('opilogisticssn')  # 运单号
@@ -460,7 +462,7 @@ class COrder():
                 order_product.OPIstatus = 1
                 now_time = datetime.now()
                 order_product.OPIresendLogistictime = datetime.strftime(now_time, format_for_db)
-                session.add(order_product)
+                session_list.append(order_product)
                 # 改变订单状态
                 oiid = order_product.OIid
                 order = session.query(OrderInfo).filter(OrderInfo.OIid == oiid).first()
@@ -470,8 +472,9 @@ class COrder():
                     raise PARAMS_MISS(u'未付款的订单')
                 if order not in order_info_list:
                     order.OIpaystatus = 5
-                    session.add(order)
+                    session_list.append(order)
                     order_info_list.append(order)
+            session.add_all(session_list)
         response = import_status('send_product_success', 'OK')
         return response
 
@@ -482,8 +485,6 @@ class COrder():
             raise TOKEN_ERROR()
         data = parameter_required(u'oiid')
         oiid = data.get('oiid')
-        # order_product_info = self.sorder.get_orderproductinfo_by_opiid(oiid)
-        # oiid = order_product_info.OIid
         order = self.sorder.get_order_by_oiid(oiid)
         if not order or order.USid != request.user.id:
             raise NOT_FOUND()
@@ -503,15 +504,12 @@ class COrder():
         response = import_status('confirm_order_success', 'OK')
         return response
 
-
-
     @verify_token_decorator
     def apply_refund(self):
         """申请退货"""
         if is_tourist():
             raise TOKEN_ERROR(u'请登录')
-
-
+        data = parameter_required('')
 
     @verify_token_decorator
     def agree_refund(self):
@@ -538,8 +536,12 @@ class COrder():
         for sku in sku_list:
             pskid = sku.get('pskid')
             productskukey = self.sproductskukey.get_psk_by_pskid(pskid)
+            if not productskukey:
+                raise NOT_FOUND(u'不存在sku')
             prid = productskukey.PRid
             product = self.sproduct.get_product_by_prid(prid)
+            if not product:
+                raise NOT_FOUND(u'商品不存在')
             orderproductinfo_dict = dict(
                 opiid=str(uuid.uuid4()),
                 oiid=oiid,
@@ -564,6 +566,7 @@ class COrder():
         order.productinfo = productinfos
         for productinfo in productinfos:
             productinfo.fields = ['OPIproductname', 'OPIproductimages', 'OPIstatus', 'OPIid', 'PRid', 'PSKproperkey', 'OIproductprice', 'OPIproductnum']
+            productinfo.fill(order.OIsn, 'oisn')
             # {0: '待发货', 1: '待收货', 2: '交易成功(未评价)', 3: '交易成功(已评价)', 4: '退货', 5: '换货'}
             if productinfo.OPIstatus in [1, 2, 3, 4, 5]:
                 productinfo.add('OPIlogisticsSn', 'OPIlogisticsText', 'OPIlogisticstime')
