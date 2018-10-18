@@ -36,7 +36,7 @@ class SOrder(SBase):
             filter_order.add(OrderInfo.OIpaystatus.in_(status))
         else:
             filter_order.add(OrderInfo.OIpaystatus == status)
-        return self.session.query(OrderInfo).filter(*filter_order).offset(page_size * (page_num - 1)).limit(page_size).all()
+        return self.session.query(OrderInfo).filter(*filter_order).all_with_page(page_num, page_size)
 
     @close_session
     def get_sell_order_by_status(self, usid, status, page_num, page_size):
@@ -48,7 +48,20 @@ class SOrder(SBase):
             filter_order.add(OrderInfo.OIpaystatus.in_(status))
         else:
             filter_order.add(OrderInfo.OIpaystatus == status)
-        return self.session.query(OrderInfo).filter(*filter_order).offset(page_size * (page_num - 1)).limit(page_size).all()
+        return self.session.query(OrderInfo).filter(*filter_order).all_with_page(page_num, page_size)
+
+    @close_session
+    def get_sell_order_by_status2(self, status, page_num, page_size, usid=None, phone=None):
+        """同上"""
+        filter_order = set()
+        if isinstance(status, list):
+            filter_order.add(OrderInfo.OIpaystatus.in_(status))
+        else:
+            filter_order.add(OrderInfo.OIpaystatus == status)
+        return self.session.query(OrderInfo).filter(*filter_order).filter_without_none(
+            OrderInfo.USid == usid,
+            OrderInfo.OIrecvphone == phone
+        ).all_with_page(page_num, page_size)
 
     @close_session
     def get_sellorder_by_user_status(self, usid, status):
@@ -96,13 +109,13 @@ class SOrder(SBase):
             OrderInfo.USid == usid, OrderInfo.Sellerid != usid, OrderInfo.OIpaystatus == staus).count()
 
     @close_session
-    def get_sell_ordercount_by_status(self, usid, status):
+    def get_sell_ordercount_by_status(self, usid=None, status=[]):
         """获取销售订单预览数"""
-        return self.session.query(OrderInfo).filter(OrderInfo.Sellerid == usid, OrderInfo.OIpaystatus.in_(status)).count()
+        return self.session.query(OrderInfo).filter_without_none(OrderInfo.Sellerid == usid).filter(OrderInfo.OIpaystatus.in_(status)).count()
 
     @close_session
-    def get_sell_ordercount_by_item_status(self, usid, status):
-        return self.session.query(OrderInfo).filter(OrderInfo.Sellerid == usid, OrderInfo.OIpaystatus == status).count()
+    def get_sell_ordercount_by_item_status(self, usid=None, status=None):
+        return self.session.query(OrderInfo).filter_without_none(OrderInfo.Sellerid == usid, OrderInfo.OIpaystatus == status).count()
 
     @close_session
     def get_order_by_oisn(self, oisn):
@@ -120,7 +133,7 @@ class SOrder(SBase):
     @close_session
     def get_orderproductinfo_by_oiid(self, oiid):
         return self.session.query(
-            OrderProductInfo).filter_by(OIid=oiid).first()
+            OrderProductInfo).filter_by(OIid=oiid).all()
 
     @close_session
     def get_orderproductinfo_by_oisn(self, oisn):
@@ -138,3 +151,33 @@ class SOrder(SBase):
     def update_orderinfo_by_oisn(self, oisn, data):
         """更新订单"""
         return self.session.query(OrderInfo).filter(OrderInfo.OIsn == oisn).update(data)
+
+    @close_session
+    def get_orderproductinfo_by_opiid(self, opiid):
+        """根据id获取订单中的商品"""
+        return self.session.query(OrderProductInfo).filter(OrderProductInfo.OPIid == opiid).first()
+
+    @close_session
+    def update_orderproductinfo_by_opiid(self, opiid, data):
+        """根据opiid更新订单中的商品信息"""
+        return self.session.query(OrderProductInfo).filter(
+            OrderProductInfo.OPIid == opiid
+        ).update(data)
+
+    @close_session
+    def get_order_by_opiid(self, opiid):
+        """根据订单商品的id获取所属的订单"""
+        return self.session.query(OrderInfo).join(OrderProductInfo, OrderProductInfo.OIid == OrderInfo.OIid).filter(
+            OrderProductInfo.OPIid == opiid
+        ).first()
+
+    @close_session
+    def update_order_productinfo_by_oiid(self, oiid, data):
+        """根据订单id更新详情信息
+        """
+        return self.session.query(OrderProductInfo).filter(OrderProductInfo.OIid == oiid).update(data)
+
+    @close_session
+    def update_order_by_oiid(self, oiid, data):
+        """根据订单ip更新订单"""
+        return self.session.query(OrderInfo).filter(OrderInfo.OIid == oiid).update(data)

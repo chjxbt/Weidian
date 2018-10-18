@@ -1,5 +1,5 @@
 # -*- coding:utf8 -*-
-from datetime import date
+from datetime import date, datetime
 
 from flask import Flask as _Flask
 from flask.json import JSONEncoder as _JSONEncoder
@@ -54,9 +54,9 @@ class JSONEncoder(_JSONEncoder):
                     res[k.lower()] = res[k]
                     res.pop(k)
             return res
-        if isinstance(o, date):
+        if isinstance(o, datetime):
             # 也可以序列化时间类型的对象
-            return o.strftime('%Y-%m-%d')
+            return o.strftime('%Y-%m-%d %H:%M:%S')
         if isinstance(o, type):
             raise o()
         if isinstance(o, HTTPException):
