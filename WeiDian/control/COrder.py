@@ -9,6 +9,7 @@ from weixin import WeixinPay
 from flask import request
 
 from WeiDian import logger
+from WeiDian.common.loggers import generic_log
 from WeiDian.common.params_require import parameter_required
 from WeiDian.config.enums import ORDER_STATUS, order_product_info_status
 from WeiDian.config.kd import kd_list
@@ -221,10 +222,32 @@ class COrder():
         return data
 
     @verify_token_decorator
+    def get_order_info(self):
+        if is_tourist():
+            raise TOKEN_ERROR(u'请登录')
+        data = request.args.to_dict()
+        oiid = data.get('oiid')
+        if not oiid:
+            raise PARAMS_MISS(u'参数oiid缺失')
+        order = self.sorder.get_order_by_oiid(oiid)
+        usid = request.user.id
+        if not order:
+            raise NOT_FOUND(u'不存在的订单')
+        if order.USid != usid and not is_admin():
+            raise NOT_FOUND(u'他人订单')
+        try:
+            self.fill_productinfo(order)
+            response = import_status('get_order_list_success', 'OK')
+            response['data'] = order
+            return response
+        except Exception as e:
+            generic_log(e)
+            raise e
+
+    @verify_token_decorator
     def admin_get_order_count(self):
         if not is_admin():
             raise TOKEN_ERROR(u'请使用管理员登录')
-        parameter_required("paystatus")
         data = request.args.to_dict()
         usid = data.get('usid', '').strip() or None
         all_status = ['1', '5', '6', '10', '11']
@@ -263,13 +286,16 @@ class COrder():
     def admin_get_order_list(self):
         if not is_admin():
             raise TOKEN_ERROR(u'请使用管理员登录')
+        parameter_required("paystatus")
         data = request.args.to_dict()
         usid = data.get('usid', '').strip() or None
         phone = data.get('phone', '').strip() or None
+        page = data.get('page', '').strip() or 1
+        count = data.get('count', '').strip() or 15
         status = data.get('paystatus')
         status = [str(i) for i in range(1, 12)] if str(status) == '0' else status
         status = ['2', '4', '5', '7', '9', '10', '11'] if str(status) == '20' else status
-        order_list = self.sorder.get_sell_order_by_status2(status, data.get('page', 1), data.get('count', 15), usid)
+        order_list = self.sorder.get_sell_order_by_status2(status, page, count, usid, phone)
         map(lambda x: x.fill(ORDER_STATUS.get(str(x.OIpaystatus)), 'oipaystatusmsg'), order_list)
         # map(self.fill_oistatusmessage, order_list)
         map(self.fill_productinfo, order_list)
@@ -517,6 +543,13 @@ class COrder():
             # {0: '待发货', 1: '待收货', 2: '交易成功(未评价)', 3: '交易成功(已评价)', 4: '退货', 5: '换货'}
             if productinfo.OPIstatus in [1, 2, 3]:  # 0: 待发货, 1 待收货, 2 交易成功,
                 productinfo.add('OPIlogisticsSn', 'OPIlogisticsText')
+                log_sn = productinfo.OPIlogisticsSn
+                if ':' in log_sn:
+                    log_info = log_sn.split(':')
+                    zh_name = filter(lambda x: x['expresskey'] == log_info[0], kd_list)
+                    productinfo.fill(zh_name, 'zh_name')
+                    productinfo.fill(log_info[0], 'logistic_company')
+                    setattr(productinfo, 'OPIlogisticsSn', log_info[-1])
             if productinfo.OPIstatus in [4, 5]:
                 productinfo.fields = ['OPIlogisticsSn', 'OPIlogisticsText', 'OPIresendLogisticSn', 'OPIresendLogisticText']
             productinfo.fill(order_product_info_status.get(productinfo.OPIstatus, u'异常'), 'zh_status')

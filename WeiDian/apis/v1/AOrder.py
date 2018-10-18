@@ -31,6 +31,7 @@ class AOrder(Resource):
             'get_kd_list': 'self.corder.get_kd_list()',
             'admin_get_order_count': 'self.corder.admin_get_order_count()',
             'admin_get_order_list': 'self.corder.admin_get_order_list()',
+            'get_order_info': 'self.corder.get_order_info()',  # 单个订单详情
         }
         res = eval(apis[order])
         return jsonify(res)
