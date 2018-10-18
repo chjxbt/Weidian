@@ -77,7 +77,7 @@
           <div class="dialog-title">订单编号： {{order.oisn}}</div>
           <div class="box-row">
             <div class="row-label">订单总价：</div>
-            <div class="row-value">{{order.oimount}}元</div>
+            <div class="row-value">{{order.oimount}} 元</div>
           </div>
           <div class="box-row">
             <div class="row-label">订单状态：</div>
@@ -97,12 +97,12 @@
           </div>
           <div class="box-row">
             <div class="row-label">买家姓名：</div>
-            <div class="row-value">{{order.sellerid}}</div>
+            <div class="row-value">{{order.user.usname}}</div>
           </div>
-          <div class="box-row">
+          <!--<div class="box-row">
             <div class="row-label">买家上级：</div>
-            <div class="row-value">{{order.sellerid}}</div>
-          </div>
+            <div class="row-value">{{order.upper.usname}}</div>
+          </div>-->
           <div class="box-row">
             <div class="row-label">留言：</div>
             <div class="row-value">{{order.oileavetext}}</div>
@@ -129,7 +129,7 @@
             </div>
             <div class="box-row">
               <div class="row-label">商品单价：</div>
-              <div class="row-value">{{product.oiproductprice}}元</div>
+              <div class="row-value">{{product.oiproductprice}} 元</div>
             </div>
             <div class="box-row">
               <div class="row-label">商品数量：</div>
@@ -137,7 +137,7 @@
             </div>
             <div class="box-row">
               <div class="row-label">价格小计：</div>
-              <div class="row-value">{{product.smalltotal}}</div>
+              <div class="row-value">{{product.smalltotal}} 元</div>
             </div>
             <div class="box-row">
               <div class="row-label">商品规格：</div>
@@ -178,7 +178,7 @@
         logisticsNo: "",                // 运单号
         logisticsCompany: "",           // 物流公司
         logisticsCompanyList: [],       // 物流公司list
-        order: {},                      // 暂存订单详情
+        order: { user: { usname: "" } },                      // 暂存订单详情
         orderProduct: {},               // 暂存发货
         orderProductWhere: "",          // 暂存发货点击来源 - 订单/商品
         product: { row: { oisn: "" } }  // 暂存退款
