@@ -11,9 +11,10 @@
               </template>
             </el-table-column>
             <el-table-column align="center" prop="opiproductname" label="商品名称"></el-table-column>
-            <el-table-column align="center" prop="zh_status" label="订单商品状态" width="100"></el-table-column>
+            <el-table-column align="center" prop="zh_status" label="订单商品状态" width="130"></el-table-column>
             <el-table-column align="center" prop="oiproductprice" label="单价"></el-table-column>
             <el-table-column align="center" prop="opiproductnum" label="数量"></el-table-column>
+            <el-table-column align="center" prop="smalltotal" label="小计"></el-table-column>
             <el-table-column align="center" prop="pskproperKey" label="规格"></el-table-column>
             <!--<el-table-column align="center" prop="opilogisticssn" label="物流单号"></el-table-column>-->
             <!--<el-table-column align="center" prop="logistic_company" label="物流公司"></el-table-column>-->
@@ -27,7 +28,7 @@
           </el-table>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="订单号" prop="oiid" width="260"></el-table-column>
+      <el-table-column align="center" label="订单号" prop="oisn" width="220"></el-table-column>
       <el-table-column align="center" label="订单状态" prop="oipaystatusmsg" width="80"></el-table-column>
       <el-table-column align="center" label="总价" prop="oimount" width="80"></el-table-column>
       <el-table-column align="center" label="下单时间" prop="oicreatetime" width="140"></el-table-column>
@@ -36,8 +37,7 @@
       <el-table-column align="center" label="留言内容" prop="oileavetext"></el-table-column>
       <el-table-column fixed="right" label="管理" width="150">
         <template slot-scope="scope">
-          <el-button class="color-text" type="text" size="small" @click="productSend(scope, 'order')">发货</el-button>
-          <!--<el-button class="color-text" type="text" size="small" @click="productSend(scope, 'order')" v-if="scope.row.opistatus == 4">发货</el-button>-->
+          <el-button class="color-text" type="text" size="small" @click="productSend(scope, 'order')" v-if="scope.row.opistatus == 4">发货</el-button>
           <el-button class="color-text" type="text" size="small" @click="orderDetail(scope, 'dialog')">详情</el-button>
         </template>
       </el-table-column>
@@ -71,9 +71,84 @@
     </el-dialog>
 
     <!--订单详情-->
-    <el-dialog title="订单详情" :visible.sync="orderDetailDialog" width="6rem">
+    <el-dialog title="订单详情" :visible.sync="orderDetailDialog" width="9rem">
       <div class="order-box">
-        <div class="dialog-title">订单编号： {{}}</div>
+        <div class="detail-box">
+          <div class="dialog-title">订单编号： {{order.oisn}}</div>
+          <div class="box-row">
+            <div class="row-label">订单总价：</div>
+            <div class="row-value">{{order.oimount}}元</div>
+          </div>
+          <div class="box-row">
+            <div class="row-label">订单状态：</div>
+            <div class="row-value">{{order.oipaystatusmsg}}</div>
+          </div>
+          <div class="box-row">
+            <div class="row-label">收货人：</div>
+            <div class="row-value">{{order.oirecvname}}</div>
+          </div>
+          <div class="box-row">
+            <div class="row-label">收货电话：</div>
+            <div class="row-value">{{order.oirecvphone}}</div>
+          </div>
+          <div class="box-row">
+            <div class="row-label">收货地址：</div>
+            <div class="row-value">{{order.oiaddress}}</div>
+          </div>
+          <div class="box-row">
+            <div class="row-label">买家姓名：</div>
+            <div class="row-value">{{order.sellerid}}</div>
+          </div>
+          <div class="box-row">
+            <div class="row-label">买家上级：</div>
+            <div class="row-value">{{order.sellerid}}</div>
+          </div>
+          <div class="box-row">
+            <div class="row-label">留言：</div>
+            <div class="row-value">{{order.oileavetext}}</div>
+          </div>
+          <div class="box-row">
+            <div class="row-label">下单时间：</div>
+            <div class="row-value">{{order.oicreatetime}}</div>
+          </div>
+          <div class="box-row">
+            <div class="row-label">支付时间：</div>
+            <div class="row-value">{{order.oipaytime}}</div>
+          </div>
+        </div>
+        <div class="detail-box">
+          <div class="dialog-title">订单编号： {{order.oisn}}</div>
+          <div class="product-box" v-for="product in order.productinfo">
+            <div class="box-row">
+              <div class="row-label">商品名称：</div>
+              <div class="row-value">{{product.opiproductname}}</div>
+            </div>
+            <div class="box-row">
+              <div class="row-label">订单商品状态：</div>
+              <div class="row-value">{{product.zh_status}}</div>
+            </div>
+            <div class="box-row">
+              <div class="row-label">商品单价：</div>
+              <div class="row-value">{{product.oiproductprice}}元</div>
+            </div>
+            <div class="box-row">
+              <div class="row-label">商品数量：</div>
+              <div class="row-value">{{product.opiproductnum}}</div>
+            </div>
+            <div class="box-row">
+              <div class="row-label">价格小计：</div>
+              <div class="row-value">{{product.smalltotal}}</div>
+            </div>
+            <div class="box-row">
+              <div class="row-label">商品规格：</div>
+              <div class="row-value">{{product.pskproperKey}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button class="at-img-dialog-btn" @click="orderDetailDialog=false">取 消</el-button>
+        <el-button class="at-img-dialog-btn btn-color" type="primary"  @click="orderDetailDialog=false">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -103,6 +178,7 @@
         logisticsNo: "",                // 运单号
         logisticsCompany: "",           // 物流公司
         logisticsCompanyList: [],       // 物流公司list
+        order: {},                      // 暂存订单详情
         orderProduct: {},               // 暂存发货
         orderProductWhere: "",          // 暂存发货点击来源 - 订单/商品
         product: { row: { oisn: "" } }  // 暂存退款
@@ -137,6 +213,9 @@
       // 订单详情
       orderDetail(scope, where) {
         this.orderDetailDialog = true;
+        this.order = scope.row;
+
+        console.log(scope.row);
       },
 
       // 商品发货取消按钮
@@ -280,6 +359,50 @@
     background-color: #80a6b5;
   }
   .order-box {
+    width: 90%;
+    margin: -0.1rem auto;
+    /*border: 1px red solid;*/
+    display: flex;
+    flex-wrap: wrap;
+    .detail-box {
+      width: 47.5%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      max-height: 4rem;
+      &:first-child {
+        margin-right: 5%;
+      }
+      .box-row {
+        display: flex;
+        font-size: 0.11rem;
+        line-height: 0.23rem;
+        text-align: center;
+        align-items: center;
+        &:last-child {
+          .row-label {
+            padding-bottom: 0.3rem;
+          }
+          .row-value {
+            padding-bottom: 0.3rem;
+          }
+        }
+        .row-label {
+          width: 30%;
+          height: 0.23rem;
+          background-color: #dbdcdc;
+        }
+        .row-value {
+          width: 70%;
+          height: 0.23rem;
+          text-align: left;
+          padding-left: 7%;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          background-color: #f1f1f1;
+        }
+      }
+    }
   }
   .dialog-footer {
     text-align: right;
