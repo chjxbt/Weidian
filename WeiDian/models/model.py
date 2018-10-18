@@ -672,7 +672,7 @@ class SearchField(BaseModel):
 #     @orm.reconstructor
 #     def __init__(self):
 #         self.fields = ['MYid', 'MYranking', 'MYrewards']
-#     # TODO 我的
+
 
 
 class IndexAdAlert(BaseModel):
@@ -791,15 +791,37 @@ class TaskUser(BaseModel):
 class Raward(BaseModel):
     __tablename__ = "raward"
     RAid = Column(String(64), primary_key=True)
-    RAtype = Column(Integer)  # {0: "满减", 1: "佣金加成", 2: "无门槛"}
-    RAfilter = Column(Float)  # 条件
-    RAamount = Column(Float)  # 减少金额
-    RAratio = Column(Float)   # 上调比例
+    RAtype = Column(Integer)        # {0: "满减", 1: "佣金加成", 2: "无门槛", 3: "邀请粉丝券", 4:"开店大礼包专用"}
+    RAfilter = Column(Float)        # 条件
+    RAamount = Column(Float)        # 减少金额
+    RAratio = Column(Float)         # 上调比例
+    RAmaxusenum = Column(Integer, default=1)        # 允许叠加使用张数
+    RAmaxholdnum = Column(Integer, default=1)       # 同种券最大可拥有数量
+    RAcreatetime = Column(String(14))               # 创建时间
+    RAendtime = Column(String(14))                  # 失效时间
+    RAname = Column(String(64))                     # 优惠券名称
+    RAtransfer = Column(Boolean, default=False)     # 是否允许转赠
+    RAtransfereffectivetime = Column(Integer)       # 转赠有效时长(单位:小时), 超时则返回
+    RAisdelete = Column(Boolean, default=False)     # 删除
 
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['RAid', "RAtype", "RAfilter", "RAamount", "RAratio"]
+        self.fields = ['RAid', "RAtype", "RAfilter", "RAamount", "RAratio", "RAname", "RAmaxusenum", "RAmaxholdnum",
+                       "RAcreatetime", "RAendtime", "RAtransfer", "RAtransfereffectivetime"]
+
+class RewardToUser(BaseModel):
+    """平台页面内发放给用户的优惠券"""
+    __tablename__ = 'rewardtouser'
+    RTid = Column(String(64), primary_key=True)
+    RAid = Column(String(64))               # 优惠券
+    RTcount = Column(Integer)               # 发放数量
+    RUcreatetime = Column(String(14))       # 发放时间
+
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = ['RTid', 'RAid', 'RUcreatetime']
 
 
 # 奖励和任务的关联表
@@ -820,11 +842,12 @@ class UserRaward(BaseModel):
     URid = Column(String(64), primary_key=True)
     RAid = Column(String(64))  # 奖励id
     USid = Column(String(64))  # 用户id
-    RAnumber = Column(Integer)  # 奖励数目
+    RAnumber = Column(Integer, default=1)  # 奖励数目
     URcreatetime = Column(String(14))  # 创建时间
     URFrom = Column(String(64))  # 优惠券来源 如果为空则为平台
 
     @orm.reconstructor
+    @auto_createtime
     def __init__(self):
         self.fields = ['TRid', "TAid", "RAid", "RAnumber"]
 

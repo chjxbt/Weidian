@@ -27,3 +27,13 @@ class SRaward(SBase):
     @close_session
     def get_reward_by_usid(self, usid):
         return self.session.query(UserRaward).filter(UserRaward.USid == usid).all()
+
+    @close_session
+    def is_user_hold_reward(self, rafilter):
+        """查看该用户是否已拥有该种优惠券"""
+        return self.session.query(UserRaward).filter_by(**rafilter).first()
+
+    @close_session
+    def update_user_reward(self, rafilter, change_info):
+        """更新用户持有优惠券"""
+        return self.session.query(UserRaward).filter_by(**rafilter).update(change_info)

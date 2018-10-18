@@ -14,7 +14,6 @@ from WeiDian.common.import_status import import_status
 from WeiDian.common.params_require import parameter_required
 from WeiDian.common.token_required import verify_token_decorator, is_tourist, is_partner, is_admin
 from WeiDian.config.enums import BANK_MAP, finished_pay_status
-from WeiDian.config.messages import get_success
 from WeiDian.config.response import AUTHORITY_ERROR, SYSTEM_ERROR, TOKEN_ERROR, PARAMS_ERROR, TIME_ERROR, PARAMS_MISS, \
     NOT_FOUND
 from WeiDian.control.BaseControl import BaseMyCenterControl

@@ -536,19 +536,20 @@ class BaseTask():
         # rawards = []
         for task_raward in rewardlist:
             raward = self.sraward.get_raward_by_id(task_raward.RAid)
-            if raward.RAtype == 0:
-                reward_str = self.filter_str.format(int(raward.RAfilter), int(raward.RAamount))
-            elif raward.RAtype == 1:
-                reward_str = self.ratio_str.format(int(raward.RAratio))
-                # if task_raward.RAnumber == 1:
-                #     reward_str = "售出首单" + reward_str
-            else:
-                reward_str = self.amout_str.format(int(raward.RAamount))
-            task_raward.rewardstr = reward_str
-            task_raward.add('rewardstr')
-            # raward.RAnumber = task_raward.RAnumber            #
-            # raward.add("RAnumber")
-            # rawards.append(reward_str)
+            if re.match(r'^[0-2]$', str(raward.RAtype)):
+                if raward.RAtype == 0:
+                    reward_str = self.filter_str.format(int(raward.RAfilter), int(raward.RAamount))
+                elif raward.RAtype == 1:
+                    reward_str = self.ratio_str.format(int(raward.RAratio))
+                    # if task_raward.RAnumber == 1:
+                    #     reward_str = "售出首单" + reward_str
+                else:
+                    reward_str = self.amout_str.format(int(raward.RAamount))
+                task_raward.rewardstr = reward_str
+                task_raward.add('rewardstr')
+                # raward.RAnumber = task_raward.RAnumber            #
+                # raward.add("RAnumber")
+                # rawards.append(reward_str)
 
         return rewardlist
 
