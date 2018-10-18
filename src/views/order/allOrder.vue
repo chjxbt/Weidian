@@ -1,28 +1,29 @@
 <template>
-  <div class="m-weidian">
+  <div class="m-weidians">
     <page-title :title="name" ></page-title>
-    <div class="m-weidian-content">
+    <div class="m-weidian-contents">
       <div class="search-box">
         <div class="search-group">
           <div class="group-title">订单编号：</div>
           <el-input class="group-content search-input" v-model="orderNo" size="mini" clearable></el-input>
         </div>
         <div class="search-group">
-          <div class="group-title">下单时间：</div>
-          <el-date-picker v-model="orderTime" type="daterange" start-placeholder="开始日期" range-separator="至"
-                          end-placeholder="结束日期" style="width: 2.5rem;"></el-date-picker>
-        </div>
-        <div class="search-group">
-          <div class="group-title">退回单号：</div>
-          <el-input class="group-content search-input" v-model="returnNo" size="mini" clearable></el-input>
-        </div>
-        <div class="search-group">
           <div class="group-title">物流单号：</div>
           <el-input class="group-content search-input" v-model="logisticsNo" size="mini" clearable></el-input>
         </div>
         <div class="search-group">
+          <div class="group-title">下单时间：</div>
+          <el-date-picker v-model="orderTime" type="daterange" start-placeholder="开始日期" range-separator="至"
+                          end-placeholder="结束日期" style="width: 2.5rem;" size="mini">
+          </el-date-picker>
+        </div>
+        <div class="search-group">
           <div class="group-title">收货电话：</div>
           <el-input class="group-content search-input" v-model="buyerTel" size="mini" clearable></el-input>
+        </div>
+        <div class="search-group">
+          <div class="group-title">退回单号：</div>
+          <el-input class="group-content search-input" v-model="returnNo" size="mini" clearable></el-input>
         </div>
         <div class="search-btn">搜 索</div>
       </div>
@@ -93,39 +94,45 @@
 <style lang="less" rel="stylesheet/less">
   @import "../../common/css/weidian";
 
-  .search-box {
-    display: flex;
-    flex-wrap: wrap;
-    margin-top: -0.1rem;
-    background-color: #f7f7f7;
-    padding: 0.1rem 0.2rem;
-    margin-left: -0.1rem;
-    border-radius: 0.1rem;
-    .search-group {
-      display: flex;
-      margin: 0.1rem 0.2rem 0 0;
-      .group-title {
-        font-size: 0.12rem;
-        line-height: 0.34rem;
-      }
-      .group-content {
+  .m-weidians {
+    background-color: #fff;
+    .m-weidian-contents {
+      padding: 0.25rem 0.45rem 0.25rem;
+      .search-box {
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: -0.1rem;
+        background-color: #f7f7f7;
+        padding: 0.1rem 0.2rem;
+        margin-left: -0.1rem;
+        border-radius: 0.1rem;
+        .search-group {
+          display: flex;
+          margin: 0.1rem 0.5rem 0 0;
+          .group-title {
+            font-size: 0.12rem;
+            line-height: 0.2rem;
+          }
+          .group-content {
 
+          }
+          .search-input {
+            width: 2rem;
+          }
+        }
+        .search-btn {
+          width: 0.28rem;
+          height: 0.18rem;
+          font-size: 0.12rem;
+          white-space: nowrap;
+          align-items: center;
+          padding: 0.03rem 0.2rem;
+          border-radius: 0.1rem;
+          margin: 0.15rem 0 0 2.4rem;
+          color: #ffffff;
+          background-color: #9fd0bf;
+        }
       }
-      .search-input {
-        width: 2.5rem;
-      }
-    }
-    .search-btn {
-      width: 0.28rem;
-      height: 0.18rem;
-      font-size: 0.12rem;
-      white-space: nowrap;
-      align-items: center;
-      padding: 0.03rem 0.2rem;
-      border-radius: 0.1rem;
-      margin: 0.15rem 0 0 2.4rem;
-      color: #ffffff;
-      background-color: #9fd0bf;
     }
   }
   .tab-list {

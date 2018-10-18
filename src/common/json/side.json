@@ -72,6 +72,11 @@
           "MNname":"佣金管理",
           "MNurl":"index",
           "MNicon":"none"
+        },
+        {
+          "MNname":"佣金设置",
+          "MNurl":"set",
+          "MNicon":"none"
         }
       ]
     },

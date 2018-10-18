@@ -118,12 +118,19 @@ export const constantRouterMap = [
     path: '/commission',
     component: Layout,
     redirect: 'commission/index',
-    children: [{
-      path: 'index',
-      component: () => import('../views/commission/index'),
-      name: 'commission',
-      meta: { title: 'commission', icon: 'commission', noCache: true }
-    }
+    children: [
+      {
+        path: 'index',
+        component: () => import('../views/commission/index'),
+        name: 'commission',
+        meta: { title: 'commission', icon: 'commission', noCache: true }
+      },
+      {
+        path: 'set',
+        component: () => import('../views/commission/set'),
+        name: 'set',
+        meta: { title: 'set', icon: 'set', noCache: true }
+      }
     ],
   },
   {
