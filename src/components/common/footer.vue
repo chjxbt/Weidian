@@ -2,7 +2,7 @@
 
     <mt-tabbar v-model="selected" :fixed="true">
       <template v-for="(item,index) in tabbar" >
-        <mt-tab-item :id="item.name" @click="tabbarClick(item)">
+        <mt-tab-item :id="item.name" @click.stop="tabbarClick(item)">
           <img slot="icon" :src="item.active_icon" v-if="item.name == selected">
           <img slot="icon" :src="item.icon" v-else>
           {{item.name}}

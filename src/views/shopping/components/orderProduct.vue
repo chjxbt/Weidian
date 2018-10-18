@@ -17,21 +17,24 @@
     <div class="store-product">
       <div class="store-title">
         <img src="/static/images/store-img.png" class="store-img">
-        <div class="store-name m-ft-28 m-black tl"><span>衣百惠</span><span class="m-red">买家已付款</span></div>
+        <div class="store-name m-ft-28 m-black tl"><span>衣百惠</span><span class="m-red">{{order.order_status}}</span></div>
       </div>
       <div class="line-one"></div>
       <template v-for="(item,index) in order.productinfo">
         <div class="order-product">
           <img src="http://img1.imgtn.bdimg.com/it/u=661395716,3070712851&fm=214&gp=0.jpg" class="product-img">
           <div class="product-info">
-            <div class="product-name m-ft-24 m-black">{{item.opiproductname}}</div>
-            <div class="product-params m-ft-24 m-black tl">
-              <!--<template v-for="(i,j) in item.current_sku.pskproperkey">-->
-                <!--<span>{{i.key}}: {{i.value}}  </span>-->
-              <!--</template>-->
+            <div class="product-name m-ft-24 m-black">
+              <span class="name">{{item.opiproductname}}</span>
+              <span>退/换</span>
             </div>
-            <span class="product-price m-ft-24 m-red tl">￥ 149</span>
-            <span class="product-quantity m-ft-20 m-black">X1</span>
+            <div class="product-params m-ft-24 m-black tl">
+              <template v-for="(i,j) in item.pskproperkey">
+                <span>{{i.key}}: {{i.value}}  </span>
+              </template>
+            </div>
+            <span class="product-price m-ft-24 m-red tl">￥ {{item.oiproductprice}}</span>
+            <span class="product-quantity m-ft-20 m-black">X{{item.opiproductnum}}</span>
           </div>
         </div>
       </template>
@@ -95,7 +98,7 @@
     justify-content: space-between;
     padding: 0 20px;
     .order-no {
-      margin: 35px 23px 20px 23px;
+      margin: 35px 0 20px 0;
       white-space: nowrap;
     }
     .copy-order-no {
@@ -173,20 +176,26 @@
       .product-info {
         flex: 1;
         .product-name {
-          width: 435px;
+          display: flex;
+          flex-flow: row;
+          justify-content: space-between;
           margin: 30px 0 14px 0;
-          text-align: left;
-          overflow: hidden;
-          white-space: nowrap;
-          text-overflow: ellipsis;
+          padding-right: 20px ;
+          .name{
+            width: 365px;
+            text-align: left;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+          }
         }
         .product-params {
-          margin-left: 10px;
+          /*margin-left: 10px;*/
         }
         .product-price {
           float: left;
           width: 200px;
-          margin: 35px 0 0 5px;
+          margin: 35px 0 0 0;
         }
         .product-quantity {
           width: 130px;

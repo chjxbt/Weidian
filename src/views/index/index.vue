@@ -299,7 +299,7 @@
         }
       },
         methods: {
-        init(){
+          init(){
           if(this.$route.query.linkUrl && localStorage.getItem('is_click') != '1'){
             switch (this.$route.query.linkUrl){
               case 'activityContent':

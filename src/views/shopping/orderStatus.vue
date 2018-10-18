@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div >
     <!--待支付-->
     <div class="order-status-title" v-if="order.oipaystatus == 1">
       <img src="/static/images/order_time.png" class="order-time-img">
@@ -107,7 +107,8 @@
         createTime:'',
         payTime:'',
         sendTime:'',
-        remaintime:''
+        remaintime:'',
+        interval:''
       }
     },
     components: { orderProduct },
@@ -128,10 +129,13 @@
               this.order = res.data.data;
               // this.order.oipaystatus = 5;
               this.createTime = res.data.data.oicreatetime.slice(0,4) + '-' +res.data.data.oicreatetime.slice(4,6) + '-' +res.data.data.oicreatetime.slice(6,8) + ' ' +res.data.data.oicreatetime.slice(8,10) + ':' +res.data.data.oicreatetime.slice(10,12) + ':' +res.data.data.oicreatetime.slice(12,14);
-              this.payTime = res.data.data.oipaytime.slice(0,4) + '-' +res.data.data.oipaytime.slice(4,6) + '-' +res.data.data.oipaytime.slice(6,8) + ' ' +res.data.data.oipaytime.slice(8,10) + ':' +res.data.data.oipaytime.slice(10,12) + ':' +res.data.data.oipaytime.slice(12,14);
+              if(res.data.data.oipaytime)
+                 this.payTime = res.data.data.oipaytime.slice(0,4) + '-' +res.data.data.oipaytime.slice(4,6) + '-' +res.data.data.oipaytime.slice(6,8) + ' ' +res.data.data.oipaytime.slice(8,10) + ':' +res.data.data.oipaytime.slice(10,12) + ':' +res.data.data.oipaytime.slice(12,14);
+              let that = this;
               if(this.order.oipaystatus == 1){
-                let that = this;
-                window.setInterval(that.getDJS,1000)
+                that.interval = window.setInterval(that.getDJS,1000)
+              }else{
+                window.clearInterval(that.interval)
               }
             }
         })
@@ -167,7 +171,13 @@
       },
       // 确认收货
       confirmReceiving() {
-
+       axios.post(api.confim_order +'?token=' +localStorage.getItem('token'),{
+         oiid:this.$route.query.oiid
+       }).then(res => {
+         if(res.data.status == 200){
+           this.getOrderInfo();
+         }
+       })
       },
       // 删除订单
       deleteOrder() {

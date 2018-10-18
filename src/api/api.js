@@ -63,6 +63,7 @@ const api={
   create_order: title +'/order/create',//创建订单
   get_one_address: title + '/mycenter/get_one_address',//获取单个地址信息
   get_order_info: title + '/order/get_order_info',//获取单个订单
+  confim_order: title + '/order/confim_order',//确认收货
 };
 
 export default api

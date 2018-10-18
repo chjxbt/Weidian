@@ -53,7 +53,7 @@
             return {
               name: '',
               order_list:[],
-              page_size:3,
+              page_size:5,
               page_num:1,
               total_count:0,
               isScroll:true,
