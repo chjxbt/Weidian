@@ -221,6 +221,68 @@ class COrder():
         return data
 
     @verify_token_decorator
+    def admin_get_order_count(self):
+        if not is_admin():
+            raise TOKEN_ERROR(u'请使用管理员登录')
+        parameter_required("paystatus")
+        data = request.args.to_dict()
+        usid = data.get('usid', '').strip() or None
+        all_status = ['1', '5', '6', '10', '11']
+        json_data = [
+            {
+                'status': u'全部',
+                'statusnum': u'0',
+                'count': self.sorder.get_sell_ordercount_by_status(usid, all_status)
+            },
+            {
+                'status': u'待付款',
+                'statusnum': u'1',
+                'count': self.sorder.get_sell_ordercount_by_item_status(usid, '1')
+            },
+            {
+                'status': u'待收货',
+                'statusnum': u'5',
+                'count': self.sorder.get_sell_ordercount_by_item_status(usid, '5')
+            },
+            {
+                'status': u'已完成',
+                'statusnum': u'6',
+                'count': self.sorder.get_sell_ordercount_by_status(usid, '7')
+            },
+            {
+                'status': u'退换货',
+                'statusnum': u'11',
+                'count': self.sorder.get_sell_ordercount_by_item_status(usid, '11')
+            }
+        ]
+        data = import_status('get_order_count_success', 'OK')
+        data['data'] = json_data
+        return data
+
+    @verify_token_decorator
+    def admin_get_order_list(self):
+        if not is_admin():
+            raise TOKEN_ERROR(u'请使用管理员登录')
+        data = request.args.to_dict()
+        usid = data.get('usid', '').strip() or None
+        status = data.get('paystatus')
+        status = [str(i) for i in range(1, 12)] if str(status) == '0' else status
+        status = ['2', '4', '5', '7', '9', '10', '11'] if str(status) == '20' else status
+        order_list = self.sorder.get_sell_order_by_status2(status, data.get('page', 1), data.get('count', 15), usid)
+        map(lambda x: x.fill(ORDER_STATUS.get(str(x.OIpaystatus)), 'oipaystatusmsg'), order_list)
+        # map(self.fill_oistatusmessage, order_list)
+        map(self.fill_productinfo, order_list)
+        map(self.fill_complainstatus, order_list)
+        response = import_status('get_order_list_success', 'OK')
+        response["count"] = request.all_count
+        response["page_count"] = request.page_count
+        response["data"] = order_list
+        return response
+
+
+
+
+    @verify_token_decorator
     def update_order(self):
         """没用"""
         if is_tourist():
@@ -322,9 +384,6 @@ class COrder():
         res = filter(lambda x: kw in x.get('expressname'), kd_list)
         response['kd_list'] = res
         return response
-
-
-
 
     @verify_token_decorator
     def send_order(self):
@@ -446,11 +505,10 @@ class COrder():
             orderproductinfo_dict['opiproductnum'] = int(sku.get('num', 1))
             # 商品价格(小计)
             orderproductinfo_dict['OIproductprice'] = self.sproductskukey.get_true_price(pskid, partner=is_partner()) *\
-                                                      orderproductinfo_dict['opiproductnum']
+                                                           orderproductinfo_dict['opiproductnum']
             sku_dict_list.append(orderproductinfo_dict)
         return sku_dict_list
 
- 
     def fill_productinfo(self, order):
         oiid = order.OIid
         productinfos = self.sorder.get_orderproductinfo_by_oiid(oiid)
@@ -463,8 +521,6 @@ class COrder():
             if productinfo.OPIstatus in [4, 5]:
                 productinfo.fields = ['OPIlogisticsSn', 'OPIlogisticsText', 'OPIresendLogisticSn', 'OPIresendLogisticText']
             productinfo.fill(order_product_info_status.get(productinfo.OPIstatus, u'异常'), 'zh_status')
-
-
         order.add('productinfo')
         return order
 

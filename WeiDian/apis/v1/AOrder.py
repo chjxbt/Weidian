@@ -29,6 +29,8 @@ class AOrder(Resource):
             'get_count': 'self.corder.get_order_count()',
             'get_list': 'self.corder.get_order_list_by_status()',
             'get_kd_list': 'self.corder.get_kd_list()',
+            'admin_get_order_count': 'self.corder.admin_get_order_count()',
+            'admin_get_order_list': 'self.corder.admin_get_order_list()',
         }
         res = eval(apis[order])
         return jsonify(res)

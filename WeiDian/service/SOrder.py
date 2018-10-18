@@ -51,6 +51,18 @@ class SOrder(SBase):
         return self.session.query(OrderInfo).filter(*filter_order).offset(page_size * (page_num - 1)).limit(page_size).all()
 
     @close_session
+    def get_sell_order_by_status2(self, status, page_num, page_size, usid=None):
+        """同上"""
+        filter_order = set()
+        if isinstance(status, list):
+            filter_order.add(OrderInfo.OIpaystatus.in_(status))
+        else:
+            filter_order.add(OrderInfo.OIpaystatus == status)
+        return self.session.query(OrderInfo).filter(*filter_order).filter_without_none(
+            OrderInfo.USid == usid
+        ).all_with_page(page_num, page_size)
+
+    @close_session
     def get_sellorder_by_user_status(self, usid, status):
         """根据状态和用户获取所有的销售订单"""
         return self.session.query(OrderInfo).filter(OrderInfo.Sellerid == usid,
@@ -96,9 +108,9 @@ class SOrder(SBase):
             OrderInfo.USid == usid, OrderInfo.Sellerid != usid, OrderInfo.OIpaystatus == staus).count()
 
     @close_session
-    def get_sell_ordercount_by_status(self, usid, status):
+    def get_sell_ordercount_by_status(self, usid=None, status=[]):
         """获取销售订单预览数"""
-        return self.session.query(OrderInfo).filter(OrderInfo.Sellerid == usid, OrderInfo.OIpaystatus.in_(status)).count()
+        return self.session.query(OrderInfo).filter_without_none(OrderInfo.Sellerid == usid).filter(OrderInfo.OIpaystatus.in_(status)).count()
 
     @close_session
     def get_sell_ordercount_by_item_status(self, usid, status):
