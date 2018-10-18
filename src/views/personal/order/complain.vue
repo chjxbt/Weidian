@@ -98,9 +98,16 @@
           oneOrder
         },
       mounted(){
-        this.isOpen = localStorage.getItem('level') == 'partner'? true:false;
-        this.isSell = localStorage.getItem('level') == 'partner'? true:false;
         common.changeTitle('快速投诉通道');
+        this.isOpen = localStorage.getItem('level') == 'partner'? true:false;
+        if(this.$route.query.oiid){
+          this.isSell = false;
+        }else{
+          this.isSell = localStorage.getItem('level') == 'partner'? true:false;
+        }
+        console.log(this.$route.query.oiid)
+        this.getOrder();
+
       },
         methods: {
           /*获取订单*/
@@ -120,12 +127,21 @@
                 }
                 this.total_count = res.data.totalcount;
 
-
                 if(page){
                   this.order_list = this.order_list.concat(res.data.data);
                 }else{
                   this.order_list = [].concat(res.data.data);
                 }
+                let arr = [];
+                let _arr =[];
+                for(let a=0;a<this.order_list.length;a++){
+                  if(this.order_list[a].oiid == this.$route.query.oiid){
+                    arr.push(this.order_list[a]);
+                  }else{
+                    _arr.push(this.order_list[a]);
+                  }
+                }
+               this.order_list = arr.concat(_arr);
               }else{
                 Toast({ message: res.data.message, className: 'm-toast-fail' });
               }
@@ -210,7 +226,7 @@
           }
         },
         created() {
-          this.getOrder();
+
         }
     }
 </script>

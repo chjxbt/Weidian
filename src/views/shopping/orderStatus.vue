@@ -155,7 +155,7 @@
       },
       // 投诉
       complaints() {
-
+        this.$router.push({path:'/complain',query:{oiid:this.$route.query.oiid}});
       },
       // 取消订单
       cancelOrder() {
