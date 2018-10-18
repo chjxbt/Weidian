@@ -11,11 +11,11 @@ from flask import request
 from WeiDian import logger
 from WeiDian.common.loggers import generic_log
 from WeiDian.common.params_require import parameter_required
-from WeiDian.config.enums import ORDER_STATUS, order_product_info_status
+from WeiDian.config.enums import ORDER_STATUS, order_product_info_status, ORDER_STATUS_
 from WeiDian.config.kd import kd_list
 from WeiDian.config.setting import QRCODEHOSTNAME, APP_ID, MCH_ID, MCH_KEY, notify_url
 from WeiDian.common.TransformToList import dict_add_models, list_add_models
-from WeiDian.common.timeformat import format_for_db
+from WeiDian.common.timeformat import format_for_db, get_web_time_str
 from WeiDian.common.token_required import verify_token_decorator, is_partner, is_admin
 from WeiDian.common.import_status import import_status
 from WeiDian.models.model import OrderProductInfo, OrderInfo
@@ -105,7 +105,7 @@ class COrder():
         sell = args.get('sell', 'false')
         parameter_required("paystatus", "page_size", "page_num")
         status = args.get('paystatus')
-        status = [str(i) for i in range(1, 12)] if status == '0' else status
+        status = ['1', '5', '6', '11'] if status == '0' else status
         status = ['2', '4', '5', '7', '9', '10', '11'] if status == '20' else status
         print status
         try:
@@ -116,11 +116,16 @@ class COrder():
                 order_list = self.sorder.get_user_order_by_status(request.user.id, status, int(args["page_num"]), int(args["page_size"]))
                 order_list_count = self.sorder.get_user_ordercount_by_status(request.user.id, status)
             for order in order_list:
-                order.fields = ['OIid', 'OIsn', 'OIpaystatus', 'OIcreatetime']
-            map(lambda x: x.fill(ORDER_STATUS.get(str(x.OIpaystatus)), 'oipaystatusmsg'), order_list)
+                # order.fields = ['OIid', 'OIsn', 'OIpaystatus', 'OIcreatetime']
+                order.fill(ORDER_STATUS.get(str(order.OIpaystatus)), 'oipaystatusmsg')
+                # map(self.fill_oistatusmessage, order_list)
+                self.fill_productinfo(order)
+                self.fill_complainstatus(order)
+                order.fill(ORDER_STATUS_.get(str(order.OIpaystatus)), 'order_status')
+                order.OIpaytime = get_web_time_str(order.OIpaytime, format_for_db)
+
+
             # map(self.fill_oistatusmessage, order_list)
-            map(self.fill_productinfo, order_list)
-            map(self.fill_complainstatus, order_list)
             data = import_status('get_order_list_success', 'OK')
             data['totalcount'] = order_list_count
             data['data'] = order_list
@@ -236,6 +241,12 @@ class COrder():
         if order.USid != usid and not is_admin():
             raise NOT_FOUND(u'他人订单')
         try:
+            order.fill(ORDER_STATUS.get(str(order.OIpaystatus)), 'oipaystatusmsg')
+            # map(self.fill_oistatusmessage, order_list)
+            self.fill_productinfo(order)
+            self.fill_complainstatus(order)
+            order.fill(ORDER_STATUS_.get(str(order.OIpaystatus)), 'order_status')
+            order.OIpaytime = get_web_time_str(order.OIpaytime, format_for_db)
             self.fill_productinfo(order)
             response = import_status('get_order_list_success', 'OK')
             response['data'] = order
@@ -296,10 +307,13 @@ class COrder():
         status = ['1', '5', '6', '11'] if str(status) == '0' else status
         status = ['2', '4', '5', '7', '9', '10', '11'] if str(status) == '20' else status
         order_list = self.sorder.get_sell_order_by_status2(status, page, count, usid, phone)
-        map(lambda x: x.fill(ORDER_STATUS.get(str(x.OIpaystatus)), 'oipaystatusmsg'), order_list)
-        # map(self.fill_oistatusmessage, order_list)
-        map(self.fill_productinfo, order_list)
-        map(self.fill_complainstatus, order_list)
+        for order in order_list:
+            order.fill(ORDER_STATUS.get(str(order.OIpaystatus)), 'oipaystatusmsg')
+            # map(self.fill_oistatusmessage, order_list)
+            self.fill_productinfo(order)
+            self.fill_complainstatus(order)
+            order.fill(ORDER_STATUS_.get(str(order.OIpaystatus)), 'order_status')
+            order.OIpaytime = get_web_time_str(order.OIpaytime, format_for_db)
         response = import_status('get_order_list_success', 'OK')
         response["count"] = request.all_count
         response["page_count"] = request.page_count
@@ -442,6 +456,8 @@ class COrder():
                     raise PARAMS_MISS(u'重复发货: {}'.format(opiid))
                 order_product.OPIlogisticsSn = opilogisticssn
                 order_product.OPIstatus = 1
+                now_time = datetime.now()
+                order_product.OPIresendLogistictime = datetime.strftime(now_time, format_for_db)
                 session.add(order_product)
                 # 改变订单状态
                 oiid = order_product.OIid
@@ -542,10 +558,13 @@ class COrder():
         productinfos = self.sorder.get_orderproductinfo_by_oiid(oiid)
         order.productinfo = productinfos
         for productinfo in productinfos:
-            productinfo.fields = ['OPIproductname', 'OPIproductimages', 'OPIstatus', 'OPIid']
+            productinfo.fields = ['OPIproductname', 'OPIproductimages', 'OPIstatus', 'OPIid', 'PRid', 'PSKproperkey', 'OIproductprice', 'OPIproductnum']
             # {0: '待发货', 1: '待收货', 2: '交易成功(未评价)', 3: '交易成功(已评价)', 4: '退货', 5: '换货'}
             if productinfo.OPIstatus in [1, 2, 3, 4, 5]:
-                productinfo.add('OPIlogisticsSn', 'OPIlogisticsText')
+                productinfo.add('OPIlogisticsSn', 'OPIlogisticsText', 'OPIlogisticstime')
+                send_time = productinfo.OPIresendLogistictime
+                if send_time:
+                    productinfo.OPIresendLogistictime = get_web_time_str(send_time, format_for_db)
                 log_sn = productinfo.OPIlogisticsSn
                 if ':' in log_sn:
                     log_info = log_sn.split(':')
