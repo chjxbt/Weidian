@@ -510,7 +510,7 @@
       },
 
       // 获取所有任务奖励
-      getAllRaward(){
+      getAllRaward() {
         this.levelLoading = true;
         axios.get(api.get_all_raward + '?token=' + localStorage.getItem('token')).then(res => {
           if(res.data.status == 200){
