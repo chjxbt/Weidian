@@ -35,6 +35,8 @@ const api={
   add_comment: title + 'activitycomment/add_comment',       // 回复评论
   del_comment: title + 'activitycomment/del_comment',       // 删除评论
 
+  create_reward: title + 'reward/create_reward',            // create_reward
+
   get_order_count: title + 'order/admin_get_order_count',   // 后台获取订单数量
   get_order_list: title + 'order/admin_get_order_list',     // 后台获取各状态下的订单
   get_kd_list: title + 'order/get_kd_list',                 // 获取快递列表
