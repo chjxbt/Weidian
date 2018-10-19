@@ -520,8 +520,6 @@
           this.hotMessageList[scope.$index].disabled = false;
           this.hotMessageList[scope.$index].editSave = "2";
         }else if(where == "activity") {
-          // console.log(scope.row);
-          // console.log(this.activityMedia);
           this.activityMedia = scope.row.media;     // 把已有图片赋给activityMedia
           this.editActivity = true;
           this.activityEditScope = scope.$index;
@@ -533,23 +531,6 @@
           let activity = this.activityList[scope.$index];
           this.activityACtext = activity.actext;
           console.log(activity);
-
-          // 商品
-          if(activity.acskiptype == "2") {
-            // this.activityJumpValue = "商品";
-            this.activityJumpValue = activity.acskiptype.toString();
-            this.activityJumpToValue = activity.product.prname;
-            this.activityProductSales = activity.soldnum;
-          }else if(activity.acskiptype == "1") {
-            // 专题
-            // this.activityJumpValue = "专题";
-            this.activityJumpValue = activity.acskiptype.toString();
-            this.activityJumpToValue = activity.bigactivity.baid;
-          }else if(activity.acskiptype == "0") {
-            this.activityJumpValue = activity.acskiptype.toString();
-            // this.activityJumpToValue = activity.bigactivity.baid;
-          }
-          // console.log(this.activityJumpToValue);
 
           // 把activity的图片赋值给图片集合，同时把图片序号同步成图片数量
           for(let i = 0; i < activity.media.length; i ++) {
@@ -563,12 +544,22 @@
           this.activityBadge = activity.tags[0].atname;
           this.author.name = activity.suuser.suname;
           this.author.id = activity.suuser.suid;
+
+          if(activity.acskiptype == "2") {               // 商品
+            this.activityJumpValue = activity.acskiptype.toString();
+            this.activityProductSales = activity.soldnum;
+            this.activityJumpToValue = activity.product.prid;
+          }else if(activity.acskiptype == "1") {        // 专题
+            this.activityJumpValue = activity.acskiptype.toString();
+            this.activityJumpToValue = activity.bigactivity.baid;
+          }else if(activity.acskiptype == "0") {        // 全部
+            this.activityJumpValue = activity.acskiptype.toString();
+          }
         }
       },
 
       // 保存编辑后的banner、热文、推文
       saveClick(scope, where) {
-        // console.log(scope, where);
         if(where == "banner") {
           let banner = this.bannerList[scope.$index];
           let params = {
@@ -620,7 +611,7 @@
             }else {
               let actype = "";
               for(let i = 0; i < this.activityTypeList.length; i ++) {
-                if(this.activityTypeList[i].label == this.activityType) {
+                if(this.activityType == this.activityTypeList[i].label) {
                   actype = this.activityTypeList[i].value;
                 }
               }
@@ -649,9 +640,19 @@
                   this.$message({ message: res.data.message, type: 'success', duration: 1500 });
 
                   // 保存后把新数据回显到表格中
-                  this.activityList[this.activityEditScope].actext = this.activityACtext;
+                  /*this.activityList[this.activityEditScope].actext = this.activityACtext;
+                  this.activityList[this.activityEditScope].media = this.activityMedia;
+                  this.activityList[this.activityEditScope].acskiptype = this.activityJumpValue;
+                  this.activityList[this.activityEditScope].aclinkvalue = this.activityJumpToValue;
+                  this.activityList[this.activityEditScope].soldnum = this.activityProductSales;
+                  this.activityList[this.activityEditScope].tags = [{ atname: this.activityBadge }];
+                  this.activityList[this.activityEditScope].actype = params.actype;
+                  this.activityList[this.activityEditScope].aclikeFakeNum = this.likeNum;
+                  this.activityList[this.activityEditScope].suid = this.author.id;
                   this.activityList[this.activityEditScope].activityTime = this.activityActivityTime;
-                  this.activityList = this.activityList.concat();
+                  this.activityList = this.activityList.concat();*/
+
+                  this.getActivity(0, this.page_size);   // 获取首页活动/推文内容列表
 
                   this.clearActivity();       // 清空推文的编辑框
                   /*this.editActivity = false;
@@ -913,7 +914,7 @@
                   this.jumpToList.push(product);
                 }
               }
-              console.log(this.activityJumpToProductList);
+              // console.log(this.activityJumpToProductList);
             }else{
               this.$message({ type: 'error', message: res.data.message, duration: 1500 });
             }
@@ -934,7 +935,7 @@
               this.jumpToList.push(banner);
             }
           }
-          console.log(this.activityJumpToBannerList);
+          // console.log(this.activityJumpToBannerList);
           // 搜索公告、教程
         }else if(to == '3' || to == '4') {
           axios.get(api.get_activity_list_by_actitle + "?token=" + localStorage.getItem("token") + "&hmtype=" + to + "&actitle=").then(res => {
