@@ -530,7 +530,7 @@
           // 把点击的那一行数据赋给activity
           let activity = this.activityList[scope.$index];
           this.activityACtext = activity.actext;
-          console.log(activity);
+          // console.log(activity);
 
           // 把activity的图片赋值给图片集合，同时把图片序号同步成图片数量
           for(let i = 0; i < activity.media.length; i ++) {
@@ -548,10 +548,14 @@
           if(activity.acskiptype == "2") {               // 商品
             this.activityJumpValue = activity.acskiptype.toString();
             this.activityProductSales = activity.soldnum;
-            this.activityJumpToValue = activity.product.prid;
+            if(activity.product) {
+              this.activityJumpToValue = activity.product.prid;
+            }
           }else if(activity.acskiptype == "1") {        // 专题
             this.activityJumpValue = activity.acskiptype.toString();
-            this.activityJumpToValue = activity.bigactivity.baid;
+            if(activity.bigactivity) {
+              this.activityJumpToValue = activity.bigactivity.baid;
+            }
           }else if(activity.acskiptype == "0") {        // 全部
             this.activityJumpValue = activity.acskiptype.toString();
           }
@@ -634,38 +638,14 @@
               if(this.activityProductSales != "") {
                 params.acproductssoldfakenum = this.activityProductSales;   // 虚拟销量
               }
-              console.log(params);
+              // console.log(params);
               axios.post(api.update_act + '?token=' + localStorage.getItem('token') + "&acid=" + this.acidTemp, params).then(res=>{
                 if(res.data.status == 200){
                   this.$message({ message: res.data.message, type: 'success', duration: 1500 });
 
-                  // 保存后把新数据回显到表格中
-                  /*this.activityList[this.activityEditScope].actext = this.activityACtext;
-                  this.activityList[this.activityEditScope].media = this.activityMedia;
-                  this.activityList[this.activityEditScope].acskiptype = this.activityJumpValue;
-                  this.activityList[this.activityEditScope].aclinkvalue = this.activityJumpToValue;
-                  this.activityList[this.activityEditScope].soldnum = this.activityProductSales;
-                  this.activityList[this.activityEditScope].tags = [{ atname: this.activityBadge }];
-                  this.activityList[this.activityEditScope].actype = params.actype;
-                  this.activityList[this.activityEditScope].aclikeFakeNum = this.likeNum;
-                  this.activityList[this.activityEditScope].suid = this.author.id;
-                  this.activityList[this.activityEditScope].activityTime = this.activityActivityTime;
-                  this.activityList = this.activityList.concat();*/
-
-                  this.getActivity(0, this.page_size);   // 获取首页活动/推文内容列表
+                  this.getActivity(0, this.page_size);   // 回显数据
 
                   this.clearActivity();       // 清空推文的编辑框
-                  /*this.editActivity = false;
-                  this.activityACtext = "";
-                  this.activityJumpValue = "";
-                  this.activityJumpToValue = "";
-                  this.activityType = "";
-                  this.activityActivityTime = "";
-                  this.likeNum = "";
-                  this.activityBadge = "";
-                  this.author = {};
-                  this.activityPictureList = [];  // 图片list置为[]
-                  this.activityMediaSort = 0;   // 上传成功后图片数量置为0*/
                 }else{
                   this.$message({ type: 'error', message: res.data.message, duration: 1500 });
                 }
