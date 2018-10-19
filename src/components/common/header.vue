@@ -1,6 +1,6 @@
 <template>
 <header class="login-header">
-  后台管理系统
+  微点后台管理系统
 </header>
 
 </template>
