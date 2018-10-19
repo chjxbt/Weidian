@@ -8,7 +8,7 @@ const api={
   edit_task_level: title + 'task/add_or_update_task_level', // 添加或更新任务等级
   get_all_task_type: title + 'task/get_all_task_type',      // 获取任务类型
   get_all_task: title + 'task/get_all_task',                // 获取所有任务
-  get_all_raward: title + 'task/get_all_raward',            // 获取所有奖励
+  // get_all_raward: title + 'task/get_all_raward',            // 获取所有奖励
   add_task: title + 'task/add_task',                        // 添加或更新任务
   del_task: title + 'task/del_task',                        // 删除任务
   del_task_level: title + 'task/del_task_level',            // 删除任务等级
@@ -35,7 +35,9 @@ const api={
   add_comment: title + 'activitycomment/add_comment',       // 回复评论
   del_comment: title + 'activitycomment/del_comment',       // 删除评论
 
-  create_reward: title + 'reward/create_reward',            // create_reward
+  get_all_raward: title + 'task/get_all_raward',            // 获取所有奖励 - 获取所有优惠券
+  create_reward: title + 'reward/create_reward',            // 创建优惠券
+  hand_out_reward: title + 'reward/hand_out_reward',        // 平台内发放优惠券
 
   get_order_count: title + 'order/admin_get_order_count',   // 后台获取订单数量
   get_order_list: title + 'order/admin_get_order_list',     // 后台获取各状态下的订单
