@@ -75,7 +75,7 @@ class CMyCenter(BaseMyCenterControl):
                 my_achev_value = my_achev.sellorinvitemount if my_achev else 0  # 我的销售总额(人数)
 
                 gt_my_sell_count = self.spartnermatch.get_partner_match_mount_gt_value(psimid, my_achev_value)   # 营业额(人数)比我多的
-                partner_num = self.suser.get_partner_count_in_current_level()  # 该等级vip总数
+                partner_num = self.suser.get_partner_count_in_current_level(request.user.USlevel)  # 该等级vip总数
                 lt_my_sell_count = partner_num - gt_my_sell_count  # 比我销售(人数)少的
                 partner_num = partner_num or 1
                 percents = int(float(lt_my_sell_count) / partner_num * 100)   # 超过的同等级的百分比

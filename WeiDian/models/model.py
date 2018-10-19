@@ -410,7 +410,7 @@ class OrderProductInfo(BaseModel):
     OPIproductname = Column(String(64))  # 商品的名字(购买之时的)
     OPIproductimages = Column(String(255))  # 商品主图
     OPIproductnum = Column(Integer, default=1)  # 购买数量
-    OPIstatus = Column(Integer, default=0, comment=u'0: 待发货, 1 待收货, 2 交易成功(未评价), 3 交易成功(已评价), 4 退货, 5 换货, 6 已签收, 7 ')
+    OPIstatus = Column(Integer, default=0, comment=u'0: 待发货, 1 待收货, 2 交易成功(未评价), 3 交易成功(已评价), 4 退货, 5 换货, 6 已签收')
     SmallTotal = Column(Float, nullable=False, comment=u'价格小计')
 
     OPIlogisticsSn = Column(String(64), comment=u'快递公司: 发货物流单号')
@@ -444,9 +444,10 @@ class OrderProductResend(BaseModel):
     OPRid = Column(String(64), primary_key=True)
     OPRsn = Column(String(64), comment=u'退货编号')
     OPIid = Column(String(64), nullable=False, comment=u'订单商品详情id')
-    OPRHandway = Column(Integer, default=0, comment=u'处理类型, 0 退货退款, 1 重新发货  2 退款')
+    OPRschedule = Column(Integer, default=0, comment=u'进度, 0 已申请, 1 买家退货中, 2 卖家发货中, 3 卖家已发货, 4 完成')
+    OPRtype = Column(Integer, default=0, comment=u'类型, 0 退货  1 换货')
     OPRmount = Column(Float, comment=u'退款金额')
-    OPRreson = Column(String(64), comment=u'退款原因')
+    OPRreason = Column(String(64), comment=u'退款原因')
     OPRdesc = Column(String(255), comment=u'退款说明')
     OPRimage = Column(Text, comment=u'凭证, [http://www.jpg, http://www.jpb')
     OPRcreatetime = Column(DateTime, default=datetime.now, comment=u'申请时间')

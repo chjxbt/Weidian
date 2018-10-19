@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 
 from WeiDian.common.timeformat import format_for_db
-from WeiDian.models.model import OrderInfo, OrderProductInfo
+from WeiDian.models.model import OrderInfo, OrderProductInfo, OrderProductResend
 from sqlalchemy import or_, extract
 from SBase import SBase, close_session
 sys.path.append(os.path.dirname(os.getcwd()))
@@ -159,6 +159,11 @@ class SOrder(SBase):
     def get_orderproductinfo_by_opiid(self, opiid):
         """根据id获取订单中的商品"""
         return self.session.query(OrderProductInfo).filter(OrderProductInfo.OPIid == opiid).first()
+
+    @close_session
+    def get_orderproduct_resend_by_opiid(self, opiid):
+        """根据订单商品详情获取退货(款)信息"""
+        return self.session.query(OrderProductResend).filter(OrderProductResend.OPIid == opiid).first()
 
     @close_session
     def update_orderproductinfo_by_opiid(self, opiid, data):
