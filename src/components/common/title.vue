@@ -51,7 +51,7 @@
     letter-spacing: 1.5px;
     padding: 0.1rem 0.3rem;
     background-color: #eeeeef;
-    border-radius: 0.1rem 0.1rem 0 0;
+    /*border-radius: 0.1rem 0.1rem 0 0;*/
     span{
       display: inline-block;
       padding: 0.05rem 0;

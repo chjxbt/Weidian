@@ -2,12 +2,13 @@
   <div class="weidian-data">
     <page-title :list="list"></page-title>
     <div class="weidian-content">
-      流量概况
+      <w-tab :list="tab_list"  @wTabClick="wTabClick"></w-tab>
     </div>
   </div>
 </template>
 <script type="text/ecmascript-6">
   import pageTitle from '../../components/common/title';
+  import wTab from '../../components/common/wTab';
   import api from '../../api/api';
   import axios from 'axios';
 
@@ -24,11 +25,24 @@
           { name: "佣金概况", url: "commission", active: false },
           { name: "优惠券概况", url: "coupons", active: false }
         ],
+        tab_list: [               // 顶部导航的list
+          { id: "", name: "总PV", active: true },
+          { id: "", name: "店主数据", active: false },
+          { id: "", name: "非店主数据", active: false }
+        ],
       }
     },
-    components:{ pageTitle },
+    components:{ pageTitle, wTab },
     methods: {
-
+      // 顶部导航的点击事件
+      wTabClick(i){
+        let arr = [].concat(this.tab_list);
+        for(let a = 0; a < arr.length; a ++){
+          arr[a].active = false;
+        }
+        arr[i].active = true;
+        this.tab_list = [].concat(arr);
+      },
     },
     mounted() {
 

@@ -2,12 +2,15 @@
   <div class="weidian-data">
     <page-title :list="list"></page-title>
     <div class="weidian-content">
-      首页
+      <w-tab :list="tab_list"  @wTabClick="wTabClick"></w-tab>
+
+      <div class="time-outside"></div>
     </div>
   </div>
 </template>
 <script type="text/ecmascript-6">
   import pageTitle from '../../components/common/title';
+  import wTab from '../../components/common/wTab';
   import api from '../../api/api';
   import axios from 'axios';
 
@@ -24,11 +27,23 @@
           { name: "佣金概况", url: "commission", active: false },
           { name: "优惠券概况", url: "coupons", active: false }
         ],
+        tab_list: [               // 顶部导航的list
+          { id: "", name: "平台总GMV", active: true },
+          { id: "", name: "24h数据", active: false }
+        ],
       }
     },
-    components:{ pageTitle },
+    components:{ pageTitle, wTab },
     methods: {
-
+      // 顶部导航的点击事件
+      wTabClick(i){
+        let arr = [].concat(this.tab_list);
+        for(let a = 0; a < arr.length; a ++){
+          arr[a].active = false;
+        }
+        arr[i].active = true;
+        this.tab_list = [].concat(arr);
+      },
     },
     mounted() {
 
@@ -37,5 +52,6 @@
 </script>
 <style lang="less" rel="stylesheet/less" scoped>
   @import "../../common/css/data.less";
+  @import "../../common/css/weidian.less";
 
 </style>

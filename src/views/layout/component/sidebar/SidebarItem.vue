@@ -99,6 +99,10 @@
         background: url("../../../../common/images/side_icon_service.png");
         background-size: 100% 100%;
       }
+      &.icon-data{
+        background: url("../../../../common/images/side_icon_data.png");
+        background-size: 100% 100%;
+      }
     }
     .sidebar-one-content{
       padding: 0.2rem 0.2rem;

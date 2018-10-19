@@ -1,48 +1,40 @@
 @import "index";
+.m-weidian-tabbox{
+  .flex-row(flex-start);
+  color: @greyColor;
+  margin-bottom: 0.2rem;
+  margin-top: 0.3rem;
+  font-size: 0.16rem;
+  &.m-ft-12{
+    font-size: 0.12rem;
+  }
+  &.m-no-margin{
+    margin-top: 0;
+  }
+  .m-tab-name{
+    cursor: pointer;
+    &.active{
+      color: #000;
+    }
+  }
+  .m-tab-line{
+    display: inline-block;
+    margin: 0 0.05rem;
+  }
+}
 .m-weidian{
   background-color: #fff;
   .m-weidian-content{
     padding: 0.25rem  0.45rem 0.25rem ;
-    .m-weidian-tabbox{
-      .flex-row(flex-start);
-      color: @greyColor;
-      margin-bottom: 0.2rem;
-      margin-top: 0.3rem;
-      font-size: 0.16rem;
-      &.m-ft-12{
-        font-size: 0.12rem;
-      }
-      &.m-no-margin{
-        margin-top: 0;
-      }
-      .m-tab-name{
-        cursor: pointer;
-        &.active{
-          color: #000;
-        }
-      }
-      .m-tab-line{
-        display: inline-block;
-        margin: 0 0.05rem;
-      }
-    }
     .m-select-btn{
      width: 0.94rem;
       height: 0.32rem;
       background-color: @green;
       border: 1px solid @green;
     }
-    .m-table-btn{
-      display: inline-block;
-      width: 0.66rem;
-      height: 0.26rem;
-      background-color: @sidebarChildColor;
-      color: #fff;
-      border-radius: 5px;
-      &.cancel{
-        background-color: #dbdcdc;
-        color: #b4b4b5;
-      }
+    .blue-btn {
+      color: #4169E1;
+      font-size: 0.11rem;
     }
     .m-page-box{
       margin-top: 0.2rem;

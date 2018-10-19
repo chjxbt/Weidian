@@ -107,7 +107,7 @@
     {
       "MNname":"数据中心",
       "MNurl":"/index",
-      "MNicon":"icon-service",
+      "MNicon":"icon-data",
       "children":[
         {
           "MNname":"数据中心",
