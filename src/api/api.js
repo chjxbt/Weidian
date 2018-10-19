@@ -49,6 +49,7 @@ const api={
   add_admin: title + 'super/add_admin',                     // 添加普通管理员
   update_admin: title + 'super/update_other_admin',         // 超管管理其他管理
   get_all_user: title + 'user/get_all_user',                // 获取所有用户信息
+  get_user_sub: title + 'user/get_user_sub',                // 获取用户下级
 
   set_show_type: title + 'activity/set_show_type',          // 控制中心 - 设置首页专题默认的过滤类型
   get_show_type: title + 'activity/get_show_type',          // 控制中心 - 获取首页默认的过滤类型
