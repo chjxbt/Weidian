@@ -153,7 +153,7 @@
     </el-dialog>
 
     <div class="bottom-box">
-      <div class="export-btn" @click="exportClick">批量导出</div>
+      <!--<div class="export-btn" @click="exportClick">批量导出</div>-->
       <Pagination class="page-box" :total="total_page" @pageChange="pageChange"></Pagination>
     </div>
   </div>
