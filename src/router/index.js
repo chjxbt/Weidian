@@ -32,18 +32,44 @@ export const constantRouterMap = [
   {
     path: '/index',
     component: Layout,
-    redirect: 'index/userIndex',
-    children: [{
-      path: 'userIndex',
-      component: () => import('../views/index/userIndex'),
-      name: 'userIndex',
-      meta: { title: 'userIndex', icon: 'userIndex', noCache: true }
-    },{
-      path: 'adminIndex',
-      component: () => import('../views/index/adminIndex'),
-      name: 'adminIndex',
-      meta: { title: 'adminIndex', icon: 'adminIndex', noCache: true }
-    }
+    redirect: 'index/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('../views/index/index'),
+        name: 'index',
+        meta: { title: 'index', icon: 'index', noCache: true }
+      },{
+        path: 'trading',
+        component: () => import('../views/index/trading'),
+        name: 'trading',
+        meta: { title: 'trading', icon: 'trading', noCache: true }
+      },{
+        path: 'flow',
+        component: () => import('../views/index/flow'),
+        name: 'flow',
+        meta: { title: 'flow', icon: 'flow', noCache: true }
+      },{
+        path: 'conversion',
+        component: () => import('../views/index/conversion'),
+        name: 'conversion',
+        meta: { title: 'conversion', icon: 'conversion', noCache: true }
+      },{
+        path: 'user',
+        component: () => import('../views/index/user'),
+        name: 'user',
+        meta: { title: 'user', icon: 'user', noCache: true }
+      },{
+        path: 'commission',
+        component: () => import('../views/index/commission'),
+        name: 'commission',
+        meta: { title: 'commission', icon: 'commission', noCache: true }
+      },{
+        path: 'coupons',
+        component: () => import('../views/index/coupons'),
+        name: 'coupons',
+        meta: { title: 'coupons', icon: 'coupons', noCache: true }
+      }
     ],
 
   },
@@ -51,17 +77,18 @@ export const constantRouterMap = [
     path: '/jurisdiction',
     component: Layout,
     redirect: 'jurisdiction/admin',
-    children: [{
-      path: 'admin',
-      component: () => import('../views/jurisdiction/admin'),
-      name: 'admin',
-      meta: { title: 'admin', icon: 'admin', noCache: true }
-    },{
-      path: 'user',
-      component: () => import('../views/jurisdiction/user'),
-      name: 'user',
-      meta: { title: 'user', icon: 'user', noCache: true }
-    }
+    children: [
+      {
+        path: 'admin',
+        component: () => import('../views/jurisdiction/admin'),
+        name: 'admin',
+        meta: { title: 'admin', icon: 'admin', noCache: true }
+      },{
+        path: 'user',
+        component: () => import('../views/jurisdiction/user'),
+        name: 'user',
+        meta: { title: 'user', icon: 'user', noCache: true }
+      }
     ],
   },
   {
@@ -94,24 +121,26 @@ export const constantRouterMap = [
     path: '/control',
     component: Layout,
     redirect: 'control/index',
-    children: [{
-      path: 'index',
-      component: () => import('../views/control/index'),
-      name: 'control',
-      meta: { title: 'control', icon: 'control', noCache: true }
-    }
+    children: [
+      {
+        path: 'index',
+        component: () => import('../views/control/index'),
+        name: 'control',
+        meta: { title: 'control', icon: 'control', noCache: true }
+      }
     ],
   },
   {
     path: '/service',
     component: Layout,
     redirect: 'service/index',
-    children: [{
-      path: 'index',
-      component: () => import('../views/service/index'),
-      name: 'service',
-      meta: { title: 'service', icon: 'service', noCache: true }
-    }
+    children: [
+      {
+        path: 'index',
+        component: () => import('../views/service/index'),
+        name: 'service',
+        meta: { title: 'service', icon: 'service', noCache: true }
+      }
     ],
   },
   {
@@ -137,27 +166,27 @@ export const constantRouterMap = [
     path: '/content',
     component: Layout,
     redirect: 'content/index',
-    children: [{
-      path: 'index',
-      component: () => import('../views/content/index'),
-      name: 'content',
-      meta: { title: 'content', icon: 'content', noCache: true }
-    },{
-      path: 'discovery',
-      component: () => import('../views/content/discovery'),
-      name: 'discovery',
-      meta: { title: 'discovery', icon: 'discovery', noCache: true }
-    },{
-      path: 'modal',
-      component: () => import('../views/content/modal'),
-      name: 'modal',
-      meta: { title: 'modal', icon: 'modal', noCache: true }
-    }
+    children: [
+      {
+        path: 'index',
+        component: () => import('../views/content/index'),
+        name: 'content',
+        meta: { title: 'content', icon: 'content', noCache: true }
+      },{
+        path: 'discovery',
+        component: () => import('../views/content/discovery'),
+        name: 'discovery',
+        meta: { title: 'discovery', icon: 'discovery', noCache: true }
+      },{
+        path: 'modal',
+        component: () => import('../views/content/modal'),
+        name: 'modal',
+        meta: { title: 'modal', icon: 'modal', noCache: true }
+      }
     ],
   },
 
-
-]
+];
 
 export default new Router({
   // mode: 'history', // require service support

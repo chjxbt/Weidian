@@ -85,7 +85,7 @@
                 // this.$store.state.token = res.data.data.token;
                 localStorage.setItem('token', res.data.data.token);
                 localStorage.setItem('userImg', res.data.data.head);
-                this.$router.push({ path: '/content/index' });
+                this.$router.push({ path: '/index/index' });
                 this.$notify({ title: '登录成功', type: 'success' });
               }else{
                 this.$message({ type: 'error', message: "用户名或密码错误", duration: 1500 });

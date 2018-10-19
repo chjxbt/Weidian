@@ -8,8 +8,8 @@
       <div class="content-table">
         <el-table :data="hiddenList" border style="width: 100%" v-loading="hiddenLoading">
           <el-table-column prop="name" label="板块" width="260"></el-table-column>
-          <el-table-column prop="content" label="隐藏内容" width="500"></el-table-column>
-          <el-table-column prop="show" label="是否显示" width="300">
+          <el-table-column prop="content" label="隐藏内容"></el-table-column>
+          <el-table-column prop="show" label="是否显示">
             <template slot-scope="scope">
               <div @click="rowClick(scope.$index)">
                 <el-switch v-model="scope.row.show" active-text="展示" inactive-text="隐藏" @change="hiddenRow"></el-switch>

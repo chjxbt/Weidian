@@ -51,12 +51,13 @@
             // console.log(key, keyPath);
           },
           indexClick(){
-            if(this.$store.state.role.indexOf('管理员') != -1){
+            /*if(this.$store.state.role.indexOf('管理员') != -1){
               this.$router.push('/index/adminIndex')
             }else{
               this.$router.push('/index/userIndex')
-            }
+            }*/
 
+            this.$router.push('/index/index');
           }
         },
         created() {

@@ -1,6 +1,48 @@
 {
   "side":[
     {
+      "MNname":"数据中心",
+      "MNurl":"/index",
+      "MNicon":"icon-service",
+      "children":[
+        {
+          "MNname":"首页",
+          "MNurl":"index",
+          "MNicon":"none"
+        },
+        {
+          "MNname":"交易概况",
+          "MNurl":"trading",
+          "MNicon":"none"
+        },
+        {
+          "MNname":"流量概况",
+          "MNurl":"flow",
+          "MNicon":"none"
+        },
+        {
+          "MNname":"转化概况",
+          "MNurl":"conversion",
+          "MNicon":"none"
+        },
+        {
+          "MNname":"会员概况",
+          "MNurl":"user",
+          "MNicon":"none"
+        },
+        {
+          "MNname":"佣金概况",
+          "MNurl":"commission",
+          "MNicon":"none"
+        },
+        {
+          "MNname":"优惠券概况",
+          "MNurl":"coupons",
+          "MNicon":"none"
+        }
+      ]
+    },
+    {
       "MNname":"用户管理",
       "MNurl":"/jurisdiction",
       "MNicon":"icon-person-side",
