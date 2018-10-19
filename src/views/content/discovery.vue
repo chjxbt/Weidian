@@ -471,7 +471,7 @@
           { value: "9", label: "限时抢" },
           { value: "10", label: "5 元 10 件" }
         ],
-        page: "每日10荐",  // 默认显示的页面
+        page: "公告",  // 默认显示的页面
         tab_list1:[],     // 导航栏
         tab_list2:[],     // 素材圈的导航栏
         tableData: [
@@ -1518,7 +1518,7 @@
       // 推文/活动跳转类型的值发生变化
       activityJumpValue(newValue, oldValue) {
         this.activityJumpToList = [];
-        this.activityJumpToValue = "";
+        // this.activityJumpToValue = "";
         if(newValue == "2") {
           // this.activityJumpToValue = "请输入关键词搜索商品";
           this.getJumpTo("product", "activity");     // 获取所有商品
