@@ -458,4 +458,7 @@ class CUser():
             pagenum = int(pagenum)
         else:
             pagenum = 1
+        pagenum = pagenum or 1
+        pagesize = pagesize or 5
+
         return pagenum, pagesize
