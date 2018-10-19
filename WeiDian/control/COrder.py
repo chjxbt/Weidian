@@ -577,7 +577,7 @@ class COrder():
             raise NOT_FOUND(u'退款或退货中')
         oiid = order_product.OIid
         order = self.sorder.get_order_by_oiid(oiid)
-        if not order or order.USid != usid
+        if not order or order.USid != usid:
             raise NOT_FOUND(u'不存在订单')
         if order.OIpaystatus == 1:
             raise NOT_FOUND(u'未付款的订单')
