@@ -80,7 +80,6 @@
           </div>
         </div>
 
-
         <div v-if="page == '每日10荐'" style="border-bottom: 1px #707070 solid; padding-bottom: 0.2rem; margin-bottom: 0.5rem">
           <p class="m-form-label" style="margin-bottom: 0.1rem">商品推荐管理</p>
           <div class="num-list" style="font-size: 16px; margin-bottom: -0.1rem">
@@ -133,7 +132,6 @@
         </div>
       </div>
 
-
       <w-tab :list="tab_list2" v-if="page == '素材圈'" class="m-ft-12"  @wTabClick="wTabClick2"></w-tab>
 
       <div class="m-form-label choose-banner">
@@ -149,17 +147,9 @@
         <el-table :data="activityList" border style="width: 100%" v-loading="activityLoading" @selection-change="selectionChange">
           <el-table-column fixed="left" type="selection" width="55" v-if="activityToBanner"></el-table-column>
           <el-table-column prop="time" label="推文时间" width="320">
-            <!--<template slot-scope="scope">
-              <el-date-picker v-model="scope.row.activityTime" type="datetimerange" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
-                              start-placeholder="开始日期" end-placeholder="结束日期" style="width: 3.5rem;" @blur="activityTimeClick(scope)" :disabled="scope.row.disabled">
-              </el-date-picker>
-            </template>-->
           </el-table-column>
           <el-table-column prop="actitle" label="推文标题" width="150" v-if="page == '公告' || page == '教程'"></el-table-column>
           <el-table-column prop="actext" label="推文内容">
-            <!--<template slot-scope="scope">
-              <el-input type="textarea" :autosize="{ minRows: 1, maxRows: 3 }" placeholder="请输入推文内容" v-model="scope.row.actext" :disabled="scope.row.disabled"></el-input>
-            </template>-->
           </el-table-column>
           <el-table-column prop="acSkiptype" label="跳转类型" width="100"></el-table-column>
           <el-table-column prop="product" label="评论管理" width="100" v-if="page == '公告' || page == '教程'">
@@ -179,7 +169,6 @@
         <Pagination class="page-box" :total="total_page" @pageChange="pageChange"></Pagination>
         <comments ref="comments"></comments>
       </div>
-
 
       <div>
         <div class="m-form-item" v-if="page == '公告' || page == '教程'">
@@ -202,7 +191,6 @@
         <div style="margin: 0.05rem 0 0.2rem 0" v-if="page == '教程'">
           <el-switch v-model="imgVideo" active-text="长图" inactive-text="视频" active-color="#91aeb5" inactive-color="#719aab"></el-switch>
         </div>
-
         <div class="m-form-item" style="min-height: 1.6rem; max-height: 1.8rem" v-if="page != '教程'">
           <p class="m-form-label required" style="width: 0.9rem;">推文图片：</p>
           <div class="m-item-content" style="width: 6rem;" :class="activityMediaSort > 4 ? 'five':''" id="abcd">
@@ -217,7 +205,6 @@
             </div>
           </div>
         </div>
-
         <div class="m-form-item" v-if="page == '教程' && imgVideo">
           <p class="m-form-label required" style="width: 0.9rem;">推文图片：</p>
           <div class="m-item-content" style="width: 6rem;">
@@ -229,7 +216,7 @@
             </div>
           </div>
         </div>
-        <div class="m-form-item" v-if="page == '教程' && !imgVideo">
+        <!--<div class="m-form-item" v-if="page == '教程' && !imgVideo">
           <p class="m-form-label required" style="width: 0.9rem;">教程视频：</p>
           <div class="m-item-content">
             <div class=" m-item-row">
@@ -239,7 +226,16 @@
               </el-upload>
             </div>
           </div>
+        </div>-->
+        <div class="m-form-item" v-if="page == '教程' && !imgVideo">
+          <p class="m-form-label" style="width: 0.9rem;">教程视频：</p>
+          <div class="m-item-content">
+            <div class=" m-item-row">
+              <el-input v-model="videoImgUrl" placeholder="请输入教程视频地址" style="width: 4rem"></el-input>
+            </div>
+          </div>
         </div>
+
         <div class="m-form-item" v-if="page == '每日10荐'">
           <p class="m-form-label required" style="width: 0.9rem;">跳转类型：</p>
           <div class="m-item-content">
@@ -323,7 +319,6 @@
           <div class="m-item-content">
             <div class=" m-item-row">
               <el-select v-model="author.name" class="m-input-l" placeholder="请选择发布者" @focus="focusselect('', 'author')">
-                <!--<el-option v-for="item in authorList" :key="item.value" :label="item.label" :value="item.value"></el-option>-->
                 <el-option v-for="item in authorList" :key="item.value" :label="item.label" :value="item.value">
                   <div style="float: left; width: 3.4rem">{{ item.label }}</div>
                   <img style="float: left; width: 0.25rem; height: 0.25rem; border-radius: 50%" :src="item.suheader">
@@ -440,17 +435,8 @@
           { acorobot: "", acotext: "" }
         ],
         activityTypeList: [       // 添加推文/活动时的活动类型选择项
-          { value: "0", label: "普通动态" },
-          { value: "1", label: "满减" },
-          { value: "2", label: "满赠" },
-          { value: "3", label: "优惠券" },
-          { value: "4", label: "砍价" },
-          { value: "5", label: "拼团" },
-          { value: "6", label: "单品优惠券" },
-          { value: "7", label: "一元秒杀" },
-          { value: "8", label: "前 30 分钟半价" },
-          { value: "9", label: "限时抢" },
-          { value: "10", label: "5 元 10 件" }
+          { value: "0", label: "普通动态" }, { value: "1", label: "满减" }, { value: "2", label: "满赠" }, { value: "3", label: "优惠券" }, { value: "4", label: "砍价" }, { value: "5", label: "拼团" },
+          { value: "6", label: "单品优惠券" }, { value: "7", label: "一元秒杀" }, { value: "8", label: "前 30 分钟半价" }, { value: "9", label: "限时抢" }, { value: "10", label: "5 元 10 件" }
         ],
         page: "公告",  // 默认显示的页面
         tab_list1:[],     // 导航栏
@@ -483,7 +469,6 @@
       // 上传教程长图
       uploadActivityLong(item) {
         let media = {};
-        // this.activityMediaSort = this.activityMediaSort + 1;
         let form = new FormData();
         form.append("file", item.file);
         form.append("FileType", 'NewsPic');
@@ -503,9 +488,8 @@
       },
 
       // 上传教程视频
-      uploadActivityVideo(item) {
+      /*uploadActivityVideo(item) {
         let media = {};
-        // this.activityMediaSort = this.activityMediaSort + 1;
         let form = new FormData();
         form.append("file", item.file);
         form.append("FileType", 'NewsPic');
@@ -522,7 +506,7 @@
             this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         });
-      },
+      },*/
 
       // 点击推文图片时执行的方法 - 预览
       handlePictureCardPreview(file, fileList) {
@@ -1139,19 +1123,22 @@
             for(let i = 0; i < res.data.data.length; i++) {
               let nav = { name: res.data.data[i].tnname, url: "", active: false, tnid: res.data.data[i].tnid };
               this.tab_list1.push(nav);
+              if(this.tab_list1[i].name == this.page) {
+                this.tab_list1[i].active = true;
+                this.tnid = this.tab_list1[i].tnid;
+              }
 
-              this.tab_list1[0].active = true;
-              this.tnid = this.tab_list1[0].tnid;
+              if(this.tab_list1[i].name == "素材圈") {
+                for(let j = 0; j < res.data.data[i].sub.length; j++) {
+                  let nav = { name: res.data.data[i].sub[j].tnname, url: "", active: false, tnid: res.data.data[i].sub[j].tnid };
+                  this.tab_list2.push(nav);
+
+                  this.tab_list2[0].active = true;
+                  // this.tnid = this.tab_list2[0].tnid;
+                }
+              }
             }
-            for(let i = 0; i < res.data.data[1].sub.length; i++) {
-              let nav = { name: res.data.data[1].sub[i].tnname, url: "", active: false, tnid: res.data.data[1].sub[i].tnid };
-              this.tab_list2.push(nav);
-
-              this.tab_list2[0].active = true;
-              // this.tnid = this.tab_list2[0].tnid;
-            }
-
-            this.getActivity(0, this.page_size);      // 获取首页活动/推文内容列表
+            this.getActivity(0, this.page_size);      // 获取推文内容列表
           }else{
             this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
