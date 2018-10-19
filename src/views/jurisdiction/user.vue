@@ -68,4 +68,9 @@
 
 <style lang="less" rel="stylesheet/less" scoped>
   @import "../../common/css/weidian";
+
+  .page-box {
+    text-align: right;
+    margin-top: 0.1rem;
+  }
 </style>
