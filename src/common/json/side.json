@@ -1,18 +1,6 @@
 {
   "side":[
     {
-      "MNname":"数据中心",
-      "MNurl":"/index",
-      "MNicon":"icon-service",
-      "children":[
-        {
-          "MNname":"数据中心",
-          "MNurl":"index",
-          "MNicon":"none"
-        }
-      ]
-    },
-    {
       "MNname":"用户管理",
       "MNurl":"/jurisdiction",
       "MNicon":"icon-person-side",
@@ -111,6 +99,18 @@
       "children":[
         {
           "MNname":"客服中心",
+          "MNurl":"index",
+          "MNicon":"none"
+        }
+      ]
+    },
+    {
+      "MNname":"数据中心",
+      "MNurl":"/index",
+      "MNicon":"icon-service",
+      "children":[
+        {
+          "MNname":"数据中心",
           "MNurl":"index",
           "MNicon":"none"
         }
