@@ -12,8 +12,51 @@
         <div class="outside-btn">下载报表</div>
       </div>
 
-      <div class="content-row">
+      <div>
+        <div class="content-row">
+          <div class="content-box width-25">
+            <div class="box-row-a title-text row-2-1">全部订单（笔）</div>
+            <div class="box-row-b hex-text row-2-2">29</div>
+          </div>
+          <div class="content-box width-25">
+            <div class="box-row-a title-text row-2-1">支付订单数（笔）</div>
+            <div class="box-row-b hex-text row-2-2">12</div>
+          </div>
+          <div class="content-box width-25">
+            <div class="box-row-a title-text row-2-1">支付转化率（%）</div>
+            <div class="box-row-b hex-text row-2-2">80%</div>
+          </div>
+          <div class="content-box width-25">
+            <div class="box-row-a title-text row-2-1">客单价（用券后）（元）</div>
+            <div class="box-row-b hex-text row-2-2">￥12.00元</div>
+          </div>
+        </div>
 
+        <div class="content-row">
+          <div class="content-box width-25">
+            <div class="box-row-a title-text row-2-1">平台总UV</div>
+            <div class="box-row-b hex-text row-2-2">29</div>
+          </div>
+          <div class="content-box width-25">
+            <div class="box-row-a title-text row-2-1">平台总支付UV</div>
+            <div class="box-row-b hex-text row-2-2">12</div>
+          </div>
+          <div class="content-box width-25">
+            <div class="box-row-a title-text row-2-1">平台总新增一级店主（人）</div>
+            <div class="box-row-b hex-text row-2-2">56</div>
+          </div>
+        </div>
+
+        <div class="content-row">
+          <div class="content-box width-25">
+            <div class="box-row-a title-text row-2-1">平台支出总额（元）</div>
+            <div class="box-row-b hex-text row-2-2">2956</div>
+          </div>
+          <div class="content-box width-25">
+            <div class="box-row-a title-text row-2-1">活动奖励支出总额（元）</div>
+            <div class="box-row-b hex-text row-2-2">12</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
