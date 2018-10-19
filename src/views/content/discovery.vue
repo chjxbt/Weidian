@@ -363,25 +363,6 @@
           <span @click="saveClick('', 'activity')" v-if="editActivity">保 存</span>
         </div>
       </div>
-
-      <div class="m-form-item" v-if="page == '公告' || page == '教程'">
-        <p class="m-form-label">评论管理</p>
-        <div class="content-table">
-          <el-table :data="tableData" border style="width: 100%">
-            <el-table-column prop="object" label="评论对象"></el-table-column>
-            <el-table-column prop="who" label="评论人"></el-table-column>
-            <el-table-column prop="time" label="评论时间"></el-table-column>
-            <el-table-column prop="content" label="评论内容"></el-table-column>
-            <el-table-column fixed="right" label="管理">
-              <template slot-scope="scope">
-                <el-button @click="handleClick(scope.row)" type="text" size="small">回复</el-button>
-                <el-button type="text" size="small">|</el-button>
-                <el-button type="text" size="small">删除</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-        </div>
-      </div>
     </div>
   </div>
 </template>
@@ -474,12 +455,6 @@
         page: "公告",  // 默认显示的页面
         tab_list1:[],     // 导航栏
         tab_list2:[],     // 素材圈的导航栏
-        tableData: [
-          { object: '新鲜出炉的周周奖现已发放，还不快去查收！', who: '张三', time: '2018-09-15 18:56:21', content: '评论测试评论测试评论测试评论测试评论测试评论测试评论测试' },
-          { object: '新鲜出炉的周周奖现已发放，还不快去查收！', who: '张三', time: '2018-09-15 18:56:21', content: '评论测试评论测试评论测试评论测试评论测试评论测试评论测试' },
-          { object: '新鲜出炉的周周奖现已发放，还不快去查收！', who: '张三', time: '2018-09-15 18:56:21', content: '评论测试评论测试评论测试评论测试评论测试评论测试评论测试' },
-          { object: '新鲜出炉的周周奖现已发放，还不快去查收！', who: '张三', time: '2018-09-15 18:56:21', content: '评论测试评论测试评论测试评论测试评论测试评论测试评论测试' }
-        ],
         page_size: 5,     // 推文每页请求的数量
         total_page: 1,    // 推文 - 总页数
         tnid: "",         // 暂存导航栏的tnid
@@ -1358,11 +1333,6 @@
         for(let i = 0; i < selection.length; i ++) {
           this.selectionList.push(selection[i].acid);
         }
-      },
-
-      // 评论列表的操作方法
-      handleClick(row) {
-        console.log(row);
       },
 
       // 导航栏
