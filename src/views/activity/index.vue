@@ -2,6 +2,13 @@
   <div class="m-weidian">
     <page-title :title="name" ></page-title>
     <div class="m-weidian-content">
+
+      <div class="title-img-box">
+        <h3 class="m-title">平台内发放优惠券</h3>
+        <img v-if="handOut" class="table-close-img" src="../../assets/images/table_close.png" @click="handOutOpen">
+        <img v-if="!handOut" class="table-close-img" src="../../assets/images/table_open.png" @click="handOutOpen">
+      </div>
+
       <div class="coupons-box">
         <p class="m-form-label" style="margin-bottom: 0.1rem; flex: 1;">平台优惠</p>
         <div class="add-coupons-btn">添加优惠券</div>
@@ -10,10 +17,6 @@
         <el-table :data="discountsList" border style="width: 100%" v-loading="discountsLoading">
           <el-table-column prop="raname" label="优惠名称"></el-table-column>
           <el-table-column prop="raType" label="优惠类型" width="120"></el-table-column>
-          <!--<el-table-column prop="status" label="状态"></el-table-column>-->
-          <!--<el-table-column prop="discounts" label="优惠"></el-table-column>-->
-          <!--<el-table-column prop="discounts" label="使用时间"></el-table-column>-->
-          <!--<el-table-column prop="num" label="已领取"></el-table-column>-->
           <el-table-column prop="rewardstr" label="优惠内容" width="140"></el-table-column>
           <el-table-column prop="rafilter" label="优惠门槛" width="80"></el-table-column>
           <el-table-column prop="raamount" label="优惠金额" width="80"></el-table-column>
@@ -102,9 +105,8 @@
           </div>
         </div>
       </div>
-
       <div class="input-btns">
-        <div class="input-btn">删 除</div>
+        <div class="input-btn">取 消</div>
         <div class="input-btn">保 存</div>
       </div>
     </div>
@@ -122,6 +124,7 @@
         name:'活动中心',
         discountsList: [],        // 平台优惠list
         discountsLoading: false,  // 平台优惠list加载中
+        handOut: true,           // 平台内发放优惠券
         discountsName: "",        // 优惠名称
         ramaxusenum: "",          // 允许叠加使用的张数
         ramaxholdnum: "",         // 同种券最大可拥有数量
@@ -136,8 +139,8 @@
         ],
         giveToOne: "",            // 可否转赠
         giveToOneList: [          // 可否转赠list
-          { value: "true", label: "可转增" },
-          { value: "false", label: "不可转增" }
+          { value: true, label: "可转增" },
+          { value: false, label: "不可转增" }
         ],
         amount: "",               // 优惠金额
         bonus: "",                // 佣金加成
@@ -168,6 +171,14 @@
             this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
         });
+      },
+      // 打开/关闭任务表格
+      handOutOpen() {
+        if(this.handOut) {
+          this.handOut = false;
+        }else if(!this.handOut) {
+          this.handOut = true;
+        }
       },
     },
     mounted() {
@@ -224,6 +235,19 @@
       background-color: #91aeb5;
       border-radius: 0.1rem;
       margin: 0.2rem 0 0.05rem 1.5rem;
+    }
+  }
+  .title-img-box {
+    display: flex;
+    justify-content: flex-start;
+    .m-title{
+      font-size: 18px;
+      margin-bottom: 0.1rem;
+    }
+    .table-close-img {
+      width: 0.18rem;
+      height: 0.12rem;
+      padding: 0.02rem 0 0 0.2rem;
     }
   }
 </style>
