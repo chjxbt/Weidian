@@ -1,5 +1,5 @@
 # -*- coding:utf8 -*-
-from datetime import date
+from datetime import date, datetime
 
 from flask import Flask as _Flask
 from flask.json import JSONEncoder as _JSONEncoder
@@ -32,8 +32,7 @@ logger.warning("that is warning")
 from werkzeug.exceptions import HTTPException
 from WeiDian.apis.v1 import AActivity, AHotMessage, ABanner, ASearchField, ATopNav, \
     ASuperUser, AProduct, ARecommendBanner, AShoppingCart, AActivityComment, AUser, ARecommend, AOrder, AProductLike, \
-    ARecommendLike, AActivityLike, AMyCenter, AComplain, AAdImage, ATask, ABigActivity
-
+    ARecommendLike, AActivityLike, AMyCenter, AComplain, AAdImage, ATask, ABigActivity, AReward
 
 # from test.test_maketoken import create_test_url
 
@@ -50,9 +49,9 @@ class JSONEncoder(_JSONEncoder):
                     res[k.lower()] = res[k]
                     res.pop(k)
             return res
-        if isinstance(o, date):
+        if isinstance(o, datetime):
             # 也可以序列化时间类型的对象
-            return o.strftime('%Y-%m-%d')
+            return o.strftime('%Y-%m-%d %H:%M:%S')
         if isinstance(o, type):
             raise o()
         if isinstance(o, HTTPException):
@@ -113,6 +112,7 @@ def register_route(app):
     app.add_url_rule('/adimage/<string:adimage>', view_func=AAdImage.as_view('adimage'))
     app.add_url_rule('/task/<string:task>', view_func=ATask.as_view('task'))
     app.add_url_rule('/bigactivity/<string:bigactivity>', view_func=ABigActivity.as_view('bigactivity'))
+    app.add_url_rule('/reward/<string:reward>', view_func=AReward.as_view('reward'))
 
 
 def create_app():

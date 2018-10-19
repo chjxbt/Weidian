@@ -1,6 +1,8 @@
 # -*- coding:utf8 -*-
+from datetime import datetime
+
 from sqlalchemy.dialects.mysql import LONGTEXT
-from sqlalchemy import Column, create_engine, Integer, String, Text, Float, Boolean, orm
+from sqlalchemy import Column, create_engine, Integer, String, Text, Float, Boolean, orm, DateTime
 from WeiDian.config import dbconfig as cfg
 from WeiDian.models.base_model import BaseModel, auto_createtime
 import json
@@ -373,12 +375,12 @@ class OrderInfo(BaseModel):
     USid = Column(String(64))  # 用户
     OItradenum = Column(String(125))  # 交易号, (如果有)
     """
-    订单状态: {0:全部, 1: 待付款, 2: 支付成功, 3: 支付超时关闭（交易关闭）, 4:待发货, 5:待收货, 
-    6:已完成, 7:已取消, 8:交易失败（退货）,  10:待评价, 11:退换货, 12: 换货(买家退回中),
+    订单状态: {0:全部, 1: 待付款, 2: 支付成功, 3: 支付超时关闭（交易关闭）, 4:待发货, 5: 已发货, 
+    6:已完成, 7:已取消, 8:交易失败（退货）,  10:待评价(评价放到), 11:退换货, 12: 换货(买家退回中),
     13: 换货(卖家发货中), 14: 卖家已发货
      }
     """
-    OIpaystatus = Column(Integer, default=0)
+    OIpaystatus = Column(Integer, default=1)
     OIpaytype = Column(Integer)  # 支付类型: {0: 银行卡支付, 1: 微信支付}
     OIleavetext = Column(String(255))  # 订单留言
     OImount = Column(Float)  # 金额
@@ -404,10 +406,22 @@ class OrderProductInfo(BaseModel):
     PRid = Column(String(64), nullable=False)  # 商品id
     # OPIsku = Column(Text, nullable=False)  # 订单中的sku值(无需存skuid)
     _PSKproperkey = Column(Text, nullable=False)  # 商品sku属性的key, json
-    OIproductprice = Column(Float, nullable=False)   # 商品价格(购买时候的价格)
+    OIproductprice = Column(Float, nullable=False)   # 商品价格(购买时候的价格)单价
     OPIproductname = Column(String(64))  # 商品的名字(购买之时的)
     OPIproductimages = Column(String(255))  # 商品主图
     OPIproductnum = Column(Integer, default=1)  # 购买数量
+    OPIstatus = Column(Integer, default=0, comment=u'0: 待发货, 1 待收货, 2 交易成功(未评价), 3 交易成功(已评价), 4 退货, 5 换货, 6 已签收, 7 ')
+    SmallTotal = Column(Float, nullable=False, comment=u'价格小计')
+
+    OPIlogisticsSn = Column(String(64), comment=u'快递公司: 发货物流单号')
+    OPIlogisticsCompnay = Column(String(16), comment=u'快递公司')
+    OPIlogisticsText = Column(Text, comment=u'发货物流信息')
+    OPIlogisticstime = Column(String(16), comment=u'发货时间')
+    # OPIsignperson = Column(String(16), comment=u'签收人')
+    #
+    # OPIresendLogisticSn = Column(String(64), comment=u'快递公司: 退货单号')
+    # OPIresendLogisticText = Column(String(64),  comment=u'退货物流信息')
+    # OPIresendLogistictime = Column(String(16), comment=u'退货时间')
 
     @property
     def PSKproperkey(self):
@@ -422,6 +436,27 @@ class OrderProductInfo(BaseModel):
     def __init__(self):
         self.fields = self.all
         self.add('PSKproperkey').hide('_PSKproperkey')
+
+
+class OrderProductResend(BaseModel):
+    """退款"""
+    __tablename__ = 'orderproductresend'
+    OPRid = Column(String(64), primary_key=True)
+    OPRsn = Column(String(64), comment=u'退货编号')
+    OPIid = Column(String(64), nullable=False, comment=u'订单商品详情id')
+    OPRHandway = Column(Integer, default=0, comment=u'处理类型, 0 退货退款, 1 重新发货  2 退款')
+    OPRmount = Column(Float, comment=u'退款金额')
+    OPRreson = Column(String(64), comment=u'退款原因')
+    OPRdesc = Column(String(255), comment=u'退款说明')
+    OPRimage = Column(Text, comment=u'凭证, [http://www.jpg, http://www.jpb')
+    OPRcreatetime = Column(DateTime, default=datetime.now, comment=u'申请时间')
+
+    OPRresendLogisticSn = Column(String(64), comment=u'快递公司: 退货单号')
+    OPRresendLogisticText = Column(String(64), comment=u'退货物流信息')
+    OPRresendLogistictime = Column(String(16), comment=u'退货时间')
+    OPRreceivername = Column(String(8), comment=u'收货人信名')
+    OPRreceiverphone = Column(String(16), comment=u'收货人手机')
+
 
 
 class ProductCategory(BaseModel):
@@ -667,7 +702,7 @@ class SearchField(BaseModel):
 #     @orm.reconstructor
 #     def __init__(self):
 #         self.fields = ['MYid', 'MYranking', 'MYrewards']
-#     # TODO 我的
+
 
 
 class IndexAdAlert(BaseModel):
@@ -718,7 +753,7 @@ class Complain(BaseModel):
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['COid', 'COcontent', 'COtype', "OIid", "USid", 'COtreatstatus']
+        self.fields = ['COid', 'COcontent', 'COtype', "OIid", "USid", 'COcreatetime', 'COtreatstatus']
 
 
 # 任务等级
@@ -786,15 +821,37 @@ class TaskUser(BaseModel):
 class Raward(BaseModel):
     __tablename__ = "raward"
     RAid = Column(String(64), primary_key=True)
-    RAtype = Column(Integer)  # {0: "满减", 1: "佣金加成", 2: "无门槛"}
-    RAfilter = Column(Float)  # 条件
-    RAamount = Column(Float)  # 减少金额
-    RAratio = Column(Float)   # 上调比例
+    RAtype = Column(Integer)        # {0: "满减", 1: "佣金加成", 2: "无门槛", 3: "邀请粉丝券", 4:"开店大礼包专用"}
+    RAfilter = Column(Float)        # 条件
+    RAamount = Column(Float)        # 减少金额
+    RAratio = Column(Float)         # 上调比例
+    RAmaxusenum = Column(Integer, default=1)        # 允许叠加使用张数
+    RAmaxholdnum = Column(Integer, default=1)       # 同种券最大可拥有数量
+    RAcreatetime = Column(String(14))               # 创建时间
+    RAendtime = Column(String(14))                  # 失效时间
+    RAname = Column(String(64))                     # 优惠券名称
+    RAtransfer = Column(Boolean, default=False)     # 是否允许转赠
+    RAtransfereffectivetime = Column(Integer)       # 转赠有效时长(单位:小时), 超时则返回
+    RAisdelete = Column(Boolean, default=False)     # 删除
 
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['RAid', "RAtype", "RAfilter", "RAamount", "RAratio"]
+        self.fields = ['RAid', "RAtype", "RAfilter", "RAamount", "RAratio", "RAname", "RAmaxusenum", "RAmaxholdnum",
+                       "RAcreatetime", "RAendtime", "RAtransfer", "RAtransfereffectivetime"]
+
+class RewardToUser(BaseModel):
+    """平台页面内发放给用户的优惠券"""
+    __tablename__ = 'rewardtouser'
+    RTid = Column(String(64), primary_key=True)
+    RAid = Column(String(64))               # 优惠券
+    RTcount = Column(Integer)               # 发放数量
+    RUcreatetime = Column(String(14))       # 发放时间
+
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = ['RTid', 'RAid', 'RUcreatetime']
 
 
 # 奖励和任务的关联表
@@ -815,13 +872,15 @@ class UserRaward(BaseModel):
     URid = Column(String(64), primary_key=True)
     RAid = Column(String(64))  # 奖励id
     USid = Column(String(64))  # 用户id
-    RAnumber = Column(Integer)  # 奖励数目
+    RAnumber = Column(Integer, default=1)  # 奖励数目
     URcreatetime = Column(String(14))  # 创建时间
     URFrom = Column(String(64))  # 优惠券来源 如果为空则为平台
 
     @orm.reconstructor
+    @auto_createtime
     def __init__(self):
-        self.fields = ['TRid', "TAid", "RAid", "RAnumber"]
+        # self.fields = ['TRid', "TAid", "RAid", "RAnumber"]
+        self.fields = ["RAid", "RAnumber", "URcreatetime"]
 
 
 class AdImage(BaseModel):

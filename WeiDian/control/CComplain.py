@@ -3,6 +3,8 @@ import sys
 import os
 import uuid
 import re
+
+from WeiDian.common.timeformat import get_web_time_str
 from flask import request
 from WeiDian.config.response import TOKEN_ERROR, PARAMS_MISS, SYSTEM_ERROR
 from WeiDian.common.import_status import import_status
@@ -18,28 +20,42 @@ class CComplain():
         self.scomplain = SComplain()
         from WeiDian.service.SActivity import SActivity
         self.sactivity = SActivity()
+        from WeiDian.service.SUser import SUser
+        self.suser = SUser()
 
     @verify_token_decorator
     def get_complain_by_usid(self):
+        """后台管理查看投诉记录"""
         if not hasattr(request, 'user'):
-            return TOKEN_ERROR  # 未登录, 或token错误
+            raise TOKEN_ERROR()  # 未登录, 或token错误
+        args = request.args.to_dict()
+        logger.debug("get complain args is %s", args)
+        page_size = args.get('page_size')
+        page_size = 10 if not page_size else int(page_size)
+        page_num = args.get('page_num')
+        page_num = 1 if not page_num else int(page_num)
         try:
-            complain_list = self.scomplain.get_complain_by_usid(request.user.id)
+            complain_list = self.scomplain.admin_get_all_complain(page_size, page_num)
+            complain_list_length = self.scomplain.admin_get_complain_count()
             from WeiDian.config.enums import complain_type
             data = import_status("get_complain_success", "OK")
             for complain in complain_list:
                 colist = str(complain.COtype).split(",")
                 logger.debug('get colist %s', colist)
-                complaintype = ",".join([complain_type.get(i) for i in colist])
+                complaintype = "，".join([complain_type.get(i) for i in colist])
                 logger.debug('convert complain type %s', complaintype)
                 complain.COtype = complaintype
+                user_info = self.suser.get_user_by_user_id(complain.USid)
+                complain.fill(user_info.USname, 'usname')
+                complain.COcreatetime = get_web_time_str(complain.COcreatetime)
 
             data['data'] = complain_list
+            data['count'] = complain_list_length
             logger.debug("get complain by usid %s", complain_list)
             return data
         except:
             logger.exception("get complain by usid error")
-            return SYSTEM_ERROR
+            raise SYSTEM_ERROR(u'获取数据错误')
 
     @verify_token_decorator
     def add_complain(self):
@@ -61,6 +77,7 @@ class CComplain():
                 "COtype": ",".join(cotype_list),
                 "OIid": data.get("OIid"),
                 "USid": request.user.id,
+                "COtreatstatus": 1,
             })
             response = import_status("complain_success", "OK")
             response['data'] = {

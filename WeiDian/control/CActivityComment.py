@@ -2,12 +2,14 @@
 import sys
 import os
 import uuid
+
+from WeiDian import logger
 from flask import request
 from datetime import datetime, timedelta
 
 from WeiDian.common.loggers import generic_log
 from WeiDian.common.params_require import parameter_required
-from WeiDian.common.timeformat import format_for_db
+from WeiDian.common.timeformat import format_for_db, get_web_time_str
 from WeiDian.config.messages import delete_activity_success, stop_activity_success
 from sqlalchemy.orm import Session
 from WeiDian.common.token_required import verify_token_decorator, is_admin, is_tourist
@@ -76,6 +78,20 @@ class CActivityComment(BaseActivityCommentControl):
         }
         return data
 
+    @verify_token_decorator
+    def del_comment_admin(self):
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'当前非管理员')
+        data = request.json
+        acoid = data.get('acoid')
+        logger.debug('del comment data is %s', data)
+        up_info = self.sactivitycomment.delete_comment_by_acoid(acoid)
+        if not up_info:
+            raise NOT_FOUND(u'要删除的数据不存在')
+        data = import_status("delete_success", "OK")
+        data['acoid'] = acoid
+        return data
+
     def get_comment_list(self):
         """获取评论列表"""
         try:
@@ -116,20 +132,26 @@ class CActivityComment(BaseActivityCommentControl):
             comment_list = self.sactivitycomment.get_comment_by_activity_id(acid, page, count)
             for comment in comment_list:
                 self.fill_user(comment)
-                reply = self.sactivitycomment.get_apply_by_acoid(comment.ACOid)
-                if reply:
-                    comment.fill(reply, 'reply')
-                    # 改: 所有的回复都是管理员回复
-                    admin_user = self.ssuperuser.get_one_super_by_suid(reply.USid)
-                    if admin_user:
-                        user = admin_user
-                        admin_user.fill(0, 'robot')
-                    else:
-                        user = {
-                            'name': u'运营人员',
-                            'robot': 1
-                        }
-                    reply.fill(user, 'user')
+                comment.ACOcreatetime = get_web_time_str(comment.ACOcreatetime)
+                replys = self.sactivitycomment.get_apply_by_acoid(comment.ACOid)
+                if replys:
+                    for reply in replys:
+                        comment.fill(replys, 'reply')
+                        reply.hide('USid')
+                        # 改: 所有的回复都是管理员回复
+                        admin_user = self.ssuperuser.get_one_super_by_suid(reply.USid)
+                        if admin_user:
+                            user = admin_user
+                            admin_user.fill(0, 'robot')
+                            user.hide('SUid')
+                        else:
+                            user = {
+                                'name': u'运营人员',
+                                'robot': 1
+                            }
+                        reply.ACOcreatetime = get_web_time_str(reply.ACOcreatetime)
+                        reply.fill(user, 'user')
+
             data = import_status('get_acvity_comment_list_success', 'OK')
             data['data'] = comment_list
             data["count"] = request.all_count

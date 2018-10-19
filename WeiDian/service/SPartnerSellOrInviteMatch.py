@@ -2,7 +2,7 @@
 from datetime import datetime
 
 from WeiDian.common.timeformat import format_for_db
-from WeiDian.models.model import PartnerSellOrInviteMatch, PartnerSellOrinviteMount
+from WeiDian.models.model import PartnerSellOrInviteMatch, PartnerSellOrinviteMount, User
 from WeiDian.service.SBase import SBase, close_session
 
 
@@ -56,4 +56,14 @@ class SPartnerSellOrInviteMatch(SBase):
             PartnerSellOrinviteMount.sellorinvitemount > value,
             PartnerSellOrinviteMount.PSIMid == psimid
         ).count()
+
+    @close_session
+    def get_partner_match_mount_gt_value_in_currentlevel(self, psimid, value, level):
+        return self.session.query(PartnerSellOrinviteMount).\
+            join(User, User.USlevel == level).filter(
+            PartnerSellOrinviteMount.sellorinvitemount > value,
+            PartnerSellOrinviteMount.PSIMid == psimid,
+            User.USlevel == level
+        ).count()
+
 

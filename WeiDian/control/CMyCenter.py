@@ -14,7 +14,6 @@ from WeiDian.common.import_status import import_status
 from WeiDian.common.params_require import parameter_required
 from WeiDian.common.token_required import verify_token_decorator, is_tourist, is_partner, is_admin
 from WeiDian.config.enums import BANK_MAP, finished_pay_status
-from WeiDian.config.messages import get_success
 from WeiDian.config.response import AUTHORITY_ERROR, SYSTEM_ERROR, TOKEN_ERROR, PARAMS_ERROR, TIME_ERROR, PARAMS_MISS, \
     NOT_FOUND
 from WeiDian.control.BaseControl import BaseMyCenterControl
@@ -76,17 +75,17 @@ class CMyCenter(BaseMyCenterControl):
                 my_achev_value = my_achev.sellorinvitemount if my_achev else 0  # 我的销售总额(人数)
 
                 gt_my_sell_count = self.spartnermatch.get_partner_match_mount_gt_value(psimid, my_achev_value)   # 营业额(人数)比我多的
-                partner_num = self.suser.get_partner_count()  # vip总数
+                partner_num = self.suser.get_partner_count_in_current_level()  # 该等级vip总数
                 lt_my_sell_count = partner_num - gt_my_sell_count  # 比我销售(人数)少的
-
                 partner_num = partner_num or 1
-                percents = int(float(lt_my_sell_count) / partner_num * 100)
+                percents = int(float(lt_my_sell_count) / partner_num * 100)   # 超过的同等级的百分比
                 my_info.fill(percents, 'overpercents')  # 超过%的vip
                 data.setdefault('myranking', percents)
-                # 保级差额(人)
+                # 未完成还需多少升级
                 try:
                     partner_match.PSIMrule = match_rule = json.loads(partner_match.PSIMrule)
                     achev_level_value = {k: int(v) - my_achev_value for k, v in match_rule.items() if int(v) > my_achev_value}
+                    #
                     if achev_level_value:  # 是否有下一级
                         next_level = sorted(achev_level_value.keys())[0]
                         # 当前等级(未用到)

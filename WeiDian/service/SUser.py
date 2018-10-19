@@ -58,3 +58,8 @@ class SUser(SBase):
     @close_session
     def get_sub_user(self, upperd):
         return self.session.query(User).filter(User.UPPerd == upperd).all()
+
+    def get_partner_count_in_current_level(self, level):
+        """该等级的合伙人总数"""
+        return self.session.query(User).filter(User.USlevel == level).count()
+
