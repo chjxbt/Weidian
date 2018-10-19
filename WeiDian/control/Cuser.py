@@ -397,12 +397,18 @@ class CUser():
         data = request.args.to_dict()
         logger.debug('get all user args : %s', data)
         pagenum, pagesize = self.get_pagesize_pagenum(data)
-        user_list = self.suser.get_all_user(pagesize, pagenum)
+
+        user_list, count = self.suser.get_all_user(pagesize, pagenum)
+        # count = self.suser.get_all_user_count()
         map(self.fill_user_level, user_list)
         map(self.fill_user_perd, user_list)
         # map(self.fill_user_sub, user_list)
         map(self.fill_user_order_amout, user_list)
-        return user_list
+        response = import_status('messages_get_item_ok', 'OK')
+        response['data'] = user_list
+        response['count'] = count
+
+        return response
 
     def fill_user_perd(self, user):
         perduser = self.suser.get_user_by_openid(user.UPPerd)
@@ -416,7 +422,9 @@ class CUser():
     #     user.add('USsub')
 
     def fill_user_level(self, user):
-        user.USlevel = userlevel.get(str(user.USlevel) if user.USlevel else '0')
+        user_level = userlevel.get(str(user.USlevel) if user.USlevel else '0')
+        user.USlevel = user_level
+        user.add('USlevel')
 
     def fill_user_order_amout(self, user):
         user.BuyOrderCount, user.SellOrderCount = self.sorder.get_user_count_order(user.USid)
@@ -432,8 +440,12 @@ class CUser():
         parameter_required('usid')
         pagenum, pagesize = self.get_pagesize_pagenum(data)
         user = self.suser.get_user_by_user_id(data.get('usid'))
-        user_sub = self.suser.get_sub_user(user.openid, pagesize, pagenum)
-        return user_sub
+        user_sub, count = self.suser.get_sub_user(user.openid, pagesize, pagenum)
+        response = import_status('messages_get_item_ok', 'OK')
+        response['data'] = user_sub
+        response['count'] = count
+
+        return response
 
     def get_pagesize_pagenum(self, data):
         pagesize = data.get('page_size')

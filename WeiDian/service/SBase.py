@@ -15,7 +15,7 @@ def close_session(fn):
     def inner(self, *args, **kwargs):
         try:
             result = fn(self, *args, **kwargs)
-            if isinstance(result, list) or isinstance(result, BaseModel):
+            if isinstance(result, (tuple, list)) or isinstance(result, BaseModel):
                 self.session.expunge_all()
             # if not 'update' in fn.__name__ and not 'delete' in fn.__name__ and not 'stop' in fn.__name__:
             #     self.session.expunge_all()
