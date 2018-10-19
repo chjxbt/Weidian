@@ -2,7 +2,7 @@
 import re
 import sys
 import os
-from flask import request, redirect
+from flask import request
 import uuid
 import datetime
 import json
@@ -17,12 +17,13 @@ from WeiDian import logger
 # from WeiDian.common.weixinmp import mp
 from WeiDian.common.params_require import parameter_required
 from WeiDian.config.response import PARAMS_MISS, SYSTEM_ERROR, NETWORK_ERROR, TOKEN_ERROR
-from WeiDian.common.token_required import verify_token_decorator, usid_to_token
+from WeiDian.common.token_required import verify_token_decorator, usid_to_token, is_admin
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db
 from WeiDian.common.weixinmp import mp
 from WeiDian.config.setting import QRCODEHOSTNAME, APP_ID, APP_SECRET_KEY, LinuxUserHead, wximg
 from WeiDian.config.urlconfig import get_subscribe
+from WeiDian.config.enums import userlevel
 from WeiDian.service.SUser import SUser
 from WeiDian.service.STask import STask
 from WeiDian.service.SMyCenter import SMyCenter
@@ -387,6 +388,24 @@ class CUser():
         url = QRCODEHOSTNAME + "/imgs/head/" + filename
         return url
 
+    @verify_token_decorator
+    def get_all_user(self):
+        if not is_admin():
+            raise TOKEN_ERROR(u'权限不足')
+        user_list = self.suser.get_all_user()
+        user_list = []
 
+    def fill_user_perd(self, user):
+        perduser = self.suser.get_user_by_openid(user.UPPerd)
+        user.UPPerd = perduser.USname
 
+    def fill_user_sub(self, user):
+        subuser = self.suser.get_sub_user(user.openid)
+        user.USsub = subuser
+        user.add('USsub')
 
+    def fill_user_level(self, user):
+        user.USlevel = userlevel.get(str(user.USlevel) if user.USlevel else '0')
+
+    def fill_user_order_amout(self, user):
+        orderlist =

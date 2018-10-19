@@ -114,3 +114,5 @@ staticimage = {
     "me_active": "me2.png",
     "shareimage": "shareimage.png",
 }
+
+userlevel = {'0': '普通用户', '1': '普通合伙人', '2': '中级合伙人', '3': '高级合伙人'}

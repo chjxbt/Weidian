@@ -51,3 +51,10 @@ class SUser(SBase):
         """合伙人数量"""
         return self.session.query(User).filter(User.USlevel > 0).count()
 
+    @close_session
+    def get_all_user(self):
+        return self.session.query(User).all()
+
+    @close_session
+    def get_sub_user(self, upperd):
+        return self.session.query(User).filter(User.UPPerd == upperd).all()
