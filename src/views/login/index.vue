@@ -20,7 +20,7 @@
           </el-form-item>
           <el-form-item >
             <el-checkbox  name="type" v-model="ruleForm.checked">记住密码</el-checkbox>
-            <p class="m-forget-pwd" @click="forgetPwd">忘记密码？</p>
+            <!--<p class="m-forget-pwd" @click="forgetPwd">忘记密码？</p>-->
           </el-form-item>
         </el-form>
       </div>
