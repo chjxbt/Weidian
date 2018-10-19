@@ -86,7 +86,7 @@ export const constantRouterMap = [
       },{
         path: 'user',
         component: () => import('../views/jurisdiction/user'),
-        name: 'user',
+        name: 'users',
         meta: { title: 'user', icon: 'user', noCache: true }
       }
     ],
@@ -112,7 +112,7 @@ export const constantRouterMap = [
       {
         path: 'index',
         component: () => import('../views/activity/index'),
-        name: 'index',
+        name: 'activity',
         meta: {title: 'index', icon: 'index', noCache: true}
       }
     ]
@@ -151,7 +151,7 @@ export const constantRouterMap = [
       {
         path: 'index',
         component: () => import('../views/commission/index'),
-        name: 'commission',
+        name: 'commissionIndex',
         meta: { title: 'commission', icon: 'commission', noCache: true }
       },
       {
