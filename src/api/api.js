@@ -8,7 +8,7 @@ const api={
   edit_task_level: title + 'task/add_or_update_task_level', // 添加或更新任务等级
   get_all_task_type: title + 'task/get_all_task_type',      // 获取任务类型
   get_all_task: title + 'task/get_all_task',                // 获取所有任务
-  // get_all_raward: title + 'task/get_all_raward',            // 获取所有奖励
+  // get_all_raward: title + 'task/get_all_raward',         // 获取所有奖励
   add_task: title + 'task/add_task',                        // 添加或更新任务
   del_task: title + 'task/del_task',                        // 删除任务
   del_task_level: title + 'task/del_task_level',            // 删除任务等级
@@ -48,6 +48,7 @@ const api={
   get_all_suser: title + 'super/get_all_suser',             // 获取管理员列表
   add_admin: title + 'super/add_admin',                     // 添加普通管理员
   update_admin: title + 'super/update_other_admin',         // 超管管理其他管理
+  get_all_user: title + 'user/get_all_user',                // 获取所有用户信息
 
   set_show_type: title + 'activity/set_show_type',          // 控制中心 - 设置首页专题默认的过滤类型
   get_show_type: title + 'activity/get_show_type',          // 控制中心 - 获取首页默认的过滤类型

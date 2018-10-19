@@ -2,18 +2,8 @@
   <div class="m-weidian">
     <page-title :title="name" ></page-title>
     <div class="m-weidian-content">
-      <el-form :inline="true" :model="form" class="demo-form-inline">
-        <div class="m-select-box">
-          <el-form-item label="用户名">
-            <el-input v-model="form.name" class="m-input-s m-green-b" placeholder=""></el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" class="m-select-btn" @click="storeSubmit">查询</el-button>
-          </el-form-item>
-        </div>
-      </el-form>
-      <div class="m-middle" style="width: 100%;margin-top: 0.1rem;">
-        <el-table :data="user" stripe style="width: 100%">
+      <div class="m-middle" style="width: 100%">
+        <el-table :data="userList" style="width: 100%" border v-loading="userLoading">
           <el-table-column align="center" prop="userName" label="用户名"></el-table-column>
           <el-table-column align="center" prop="userId" label="会员等级" ></el-table-column>
           <el-table-column align="center" prop="userName" label="下单量"></el-table-column>
@@ -27,9 +17,8 @@
           </el-table-column>
         </el-table>
       </div>
-      <div class="m-page-box">
-        <Pagination :total="page_data.total_page" @pageChange="pageChange"></Pagination>
-      </div>
+
+      <Pagination class="page-box" :total="total_page" @pageChange="pageChange"></Pagination>
     </div>
   </div>
 </template>
@@ -37,36 +26,42 @@
 <script>
   import pageTitle from '../../components/common/title';
   import Pagination from "../../components/common/page";
+  import api from '../../api/api';
+  import axios from 'axios';
+
   export default {
     data(){
       return{
-        name:'会员管理',
-        form:{ name:'' },
-        page_data:{
-          total_page:1,
-          current_page:1,
-          total_num:0,
-          page_size:10
-        },
-        user:[
-          { group:'', userName:'', userId:'' }
-        ]
+        name:'用户管理',
+        userName: "",             // 头部查询的用户名
+        userList: [],             // 用户list
+        userLoading: false,       // 用户表格加载中
+        page_size: 10,            // 每页请求的数量
+        total_page: 1,            // 总页数
       }
     },
     components:{ pageTitle, Pagination },
     methods:{
-      /*分页点击*/
+      // 分页组件的提示
       pageChange(v){
-        // if(v == this.current_page){
-        //   this.$message({ message: '这已经是第' + v + '页数据了', type: 'warning', duration: 1500 });
-        //   return false;
-        // }
-        // this.current_page = v;
-
+        console.log(v)
       },
-      storeSubmit(){
-
-      },
+      // 获取用户list
+      getUserList() {
+        this.userLoading = true;
+        axios.get(api.get_all_user + "?token=" + localStorage.getItem('token')).then(res => {
+          if(res.data.status == 200) {
+            this.userList = res.data.data;
+            this.userLoading = false;
+            console.log(this.userList);
+          }else{
+            this.$message({ message: res.data.message, type: 'error', duration: 1500 });
+          }
+        });
+      }
+    },
+    mounted() {
+      // this.getUserList();       // 获取用户list
     }
   }
 </script>
