@@ -431,7 +431,7 @@
         productViewNum: "",       // 虚拟查看数
         productLikeNum: "",       // 虚拟喜欢数
         activityActivityTime: [], // 推文-活动时间
-        commentsList: [             // 自行添加评论
+        commentsList: [           // 自行添加评论
           { acorobot: "", acotext: "" }
         ],
         activityTypeList: [       // 添加推文/活动时的活动类型选择项
@@ -607,7 +607,9 @@
             this.viewsNum = activity.acbrowsenum;
             this.commentsList = [];
             for(let i = 0; i < activity.comment.length; i ++) {
-              this.commentsList.push({ acorobot: activity.comment[i].user.usname, acotext: activity.comment[i].actext });
+              if(activity.comment[i].user.robot == "1") {
+                this.commentsList.push({ acorobot: activity.comment[i].user.usname, acotext: activity.comment[i].actext });
+              }
             }
             this.placedTop = activity.acistop;
             if(this.page == "教程" && this.imgVideo) {
