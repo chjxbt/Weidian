@@ -5,6 +5,81 @@
   background-color: #fff;
   .weidian-content {
     padding: 0.2rem 0.3rem;
-
+    .time-outside {
+      display: flex;
+      margin-bottom: 0.1rem;
+      .time-text {
+        line-height: 0.3rem;
+        margin-right: 0.1rem;
+      }
+      .time-box {
+        flex: 1;
+      }
+      .outside-btn {
+        width: 0.7rem;
+        color: #ffffff;
+        text-align: center;
+        align-items: center;
+        letter-spacing: 1.5px;
+        border-radius: 0.05rem;
+        padding: 0.05rem 0.3rem;
+        background-color: #719aab;
+      }
+    }
+    .content-row {
+      display: flex;
+      padding: 0.15rem 0 0.05rem 0;
+      border-bottom: solid 1px #ababab;
+      &:last-child {
+        border-bottom: none;
+      }
+      .content-box {
+        .wid(20%);
+        text-align: center;
+        align-items: center;
+        .box-row-a {
+          .ft(0.14rem);
+        }
+        .box-row-b {
+          .ft(0.3rem);
+        }
+        .box-row-c {
+          .ft(0.1rem);
+          width: 60%;
+          display: flex;
+          margin: auto;
+          line-height: 0.2rem;
+          justify-content: space-between;
+          .cow-a {
+            width: 0.65rem;
+            white-space: nowrap;
+          }
+          .cow-b {
+            width: 0.5rem;
+            white-space: nowrap;
+          }
+          .cow-c {
+            width: 0.08rem;
+            height: 0.08rem;
+            margin-top: 0.05rem;
+          }
+        }
+      }
+    }
   }
+}
+.title-text {
+  color: #595757;
+}
+.hex-text {
+  color: #6eabb8;
+}
+.grey-text {
+  color: #ababab;
+}
+.ft(@x) {
+  font-size: @x;
+}
+.wid(@x) {
+  width: @x;
 }

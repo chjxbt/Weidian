@@ -4,7 +4,17 @@
     <div class="weidian-content">
       <w-tab :list="tab_list"  @wTabClick="wTabClick"></w-tab>
 
-      <div class="time-outside"></div>
+      <div class="time-outside">
+        <div class="time-text">时间段：</div>
+        <div class="time-box">
+          <el-date-picker v-model="time" type="daterange" start-placeholder="开始日期" range-separator="至" end-placeholder="结束日期"></el-date-picker>
+        </div>
+        <div class="outside-btn">下载报表</div>
+      </div>
+
+      <div class="content-row">
+
+      </div>
     </div>
   </div>
 </template>
@@ -31,6 +41,7 @@
           { id: "", name: "平台总GMV", active: true },
           { id: "", name: "24h数据", active: false }
         ],
+        time: "",                 // 时间段
       }
     },
     components:{ pageTitle, wTab },
