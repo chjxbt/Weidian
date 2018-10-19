@@ -105,9 +105,8 @@
         }else{
           this.isSell = localStorage.getItem('level') == 'partner'? true:false;
         }
-        console.log(this.$route.query.oiid)
         this.getOrder();
-
+        // Toast({ message: '您的投诉信息提交成功，我们将在5个工作日内做出反馈，请保持手机畅通',duration:30030, className: 'm-toast-success m-text-l' });
       },
         methods: {
           /*获取订单*/
@@ -178,7 +177,7 @@
               COtype:arr
             }).then(res => {
               if(res.data.status ==200){
-                Toast({ message: res.data.message, className: 'm-toast-success' });
+                Toast({ message: res.data.message, className: 'm-toast-success m-text-l' });
               }else{
                 Toast({ message: res.data.message, className: 'm-toast-fail' });
               }

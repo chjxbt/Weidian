@@ -233,7 +233,7 @@
               scid:product.scid
             }).then(res => {
               if(res.data.status == 200){
-                this.getShop()
+                this.getShop();
               }
             })
           }
