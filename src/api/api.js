@@ -64,6 +64,8 @@ const api={
   get_one_address: title + '/mycenter/get_one_address',//获取单个地址信息
   get_order_info: title + '/order/get_order_info',//获取单个订单
   confim_order: title + '/order/confim_order',//确认收货
+  get_hand_out_reward: title + '/reward/get_hand_out_reward',//获取平台优惠券
+  get_user_reward:title +'/reward/get_user_reward',//获取用户所有优惠券
 };
 
 export default api

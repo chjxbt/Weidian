@@ -39,7 +39,7 @@
       <div class="line-two"></div>
       <p class="user-new">
         <span class="user-new-title m-ft-26 m-grey">使用新衣币</span>
-        <new-currency class="new-currency tr"></new-currency>
+        <new-currency class="new-currency tr" :valid="valid"  :select="select_valid" :unvalid="unvalid" @oneChoose="oneChoose"></new-currency>
       </p>
       <div class="line-two"></div>
       <div class="wechat-pay">
@@ -83,10 +83,38 @@
         },
         order: {},
         totalPrice:0,
+        unvalid:[],
+        valid:[],
+        select_valid:null
       }
     },
     components: { newCurrency },
     methods: {
+      //获取优惠券
+      getReward(){
+        axios.get(api.get_user_reward,{
+          params:{
+            token: localStorage.getItem('token'),
+            topay: true
+          }
+        }).then(res => {
+          if(res.data.status == 200){
+            let arr = res.data.data;
+            let _valid = [];
+            let _unvalid = [];
+            for(let i=0;i<arr.length;i++){
+              arr[i].click =false;
+              if(arr[i].reward_detail.valid){
+                _valid.push(arr[i]);
+              }else{
+                _unvalid.push(arr[i])
+              }
+            }
+            this.valid = [].concat(_valid);
+            this.unvalid = [].concat(_unvalid);
+          }
+        })
+      },
       //获取地址
       getInfo(uaid){
         axios.get(api.get_one_address,{
@@ -124,6 +152,10 @@
       // 支付订单
       payOrder() {
         let order = [];
+        let reward =[];
+        for(let a=0;a<this.select_valid.length;a++){
+          reward.push(this.select_valid[a].raid)
+        }
         for(let i =0;i<this.order.length;i++){
           order.push({pskid:this.order[i].current_sku.pskid,num:this.order[i].scnums})
         }
@@ -132,13 +164,35 @@
           oirecvname:  this.address.oirecvname,
           oirecvphone:  this.address.oirecvphone,
           oilleavetext:  this.address.oilleavetext,
-          sku:order
+          sku:order,
+          raids:reward
         }).then(res => {
           if(res.data.status == 200){
             this.$router.push({path: "/orderPayOK", query: { oiid:res.data.data.oiid,price:this.totalPrice}});
           }
         })
 
+      },
+      oneChoose(i){
+        if(i === null){
+         this.select_valid = null;
+         return false;
+        }
+        let _arr = this.valid;
+        let valid_arr = [];
+        if(_arr[i].reward_detail.ramaxholdnum > 1 && _arr[0].reward_detail.ramaxholdnum > 1){
+          _arr[i].click = true;
+          this.select_valid = this.select_valid.push(_arr[i]);
+        }else{
+          for(let a=0;a<_arr.length;a++){
+            _arr[a].click = false
+          }
+          _arr[i].click = true;
+          valid_arr.push(_arr[i]);
+          this.select_valid = [].concat(valid_arr);
+        }
+
+        this.valid = [].concat(_arr);
       }
     },
     mounted() {
@@ -148,6 +202,7 @@
         this.totalPrice =  this.order[i].current_sku.pskprice *  this.order[i].scnums;
       }
       this.getInfo(this.$route.query.UAid);
+      this.getReward();
     }
   }
 </script>
@@ -231,6 +286,7 @@
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
+          text-align: left;
         }
         .product-params {
           margin-left: 10px;

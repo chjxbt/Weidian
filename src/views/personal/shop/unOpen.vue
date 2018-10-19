@@ -28,7 +28,7 @@
           <img :src="short" class="m-short-img" alt="">
         </div>
         <div class="m-high-bannar"  v-if="high">
-          <img :src="high" class="m-high-img" alt="">
+          <img :src="high" class="m-high-img" @click="highImg" alt="">
         </div>
 
 
@@ -173,7 +173,10 @@
         created() {
           this.getOrder();
           this.getImg();
-        }
+        },
+      highImg(){
+        this.$router.push({path:"/invitationLetter"});
+      }
     }
 </script>
 <style lang="less" rel="stylesheet/less">

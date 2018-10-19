@@ -1,7 +1,8 @@
 <template>
   <div>
     <div class="new-currency" @click="chooseNewCurrency">
-      <span class="m-ft-26 m-black">优惠：5元新衣币</span>
+      <span class="m-ft-26 m-black" v-if="select">优惠：{{select[0].reward_detail.raamount}}元新衣币</span>
+      <span class="m-ft-26 m-black" v-else>选择优惠券</span>
       <img src="/static/images/icon-list-right.png" class="user-new-more">
     </div>
 
@@ -14,83 +15,41 @@
       </mt-navbar>
       <mt-tab-container v-model="selected">
         <mt-tab-container-item id="1">
-
           <div class="m-scroll">
             <ul class="m-new-info">
-              <li class="m-already-back">
-                <div class="m-new-info-left m-ft-24">
-                  <p class="m-red m-ft-b tc m-new-info-num">
-                    <span class="m-ft-30">￥</span>
-                    <span class="m-ft-60">5</span>
-                  </p>
-                  <p class="m-red">满6元使用</p>
-                </div>
-                <div class="m-new-info-right m-ft-22 m-bg-main-color tl">
-                  <p class="m-ft-24">限时分享贝币</p>
-                  <p class="m-red">退回时间：2017.12.11 20:40</p>
-                  <div class="m-new-person-info">
-                    <img src="" class="m-new-info-img" alt="">
-                    <p>乌冬冬领取后24小时未
-                      使用还回</p>
+              <template v-for="(item,index) in valid">
+                <li class="m-already-back">
+                  <div class="m-new-info-left m-ft-24">
+                    <p class="m-red m-ft-b tc m-new-info-num">
+                      <span class="m-ft-30">￥</span>
+                      <span class="m-ft-60">{{item.reward_detail.raamount}}</span>
+                    </p>
+                    <p class="m-red m-center" v-if="item.reward_detail.ratype == 0">满{{item.reward_detail.rafilter}}元使用</p>
+                    <p class="m-red m-center" v-else>{{item.reward_detail.zh_ratype}}</p>
                   </div>
-                </div>
-                <div class="new-currency-choose-img">
-                  <img v-if="chooseNewVisible" src="/static/images/icon-complain-check-active.png" class="new-currency-choose" @click="chooseNew">
-                  <img v-if="!chooseNewVisible" src="/static/images/icon-complain-check.png" class="new-currency-choose" @click="chooseNew">
-                </div>
-              </li>
-              <li class="m-already-back">
-                <div class="m-new-info-left m-ft-24">
-                  <p class="m-red m-ft-b tc m-new-info-num">
-                    <span class="m-ft-30">￥</span>
-                    <span class="m-ft-60">5</span>
-                  </p>
-                  <p class="m-red">满6元使用</p>
-                </div>
-                <div class="m-new-info-right m-ft-22 m-bg-main-color tl">
-                  <p class="m-ft-24">限时分享贝币</p>
-                  <p class="m-red">退回时间：2017.12.11 20:40</p>
-                  <div class="m-new-person-info">
-                    <img src="" class="m-new-info-img" alt="">
-                    <p>乌冬冬领取后24小时未
-                      使用还回</p>
+                  <div class="m-new-info-right m-ft-22 m-bg-main-color tl">
+                    <p class="m-ft-24">{{item.reward_detail.raname}}</p>
+                    <p class="m-red">退回时间：{{item.reward_detail.racreatetime}}</p>
+                    <div class="m-new-person-info">
+                      <img src="" class="m-new-info-img" alt="">
+                      <p>乌冬冬领取后24小时未
+                        使用还回</p>
+                    </div>
                   </div>
-                </div>
-                <div class="new-currency-choose-img">
-                  <img v-if="chooseNewVisible" src="/static/images/icon-complain-check-active.png" class="new-currency-choose" @click="chooseNew">
-                  <img v-if="!chooseNewVisible" src="/static/images/icon-complain-check.png" class="new-currency-choose" @click="chooseNew">
-                </div>
-              </li>
-              <li class="m-already-back">
-                <div class="m-new-info-left m-ft-24">
-                  <p class="m-red m-ft-b tc m-new-info-num">
-                    <span class="m-ft-30">￥</span>
-                    <span class="m-ft-60">5</span>
-                  </p>
-                  <p class="m-red">满6元使用</p>
-                </div>
-                <div class="m-new-info-right m-ft-22 m-bg-main-color tl">
-                  <p class="m-ft-24">限时分享贝币</p>
-                  <p class="m-red">退回时间：2017.12.11 20:40</p>
-                  <div class="m-new-person-info">
-                    <img src="" class="m-new-info-img" alt="">
-                    <p>乌冬冬领取后24小时未
-                      使用还回</p>
+                  <div class="new-currency-choose-img">
+                    <img v-if="item.click" src="/static/images/icon-complain-check-active.png" class="new-currency-choose" >
+                    <img v-else src="/static/images/icon-complain-check.png" class="new-currency-choose" @click="chooseNew('one',index)">
                   </div>
-                </div>
-                <div class="new-currency-choose-img">
-                  <img v-if="chooseNewVisible" src="/static/images/icon-complain-check-active.png" class="new-currency-choose" @click="chooseNew">
-                  <img v-if="!chooseNewVisible" src="/static/images/icon-complain-check.png" class="new-currency-choose" @click="chooseNew">
-                </div>
-              </li>
+                </li>
+              </template>
             </ul>
           </div>
 
           <div class="line"></div>
           <div class="m-un-use">
             <div class="un-use-text m-ft-30 m-grey-color tl">不使用</div>
-            <img v-if="chooseNewVisible" src="/static/images/icon-complain-check-active.png" class="un-use-img" @click="chooseNew">
-            <img v-if="!chooseNewVisible" src="/static/images/icon-complain-check.png" class="un-use-img" @click="chooseNew">
+            <img v-if="chooseNewVisible" src="/static/images/icon-complain-check-active.png" class="un-use-img">
+            <img v-if="!chooseNewVisible" src="/static/images/icon-complain-check.png" class="un-use-img" @click="chooseNew('no')">
           </div>
           <div class="line-black"></div>
           <div class="m-scroll-close m-ft-30 m-red tc" @click="closeScroll">关闭</div>
@@ -100,57 +59,61 @@
 
           <div class="m-un-scroll">
             <ul class="m-new-info">
-              <li class="m-already-used">
-                <div class="m-new-info-left m-ft-24">
-                  <p class="m-red m-ft-b tc m-new-info-num">
-                    <span class="m-ft-30">￥</span>
-                    <span class="m-ft-60">5</span>
-                  </p>
-                  <p class="m-red">满6元使用</p>
-                </div>
-                <div class="m-new-info-right m-ft-22 m-bg-main-color tl">
-                  <p class="m-ft-24">限时分享贝币</p>
-                  <p class="m-red">退回时间：2017.12.11 20:40</p>
-                  <div class="m-new-person-info">
-                    <img src="" class="m-new-info-img" alt="">
-                    <p>乌冬冬领取后24小时未
-                      使用还回</p>
+              <template v-for="(item,index) in unvalid">
+                <li class="m-already-used">
+                  <div class="m-new-info-left m-ft-24">
+                    <p class="m-red m-ft-b tc m-new-info-num">
+                      <span class="m-ft-30">￥</span>
+                      <span class="m-ft-60">{{item.reward_detail.raamount}}</span>
+                    </p>
+                    <p class="m-red m-center" v-if="item.reward_detail.ratype == 0">满{{item.reward_detail.rafilter}}元使用</p>
+                    <p class="m-red m-center" v-else>{{item.reward_detail.zh_ratype}}</p>
                   </div>
-                </div>
-              </li>
-              <li class="m-already-back">
-                <div class="m-new-info-left m-ft-24">
-                  <p class="m-red m-ft-b tc m-new-info-num">
-                    <span class="m-ft-30">￥</span>
-                    <span class="m-ft-60">5</span>
-                  </p>
-                  <p class="m-red">满6元使用</p>
-                </div>
-                <div class="m-new-info-right m-ft-22 m-bg-main-color tl">
-                  <p class="m-ft-24">限时分享贝币</p>
-                  <p class="m-red">退回时间：2017.12.11 20:40</p>
-                  <div class="m-new-person-info">
-                    <img src="" class="m-new-info-img" alt="">
-                    <p>乌冬冬已使用</p>
+                  <div class="m-new-info-right m-ft-22 m-bg-main-color tl">
+                    <p class="m-ft-24">限时分享贝币</p>
+                    <p class="m-red">退回时间：2017.12.11 20:40</p>
+                    <div class="m-new-person-info">
+                      <img src="" class="m-new-info-img" alt="">
+                      <p>乌冬冬领取后24小时未
+                        使用还回</p>
+                    </div>
                   </div>
-                </div>
-              </li>
-              <li class="m-Unavailable">
-                <div class="m-new-info-left m-ft-24">
-                  <p class="m-red m-ft-b tc m-new-info-num">
-                    <span class="m-ft-30">￥</span>
-                    <span class="m-ft-60">5</span>
-                  </p>
-                  <p class="m-red">满6元使用</p>
-                </div>
-                <div class="m-new-info-right m-ft-22 m-bg-main-color tl">
-                  <p class="m-ft-24">限时分享贝币</p>
-                  <p class="m-red">退回时间：2017.12.11 20:40</p>
-                  <div class="m-new-person-info">
+                </li>
+                <li class="m-already-back">
+                  <div class="m-new-info-left m-ft-24">
+                    <p class="m-red m-ft-b tc m-new-info-num">
+                      <span class="m-ft-30">￥</span>
+                      <span class="m-ft-60">{{item.reward_detail.raamount}}</span>
+                    </p>
+                    <p class="m-red m-center" v-if="item.reward_detail.ratype == 0">满{{item.reward_detail.rafilter}}元使用</p>
+                    <p class="m-red m-center" v-else>{{item.reward_detail.zh_ratype}}</p>
+                  </div>
+                  <div class="m-new-info-right m-ft-22 m-bg-main-color tl">
+                    <p class="m-ft-24">限时分享贝币</p>
+                    <p class="m-red">退回时间：2017.12.11 20:40</p>
+                    <div class="m-new-person-info">
+                      <img src="" class="m-new-info-img" alt="">
+                      <p>乌冬冬已使用</p>
+                    </div>
+                  </div>
+                </li>
+                <li class="m-Unavailable">
+                  <div class="m-new-info-left m-ft-24">
+                    <p class="m-red m-ft-b tc m-new-info-num">
+                      <span class="m-ft-30">￥</span>
+                      <span class="m-ft-60">5</span>
+                    </p>
+                    <p class="m-red">满6元使用</p>
+                  </div>
+                  <div class="m-new-info-right m-ft-22 m-bg-main-color tl">
+                    <p class="m-ft-24">限时分享贝币</p>
+                    <p class="m-red">退回时间：2017.12.11 20:40</p>
+                    <div class="m-new-person-info">
+                    </div>
+                  </div>
+                </li>
+              </template>
 
-                  </div>
-                </div>
-              </li>
             </ul>
           </div>
           <div class="line-black"></div>
@@ -172,6 +135,20 @@
         chooseNewVisible: false
       }
     },
+    props:{
+      valid:{
+        type:Array,
+        default:null
+      },
+      unvalid:{
+        type:Array,
+        default:null
+      },
+      select:{
+        type:Array,
+        default:null
+      }
+    },
     methods: {
       // 判断选择新衣币的下部弹框是否弹出
       chooseNewCurrency() {
@@ -182,13 +159,24 @@
         }
       },
       // 勾选新衣币
-      chooseNew() {
-        // console.log(this.chooseNewVisible);
-        if(this.chooseNewVisible) {
+      chooseNew(name,i) {
+        if(name == 'one'){
+          if(this.valid[i].click){
+            return false;
+          }
           this.chooseNewVisible = false;
-        }else if(!this.chooseNewVisible) {
-          this.chooseNewVisible = true;
+          this.$emit('oneChoose',i);
+        }else{
+            this.chooseNewVisible = true;
+          this.$emit('oneChoose',null);
         }
+        this.popupVisible=false;
+
+        // if(this.chooseNewVisible) {
+        //   this.chooseNewVisible = false;
+        // }else if(!this.chooseNewVisible) {
+        //   this.chooseNewVisible = true;
+        // }
       },
       // 获取点击的tab 可使用、不可用
       tabName() {
@@ -205,7 +193,9 @@
 
 <style lang="less" rel="stylesheet/less">
   @import "../../../common/css/index";
-
+.m-center{
+  text-align: center;
+}
   .new-currency {
     .user-new-more {
       width: 22px;
