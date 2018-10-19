@@ -60,11 +60,11 @@ class SBase(object):
         try:
             yield self.session
             self.session.commit()
-            self.session.close()
         except Exception as e:
             if func is not None:
                 func(*args)
             self.session.rollback()
-            self.session.close()
             generic_log(e)
             raise e
+        finally:
+            self.session.close()

@@ -61,3 +61,9 @@ class NETWORK_ERROR(BaseError):
     status_code = 405004
     message = '网络异常'
 
+
+class DumpliError(BaseError):
+    status = 405
+    status_code = 405005
+    message = '重复数据'
+

@@ -124,4 +124,6 @@ def create_app():
     register_route(app)  # 对app进行路由设置
     # create_test_url(app)  # 测试用
     # CORS(app, supports_credentials=True)
+    # from WeiDian.common.loggers import register_logger_handler
+    # register_logger_handler(app)
     return app

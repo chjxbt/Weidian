@@ -11,7 +11,7 @@ BASEDIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 def generic_log(data, info=None):
     logger_file_name = datetime.now().strftime("%Y-%m-%d") + u'.log'
-    logger_dir = os.path.join(BASEDIR, 'logs')
+    logger_dir = os.path.join(BASEDIR, 'flask')
     if not os.path.isdir(logger_dir):
         os.makedirs(logger_dir)
     logger_dir = os.path.join(logger_dir, logger_file_name)
@@ -31,3 +31,14 @@ def generic_log(data, info=None):
     current_app.logger.error(data)
     current_app.logger.error(request.detail)
     current_app.logger.removeHandler(handler)
+
+
+def register_logger_handler(app):
+    @app.before_request
+    def first():
+        generic_log(request.detail, 'info')
+
+    @app.errorhandler(Exception)
+    def error(e):
+        generic_log(e)
+        raise e
