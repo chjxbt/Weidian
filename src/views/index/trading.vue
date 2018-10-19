@@ -11,7 +11,7 @@
       </div>
 
       <div class="content-row">
-        <div class="content-box width-20">
+        <div class="content-box width-20 row-4">
           <div class="box-row-a title-text">平台销售总GMV</div>
           <div class="box-row-b hex-text">29</div>
           <div class="box-row-c grey-text">
@@ -25,7 +25,7 @@
             <img class="cow-c" :src="img(5.00)">
           </div>
         </div>
-        <div class="content-box width-20">
+        <div class="content-box width-20 row-4">
           <div class="box-row-a title-text">除优惠券平台销售总GMV</div>
           <div class="box-row-b hex-text">12</div>
           <div class="box-row-c grey-text">
@@ -39,7 +39,7 @@
             <img class="cow-c" :src="img(5.00)">
           </div>
         </div>
-        <div class="content-box width-20">
+        <div class="content-box width-20 row-4">
           <div class="box-row-a title-text">邀请开店GMV</div>
           <div class="box-row-b hex-text">80</div>
           <div class="box-row-c grey-text">
@@ -53,7 +53,7 @@
             <img class="cow-c" :src="img(-5.00)">
           </div>
         </div>
-        <div class="content-box width-20">
+        <div class="content-box width-20 row-4">
           <div class="box-row-a title-text">商品销售GMV</div>
           <div class="box-row-b hex-text">20</div>
           <div class="box-row-c grey-text">
@@ -67,7 +67,7 @@
             <img class="cow-c" :src="img(-5.00)">
           </div>
         </div>
-        <div class="content-box width-20">
+        <div class="content-box width-20 row-4">
           <div class="box-row-a title-text">专粉GMV</div>
           <div class="box-row-b hex-text">50</div>
           <div class="box-row-c grey-text">
@@ -84,7 +84,7 @@
       </div>
 
       <div class="content-row">
-        <div class="content-box width-20">
+        <div class="content-box width-20 row-4">
           <div class="box-row-a title-text">总订单数（笔）</div>
           <div class="box-row-b hex-text">29</div>
           <div class="box-row-c grey-text">
@@ -98,7 +98,7 @@
             <img class="cow-c" :src="img(5.00)">
           </div>
         </div>
-        <div class="content-box width-20">
+        <div class="content-box width-20 row-4">
           <div class="box-row-a title-text">支付订单数（笔）</div>
           <div class="box-row-b hex-text">12</div>
           <div class="box-row-c grey-text">
@@ -112,7 +112,7 @@
             <img class="cow-c" :src="img(5.00)">
           </div>
         </div>
-        <div class="content-box width-20">
+        <div class="content-box width-20 row-4">
           <div class="box-row-a title-text">支付件数（件）</div>
           <div class="box-row-b hex-text">80</div>
           <div class="box-row-c grey-text">
@@ -126,7 +126,7 @@
             <img class="cow-c" :src="img(-5.00)">
           </div>
         </div>
-        <div class="content-box width-20">
+        <div class="content-box width-20 row-4">
           <div class="box-row-a title-text">支付子订单数（笔）</div>
           <div class="box-row-b hex-text">20</div>
           <div class="box-row-c grey-text">
@@ -140,7 +140,7 @@
             <img class="cow-c" :src="img(-5.00)">
           </div>
         </div>
-        <div class="content-box width-20">
+        <div class="content-box width-20 row-4">
           <div class="box-row-a title-text">投诉订单数（笔）</div>
           <div class="box-row-b hex-text">50</div>
           <div class="box-row-c grey-text">
@@ -157,7 +157,7 @@
       </div>
 
       <div class="content-row">
-        <div class="content-box width-20">
+        <div class="content-box width-20 row-4">
           <div class="box-row-a title-text">退货订单数（笔）</div>
           <div class="box-row-b hex-text">29</div>
           <div class="box-row-c grey-text">
@@ -171,7 +171,7 @@
             <img class="cow-c" :src="img(5.00)">
           </div>
         </div>
-        <div class="content-box width-20">
+        <div class="content-box width-20 row-4">
           <div class="box-row-a title-text">快速投诉通道订单数（笔）</div>
           <div class="box-row-b hex-text">12</div>
           <div class="box-row-c grey-text">
@@ -185,7 +185,7 @@
             <img class="cow-c" :src="img(5.00)">
           </div>
         </div>
-        <div class="content-box width-20">
+        <div class="content-box width-20 row-4">
           <div class="box-row-a title-text">客单价（用券前）</div>
           <div class="box-row-b hex-text">80</div>
           <div class="box-row-c grey-text">
@@ -199,7 +199,7 @@
             <img class="cow-c" :src="img(-5.00)">
           </div>
         </div>
-        <div class="content-box width-20">
+        <div class="content-box width-20 row-4">
           <div class="box-row-a title-text">客单价（用券后）</div>
           <div class="box-row-b hex-text">20</div>
           <div class="box-row-c grey-text">
@@ -216,7 +216,7 @@
       </div>
 
       <div class="content-row">
-        <div class="content-box width-20">
+        <div class="content-box width-20 row-4">
           <div class="box-row-a title-text">支付UV</div>
           <div class="box-row-b hex-text">29</div>
           <div class="box-row-c grey-text">
@@ -230,7 +230,7 @@
             <img class="cow-c" :src="img(5.00)">
           </div>
         </div>
-        <div class="content-box width-20">
+        <div class="content-box width-20 row-4">
           <div class="box-row-a title-text">支付老客UV</div>
           <div class="box-row-b hex-text">12</div>
           <div class="box-row-c grey-text">
@@ -245,6 +245,7 @@
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </template>

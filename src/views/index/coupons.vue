@@ -2,7 +2,32 @@
   <div class="weidian-data">
     <page-title :list="list"></page-title>
     <div class="weidian-content">
-      优惠券概况
+      <div class="time-outside" style="margin-top: 0.2rem">
+        <div class="time-text">时间段：</div>
+        <div class="time-box">
+          <el-date-picker v-model="time" type="daterange" start-placeholder="开始日期" range-separator="至" end-placeholder="结束日期"></el-date-picker>
+        </div>
+        <div class="outside-btn">下载报表</div>
+      </div>
+
+      <div class="content-row">
+        <div class="content-box width-25">
+          <div class="box-row-a title-text row-2-1">优惠券发放数量</div>
+          <div class="box-row-b hex-text row-2-2">29</div>
+        </div>
+        <div class="content-box width-25">
+          <div class="box-row-a title-text row-2-1">优惠券领取数量</div>
+          <div class="box-row-b hex-text row-2-2">12</div>
+        </div>
+        <div class="content-box width-25">
+          <div class="box-row-a title-text row-2-1">优惠券使用总量</div>
+          <div class="box-row-b hex-text row-2-2">80</div>
+        </div>
+        <div class="content-box width-25">
+          <div class="box-row-a title-text row-2-1">优惠券使用总金额</div>
+          <div class="box-row-b hex-text row-2-2">80</div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -24,6 +49,7 @@
           { name: "佣金概况", url: "commission", active: false },
           { name: "优惠券概况", url: "coupons", active: true }
         ],
+        time: "",                // 时间段
       }
     },
     components:{ pageTitle },
