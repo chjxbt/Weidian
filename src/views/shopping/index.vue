@@ -246,6 +246,9 @@
       },
       // 去结算
       toOrder() {
+        if(this.order.length == 0){
+          return false;
+        }
         let order =JSON.stringify(this.order);
         this.$router.push({path: "/submitOrder", query: { order: order }});
       },
