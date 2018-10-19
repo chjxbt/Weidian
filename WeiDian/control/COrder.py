@@ -538,7 +538,7 @@ class COrder():
         with self.sorder.auto_commit() as session:
             if len(filter(lambda x: x.OPIstatus in [0], order_product_list)):
                 raise PARAMS_MISS(u'部分商品未发货')
-                # 判断订单中的所有商品是否都已经完成, 如果已经完成则更改订单状态为交易成功
+            # 判断订单中的所有商品是否都已经完成, 如果已经完成则更改订单状态为交易成功
             session.query(OrderInfo).filter(OrderInfo.OIid == oiid).update({
                 'OIpaystatus': 6  # 交易完成
             })
@@ -617,7 +617,7 @@ class COrder():
             # {0: '待发货', 1: '待收货', 2: '交易成功(未评价)', 3: '交易成功(已评价)', 4: '退货', 5: '换货'}
             if productinfo.OPIstatus in [1, 2, 3, 4, 5]:
                 productinfo.add('OPIlogisticsSn', 'OPIlogisticsText', 'OPIlogisticstime')
-                send_time = productinfo.OPIresendLogistictime
+                send_time = productinfo.OPIlogisticstime
                 if send_time:
                     productinfo.OPIresendLogistictime = get_web_time_str(send_time)
                 log_sn = productinfo.OPIlogisticsSn or ''
