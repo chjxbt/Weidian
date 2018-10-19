@@ -3,7 +3,6 @@
     <page-title :title="name" ></page-title>
     <div class="m-weidian-content">
 
-
       <p class="m-form-label" style="margin-bottom: 0.2rem">专题管理</p>
       <div class="content-table">
         <el-table :data="bannerList" border style="width: 100%" v-loading="bannerLoading">
@@ -79,7 +78,6 @@
         </div>
       </div>
 
-
       <p class="m-form-label" style="margin-bottom: 0.2rem">热文管理</p>
       <div class="content-table">
         <el-table :data="hotMessageList" border style="width: 100%" v-loading="hotLoading">
@@ -89,14 +87,7 @@
               <el-input v-model="scope.row.hmtext" size="mini" placeholder="请输入热文内容" :disabled="scope.row.disabled"></el-input>
             </template>
           </el-table-column>
-          <el-table-column prop="hmskiptype" label="跳转类型" width="130">
-            <!--<template slot-scope="scope">
-              <el-select v-model="scope.row.hmskiptype" class="m-input-l" placeholder="请选择" :disabled="scope.row.disabled"
-                         style="width: 0.8rem" @change="bannerToValueChange">
-                <el-option v-for="item in hotJumpList" :key="item.value" :label="item.label" :value="item.value"></el-option>
-              </el-select>
-            </template>-->
-          </el-table-column>
+          <el-table-column prop="hmskiptype" label="跳转类型" width="130"></el-table-column>
           <el-table-column prop="hmdisplaytype" label="热文读者" width="130"></el-table-column>
           <el-table-column fixed="right" label="管理" width="220">
             <template slot-scope="scope">
@@ -158,7 +149,6 @@
         <div class="save-btn" @click="addHotMessage">保 存</div>
       </div>
 
-
       <w-tab :list="tab_list"  @wTabClick="wTabClick" style="margin-top: 0.3rem"></w-tab>
 
       <div class="m-form-label choose-banner">
@@ -174,16 +164,8 @@
         <el-table :data="activityList" border style="width: 100%" v-loading="activityLoading" @selection-change="selectionChange">
           <el-table-column fixed="left" type="selection" width="55" v-if="activityToBanner"></el-table-column>
           <el-table-column prop="time" label="推文时间" width="320">
-            <!--<template slot-scope="scope">
-              <el-date-picker v-model="scope.row.activityTime" type="datetimerange" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
-                              start-placeholder="开始日期" end-placeholder="结束日期" style="width: 3.5rem;" @blur="activityTimeClick(scope)" :disabled="scope.row.disabled">
-              </el-date-picker>
-            </template>-->
           </el-table-column>
           <el-table-column prop="actext" label="推文内容">
-            <!--<template slot-scope="scope">
-              <el-input type="textarea" :autosize="{ minRows: 1, maxRows: 3 }" placeholder="请输入推文内容" v-model="scope.row.actext" :disabled="scope.row.disabled"></el-input>
-            </template>-->
           </el-table-column>
           <el-table-column prop="acSkiptype" label="跳转类型" width="100"></el-table-column>
           <el-table-column fixed="right" label="管理" width="180">
@@ -237,16 +219,17 @@
         <p class="m-form-label required" style="width: 0.9rem;">跳转类型：</p>
         <div class="m-item-content">
           <div class="m-item-row">
-            <el-select v-model="activityJumpValue" class="m-input-l" placeholder="请选择" :disabled="editActivity" style="width: 1.75rem">
+            <el-select v-model="activityJumpValue" class="m-input-l" placeholder="请选择" style="width: 1.75rem" @change="activityJumpChange">
+            <!--<el-select v-model="activityJumpValue" class="m-input-l" placeholder="请选择" :disabled="editActivity" style="width: 1.75rem">-->
               <el-option v-for="item in activityJumpList" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
-            <el-select v-if="activityJumpValue == '1' || activityJumpValue == '专题'" v-model="activityJumpToValue" @focus="focusselect('banner')" class="m-input-l" :placeholder="activityJumpToValue" style="width: 4rem; margin-left: 0.5rem">
-              <el-option v-for="item in activityJumpToList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+            <el-select v-if="activityJumpValue == '1'" v-model="activityJumpToValue" @focus="focusselect('banner')" class="m-input-l" :placeholder="activityJumpToValue" style="width: 4rem; margin-left: 0.5rem">
+              <el-option v-for="item in activityJumpToBannerList" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
-            <el-select v-if="activityJumpValue == '2' || activityJumpValue == '商品'" v-model="activityJumpToValue" @focus="focusselect('product')" filterable :placeholder="activityJumpToValue" style="width: 4rem; margin-left: 0.5rem">
-              <el-option v-for="item in activityJumpToList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+            <el-select v-if="activityJumpValue == '2'" v-model="activityJumpToValue" @focus="focusselect('product')" filterable :placeholder="activityJumpToValue" style="width: 4rem; margin-left: 0.5rem">
+              <el-option v-for="item in activityJumpToProductList" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
-            <div v-if="activityJumpValue == '2' || activityJumpValue == '商品'" style="margin-left: 0.5rem">
+            <div v-if="activityJumpValue == '2'" style="margin-left: 0.5rem">
               <span>虚拟销量：</span>
               <el-input v-model="activityProductSales" style="width: 1rem; text-align: center"></el-input>
             </div>
@@ -296,7 +279,6 @@
           <div class="m-item-content">
             <div class="m-item-row">
               <el-select v-model="author.name" class="m-input-l" placeholder="请选择发布者" @focus="focusselect('author')">
-                <!--<el-option v-for="item in authorList" :key="item.value" :label="item.label" :value="item.value"></el-option>-->
                 <el-option v-for="item in authorList" :key="item.value" :label="item.label" :value="item.value">
                   <div style="float: left; width: 3.4rem">{{ item.label }}</div>
                   <img style="float: left; width: 0.25rem; height: 0.25rem; border-radius: 50%" :src="item.suheader">
@@ -307,7 +289,7 @@
         </div>
         <div class="m-form-confirm-btn">
           <span @click="addActivity" v-if="!editActivity">保 存</span>
-          <span @click="cancelActivity" v-if="editActivity">取 消</span>
+          <span @click="clearActivity" v-if="editActivity">取 消</span>
           <span @click="saveClick('', 'activity')" v-if="editActivity">保 存</span>
         </div>
       </div>
@@ -400,6 +382,8 @@
         ],
         activityJumpToValue: '',    // 推文-跳转类型选择后具体的跳转id
         activityJumpToList: [],     // 推文-跳转类型选择后可选择的跳转项
+        activityJumpToBannerList: [],     // 推文-跳转类型选择后可选择的跳转项
+        activityJumpToProductList: [],     // 推文-跳转类型选择后可选择的跳转项
         activityActivityTime: [],   // 推文-活动时间
         acidTemp: "",             // 用来暂存acid
         bannerToList: [           // 专题跳转去向的可选择项
@@ -460,6 +444,12 @@
         if(where == "author") {
           this.getAdmin();      // 获取管理员
         }
+      },
+
+      // select选择器选中值发生变化时执行
+      activityJumpChange(v) {
+        // console.log(v);
+        // console.log(this.activityJumpValue);
       },
 
       // 轮播图管理-确定点击的图片是第几行
@@ -530,7 +520,7 @@
           this.hotMessageList[scope.$index].disabled = false;
           this.hotMessageList[scope.$index].editSave = "2";
         }else if(where == "activity") {
-          console.log(scope.row);
+          // console.log(scope.row);
           // console.log(this.activityMedia);
           this.activityMedia = scope.row.media;     // 把已有图片赋给activityMedia
           this.editActivity = true;
@@ -542,19 +532,21 @@
           // 把点击的那一行数据赋给activity
           let activity = this.activityList[scope.$index];
           this.activityACtext = activity.actext;
-          // console.log(activity);
+          console.log(activity);
 
           // 商品
           if(activity.acskiptype == "2") {
-            this.activityJumpValue = "商品";
+            // this.activityJumpValue = "商品";
+            this.activityJumpValue = activity.acskiptype.toString();
             this.activityJumpToValue = activity.product.prname;
             this.activityProductSales = activity.soldnum;
           }else if(activity.acskiptype == "1") {
             // 专题
-            this.activityJumpValue = "专题";
+            // this.activityJumpValue = "专题";
+            this.activityJumpValue = activity.acskiptype.toString();
             this.activityJumpToValue = activity.bigactivity.baid;
           }else if(activity.acskiptype == "0") {
-            this.activityJumpValue = "0";
+            this.activityJumpValue = activity.acskiptype.toString();
             // this.activityJumpToValue = activity.bigactivity.baid;
           }
           // console.log(this.activityJumpToValue);
@@ -635,6 +627,8 @@
 
               // 编辑推文后post的参数
               let params = {
+                acskiptype: this.activityJumpValue,
+                aclinkvalue: this.activityJumpToValue,
                 actype: actype,
                 topnavid: this.tnid,
                 actext: this.activityACtext,
@@ -659,7 +653,8 @@
                   this.activityList[this.activityEditScope].activityTime = this.activityActivityTime;
                   this.activityList = this.activityList.concat();
 
-                  // 清空推文的编辑框
+                  this.clearActivity();       // 清空推文的编辑框
+                  /*this.editActivity = false;
                   this.activityACtext = "";
                   this.activityJumpValue = "";
                   this.activityJumpToValue = "";
@@ -669,7 +664,7 @@
                   this.activityBadge = "";
                   this.author = {};
                   this.activityPictureList = [];  // 图片list置为[]
-                  this.activityMediaSort = 0;   // 上传成功后图片数量置为0
+                  this.activityMediaSort = 0;   // 上传成功后图片数量置为0*/
                 }else{
                   this.$message({ type: 'error', message: res.data.message, duration: 1500 });
                 }
@@ -729,6 +724,8 @@
               this.$message({ message: "推文删除成功", type: 'success', duration: 1500 });
               this.activityList.splice(scope.$index, 1);    // 刷新视图
               this.activityLoading = false;
+
+              this.clearActivity();       // 清空推文的编辑框
             }else{
               this.$message({ type: 'error', message: res.data.message, duration: 1500 });
             }
@@ -772,31 +769,29 @@
           this.getActivity(0, this.page_size);
         }
       },
-
       // 取消搜索
       cancelSearch() {
         this.searching = false;
         this.activitySearch = "";
         this.getActivity(0, this.page_size);
       },
-
-      // 编辑推文 - 取消
-      cancelActivity() {
-        // 点击取消按钮清空编辑框
-        this.activityMediaSort = 0;
+      // 初始化activity，清空
+      clearActivity() {
+        // 清空推文的编辑框
+        this.editActivity = false;
         this.activityACtext = "";
         this.activityJumpValue = "";
         this.activityJumpToValue = "";
+        this.activityProductSales = "";
         this.activityType = "";
         this.activityActivityTime = "";
         this.likeNum = "";
         this.activityBadge = "";
         this.author = {};
+        this.activityMedia = [];
         this.activityPictureList = [];  // 图片list置为[]
-
-        this.editActivity = false;      // 隐藏取消按钮
+        this.activityMediaSort = 0;   // 上传成功后图片数量置为0
       },
-
       // 上移banner/专题
       upBanner(scope) {
         this.bannerLoading = true;
@@ -811,7 +806,6 @@
           }
         });
       },
-
       // 上移热文
       upHotMessage(scope) {
         this.hotLoading = true;
@@ -914,12 +908,12 @@
               for(let i = 0; i < res.data.data.length; i ++) {
                 product = { label: res.data.data[i].prname, value: res.data.data[i].prid };
                 if(where == "activity") {
-                  this.activityJumpToList.push(product);
+                  this.activityJumpToProductList.push(product);
                 }else if(where == "hot") {
                   this.jumpToList.push(product);
                 }
               }
-              // console.log(this.jumpToList);
+              console.log(this.activityJumpToProductList);
             }else{
               this.$message({ type: 'error', message: res.data.message, duration: 1500 });
             }
@@ -935,11 +929,12 @@
                 this.addBannerBtn = true;
                 this.bannerList.splice(this.bannerList.length - 1, 1);    // 刷新视图
               }
-              this.activityJumpToList.push(banner);
+              this.activityJumpToBannerList.push(banner);
             }else if(where == "hot") {
               this.jumpToList.push(banner);
             }
           }
+          console.log(this.activityJumpToBannerList);
           // 搜索公告、教程
         }else if(to == '3' || to == '4') {
           axios.get(api.get_activity_list_by_actitle + "?token=" + localStorage.getItem("token") + "&hmtype=" + to + "&actitle=").then(res => {
@@ -1065,8 +1060,8 @@
             if(this.activityProductSales != "") { // 虚拟销量不为空时
               params.ACProductsSoldFakeNum = this.activityProductSales;
             }
-            if(this.author.id != "") { // 发布者不为空时
-              params.SUid = this.author.id;
+            if(this.author.name != "") { // 发布者不为空时
+              params.SUid = this.author.name;
             }
             this.activityLoading = true;
             console.log(params);
@@ -1075,8 +1070,9 @@
                 this.$message({ type: 'success', message: res.data.message, duration: 1500 });
                 this.getActivity(0, this.page_size);     // 获取推文/内容
 
+                this.clearActivity();       // 清空推文的编辑框
                 // 保存成功后将input等置空
-                this.activityACtext = "";
+                /*this.activityACtext = "";
                 this.activityJumpValue = "";
                 this.activityJumpToValue = "";
                 this.activityProductSales = "";
@@ -1087,7 +1083,7 @@
                 this.activityMedia = [];
                 this.activityPictureList = [];   // 上传成功后图片list置为[]
                 this.activityMediaSort = 0;   // 上传成功后图片数量置为0
-                this.author = {};
+                this.author = {};*/
               }else{
                 this.$message({ type: 'error', message: res.data.message, duration: 1500 });
               }
@@ -1302,7 +1298,9 @@
       // 推文/活动跳转类型的值发生变化
       activityJumpValue(newValue, oldValue) {
         this.activityJumpToList = [];
-        this.activityJumpToValue = "";
+        this.activityJumpToBannerList = [];
+        this.activityJumpToProductList = [];
+        // this.activityJumpToValue = "";
         if(newValue == "2") {
           // this.activityJumpToValue = "请输入关键词搜索商品";
           this.getJumpTo("product", "activity");     // 获取所有商品
