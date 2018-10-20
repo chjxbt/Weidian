@@ -29,11 +29,10 @@
                   </div>
                   <div class="m-new-info-right m-ft-22 m-bg-main-color tl">
                     <p class="m-ft-24">{{item.reward_detail.raname}}</p>
-                    <p class="m-red">退回时间：{{item.reward_detail.racreatetime}}</p>
+                    <p class="m-red">领取时间：{{item.urcreatetime}}</p>
                     <div class="m-new-person-info">
-                      <img src="" class="m-new-info-img" alt="">
-                      <p>乌冬冬领取后24小时未
-                        使用还回</p>
+                      <img :src="item.usheader" v-if="item.usheader" class="m-new-info-img" alt="">
+                      <p>{{item.remarks}}</p>
                     </div>
                   </div>
                   <div class="new-currency-choose-img">
@@ -60,7 +59,7 @@
           <div class="m-un-scroll">
             <ul class="m-new-info">
               <template v-for="(item,index) in unvalid">
-                <li class="m-already-used">
+                <li :class="item.rfstatus ==2?'m-already-used':( item.rfstatus == 1?'m-already-back':(item.reward_detail.valid == false)?'m-Unavailable':'')">
                   <div class="m-new-info-left m-ft-24">
                     <p class="m-red m-ft-b tc m-new-info-num">
                       <span class="m-ft-30">￥</span>
@@ -70,48 +69,49 @@
                     <p class="m-red m-center" v-else>{{item.reward_detail.zh_ratype}}</p>
                   </div>
                   <div class="m-new-info-right m-ft-22 m-bg-main-color tl">
-                    <p class="m-ft-24">限时分享贝币</p>
-                    <p class="m-red">退回时间：2017.12.11 20:40</p>
+                    <p class="m-ft-24">{{item.reward_detail.raname}}</p>
+                    <p class="m-red" v-if="item.rfstatus == 1">退回时间：{{item.urendtime}}</p>
+                    <p class="m-red" v-if="item.rfstatus == 2 && item.urusetime">使用时间：{{item.urusetime}}</p>
+                    <p class="m-red" v-else-if="item.reward_detail.valid == false">失效时间：{{item.reward_detail.raendtime}}</p>
                     <div class="m-new-person-info">
-                      <img src="" class="m-new-info-img" alt="">
-                      <p>乌冬冬领取后24小时未
-                        使用还回</p>
+                      <img :src="item.usheader" v-if="item.usheader" class="m-new-info-img" alt="">
+                      <p>{{item.remarks}}</p>
                     </div>
                   </div>
                 </li>
-                <li class="m-already-back">
-                  <div class="m-new-info-left m-ft-24">
-                    <p class="m-red m-ft-b tc m-new-info-num">
-                      <span class="m-ft-30">￥</span>
-                      <span class="m-ft-60">{{item.reward_detail.raamount}}</span>
-                    </p>
-                    <p class="m-red m-center" v-if="item.reward_detail.ratype == 0">满{{item.reward_detail.rafilter}}元使用</p>
-                    <p class="m-red m-center" v-else>{{item.reward_detail.zh_ratype}}</p>
-                  </div>
-                  <div class="m-new-info-right m-ft-22 m-bg-main-color tl">
-                    <p class="m-ft-24">限时分享贝币</p>
-                    <p class="m-red">退回时间：2017.12.11 20:40</p>
-                    <div class="m-new-person-info">
-                      <img src="" class="m-new-info-img" alt="">
-                      <p>乌冬冬已使用</p>
-                    </div>
-                  </div>
-                </li>
-                <li class="m-Unavailable">
-                  <div class="m-new-info-left m-ft-24">
-                    <p class="m-red m-ft-b tc m-new-info-num">
-                      <span class="m-ft-30">￥</span>
-                      <span class="m-ft-60">5</span>
-                    </p>
-                    <p class="m-red">满6元使用</p>
-                  </div>
-                  <div class="m-new-info-right m-ft-22 m-bg-main-color tl">
-                    <p class="m-ft-24">限时分享贝币</p>
-                    <p class="m-red">退回时间：2017.12.11 20:40</p>
-                    <div class="m-new-person-info">
-                    </div>
-                  </div>
-                </li>
+                <!--<li class="m-already-back">-->
+                  <!--<div class="m-new-info-left m-ft-24">-->
+                    <!--<p class="m-red m-ft-b tc m-new-info-num">-->
+                      <!--<span class="m-ft-30">￥</span>-->
+                      <!--<span class="m-ft-60">{{item.reward_detail.raamount}}</span>-->
+                    <!--</p>-->
+                    <!--<p class="m-red m-center" v-if="item.reward_detail.ratype == 0">满{{item.reward_detail.rafilter}}元使用</p>-->
+                    <!--<p class="m-red m-center" v-else>{{item.reward_detail.zh_ratype}}</p>-->
+                  <!--</div>-->
+                  <!--<div class="m-new-info-right m-ft-22 m-bg-main-color tl">-->
+                    <!--<p class="m-ft-24">限时分享贝币</p>-->
+                    <!--<p class="m-red">退回时间：2017.12.11 20:40</p>-->
+                    <!--<div class="m-new-person-info">-->
+                      <!--<img src="" class="m-new-info-img" alt="">-->
+                      <!--<p>乌冬冬已使用</p>-->
+                    <!--</div>-->
+                  <!--</div>-->
+                <!--</li>-->
+                <!--<li class="m-Unavailable">-->
+                  <!--<div class="m-new-info-left m-ft-24">-->
+                    <!--<p class="m-red m-ft-b tc m-new-info-num">-->
+                      <!--<span class="m-ft-30">￥</span>-->
+                      <!--<span class="m-ft-60">5</span>-->
+                    <!--</p>-->
+                    <!--<p class="m-red">满6元使用</p>-->
+                  <!--</div>-->
+                  <!--<div class="m-new-info-right m-ft-22 m-bg-main-color tl">-->
+                    <!--<p class="m-ft-24">限时分享贝币</p>-->
+                    <!--<p class="m-red">退回时间：2017.12.11 20:40</p>-->
+                    <!--<div class="m-new-person-info">-->
+                    <!--</div>-->
+                  <!--</div>-->
+                <!--</li>-->
               </template>
 
             </ul>

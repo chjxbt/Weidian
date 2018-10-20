@@ -92,11 +92,13 @@
     methods: {
       //获取优惠券
       getReward(){
-        axios.get(api.get_user_reward,{
-          params:{
-            token: localStorage.getItem('token'),
+        let _sku = [];
+        for(let i=0;i<this.order.length;i++){
+          _sku.push({pskid:this.order[i].current_sku.pskid,num:this.order[i].scnums})
+        }
+        axios.post(api.get_user_reward +'?token=' + localStorage.getItem('token'),{
+            sku:_sku,
             topay: true
-          }
         }).then(res => {
           if(res.data.status == 200){
             let arr = res.data.data;
@@ -156,6 +158,7 @@
         for(let a=0;a<this.select_valid.length;a++){
           reward.push(this.select_valid[a].raid)
         }
+        console.log(this.select_valid,reward)
         for(let i =0;i<this.order.length;i++){
           order.push({pskid:this.order[i].current_sku.pskid,num:this.order[i].scnums})
         }
