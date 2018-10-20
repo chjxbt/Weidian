@@ -5,10 +5,10 @@ from flask import Flask as _Flask
 from flask.json import JSONEncoder as _JSONEncoder
 from flask.wrappers import Request as _Request
 
-
 import platform
 import logging
 import os
+
 logger = logging.getLogger(__name__)
 logger.setLevel(level=logging.DEBUG)
 
@@ -28,23 +28,18 @@ logger.info("that is info")
 logger.error("that is error")
 logger.warning("that is warning")
 
-from weixin.mp import WeixinMP
-from WeiDian.config.setting import APP_ID, APP_SECRET_KEY
-mp = WeixinMP(APP_ID, APP_SECRET_KEY)
-
-
 # from flask_cors import CORS
 from werkzeug.exceptions import HTTPException
 from WeiDian.apis.v1 import AActivity, AHotMessage, ABanner, ASearchField, ATopNav, \
     ASuperUser, AProduct, ARecommendBanner, AShoppingCart, AActivityComment, AUser, ARecommend, AOrder, AProductLike, \
     ARecommendLike, AActivityLike, AMyCenter, AComplain, AAdImage, ATask, ABigActivity, AReward
 
-
 # from test.test_maketoken import create_test_url
 
 
 class JSONEncoder(_JSONEncoder):
     """重写对象序列化, 当默认jsonify无法序列化对象的时候将调用这里的default"""
+
     def default(self, o):
         if hasattr(o, 'keys') and hasattr(o, '__getitem__'):
             res = dict(o)
@@ -126,7 +121,7 @@ def create_app():
     from raven.contrib.flask import Sentry
     sentry = Sentry(app, dsn='http://5ffc9de0629a4a58a7e76958dd4c6a2a:edc93accdb934ad1b7e16cf7fbb407e2@s.wkt.ooo:7443/3')
     # ws = GeventWebSocket(app)
-    register_route(app)   # 对app进行路由设置
+    register_route(app)  # 对app进行路由设置
     # create_test_url(app)  # 测试用
     # CORS(app, supports_credentials=True)
     # from WeiDian.common.loggers import register_logger_handler

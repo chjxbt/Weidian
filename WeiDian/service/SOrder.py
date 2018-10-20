@@ -189,3 +189,12 @@ class SOrder(SBase):
     def update_order_by_oiid(self, oiid, data):
         """根据订单ip更新订单"""
         return self.session.query(OrderInfo).filter(OrderInfo.OIid == oiid).update(data)
+
+    @close_session
+    def get_user_count_order(self, usid):
+        usercount = self.session.query(OrderInfo).filter(
+            OrderInfo.USid == usid, OrderInfo.OIpaystatus.in_(['1', '4', '5', '6', '11'])).count()
+        sellcount = self.session.query(OrderInfo).filter(
+            OrderInfo.Sellerid == usid, OrderInfo.OIpaystatus.in_(['1', '4', '5', '6', '11'])
+        ).count()
+        return usercount, sellcount
