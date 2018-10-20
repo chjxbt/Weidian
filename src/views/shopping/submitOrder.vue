@@ -165,7 +165,8 @@
           oirecvphone:  this.address.oirecvphone,
           oilleavetext:  this.address.oilleavetext,
           sku:order,
-          raids:reward
+          raid:reward[0]
+          // raids:reward
         }).then(res => {
           if(res.data.status == 200){
             this.$router.push({path: "/orderPayOK", query: { oiid:res.data.data.oiid,price:this.totalPrice}});
@@ -180,17 +181,17 @@
         }
         let _arr = this.valid;
         let valid_arr = [];
-        if(_arr[i].reward_detail.ramaxholdnum > 1 && _arr[0].reward_detail.ramaxholdnum > 1){
-          _arr[i].click = true;
-          this.select_valid = this.select_valid.push(_arr[i]);
-        }else{
+        // if(_arr[i].reward_detail.ramaxholdnum > 1 && _arr[0].reward_detail.ramaxholdnum > 1){
+        //   _arr[i].click = true;
+        //   this.select_valid = this.select_valid.push(_arr[i]);
+        // }else{
           for(let a=0;a<_arr.length;a++){
             _arr[a].click = false
           }
           _arr[i].click = true;
           valid_arr.push(_arr[i]);
           this.select_valid = [].concat(valid_arr);
-        }
+        // }
 
         this.valid = [].concat(_arr);
       }
