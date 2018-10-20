@@ -418,11 +418,11 @@ class CActivity(BaseActivityControl, BaseTask):
 
         image_num = 0  # 标志用来限制图片或视频的数量
         if media:
+            self.smedia.del_media_by_acid(acid)
             for img_or_video in media:
                 img_or_video_keys = img_or_video.keys()
                 if 'amimage' in img_or_video_keys and 'amvideo' not in img_or_video_keys:
                     """图片"""
-                    self.smedia.del_media_by_acid(acid)
                     self.smedia.add_model('ActivityMedia', **{
                         'AMid': str(uuid.uuid1()),
                         'ACid': acid,
@@ -447,6 +447,7 @@ class CActivity(BaseActivityControl, BaseTask):
                         break
         # 创建tag
         if tags:
+            self.stags.del_tags_by_acid(acid)
             count = 0
             for tag in tags:
                 state = tag.get('atstate', 0)
@@ -458,7 +459,6 @@ class CActivity(BaseActivityControl, BaseTask):
                     raise PARAMS_ERROR(u'默认显示角标只能有一个')
             for tag in tags:
                 atstate = tag.get('atstate', 0)
-                self.stags.del_tags_by_acid(acid)
                 self.stags.add_model('ActivityTag', **{
                     'ATid': str(uuid.uuid1()),
                     'ACid': acid,

@@ -829,6 +829,23 @@ class RewardToUser(BaseModel):
     def __init__(self):
         self.fields = ['RTid', 'RAid', 'RUcreatetime']
 
+# TODO 转赠表 / 优惠券集合
+class RewardTransfer(BaseModel):
+    """优惠券转赠表"""
+    __tablename__ = 'rewardtransfer'
+    RFid = Column(String(64), primary_key=True)
+    USid = Column(String(64))               # 接收用户
+    RAid = Column(String(64))               # 优惠券
+    RFfrom = Column(String(64))             # 赠送人
+    RAnumber = Column(Integer)              # 赠送数量
+    RFcreatetime = Column(String(14))       # 转赠时间
+    RFendtime = Column(String(14))          # 退回时间
+    RFstatus = Column(Integer, default=0)   # 转赠状态 {0:已领取 1:已退回 2:已使用}
+
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = ['RAid', 'USid', 'RAnumber', 'RFfrom', 'RFcreatetime', 'RFendtime', 'RFstatus']
 
 # 奖励和任务的关联表
 class TaskRaward(BaseModel):
@@ -856,7 +873,7 @@ class UserRaward(BaseModel):
     @auto_createtime
     def __init__(self):
         # self.fields = ['TRid', "TAid", "RAid", "RAnumber"]
-        self.fields = ["RAid", "RAnumber", "URcreatetime"]
+        self.fields = ["URid", "RAid", "RAnumber", "URcreatetime"]
 
 
 class AdImage(BaseModel):

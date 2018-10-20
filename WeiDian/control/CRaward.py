@@ -4,6 +4,7 @@ import sys
 import os
 import uuid
 
+from WeiDian.config.enums import REWARD_TYPE
 from flask import request
 from WeiDian import logger
 from datetime import datetime, timedelta
@@ -11,13 +12,16 @@ from WeiDian.common.params_require import parameter_required
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import get_db_time_str, get_web_time_str, format_for_web_second, format_for_db
 from WeiDian.common.token_required import verify_token_decorator, is_admin, is_tourist
-from WeiDian.config.response import TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR, NOT_FOUND, PARAMS_ERROR
+from WeiDian.config.response import TOKEN_ERROR, AUTHORITY_ERROR, SYSTEM_ERROR, NOT_FOUND, PARAMS_ERROR, \
+    PARAMS_REDUNDANCE
+
 sys.path.append(os.path.dirname(os.getcwd()))
 
 class CRaward():
     def __init__(self):
         from WeiDian.service.SRaward import SRaward
         self.sraward = SRaward()
+
 
     @verify_token_decorator
     def create_reward(self):
@@ -124,7 +128,7 @@ class CRaward():
             if is_hold.RAnumber < reward_info.RAmaxholdnum:
                 self.sraward.update_user_reward({'RAid': raid}, {'RAnumber': is_hold.RAnumber + 1})
             else:
-                raise SYSTEM_ERROR(u'已拥有该券最大可持有数量')
+                raise PARAMS_REDUNDANCE(u'已拥有该券最大可持有数量')
         else:
             logger.info("New reward to user")
             urid = str(uuid.uuid1())
@@ -167,7 +171,7 @@ class CRaward():
         rtid = str(uuid.uuid1())
         is_hand_out = self.sraward.is_hand_out({'RAid': raid})
         if is_hand_out:
-            raise SYSTEM_ERROR(u'该优惠券已在页面发放')
+            raise PARAMS_REDUNDANCE(u'该优惠券已在页面发放')
         else:
             self.sraward.add_model('RewardToUser', **{
                 'RTid': rtid,
@@ -193,6 +197,53 @@ class CRaward():
         data['data'] = horewards
         return data
 
+    @verify_token_decorator
+    def give_reward_to_others(self):
+        """转赠优惠券"""
+        if is_tourist():
+            raise TOKEN_ERROR(u'未登录')
+        data = request.json
+        usid = data.get('usid')
+        raid = data.get('raid')
+        is_own_hold = self.sraward.is_user_hold_reward({'USid': request.user.id, 'RAid': raid})
+        if is_own_hold:
+            if is_own_hold.RAnumber > 0:
+                update_reward = self.sraward.update_user_reward({'URid': is_own_hold.URid}, {'RAnumber': is_own_hold.RAnumber - 1})
+                if not update_reward:
+                    raise PARAMS_ERROR(u'更新参数错误')
+            else:
+                raise NOT_FOUND(u'已没有可赠送的数量')
+        else:
+            raise NOT_FOUND(u'用户不存在该优惠券')
+        is_recivice_hold = self.sraward.is_user_hold_reward({'USid': usid, 'RAid': raid})
+        if is_recivice_hold:
+            logger.info("The user already has this type of reward ")
+            reward_info = self.sraward.get_raward_by_id(raid)
+            urid = is_recivice_hold.URid
+            if is_recivice_hold.RAnumber < reward_info.RAmaxholdnum:
+                self.sraward.update_user_reward({'RAid': raid}, {'RAnumber': is_recivice_hold.RAnumber + 1})
+            else:
+                raise PARAMS_REDUNDANCE(u'该用户已拥有该券最大可持有数量')
+        else:
+            logger.info("New reward to user")
+            urid = str(uuid.uuid1())
+            self.sraward.add_model('UserRaward', **{
+                'URid': urid,
+                'USid': usid,
+                'RAid': raid,
+                'URFrom': request.user.id
+            })
+        data = import_status("give_to_others_success", "OK")
+        data['data'] = {'urid': urid}
+        return data
+
+
+
+
+    # TODO  检查对方是否拥有该券，是否超出该券最大可持有数，有+1，没有创建
+    # TODO 什么时候失效 / 持有数为零时的显示 / 是否允许删除失效券
+    # TODO 大礼包晋升时直接给创建
+    # TODO 粉丝邀请券
 
     # TODO 用户转赠优惠券 / 获取所有下级
 
@@ -217,6 +268,7 @@ class CRaward():
 
             if str(topay) == 'true':
                 reward_info = filter(lambda r: r.reward_detail['RAtype'] in [0, 2], reward_info)
+
             data = import_status('messages_get_item_ok', "OK")
             data['data'] = reward_info
             return data
@@ -224,8 +276,68 @@ class CRaward():
             logger.exception("get user reward error")
             raise SYSTEM_ERROR(u'获取数据错误')
 
+    @verify_token_decorator
+    def get_user_pay_reward(self):
+        """查看用户支付时的优惠券"""
+        if is_tourist():
+            raise TOKEN_ERROR(u'未登录')
+        data = request.json
+        logger.debug("get pay reward data is %s", data)
+        skus = data.get('sku')
+        parameter_required('sku')
+        from WeiDian.service.SProductSkuKey import SProductSkuKey
+        total_price = 0
+        for sku in skus:
+            price = SProductSkuKey().get_true_price(sku.get('pskid')) * int(sku.get('num'))
+            total_price = total_price + price
+
+        reward_info = self.sraward.get_reward_by_usid(request.user.id)
+        gift_reward_info = self.sraward.get_gifts_and_reward_by_usid(request.user.id)
+        if not gift_reward_info:
+            raise NOT_FOUND(u'用户暂无优惠券')
+        try:
+            reward_list = []
+            for reward in reward_info:
+                reward_detail = self.sraward.get_raward_by_id(reward.RAid)
+                reward_detail = self.fill_reward_detail(reward_detail, total_price)
+                reward.fill(reward_detail, 'reward_detail')
+                reward = dict(reward)
+                reward_list.append(reward)
+                reward['URcreatetime'] = get_web_time_str(reward.get('URcreatetime'))
+            for gift in gift_reward_info:
+                gift = self.fill_transfer_detail(gift)
+                gift_detail = self.sraward.get_raward_by_id(gift.RAid)
+                gift_detail = self.fill_reward_detail(gift_detail, total_price)
+                gift.fill(gift_detail, 'reward_detail')
+                gift.RFcreatetime = get_web_time_str(gift.RFcreatetime)
+                gift.RFendtime = get_web_time_str(gift.RFendtime)
+                gift_dict = {
+                    'URid': gift.RFid,
+                    'USid': gift.USid,
+                    'RAid': gift.RAid,
+                    'RAnumber': gift.RAnumber,
+                    'URcreatetime': gift.RFcreatetime,
+                    'URendtime': gift.RFendtime,
+                    'RFfrom': gift.RFfrom,
+                    'RFstatus': gift.RFstatus,
+                    'remarks': gift.remarks,
+                    'tag': gift.tag,
+                    'reward_detail': gift.reward_detail
+                }
+                reward_list.append(gift_dict)
+
+            reward_info = filter(lambda r: r.get('reward_detail')['RAtype'] in [0, 2], reward_list)
+
+            data = import_status('messages_get_item_ok', "OK")
+            data['data'] = reward_info
+            return data
+        except Exception as e:
+            logger.exception("get user reward error")
+            raise SYSTEM_ERROR(u'获取数据错误')
+
+
     @staticmethod
-    def fill_reward_detail(raward):
+    def fill_reward_detail(raward, price):
         reward_number = '{0}张'
         reward_number_ratio = '前{0}单'
         filter_str = '满{0}-{1}新衣币'
@@ -238,9 +350,39 @@ class CRaward():
                 reward_str = ratio_str.format(int(raward.RAratio))
             else:
                 reward_str = amout_str.format(int(raward.RAamount))
-            raward.RAendtime = get_web_time_str(raward.RAendtime)
-            raward.RAcreatetime = get_web_time_str(raward.RAcreatetime)
-            raward.rewardstr = reward_str
-            raward.add('rewardstr')
+        zh_ratype = REWARD_TYPE.get(str(raward.RAtype))
+        raward.fill(zh_ratype, 'zh_ratype')
+        raward.fill(reward_str, 'rewardstr')
+        time_valid = raward.RAcreatetime < get_db_time_str() < raward.RAendtime
+        price_use = price > raward.RAfilter
+        valid = time_valid and price_use
+        raward.fill(valid, 'valid')
+        raward.RAendtime = get_web_time_str(raward.RAendtime)
+        raward.RAcreatetime = get_web_time_str(raward.RAcreatetime)
         return raward
 
+    def fill_transfer_detail(self, raward):
+        from WeiDian.service.SUser import SUser
+        if hasattr(raward, 'RFstatus'):
+            reward_info = self.sraward.get_raward_by_id(raward.RAid)
+            if reward_info.RAtransfer == False:
+                raise SYSTEM_ERROR(u'信息错误，该券不能被赠送')
+            if raward.RFstatus == 0:
+                presenter = SUser().get_user_by_user_id(raward.RFfrom)
+                remarks = '由{0}赠送'.format(str(presenter.USname))
+                tag = '赠送'
+            elif raward.RFstatus == 1:
+                recipient = SUser().get_user_by_user_id(raward.USid)
+                remarks = '{0}领取后{1}小时未使用还回'.format(str(recipient.USname), reward_info.RAtransfereffectivetime)
+                tag = '已退回'
+            elif raward.RFstatus == 2:
+                recipient = SUser().get_user_by_user_id(raward.USid)
+                remarks = '{0}已使用'.format(str(recipient.USname))
+                tag = '已使用'
+        raward.fill(remarks, 'remarks')
+        raward.fill(tag, 'tag')
+        return raward
+
+    def check_holdnum_is_exceeded(self, reward):
+        """检查持有的优惠券是否超出可拥有数量"""
+        pass
