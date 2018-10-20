@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 
 from WeiDian.common.timeformat import format_for_db
-from WeiDian.models.model import OrderInfo, OrderProductInfo
+from WeiDian.models.model import OrderInfo, OrderProductInfo, OrderProductResend
 from sqlalchemy import or_, extract
 from SBase import SBase, close_session
 sys.path.append(os.path.dirname(os.getcwd()))
@@ -36,7 +36,7 @@ class SOrder(SBase):
             filter_order.add(OrderInfo.OIpaystatus.in_(status))
         else:
             filter_order.add(OrderInfo.OIpaystatus == status)
-        return self.session.query(OrderInfo).filter(*filter_order).all_with_page(page_num, page_size)
+        return self.session.query(OrderInfo).filter(*filter_order).order_by(OrderInfo.OIcreatetime.desc()).all_with_page(page_num, page_size)
 
     @close_session
     def get_sell_order_by_status(self, usid, status, page_num, page_size):
@@ -48,7 +48,7 @@ class SOrder(SBase):
             filter_order.add(OrderInfo.OIpaystatus.in_(status))
         else:
             filter_order.add(OrderInfo.OIpaystatus == status)
-        return self.session.query(OrderInfo).filter(*filter_order).all_with_page(page_num, page_size)
+        return self.session.query(OrderInfo).filter(*filter_order).order_by(OrderInfo.OIcreatetime.desc()).all_with_page(page_num, page_size)
 
     @close_session
     def get_sell_order_by_status2(self, status, page_num, page_size, usid=None, phone=None):
@@ -61,18 +61,18 @@ class SOrder(SBase):
         return self.session.query(OrderInfo).filter(*filter_order).filter_without_none(
             OrderInfo.USid == usid,
             OrderInfo.OIrecvphone == phone
-        ).all_with_page(page_num, page_size)
+        ).order_by(OrderInfo.OIcreatetime.desc()).all_with_page(page_num, page_size)
 
     @close_session
     def get_sellorder_by_user_status(self, usid, status):
         """根据状态和用户获取所有的销售订单"""
         return self.session.query(OrderInfo).filter(OrderInfo.Sellerid == usid,
-                                                    or_(OrderInfo.OIpaystatus == s for s in status)).all()
+                                                    or_(OrderInfo.OIpaystatus == s for s in status)).order_by(OrderInfo.OIcreatetime.desc()).all()
 
     @close_session
     def get_sellorder_fitler_status__all(self, status, mount=0):
         """获取某状态的所有订单"""
-        return self.session.query(OrderInfo).filter(or_(OrderInfo.OIpaystatus == s for s in status),).all()
+        return self.session.query(OrderInfo).filter(or_(OrderInfo.OIpaystatus == s for s in status),).order_by(OrderInfo.OIcreatetime.desc()).all()
 
     @close_session
     def get_today_order_by_usid_status(self, usid, status):
@@ -161,6 +161,11 @@ class SOrder(SBase):
         return self.session.query(OrderProductInfo).filter(OrderProductInfo.OPIid == opiid).first()
 
     @close_session
+    def get_orderproduct_resend_by_opiid(self, opiid):
+        """根据订单商品详情获取退货(款)信息"""
+        return self.session.query(OrderProductResend).filter(OrderProductResend.OPIid == opiid).first()
+
+    @close_session
     def update_orderproductinfo_by_opiid(self, opiid, data):
         """根据opiid更新订单中的商品信息"""
         return self.session.query(OrderProductInfo).filter(
@@ -184,3 +189,12 @@ class SOrder(SBase):
     def update_order_by_oiid(self, oiid, data):
         """根据订单ip更新订单"""
         return self.session.query(OrderInfo).filter(OrderInfo.OIid == oiid).update(data)
+
+    @close_session
+    def get_user_count_order(self, usid):
+        usercount = self.session.query(OrderInfo).filter(
+            OrderInfo.USid == usid, OrderInfo.OIpaystatus.in_(['1', '4', '5', '6', '11'])).count()
+        sellcount = self.session.query(OrderInfo).filter(
+            OrderInfo.Sellerid == usid, OrderInfo.OIpaystatus.in_(['1', '4', '5', '6', '11'])
+        ).count()
+        return usercount, sellcount

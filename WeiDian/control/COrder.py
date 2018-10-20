@@ -1,4 +1,5 @@
 # -*- coding:utf8 -*-
+import json
 import sys
 import os
 import uuid
@@ -11,21 +12,21 @@ from flask import request
 from WeiDian import logger
 from WeiDian.common.loggers import generic_log
 from WeiDian.common.params_require import parameter_required
-from WeiDian.config.enums import ORDER_STATUS, order_product_info_status, ORDER_STATUS_
+from WeiDian.config.enums import ORDER_STATUS, order_product_info_status, ORDER_STATUS_, OrderResend, OrderResendType
 from WeiDian.config.kd import kd_list
 from WeiDian.config.setting import QRCODEHOSTNAME, APP_ID, MCH_ID, MCH_KEY, notify_url
 from WeiDian.common.TransformToList import dict_add_models, list_add_models
 from WeiDian.common.timeformat import format_for_db, get_web_time_str
 from WeiDian.common.token_required import verify_token_decorator, is_partner, is_admin
 from WeiDian.common.import_status import import_status
-from WeiDian.models.model import OrderProductInfo, OrderInfo
+from WeiDian.models.model import OrderProductInfo, OrderInfo, OrderProductResend
 from WeiDian.service.SOrder import SOrder
 from WeiDian.service.SProductImage import SProductImage
 from WeiDian.service.SProductSkuKey import SProductSkuKey
 from WeiDian.service.SProduct import SProduct
 from WeiDian.service.SComplain import SComplain
 from WeiDian.service.SUser import SUser
-from WeiDian.config.response import PARAMS_MISS, SYSTEM_ERROR, AUTHORITY_ERROR, TOKEN_ERROR, NOT_FOUND
+from WeiDian.config.response import PARAMS_MISS, SYSTEM_ERROR, AUTHORITY_ERROR, TOKEN_ERROR, NOT_FOUND, DumpliError
 from WeiDian.common.token_required import is_tourist
 sys.path.append(os.path.dirname(os.getcwd()))
 
@@ -52,48 +53,36 @@ class COrder():
         missed = filter(lambda x: x not in data, required)
         if missed:
             return PARAMS_MISS('必要参数缺失: ' + '/'.join(missed))
+        with self.sorder.auto_commit() as session:
+            pass
+        # 判断优惠券是否符合条件
+        raids = data.get('raids')
+        if raids:
+            for raid in raids:
+                # todo 判断优惠券
+                reward = ''
+        # 建立订单
         order_dict = dict(
             oiid=str(uuid.uuid4()),
             usid=request.user.id,
-            oisn=datetime.strftime(datetime.now(), format_for_db) + str(random.randint(10000, 100000)),
+            oisn=self._geceric_sn(),
             oileavetext=data.get('oileavetext') or '',
             oiaddress=data.get('oiaddress'),
             oirecvname=data.get('oirecvname'),
             oirecvphone=data.get('oirecvphone'),
+            Sellerid=request.user.UPPerd
         )
+        # 建立订单详情
         sku = data.get('sku')
         orderproductinfo_dict_list = self.fix_orderproduct_info(sku, order_dict['oiid'])
         list_add_models('OrderProductInfo', orderproductinfo_dict_list)
-        order_dict['oimount'] = sum([x['OIproductprice'] for x in orderproductinfo_dict_list]) # 总价
+        order_dict['oimount'] = sum([x['SmallTotal'] for x in orderproductinfo_dict_list]) # 总价
         dict_add_models('OrderInfo', order_dict)
         data = import_status('add_order_success', 'OK')
         data['data'] = {
             'oiid': order_dict['oiid']
         }
         return data
-
-    # @verify_token_decorator
-    # def get_order_list(self):
-    #     """获取所有订单"""
-    #     if is_tourist():
-    #         return AUTHORITY_ERROR(u"未登录")
-    #     args = request.args.to_dict()
-    #     make_log("args", args)
-    #     true_args = ["sell", "page_size", "page_num"]
-    #     if judge_keys(true_args, args.keys()) != 200:
-    #         return judge_keys(true_args, args.keys())
-    #     try:
-    #         order_list = self.sorder.get_order_by_usid(args["sell"], request.user.id, int(args["page_num"]), int(args["page_size"]))
-    #         for order in order_list:
-    #             order.fields = ['OIsn', 'OIpaystatus', 'OIcreatetime']
-    #         map(self.fill_productinfo, order_list)
-    #         map(self.fill_complainstatus, order_list)
-    #         data = import_status('get_order_list_success', 'OK')
-    #         data['data'] = order_list
-    #         return data
-    #     except:
-    #         logger.exception("get order list error")
-    #         return SYSTEM_ERROR
 
     @verify_token_decorator
     def get_order_list_by_status(self):
@@ -266,6 +255,7 @@ class COrder():
                     user.level = 'partner'
                 user.add('level')
                 order.fill(upuser, 'upper')
+            # 填充退款信息
             order.OIpaytime = get_web_time_str(order.OIpaytime)
             order.OIcreatetime = get_web_time_str(order.OIcreatetime)
             response = import_status('get_order_list_success', 'OK')
@@ -340,6 +330,26 @@ class COrder():
             order.fill(ORDER_STATUS_.get(str(order.OIpaystatus)), 'order_status')
             order.OIpaytime = get_web_time_str(order.OIpaytime)
             order.OIcreatetime = get_web_time_str(order.OIcreatetime)
+            # 买家
+            usid = order.USid
+            user = self.suser.get_user_by_user_id(usid)
+            if user:
+                if user.USlevel == 0:
+                    user.level = 'ordinary'
+                if user.USlevel > 0:
+                    user.level = 'partner'
+                user.add('level')
+                order.fill(user, 'user')
+            # 卖家
+            upperusid = order.Sellerid
+            upuser = self.suser.get_user_by_user_id(upperusid)
+            if upuser:
+                if upuser.USlevel == 0:
+                    upuser.level = 'ordinary'
+                if upuser.USlevel > 0:
+                    upuser.level = 'partner'
+                upuser.add('level')
+                order.fill(upuser, 'upper')
         response = import_status('get_order_list_success', 'OK')
         response["count"] = request.all_count
         response["page_count"] = request.page_count
@@ -517,34 +527,109 @@ class COrder():
         with self.sorder.auto_commit() as session:
             if len(filter(lambda x: x.OPIstatus in [0], order_product_list)):
                 raise PARAMS_MISS(u'部分商品未发货')
-                # 判断订单中的所有商品是否都已经完成, 如果已经完成则更改订单状态为交易成功
+            # 判断订单中的所有商品是否都已经完成, 如果已经完成则更改订单状态为交易成功
             session.query(OrderInfo).filter(OrderInfo.OIid == oiid).update({
                 'OIpaystatus': 6  # 交易完成
             })
             session.query(OrderProductInfo).filter(OrderProductInfo.OIid == oiid).update({
-                'OPIstatus': 2
+                'OPIstatus': 2  # 已发货
             })
         response = import_status('confirm_order_success', 'OK')
         return response
 
     @verify_token_decorator
     def apply_refund(self):
-        """申请退货"""
+        """申请退货(换货)"""
         if is_tourist():
             raise TOKEN_ERROR(u'请登录')
-        data = parameter_required('')
+        data = parameter_required(u'opiid', u'oprreason', u'oprtype')
+        opiid = data.get('opiid')
+        OPRtype = data.get('oprtype')
+        if OPRtype not in [0, 1]:
+            raise PARAMS_MISS(u'参数错误')
+        usid = request.user.id
+        order_product = self.sorder.get_orderproductinfo_by_opiid(opiid)
+        if not order_product:
+            raise NOT_FOUND(u'不存在的订单商品')
+        if order_product.OPIstatus in [4, 5]:
+            raise NOT_FOUND(u'退款或退货中')
+        oiid = order_product.OIid
+        order = self.sorder.get_order_by_oiid(oiid)
+        if not order or order.USid != usid:
+            raise NOT_FOUND(u'不存在订单')
+        if order.OIpaystatus == 1:
+            raise NOT_FOUND(u'未付款的订单')
+        already_apply = self.sorder.get_orderproduct_resend_by_opiid(opiid)
+        if already_apply:
+            raise DumpliError()
+        with self.suser.auto_commit() as session:
+            session_list = []
+            # 创建退款记录
+            voucher_images = data.get('oprimage')
+            oprmount = data.get('oprmount')
+            if oprmount > order_product.SmallTotal or oprmount is None:
+                oprmount = order_product.SmallTotal
+            model_dict = {
+                'OPRid': str(uuid.uuid4()),
+                'OPRsn': self._geceric_sn(),
+                'OPIid': opiid,
+                'OPRtype': OPRtype,
+                'OPRreason': data.get('oprreason'),
+                'OPRdesc': data.get('oprdesc'),
+                'OPRimage': json.dumps(voucher_images)
+            }
+            OPIstatus = 5
+            msg = u'申请换货成功'
+            if OPRtype == 0:
+                # 退货退款
+                model_dict['OPRmount'] = oprmount
+                OPIstatus = 4
+                msg = u'申请退货成功'
+            new_resend = OrderProductResend()
+            [setattr(new_resend, k, v) for k, v in model_dict.items() if v is not None]
+            session_list.append(new_resend)
+            # 更改商品详情状态
+            session.query(OrderProductInfo).filter(OrderProductInfo.OPIid == opiid).update({
+                'OPIstatus': OPIstatus
+            })
+            # 更改订单状态
+            session.query(OrderInfo).filter(OrderInfo.OIid == oiid).update({
+                'OIpaystatus': 11
+            })
+            session.add_all(session_list)
+        response = {"message": msg, "status": 200}
+        return response
 
     @verify_token_decorator
     def agree_refund(self):
         """同意退货"""
-
-    @verify_token_decorator
-    def apply_change(self):
-        """申请换货"""
-
-    @verify_token_decorator
-    def agree_change(self):
-        """同意换货"""
+        if not is_admin():
+            raise TOKEN_ERROR(u'请使用管理员登录')
+        data = parameter_required(u'opiid')
+        agree = data.get('agree', 1)
+        opiid = data.get('opiid')
+        order_product_info = self.sorder.get_orderproductinfo_by_opiid(opiid)
+        if not order_product_info:
+            raise NOT_FOUND(u'不存在的订单')
+        order_product_resend = self.sorder.get_orderproduct_resend_by_opiid(opiid)
+        if order_product_resend.OPRschedule != 0:
+            raise DumpliError(u'未申请或已处理')
+        # 判断状态
+        if agree == 1:
+            with self.sorder.auto_commit() as session:
+                # 更改退款表状态
+                session.query(OrderProductResend).filter(
+                        OrderProductResend.OPIid == opiid
+                ).update({'OPRschedule': 1})
+            msg = '同意退货, 等待买家发货'
+        elif agree == 0:
+            with self.sorder.auto_commit() as session:
+                session.query(OrderProductResend).filter(
+                        OrderProductResend.OPIid == opiid
+                ).update({'OPRschedule': 5})
+            msg = '拒绝成功'
+        response = {"message": msg, "status": 200}
+        return response
 
     def fix_orderproduct_info(self, sku_list, oiid):
         """
@@ -571,15 +656,10 @@ class COrder():
                 prid=prid,
                 PSKproperkey=productskukey.PSKproperkey,  # 商品属性组合(sku)
             )
-            # 商品名字
             orderproductinfo_dict['opiproductname'] = product.PRname
-            # 商品主图
             orderproductinfo_dict['opiproductimages'] = product.PRmainpic
-            # 商品数量
             orderproductinfo_dict['opiproductnum'] = int(sku.get('num', 1))
-            # 单价
             orderproductinfo_dict['OIproductprice'] = self.sproductskukey.get_true_price(pskid, partner=is_partner())
-            # 商品价格(小计)
             orderproductinfo_dict['SmallTotal'] = self.sproductskukey.get_true_price(pskid, partner=is_partner()) *\
                                                             orderproductinfo_dict['opiproductnum']
             sku_dict_list.append(orderproductinfo_dict)
@@ -592,32 +672,26 @@ class COrder():
         for productinfo in productinfos:
             productinfo.fields = ['OPIproductname', 'OPIproductimages', 'OPIstatus', 'OPIid', 'PRid', 'PSKproperkey', 'OIproductprice', 'OPIproductnum', 'SmallTotal']
             productinfo.OPIlogisticstime = get_web_time_str(productinfo.OPIlogisticstime)
-
             productinfo.fill(order.OIsn, 'oisn')
             # {0: '待发货', 1: '待收货', 2: '交易成功(未评价)', 3: '交易成功(已评价)', 4: '退货', 5: '换货'}
-            if productinfo.OPIstatus in [1, 2, 3, 4, 5]:
-                productinfo.add('OPIlogisticsSn', 'OPIlogisticsText', 'OPIlogisticstime')
-                send_time = productinfo.OPIresendLogistictime
+            if productinfo.OPIstatus in [1, 2, 3, 4, 5, 6]:
+                # 发货信息
+                productinfo.add('OPIlogisticsSn', 'OPIlogisticsCompnay', 'OPIlogisticsText', 'OPIlogisticstime')
+                send_time = productinfo.OPIlogisticstime
                 if send_time:
                     productinfo.OPIresendLogistictime = get_web_time_str(send_time)
-                log_sn = productinfo.OPIlogisticsSn or ''
-                if ':' in log_sn:
-                    log_info = log_sn.split(':')
-                    zh_name = filter(lambda x: x['expresskey'] == log_info[0], kd_list)
-                    productinfo.fill(zh_name, 'zh_name')
-                    productinfo.fill(log_info[0], 'logistic_company')
-                    setattr(productinfo, 'OPIlogisticsSn', log_info[-1])
-            if productinfo.OPIstatus in [4, 5]:  # 退换货
-                # productinfo.fields = ['OPIresendLogisticSn', 'OPIresendLogisticText']
-                # resend_log_sn = productinfo.OPIlogisticsSn
-                # if ':' in resend_log_sn:
-                #     log_info = resend_log_sn.split(':')
-                #     resend_zh_name = filter(lambda x: x['expresskey'] == log_info[0], kd_list)
-                #     productinfo.fill(resend_zh_name, 'resend_zh_name')
-                #     productinfo.fill(log_info[0], 'logistic_company')
-                #     setattr(productinfo, 'OPIresendLogisticSn', log_info[-1])
-                #     # todo
-                pass
+                logistic_name = self.get_current_kd(productinfo.OPIlogisticsCompnay)
+                if logistic_name:
+                    productinfo.fill(logistic_name, 'zh_logistic_compnay')
+                if productinfo.OPIlogisticsText:
+                    productinfo.OPIlogisticsText = json.loads(productinfo.OPIlogisticsText)
+            if productinfo.OPIstatus in [4, 5]:  # 退换货, 需要查询退换货表
+                product_resend = self.sorder.get_orderproduct_resend_by_opiid(productinfo.OPIid)
+                product_resend.fields = product_resend.all
+                product_resend.zh_OPRschedule = OrderResend.get(product_resend.OPRschedule)
+                product_resend.zh_OPRtype = OrderResendType.get(product_resend.OPRtype)
+                product_resend.add('zh_OPRtype', 'zh_OPRschedule')
+
 
             productinfo.fill(order_product_info_status.get(productinfo.OPIstatus, u'异常'), 'zh_status')
         order.add('productinfo')
@@ -633,6 +707,16 @@ class COrder():
             order.complainstatus = {"cotreatstatus": 0}
         order.add('complainstatus')
         return order
+
+    @staticmethod
+    def _geceric_sn():
+        return datetime.strftime(datetime.now(), format_for_db) + str(random.randint(10000, 100000))
+
+    @staticmethod
+    def get_current_kd(alias):
+        for kd in kd_list:
+            if kd.get('expresskey') == alias:
+                return kd.get('expressname')
 
     
 

@@ -1,6 +1,8 @@
 # -*- coding:utf8 -*-
+from datetime import datetime
+
 from sqlalchemy.dialects.mysql import LONGTEXT
-from sqlalchemy import Column, create_engine, Integer, String, Text, Float, Boolean, orm
+from sqlalchemy import Column, create_engine, Integer, String, Text, Float, Boolean, orm, DateTime
 from WeiDian.config import dbconfig as cfg
 from WeiDian.models.base_model import BaseModel, auto_createtime
 import json
@@ -408,17 +410,18 @@ class OrderProductInfo(BaseModel):
     OPIproductname = Column(String(64))  # 商品的名字(购买之时的)
     OPIproductimages = Column(String(255))  # 商品主图
     OPIproductnum = Column(Integer, default=1)  # 购买数量
-    OPIstatus = Column(Integer, default=0, comment=u'0: 待发货, 1 待收货, 2 交易成功(未评价), 3 交易成功(已评价), 4 退货, 5 换货, 6 已签收, 7 ')
+    OPIstatus = Column(Integer, default=0, comment=u'0: 待发货, 1 待收货, 2 交易成功(未评价), 3 交易成功(已评价), 4 退货, 5 换货, 6 已签收')
     SmallTotal = Column(Float, nullable=False, comment=u'价格小计')
 
-    OPIlogisticsSn = Column(String(64), comment=u'快递公司: 发货物流单号')
+    OPIlogisticsSn = Column(String(64), comment=u'发货物流单号')
+    OPIlogisticsCompnay = Column(String(16), comment=u'快递公司')
     OPIlogisticsText = Column(Text, comment=u'发货物流信息')
     OPIlogisticstime = Column(String(16), comment=u'发货时间')
     # OPIsignperson = Column(String(16), comment=u'签收人')
-
-    OPIresendLogisticSn = Column(String(64), comment=u'快递公司: 退货单号')
-    OPIresendLogisticText = Column(String(64),  comment=u'退货物流信息')
-    OPIresendLogistictime = Column(String(16), comment=u'退货时间')
+    #
+    # OPIresendLogisticSn = Column(String(64), comment=u'快递公司: 退货单号')
+    # OPIresendLogisticText = Column(String(64),  comment=u'退货物流信息')
+    # OPIresendLogistictime = Column(String(16), comment=u'退货时间')
 
     @property
     def PSKproperkey(self):
@@ -433,6 +436,29 @@ class OrderProductInfo(BaseModel):
     def __init__(self):
         self.fields = self.all
         self.add('PSKproperkey').hide('_PSKproperkey')
+
+
+class OrderProductResend(BaseModel):
+    """退款"""
+    __tablename__ = 'orderproductresend'
+    OPRid = Column(String(64), primary_key=True)
+    OPRsn = Column(String(64), comment=u'退货编号')
+    OPIid = Column(String(64), nullable=False, comment=u'订单商品详情id')
+    OPRschedule = Column(Integer, default=0, comment=u'进度, 0 已申请, 1 买家退货中, 2 卖家发货中, 3 卖家已发货, 4 完成, 5 拒绝申请')
+    OPRtype = Column(Integer, default=0, comment=u'类型, 0 退货  1 换货')
+    OPRmount = Column(Float, comment=u'退款金额')
+    OPRreason = Column(String(64), comment=u'退款原因')
+    OPRdesc = Column(String(255), comment=u'退款说明')
+    OPRimage = Column(Text, comment=u'凭证, [http://www.jpg, http://www.jpb')
+    OPRcreatetime = Column(DateTime, default=datetime.now, comment=u'申请时间')
+
+    OPRresendLogisticSn = Column(String(64), comment=u'退货单号')
+    OPRresendLogisticCompany = Column(Text, comment=u'物流公司')
+    OPRresendLogisticText = Column(Text, comment=u'退货物流信息')
+    OPRresendLogistictime = Column(DateTime, comment=u'退货时间')
+    OPRreceivername = Column(String(16), comment=u'收货人信名')
+    OPRreceiverphone = Column(String(16), comment=u'收货人手机')
+
 
 
 class ProductCategory(BaseModel):

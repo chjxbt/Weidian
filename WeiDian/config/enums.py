@@ -120,6 +120,7 @@ staticimage = {
     "shareimage": "shareimage.png",
 }
 
+userlevel = {'0': '普通用户', '1': '普通合伙人', '2': '中级合伙人', '3': '高级合伙人'}
 
 
 ORDER_STATUS_ = {
@@ -140,3 +141,6 @@ ORDER_STATUS_ = {
     '13': '卖家已发货',
     '14': '卖家已发货',
 }
+
+OrderResend = {0: '已申请', 1: '买家退货中', 2: '卖家发货中', 3: '卖家已发货', 4: '完成', 5: '拒绝申请'}
+OrderResendType = {0: '退货', 1: '换货'}

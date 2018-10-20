@@ -2,7 +2,7 @@
 import re
 import sys
 import os
-from flask import request, redirect
+from flask import request
 import uuid
 import datetime
 import json
@@ -17,15 +17,17 @@ from WeiDian import logger
 # from WeiDian.common.weixinmp import mp
 from WeiDian.common.params_require import parameter_required
 from WeiDian.config.response import PARAMS_MISS, SYSTEM_ERROR, NETWORK_ERROR, TOKEN_ERROR
-from WeiDian.common.token_required import verify_token_decorator, usid_to_token
+from WeiDian.common.token_required import verify_token_decorator, usid_to_token, is_admin
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db
 from WeiDian.common.weixinmp import mp
 from WeiDian.config.setting import QRCODEHOSTNAME, APP_ID, APP_SECRET_KEY, LinuxUserHead, wximg
 from WeiDian.config.urlconfig import get_subscribe
+from WeiDian.config.enums import userlevel
 from WeiDian.service.SUser import SUser
 from WeiDian.service.STask import STask
 from WeiDian.service.SMyCenter import SMyCenter
+from WeiDian.service.SOrder import SOrder
 from WeiDian.common.loggers import generic_log
 from WeiDian.config.enums import icon
 sys.path.append(os.path.dirname(os.getcwd()))
@@ -37,6 +39,7 @@ class CUser():
         self.suser = SUser()
         self.stask = STask()
         self.smycenter = SMyCenter()
+        self.sorder = SOrder()
 
     def login(self):
         json_data = request.json
@@ -387,6 +390,75 @@ class CUser():
         url = QRCODEHOSTNAME + "/imgs/head/" + filename
         return url
 
+    @verify_token_decorator
+    def get_all_user(self):
+        if not is_admin():
+            raise TOKEN_ERROR(u'权限不足')
+        data = request.args.to_dict()
+        logger.debug('get all user args : %s', data)
+        pagenum, pagesize = self.get_pagesize_pagenum(data)
 
+        user_list, count = self.suser.get_all_user(pagesize, pagenum)
+        # count = self.suser.get_all_user_count()
+        map(self.fill_user_level, user_list)
+        map(self.fill_user_perd, user_list)
+        # map(self.fill_user_sub, user_list)
+        map(self.fill_user_order_amout, user_list)
+        response = import_status('messages_get_item_ok', 'OK')
+        response['data'] = user_list
+        response['count'] = count
 
+        return response
 
+    def fill_user_perd(self, user):
+        perduser = self.suser.get_user_by_openid(user.UPPerd)
+        if perduser:
+            user.UPPerd = perduser.USname
+        user.add("UPPerd")
+
+    # def fill_user_sub(self, user):
+    #     subuser = self.suser.get_sub_user(user.openid)
+    #     user.USsub = subuser
+    #     user.add('USsub')
+
+    def fill_user_level(self, user):
+        user_level = userlevel.get(str(user.USlevel) if user.USlevel else '0')
+        user.USlevel = user_level
+        user.add('USlevel')
+
+    def fill_user_order_amout(self, user):
+        user.BuyOrderCount, user.SellOrderCount = self.sorder.get_user_count_order(user.USid)
+        user.add("BuyOrderCount", "SellOrderCount")
+
+    @verify_token_decorator
+    def get_user_sub(self):
+        if not is_admin():
+            raise TOKEN_ERROR(u'权限不足')
+
+        data = request.args.to_dict()
+        logger.debug('get user sub args: %s', data)
+        parameter_required('usid')
+        pagenum, pagesize = self.get_pagesize_pagenum(data)
+        user = self.suser.get_user_by_user_id(data.get('usid'))
+        user_sub, count = self.suser.get_sub_user(user.openid, pagesize, pagenum)
+        response = import_status('messages_get_item_ok', 'OK')
+        response['data'] = user_sub
+        response['count'] = count
+
+        return response
+
+    def get_pagesize_pagenum(self, data):
+        pagesize = data.get('page_size')
+        pagenum = data.get('page_num')
+        if re.match(r'^\d+$', str(pagesize)):
+            pagesize = int(pagesize)
+        else:
+            pagesize = 10
+        if re.match(r'^\d+$', str(pagenum)):
+            pagenum = int(pagenum)
+        else:
+            pagenum = 1
+        pagenum = pagenum or 1
+        pagesize = pagesize or 5
+
+        return pagenum, pagesize
