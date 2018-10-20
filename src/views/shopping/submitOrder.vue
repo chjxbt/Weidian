@@ -195,7 +195,10 @@
           valid_arr.push(_arr[i]);
           this.select_valid = [].concat(valid_arr);
         // }
-
+        if(this.select_valid.length > 0){
+          if(this.select_valid[0].reward_detail.raamount)
+            this.totalPrice = this.totalPrice - this.select_valid[0].reward_detail.raamount;
+        }
         this.valid = [].concat(_arr);
       }
     },
