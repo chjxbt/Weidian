@@ -12,7 +12,7 @@ from flask import request
 from WeiDian import logger
 from WeiDian.common.loggers import generic_log
 from WeiDian.common.params_require import parameter_required
-from WeiDian.config.enums import ORDER_STATUS, order_product_info_status, ORDER_STATUS_
+from WeiDian.config.enums import ORDER_STATUS, order_product_info_status, ORDER_STATUS_, OrderResend, OrderResendType
 from WeiDian.config.kd import kd_list
 from WeiDian.config.setting import QRCODEHOSTNAME, APP_ID, MCH_ID, MCH_KEY, notify_url
 from WeiDian.common.TransformToList import dict_add_models, list_add_models
@@ -539,7 +539,7 @@ class COrder():
 
     @verify_token_decorator
     def apply_refund(self):
-        """申请退货"""
+        """申请退货(换货)"""
         if is_tourist():
             raise TOKEN_ERROR(u'请登录')
         data = parameter_required(u'opiid', u'oprreason', u'oprtype')
@@ -628,17 +628,8 @@ class COrder():
                         OrderProductResend.OPIid == opiid
                 ).update({'OPRschedule': 5})
             msg = '拒绝成功'
-        response = {"message": '同意退货, 等待买家发货', "status": 200}
+        response = {"message": msg, "status": 200}
         return response
-
-
-    @verify_token_decorator
-    def apply_change(self):
-        """申请换货"""
-
-    @verify_token_decorator
-    def agree_change(self):
-        """同意换货"""
 
     def fix_orderproduct_info(self, sku_list, oiid):
         """
@@ -684,16 +675,23 @@ class COrder():
             productinfo.fill(order.OIsn, 'oisn')
             # {0: '待发货', 1: '待收货', 2: '交易成功(未评价)', 3: '交易成功(已评价)', 4: '退货', 5: '换货'}
             if productinfo.OPIstatus in [1, 2, 3, 4, 5, 6]:
+                # 发货信息
                 productinfo.add('OPIlogisticsSn', 'OPIlogisticsCompnay', 'OPIlogisticsText', 'OPIlogisticstime')
                 send_time = productinfo.OPIlogisticstime
                 if send_time:
                     productinfo.OPIresendLogistictime = get_web_time_str(send_time)
-                kd_info = filter(lambda x: x['expresskey'] == productinfo.OPIlogisticsCompnay, kd_list)[0]
-                kd_name = kd_info.get('expressname', u'未知')
-                productinfo.fill(kd_info, 'kd_info')
-                setattr(productinfo, 'OPIlogisticsSn', log_info[-1])
-            if productinfo.OPIstatus in [4, 5]:  # 退换货
-                pass
+                logistic_name = self.get_current_kd(productinfo.OPIlogisticsCompnay)
+                if logistic_name:
+                    productinfo.fill(logistic_name, 'zh_logistic_compnay')
+                if productinfo.OPIlogisticsText:
+                    productinfo.OPIlogisticsText = json.loads(productinfo.OPIlogisticsText)
+            if productinfo.OPIstatus in [4, 5]:  # 退换货, 需要查询退换货表
+                product_resend = self.sorder.get_orderproduct_resend_by_opiid(productinfo.OPIid)
+                product_resend.fields = product_resend.all
+                product_resend.zh_OPRschedule = OrderResend.get(product_resend.OPRschedule)
+                product_resend.zh_OPRtype = OrderResendType.get(product_resend.OPRtype)
+                product_resend.add('zh_OPRtype', 'zh_OPRschedule')
+
 
             productinfo.fill(order_product_info_status.get(productinfo.OPIstatus, u'异常'), 'zh_status')
         order.add('productinfo')
@@ -713,5 +711,12 @@ class COrder():
     @staticmethod
     def _geceric_sn():
         return datetime.strftime(datetime.now(), format_for_db) + str(random.randint(10000, 100000))
+
+    @staticmethod
+    def get_current_kd(alias):
+        for kd in kd_list:
+            if kd.get('expresskey') == alias:
+                return kd.get('expressname')
+
     
 

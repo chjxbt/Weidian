@@ -452,10 +452,11 @@ class OrderProductResend(BaseModel):
     OPRimage = Column(Text, comment=u'凭证, [http://www.jpg, http://www.jpb')
     OPRcreatetime = Column(DateTime, default=datetime.now, comment=u'申请时间')
 
-    OPRresendLogisticSn = Column(String(64), comment=u'快递公司: 退货单号')
-    OPRresendLogisticText = Column(String(64), comment=u'退货物流信息')
-    OPRresendLogistictime = Column(String(16), comment=u'退货时间')
-    OPRreceivername = Column(String(8), comment=u'收货人信名')
+    OPRresendLogisticSn = Column(String(64), comment=u'退货单号')
+    OPRresendLogisticCompany = Column(Text, comment=u'物流公司')
+    OPRresendLogisticText = Column(Text, comment=u'退货物流信息')
+    OPRresendLogistictime = Column(DateTime, comment=u'退货时间')
+    OPRreceivername = Column(String(16), comment=u'收货人信名')
     OPRreceiverphone = Column(String(16), comment=u'收货人手机')
 
 
