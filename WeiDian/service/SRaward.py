@@ -2,7 +2,8 @@
 import sys
 import os
 from SBase import SBase, close_session
-from WeiDian.models.model import Raward, TaskRaward, UserRaward, RewardToUser
+from WeiDian.models.model import Raward, TaskRaward, UserRaward, RewardToUser, RewardTransfer
+
 sys.path.append(os.path.dirname(os.getcwd()))
 
 
@@ -27,6 +28,12 @@ class SRaward(SBase):
     @close_session
     def get_reward_by_usid(self, usid):
         return self.session.query(UserRaward).filter(UserRaward.USid == usid).all()
+
+    @close_session
+    def get_gifts_and_reward_by_usid(self, usid):
+        """两表查询"""
+        # return self.session.query(UserRaward, RewardTransfer).filter(UserRaward.USid == usid).filter(RewardTransfer.USid == usid).all()
+        return self.session.query(RewardTransfer).filter(RewardTransfer.USid == usid).all()
 
     @close_session
     def is_user_hold_reward(self, rafilter):
