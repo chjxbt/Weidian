@@ -483,7 +483,7 @@ class COrder():
                 if not opiid or not opilogisticssn or not kdcompany:
                     raise PARAMS_MISS(u'缺少opiid或者opilogisticssn或者kdcompany')
                 # 改变订单商品状态
-                opilogisticssn = kdcompany + u':' + opilogisticssn
+                opilogisticssn = opilogisticssn
                 order_product = session.query(OrderProductInfo).filter(
                         OrderProductInfo.OPIid == opiid
                 ).first()
@@ -492,6 +492,7 @@ class COrder():
                 if order_product.OPIstatus != 0:
                     raise PARAMS_MISS(u'重复发货: {}'.format(opiid))
                 order_product.OPIlogisticsSn = opilogisticssn
+                order_product.OPIlogisticsCompnay = kdcompany
                 order_product.OPIstatus = 1
                 now_time = datetime.now()
                 order_product.OPIresendLogistictime = datetime.strftime(now_time, format_for_db)
@@ -551,8 +552,6 @@ class COrder():
         order_product = self.sorder.get_orderproductinfo_by_opiid(opiid)
         if not order_product:
             raise NOT_FOUND(u'不存在的订单商品')
-        if order_product.OPIstatus in [4, 5]:
-            raise NOT_FOUND(u'退款或退货中')
         oiid = order_product.OIid
         order = self.sorder.get_order_by_oiid(oiid)
         if not order or order.USid != usid:
@@ -578,20 +577,18 @@ class COrder():
                 'OPRdesc': data.get('oprdesc'),
                 'OPRimage': json.dumps(voucher_images)
             }
-            OPIstatus = 5
             msg = u'申请换货成功'
             if OPRtype == 0:
                 # 退货退款
                 model_dict['OPRmount'] = oprmount
-                OPIstatus = 4
                 msg = u'申请退货成功'
             new_resend = OrderProductResend()
             [setattr(new_resend, k, v) for k, v in model_dict.items() if v is not None]
             session_list.append(new_resend)
-            # 更改商品详情状态
-            session.query(OrderProductInfo).filter(OrderProductInfo.OPIid == opiid).update({
-                'OPIstatus': OPIstatus
-            })
+            # # 更改商品详情状态   不需要改, 需要记住以前的状态
+            # session.query(OrderProductInfo).filter(OrderProductInfo.OPIid == opiid).update({
+            #     'OPIstatus': OPIstatus
+            # })
             # 更改订单状态
             session.query(OrderInfo).filter(OrderInfo.OIid == oiid).update({
                 'OIpaystatus': 11
@@ -612,7 +609,7 @@ class COrder():
         if not order_product_info:
             raise NOT_FOUND(u'不存在的订单')
         order_product_resend = self.sorder.get_orderproduct_resend_by_opiid(opiid)
-        if order_product_resend.OPRschedule != 0:
+        if not order_product_resend or order_product_resend.OPRschedule != 0:
             raise DumpliError(u'未申请或已处理')
         # 判断状态
         if agree == 1:
@@ -630,6 +627,7 @@ class COrder():
             msg = '拒绝成功'
         response = {"message": msg, "status": 200}
         return response
+
 
     def fix_orderproduct_info(self, sku_list, oiid):
         """
@@ -673,8 +671,8 @@ class COrder():
             productinfo.fields = ['OPIproductname', 'OPIproductimages', 'OPIstatus', 'OPIid', 'PRid', 'PSKproperkey', 'OIproductprice', 'OPIproductnum', 'SmallTotal']
             productinfo.OPIlogisticstime = get_web_time_str(productinfo.OPIlogisticstime)
             productinfo.fill(order.OIsn, 'oisn')
-            # {0: '待发货', 1: '待收货', 2: '交易成功(未评价)', 3: '交易成功(已评价)', 4: '退货', 5: '换货'}
-            if productinfo.OPIstatus in [1, 2, 3, 4, 5, 6]:
+            # 0: 待发货, 1 待收货, 2 交易成功(未评价), 3 交易成功(已评价), 4 已签收'
+            if productinfo.OPIstatus != 0:
                 # 发货信息
                 productinfo.add('OPIlogisticsSn', 'OPIlogisticsCompnay', 'OPIlogisticsText', 'OPIlogisticstime')
                 send_time = productinfo.OPIlogisticstime
@@ -685,13 +683,16 @@ class COrder():
                     productinfo.fill(logistic_name, 'zh_logistic_compnay')
                 if productinfo.OPIlogisticsText:
                     productinfo.OPIlogisticsText = json.loads(productinfo.OPIlogisticsText)
-            if productinfo.OPIstatus in [4, 5]:  # 退换货, 需要查询退换货表
+                productinfo.fill(False, 'resend')
+            # 退货信息
+            product_resend = self.sorder.get_orderproduct_resend_by_opiid(productinfo.OPIid)
+            if product_resend:  # 退换货, 需要查询退换货表
                 product_resend = self.sorder.get_orderproduct_resend_by_opiid(productinfo.OPIid)
                 product_resend.fields = product_resend.all
                 product_resend.zh_OPRschedule = OrderResend.get(product_resend.OPRschedule)
                 product_resend.zh_OPRtype = OrderResendType.get(product_resend.OPRtype)
                 product_resend.add('zh_OPRtype', 'zh_OPRschedule')
-
+                productinfo.fill(True, 'resend')
 
             productinfo.fill(order_product_info_status.get(productinfo.OPIstatus, u'异常'), 'zh_status')
         order.add('productinfo')
