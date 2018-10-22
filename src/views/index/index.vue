@@ -300,41 +300,41 @@
       },
         methods: {
           init(){
-          if(this.$route.query.linkUrl && localStorage.getItem('is_click') != '1'){
+          if(this.$route.query.linkUrl && localStorage.getItem('first_click') != '1'){
             switch (this.$route.query.linkUrl){
               case 'activityContent':
                 this.$router.push({path:'/'+this.$route.query.linkUrl,query:{
                     baid:this.$route.query.baid,
                   }});
-                localStorage.setItem('is_click','1')
+                localStorage.setItem('first_click','1')
                 break;
               case 'productDetail':
                 this.$router.push({path:'/'+this.$route.query.linkUrl,query:{
                     prid:this.$route.query.prid,
                   }})
-                localStorage.setItem('is_click','1')
+                localStorage.setItem('first_click','1')
                 break;
               case 'discover/index':
                 this.$router.push({path:'/'+this.$route.query.linkUrl,query:{
                     acid:this.$route.query.acid,
                     name:this.$route.query.name
                   }});
-                localStorage.setItem('is_click','1')
+                localStorage.setItem('first_click','1')
                 break;
               case 'invitationLetter':
                 this.$router.push({path:'/'+this.$route.query.linkUrl,query:{
 
                   }});
-                localStorage.setItem('is_click','1');
+                localStorage.setItem('first_click','1');
                 break;
             }
             return false;
           }
           /*邀请专粉*/
-          if(this.$route.query.isFans == '1' && localStorage.getItem('is_click') != '1' ){
+          if(this.$route.query.isFans == '1' && localStorage.getItem('first_click') != '1' ){
             this.show_fans_img = true;
             this.helpPopupVisible =true;
-            localStorage.setItem('is_click','1')
+            localStorage.setItem('first_click','1')
           }
           common.changeTitle('首页');
           // if(common.GetQueryString('UPPerd')){
