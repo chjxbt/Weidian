@@ -391,6 +391,7 @@ class OrderInfo(BaseModel):
     OIcreatetime = Column(String(14))  # 订单创建时间
     OIisdelete = Column(Boolean, default=False)  # 是否删除
     Sellerid = Column(String(64))  # 卖家id
+    RAid = Column(String(64), comment=u'优惠券id')
 
     @orm.reconstructor
     @auto_createtime

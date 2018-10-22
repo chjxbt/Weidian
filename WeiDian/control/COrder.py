@@ -28,6 +28,7 @@ from WeiDian.service.SComplain import SComplain
 from WeiDian.service.SUser import SUser
 from WeiDian.config.response import PARAMS_MISS, SYSTEM_ERROR, AUTHORITY_ERROR, TOKEN_ERROR, NOT_FOUND, DumpliError
 from WeiDian.common.token_required import is_tourist
+from WeiDian.service.SRaward import SRaward
 sys.path.append(os.path.dirname(os.getcwd()))
 
 
@@ -41,6 +42,7 @@ class COrder():
         self.scomplain = SComplain()
         self.update_order_params = ['orid', 'oipaystatus']
         self.pay = WeixinPay(APP_ID, MCH_ID, MCH_KEY, notify_url)
+        self.sraward = SRaward()
 
     @verify_token_decorator
     def add_one(self):
@@ -51,16 +53,11 @@ class COrder():
             return PARAMS_MISS
         required = ['oiaddress', 'oirecvname', 'oirecvphone', 'sku']
         missed = filter(lambda x: x not in data, required)
+        usid = request.user.id
         if missed:
             return PARAMS_MISS('必要参数缺失: ' + '/'.join(missed))
         with self.sorder.auto_commit() as session:
             pass
-        # 判断优惠券是否符合条件
-        raids = data.get('raids')
-        if raids:
-            for raid in raids:
-                # todo 判断优惠券
-                reward = ''
         # 建立订单
         order_dict = dict(
             oiid=str(uuid.uuid4()),
@@ -77,6 +74,21 @@ class COrder():
         orderproductinfo_dict_list = self.fix_orderproduct_info(sku, order_dict['oiid'])
         list_add_models('OrderProductInfo', orderproductinfo_dict_list)
         order_dict['oimount'] = sum([x['SmallTotal'] for x in orderproductinfo_dict_list]) # 总价
+        # 判断优惠券是否符合条件
+        raid = data.get('raid')
+        if raid:
+            # 判断优惠券
+            raward = self.sraward.get_raward_by_id(raid)
+            if not raward:
+                raise NOT_FOUND(u'不正确的优惠券')
+            user_raward = self.get_reward_by_raid_usid(raid, usid)
+            if not user_raward:
+                raise NOT_FOUND(u'不正确的优惠券')
+            # todo 可使用的转赠优惠券
+
+            if raward.RAtype == 0:
+                order_dict['oimount'] -= raward.RAamount
+            order_dict['RAid'] = raid
         dict_add_models('OrderInfo', order_dict)
         data = import_status('add_order_success', 'OK')
         data['data'] = {
@@ -535,6 +547,8 @@ class COrder():
             session.query(OrderProductInfo).filter(OrderProductInfo.OIid == oiid).update({
                 'OPIstatus': 2  # 已发货
             })
+            # 上级福利
+
         response = import_status('confirm_order_success', 'OK')
         return response
 
@@ -627,6 +641,8 @@ class COrder():
             msg = '拒绝成功'
         response = {"message": msg, "status": 200}
         return response
+
+
 
 
     def fix_orderproduct_info(self, sku_list, oiid):
