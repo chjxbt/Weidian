@@ -31,6 +31,16 @@ class SRaward(SBase):
         return self.session.query(UserRaward).filter(UserRaward.USid == usid).all()
 
     @close_session
+<<<<<<< HEAD
+    def get_reward_by_raid_usid(self, raid, usid):
+        return self.session.query(UserRaward).filter(UserRaward.USid == usid, UserRaward.RAid == raid).first()
+
+    @close_session
+    def get_gifts_and_reward_by_usid(self, usid):
+        """两表查询"""
+        # return self.session.query(UserRaward, RewardTransfer).filter(UserRaward.USid == usid).filter(RewardTransfer.USid == usid).all()
+        return self.session.query(RewardTransfer).filter(RewardTransfer.USid == usid).all()
+=======
     def get_gifts_by_usfrom_or_usid(self, rtfilter):
         return self.session.query(RewardTransfer).filter(or_(*rtfilter)).all()
 
@@ -48,6 +58,7 @@ class SRaward(SBase):
     def update_reward_transfer_info(self, upfilter, upinfo):
         """更新转增表中相应的状态"""
         return self.session.query(RewardTransfer).filter_by(**upfilter).update(upinfo)
+>>>>>>> 2bbc3d4e966ad1eaf8fb2fa754e14784cb465123
 
     @close_session
     def is_user_hold_reward(self, rafilter):
