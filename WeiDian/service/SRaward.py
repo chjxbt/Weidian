@@ -31,7 +31,6 @@ class SRaward(SBase):
         return self.session.query(UserRaward).filter(UserRaward.USid == usid).all()
 
     @close_session
-<<<<<<< HEAD
     def get_reward_by_raid_usid(self, raid, usid):
         return self.session.query(UserRaward).filter(UserRaward.USid == usid, UserRaward.RAid == raid).first()
 

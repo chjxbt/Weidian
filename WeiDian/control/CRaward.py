@@ -198,6 +198,97 @@ class CRaward():
         return data
 
     @verify_token_decorator
+    def get_transfer_reward(self):
+        """接收者领取优惠券"""
+        if is_tourist():
+            raise TOKEN_ERROR(u'未登录')
+        data = request.json
+        urid = data.get('urid')
+        openid = data.get('openid')
+        from WeiDian.service.SUser import SUser
+        presenter = SUser().get_user_by_openid(openid)
+        if not presenter:
+            raise NOT_FOUND(u'无此赠送用户')
+
+        # 在赠送者的普通券表中有
+        is_own_hold = self.sraward.is_user_hold_reward({'USid': presenter.USid, 'URid': urid})
+
+        # 赠送者送出去过，但是已退回，可以继续转赠
+        is_own_gift_hold = self.sraward.is_user_hold_reward_in_gift(
+            {'RFfrom': presenter.USid, 'RFid': urid, 'RFstatus': 1})
+
+        if is_own_hold:
+            raid = is_own_hold.RAid
+        elif is_own_gift_hold:
+            raid = is_own_gift_hold.RAid
+        else:
+            raise NOT_FOUND(u'用户无此优惠券')
+        reward_info = self.sraward.get_raward_by_id(raid)
+        if reward_info.RAtransfer == False:
+            raise SYSTEM_ERROR(u'该券不允许转赠')
+        return_time = reward_info.RAtransfereffectivetime  # 转赠有效时间，退回时间
+
+        # 已经赠送了该券给接收者，接收者还没用，且未到退回时间
+        is_recivice_gift_hold = self.sraward.is_user_hold_reward_in_gift(
+            {'RAid': raid, 'USid': request.user.id, 'RFstatus': 0, 'RFfrom': presenter.USid})
+        if is_recivice_gift_hold:
+            raise SYSTEM_ERROR(u'您已赠送过该券给用户')
+
+        # 接收者已经拥有其他人送的该券, 不影响, 忽略
+        # is_recivice_hold_from_other = self.sraward.is_user_hold_reward({'USid': usid, 'RAid': raid})
+
+        # 接收者原来已经拥有此券了
+        is_recivice_hold = self.sraward.is_user_hold_reward({'RAid': raid})
+
+        if is_own_gift_hold:
+            up_reward_info = self.sraward.update_reward_transfer_info(
+                {'RFfrom': request.user.id, 'RFid': urid, 'RFstatus': 1}, {'USid': usid, 'RFstatus': 0})
+            if not up_reward_info:
+                raise SYSTEM_ERROR(u'再次转送失败')
+
+        if is_own_hold and is_recivice_hold:
+            if is_own_hold.RAnumber > 0 and is_recivice_hold.RAnumber < reward_info.RAmaxholdnum:
+                logger.info("The user already has this type of reward ")
+                update_reward = self.sraward.update_user_reward({'URid': is_own_hold.URid},
+                                                                {'RAnumber': is_own_hold.RAnumber - 1})
+                # self.sraward.update_user_reward({'RAid': raid}, {'RAnumber': is_recivice_hold.RAnumber + 1})
+                rfid = str(uuid.uuid1())
+                self.sraward.add_model('RewardTransfer', **{
+                    'RFid': rfid,
+                    'USid': usid,
+                    'RAid': raid,
+                    'URFrom': request.user.id,
+                    'RAnumber': 1,
+                    'RFendtime': (datetime.now() + timedelta(hours=int(return_time))).strftime(format_for_db),
+                    'RFstatus': 0
+                })
+
+                if not update_reward:
+                    raise PARAMS_ERROR(u'更新参数错误')
+            else:
+                raise NOT_FOUND(u'您已没有可赠送数量或赠送用户已拥有该券最大可持有数')
+        elif is_own_hold and not is_recivice_hold:
+            if is_own_hold.RAnumber > 0:
+                logger.info("New reward to user")
+                rfid = str(uuid.uuid1())
+                self.sraward.add_model('RewardTransfer', **{
+                    'RFid': rfid,
+                    'USid': usid,
+                    'RAid': raid,
+                    'URFrom': request.user.id,
+                    'RAnumber': 1,
+                    'RFendtime': (datetime.now() + timedelta(hours=int(return_time))).strftime(format_for_db),
+                    'RFstatus': 0
+                })
+            else:
+                raise NOT_FOUND(u'您已没有可赠送的数量')
+        else:
+            raise NOT_FOUND(u'您已没有可赠送的数量')
+        data = import_status("give_to_others_success", "OK")
+        data['data'] = {'urid': urid}
+        return data
+
+    @verify_token_decorator
     def give_reward_to_others(self):
         """转赠优惠券"""
         if is_tourist():
@@ -278,9 +369,6 @@ class CRaward():
         data = import_status("give_to_others_success", "OK")
         data['data'] = {'urid': urid}
         return data
-
-    # TODO 持有数为零时的显示 / 是否允许删除失效券
-    # TODO 大礼包晋升时直接给创建
 
     @verify_token_decorator
     def get_user_reward(self):
