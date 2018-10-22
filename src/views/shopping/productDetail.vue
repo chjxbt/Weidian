@@ -107,7 +107,7 @@
         <img src="/static/images/produc_detail_shopping_cart.png" class="to-buy-icon m-ft-20">
         <p class="to-buy-text m-ft-20">购物车</p>
       </span>
-      <template v-if="!is_vip">
+      <template v-if="is_vip">
         <div class="m-vip-btn m-ft-36 "   @click.stop="addCart">
           <p>买</p>
           <p class="m-ft-24">省￥{{product_info.prsavemonty}}</p>
@@ -115,7 +115,6 @@
         <div class="m-vip-btn m-ft-36 active" >
           <p>卖</p>
           <p class="m-ft-24">赚￥{{product_info.prsavemonty}}</p></div>
-
       </template>
       <template v-else>
         <div class="m-vip-btn m-normal m-ft-36 "  @click="addCart">
