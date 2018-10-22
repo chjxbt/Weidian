@@ -19,6 +19,7 @@ class AOrder(Resource):
             'confim_order': 'self.corder.confim_order()',
             'apply_refund': 'self.corder.apply_refund()',
             'agree_refund': 'self.corder.agree_refund()', 
+            'buyer_send_out': 'self.corder.buyer_send_out()', 
          }
         res = eval(apis[order])
         return jsonify(res)

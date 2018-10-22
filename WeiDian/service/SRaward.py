@@ -35,6 +35,10 @@ class SRaward(SBase):
         return self.session.query(UserRaward).filter(UserRaward.USid == usid, UserRaward.RAid == raid).first()
 
     @close_session
+    def update_reward_by_raid_usid(self, raid, usid, data):
+        return self.session.query(UserRaward).filter(UserRaward.USid == usid, UserRaward.RAid == raid).update(data)
+
+    @close_session
     def get_gifts_and_reward_by_usid(self, usid):
         """两表查询"""
         # return self.session.query(UserRaward, RewardTransfer).filter(UserRaward.USid == usid).filter(RewardTransfer.USid == usid).all()
