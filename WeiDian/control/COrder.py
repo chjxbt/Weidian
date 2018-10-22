@@ -642,6 +642,16 @@ class COrder():
         response = {"message": msg, "status": 200}
         return response
 
+    def buyser_send_out(self):
+        """买家发货"""
+        if is_tourist():
+            raise TOKEN_ERROR(u'请登录')
+        data = parameter_required(u'opiid')
+        order_product_resend = self.sorder.get_orderproduct_resend_by_opiid(opiid)
+        if not order_product_resend:
+            raise NOT_FOUND(u'未申请')
+
+
     def fix_orderproduct_info(self, sku_list, oiid):
         """
         调整参数以可以持久化到orderproductinfo表
