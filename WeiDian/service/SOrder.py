@@ -198,3 +198,8 @@ class SOrder(SBase):
             OrderInfo.Sellerid == usid, OrderInfo.OIpaystatus.in_(['1', '4', '5', '6', '11'])
         ).count()
         return usercount, sellcount
+
+    @close_session
+    def update_order_product_resend_by_oprid(self, oprid, data):
+        """更新退货信息的状态"""
+        return self.session.query(OrderProductResend).filter(OrderProductResend.OPRid == oprid).update(data)

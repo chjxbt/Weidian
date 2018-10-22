@@ -19,14 +19,15 @@ from WeiDian.common.TransformToList import dict_add_models, list_add_models
 from WeiDian.common.timeformat import format_for_db, get_web_time_str
 from WeiDian.common.token_required import verify_token_decorator, is_partner, is_admin
 from WeiDian.common.import_status import import_status
-from WeiDian.models.model import OrderProductInfo, OrderInfo, OrderProductResend
+from WeiDian.models.model import OrderProductInfo, OrderInfo, OrderProductResend, UserRaward
 from WeiDian.service.SOrder import SOrder
 from WeiDian.service.SProductImage import SProductImage
 from WeiDian.service.SProductSkuKey import SProductSkuKey
 from WeiDian.service.SProduct import SProduct
 from WeiDian.service.SComplain import SComplain
 from WeiDian.service.SUser import SUser
-from WeiDian.config.response import PARAMS_MISS, SYSTEM_ERROR, AUTHORITY_ERROR, TOKEN_ERROR, NOT_FOUND, DumpliError
+from WeiDian.config.response import PARAMS_MISS, SYSTEM_ERROR, AUTHORITY_ERROR, TOKEN_ERROR, NOT_FOUND, DumpliError, \
+    PARAMS_ERROR
 from WeiDian.common.token_required import is_tourist
 from WeiDian.service.SRaward import SRaward
 sys.path.append(os.path.dirname(os.getcwd()))
@@ -81,11 +82,14 @@ class COrder():
             raward = self.sraward.get_raward_by_id(raid)
             if not raward:
                 raise NOT_FOUND(u'不正确的优惠券')
-            user_raward = self.get_reward_by_raid_usid(raid, usid)
+            user_raward = self.sraward.get_reward_by_raid_usid(raid, usid)
             if not user_raward:
                 raise NOT_FOUND(u'不正确的优惠券')
-            # todo 可使用的转赠优惠券
+            self.sraward.update_reward_by_raid_usid(raid, usid, {
+                'RAnumber': UserRaward.RAnumber - 1
+            })
 
+            # todo 可使用的转赠优惠券
             if raward.RAtype == 0:
                 order_dict['oimount'] -= raward.RAamount
             order_dict['RAid'] = raid
@@ -369,20 +373,6 @@ class COrder():
         return response
 
     @verify_token_decorator
-    def update_order(self):
-        """没用"""
-        if is_tourist():
-            return TOKEN_ERROR
-        parameter_required(*self.update_order_params)
-        data = request.json
-        orid = data.get('orid')
-        oipaystatus = data.get("oipaystatus")
-        update_result = self.sorder.update_orderinfo_status(orid, {"OIpaystatus": oipaystatus})
-        if not update_result:
-            raise SYSTEM_ERROR(u'数据库连接异常')
-        # if oipaystatus:
-
-    @verify_token_decorator
     def pay_order(self):
         """付款"""
         if is_tourist():
@@ -629,18 +619,72 @@ class COrder():
         if agree == 1:
             with self.sorder.auto_commit() as session:
                 # 更改退款表状态
+                # 如果未发货, 可以直接退款
+                schedule = 1
+                msg = '同意退货, 等待买家发货'
+                if order_product_info.OPIstatus == 0:
+                    schedule = 5  # 完成
+                    # todo 退款方法
+                    self._refund()
+                    msg = '已执行退款'
                 session.query(OrderProductResend).filter(
                         OrderProductResend.OPIid == opiid
-                ).update({'OPRschedule': 1})
-            msg = '同意退货, 等待买家发货'
+                ).update({'OPRschedule': schedule})
         elif agree == 0:
             with self.sorder.auto_commit() as session:
                 session.query(OrderProductResend).filter(
                         OrderProductResend.OPIid == opiid
                 ).update({'OPRschedule': 5})
-            msg = '拒绝成功'
+                msg = '拒绝成功'
+        else:
+            raise PARAMS_MISS()
         response = {"message": msg, "status": 200}
         return response
+
+    @verify_token_decorator
+    def buyer_send_out(self):
+        """买家发货"""
+        if is_tourist():
+            raise TOKEN_ERROR(u'请登录')
+        data = parameter_required(u'opiid', 'oprresendlogisticcompnay', 'oprresendlogisticsn', 'oprreceivername', 'oprreceiverphone')
+        order_product_resend = self.sorder.get_orderproduct_resend_by_opiid(opiid)
+        if not order_product_resend:
+            raise NOT_FOUND(u'未申请')
+        if not order_product_resend.OPRschedule != 0:
+            raise NOT_FOUND(u'已发货')
+        kd_company_list = [x['expresskey'] for x in kd_list]
+        kd_company = data.get('oprresendlogisticcompnay')
+        if kd_company not in kd_company_list:
+            raise PARAMS_ERROR(u'不正确的快递公司')
+        oprid = order_product_resend.OPRid
+        update_dict = {
+            'OPRresendLogisticCompany': data.get('oprresendlogisticcompnay'),
+            'OPRresendLogisticSn': data.get('oprresendlogisticsn'),
+            'OPRresendLogistictime': datetime.now(),
+            'OPRreceivername': data.get('oprreceivername'),
+            'OPRreceiverphone': data.get('oprreceiverphone'),
+            'OPRschedule': 3  # 3: 买家已发货
+        }
+        updated = self.sorder.update_order_product_resend_by_oprid(oprid, update_dict)
+        msg = '发货成功'
+        response = {'message': msg, 'status': 200}
+        return response
+
+    @verify_token_decorator
+    def solder_confirm(self):
+        """买家确认收货"""
+        if not is_admin():
+            raise TOKEN_ERROR(u'请使用管理员登录')
+        data = parameter_required(u'opiid')
+        # 如果为退款, 则直接退款；如果为换货, 则进入卖家发货中
+        opiid = data.get('opiid')
+        order_product_resend = self.sorder.get_orderproduct_resend_by_opiid(opiid)
+        if not order_product_resend:
+            raise NOT_FOUND()
+
+    @verify_token_decorator
+    def solder_change_send(self):
+        """卖家换货发货"""
 
     def fix_orderproduct_info(self, sku_list, oiid):
         """
@@ -700,12 +744,14 @@ class COrder():
             # 退货信息
             product_resend = self.sorder.get_orderproduct_resend_by_opiid(productinfo.OPIid)
             if product_resend:  # 退换货, 需要查询退换货表
-                product_resend = self.sorder.get_orderproduct_resend_by_opiid(productinfo.OPIid)
                 product_resend.fields = product_resend.all
                 product_resend.zh_OPRschedule = OrderResend.get(product_resend.OPRschedule)
                 product_resend.zh_OPRtype = OrderResendType.get(product_resend.OPRtype)
+                product_resend.OPRimage = json.loads(product_resend.OPRimage)
                 product_resend.add('zh_OPRtype', 'zh_OPRschedule')
                 productinfo.fill(True, 'resend')
+                productinfo.fill(product_resend, 'product_resend')
+
 
             productinfo.fill(order_product_info_status.get(productinfo.OPIstatus, u'异常'), 'zh_status')
         order.add('productinfo')
@@ -731,6 +777,9 @@ class COrder():
         for kd in kd_list:
             if kd.get('expresskey') == alias:
                 return kd.get('expressname')
+
+    def _refund(self):
+        pass
 
     
 

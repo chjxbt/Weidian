@@ -445,7 +445,8 @@ class OrderProductResend(BaseModel):
     OPRid = Column(String(64), primary_key=True)
     OPRsn = Column(String(64), comment=u'退货编号')
     OPIid = Column(String(64), nullable=False, comment=u'订单商品详情id')
-    OPRschedule = Column(Integer, default=0, comment=u'进度, 0 已申请, 1 买家退货中, 2 卖家发货中, 3 卖家已发货, 4 完成, 5 拒绝申请')
+
+    OPRschedule = Column(Integer, default=0, comment=u"进度,  {0: '已申请', 1: '等待买家发货', 3: '买家已发货', 3: '卖家发货中', 4: '卖家已发货', 5: '完成', 6: '拒绝申请'}")
     OPRtype = Column(Integer, default=0, comment=u'类型, 0 退货  1 换货')
     OPRmount = Column(Float, comment=u'退款金额')
     OPRreason = Column(String(64), comment=u'退款原因')
@@ -459,6 +460,13 @@ class OrderProductResend(BaseModel):
     OPRresendLogistictime = Column(DateTime, comment=u'退货时间')
     OPRreceivername = Column(String(16), comment=u'收货人信名')
     OPRreceiverphone = Column(String(16), comment=u'收货人手机')
+
+
+# class OrderProductSendTwice(BaseModel):
+#     """卖家第二次发货"""
+#     __tablename__ = 'ordersendtwice'
+#     OPSid = Column(String(64), primary_key=True)
+
 
 
 
