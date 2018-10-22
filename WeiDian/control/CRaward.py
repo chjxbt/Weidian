@@ -347,12 +347,6 @@ class CRaward():
                 reward_list.append(reward)
                 reward['urcreatetime'] = get_web_time_str(reward.get('urcreatetime'))
             for gift in gift_reward_info:
-<<<<<<< HEAD
-                if gift.RFfrom == request.user.id:
-                    # todo 是赠送者获取状态，同时也有他人赠送自己的券
-                    pass # pass防报错
-=======
->>>>>>> 2bbc3d4e966ad1eaf8fb2fa754e14784cb465123
                 gift = self.fill_transfer_detail(gift)
                 gift_detail = self.sraward.get_raward_by_id(gift.RAid)
                 gift_detail = self.fill_reward_detail(gift_detail, total_price)
