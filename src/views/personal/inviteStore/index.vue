@@ -153,21 +153,9 @@
             <h3 class="m-inviteStore-modal-content-h3">选择赠与的新衣币</h3>
             <div class="m-scroll">
               <ul class="m-inviteStore-modal-content-ul">
-                <li>
-                  <span class="m-check"></span>
-                  <discount-coupon></discount-coupon>
-                </li>
-                <li>
-                  <span class="m-check active"></span>
-                  <discount-coupon></discount-coupon>
-                </li>
-                <li>
-                  <span class="m-check"></span>
-                  <discount-coupon></discount-coupon>
-                </li>
-                <li>
-                  <span class="m-check active"></span>
-                  <discount-coupon></discount-coupon>
+                <li v-for="(item,index) in valid">
+                  <span class="m-check" :class="item.click?'active':''" @click.stop="checkClick(index)"></span>
+                  <discount-coupon :card="item" :i="index"></discount-coupon>
                 </li>
               </ul>
             </div>
@@ -175,7 +163,7 @@
           </div>
           <div class="m-inviteStore-modal-foot">
             <div class="m-flex-start">
-              <span class="m-check"></span>
+              <span class="m-check" :class="no_card?'active':''" @click.stop="noCard"></span>
               <span>不使用新衣币</span>
             </div>
             <span class="m-inviteStore-modal-btn" @click="inviteClick">确定</span>
@@ -196,6 +184,21 @@
   import common from '../../../common/js/common';
   import imgModal from '../../../components/common/imgModal';
   import wxapi from '../../../common/js/mixins';
+  var scroll = (function (className) {
+    var scrollTop;
+    return {
+      afterOpen: function () {
+        scrollTop = document.scrollingElement.scrollTop || document.body.scrollTop;
+        document.body.classList.add(className);
+        document.body.style.top = -scrollTop + 'px';
+      },
+      beforeClose: function () {
+        document.body.classList.remove(className);
+        document.scrollingElement.scrollTop = scrollTop;
+        document.body.scrollTop = scrollTop;
+      }
+    };
+  })('scroll');
     export default {
       mixins: [wxapi],
       data() {
@@ -223,19 +226,56 @@
           show_img:false,
           img_src:'',
           bg_src:'',
-          show_invite:false
+          show_invite:false,
+          valid:null,
+          select_valid:null,
+          no_card:false
         }
       },
       components: {
         discountCoupon,
         imgModal},
+      watch:{
+        show_modal:function (val,oldVal) {
+          if(val){
+            scroll.afterOpen();
+          }else{
+            scroll.beforeClose();
+          }
+        }
+      },
       methods: {
+        //获取优惠券
+        getReward(){
+          axios.get(api.get_user_reward ,{
+            params:{
+              transfer:true,
+              token:localStorage.getItem('token')
+            }
+          }).then(res => {
+            if(res.data.status == 200){
+              let arr = res.data.data;
+              let _valid = [];
+              let _unvalid = [];
+              for(let i=0;i<arr.length;i++){
+                arr[i].click =false;
+                if(arr[i].reward_detail.valid){
+                  _valid.push(arr[i]);
+                }else{
+                  _unvalid.push(arr[i])
+                }
+              }
+              this.valid = [].concat(_valid);
+              this.unvalid = [].concat(_unvalid);
+            }
+          })
+        },
         /*分享*/
         wxRegCallback () {
           this.wxShare()
         },
         wxShare () {
-          const url = window.location.origin + '/#/index/index?UPPerd=' + localStorage.getItem('openid') +'&linkUrl=invitationLetter';
+          const url = window.location.origin + '/#/index/index?UPPerd=' + localStorage.getItem('openid') +'&linkUrl=invitationLetter&urid=' + this.select_valid.urid;
           axios.get(api.get_share_params+'?token='+localStorage.getItem('token')).then(res => {
             if(res.data.status == 200){
               let opstion = {
@@ -253,8 +293,8 @@
               this.show_invite = true;
             }
           })
-
         },
+        //导航切换
         navChange(v){
           this.now = v
         },
@@ -292,6 +332,33 @@
         inviteClick(){
           this.show_modal = false;
           this.wxShare();
+        },
+        //单选
+        checkClick(index){
+          if(this.valid[index].click){
+            return false;
+          }
+          let arr = [].concat(this.valid);
+          for(let i=0;i<arr.length;i++){
+            arr[i].click = false;
+          }
+          arr[index].click =true;
+          this.no_card =false;
+          this.valid = [].concat(arr);
+          this.select_valid = this.valid[index];
+        },
+        //不使用优惠券
+        noCard(){
+          if(this.no_card){
+            return false;
+          }
+          this.no_card =true;
+          let arr = [].concat(this.valid);
+          for(let i=0;i<arr.length;i++){
+            arr[i].click = false;
+          }
+          this.valid = [].concat(arr);
+          this.select_valid =null;
         }
       },
       mounted(){
@@ -299,6 +366,7 @@
         // this.getRule();
         wxapi.wxRegister(this.wxRegCallback);
         this.getRule(8);
+        this.getReward()
       },
       created() {
 

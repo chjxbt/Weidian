@@ -168,15 +168,15 @@
           },
           orderIcon(i){
             this.$router.push({path:"/order",query:{name:i.name}});
+          },
+          highImg(){
+            this.$router.push({path:"/invitationLetter"});
           }
         },
         created() {
           this.getOrder();
           this.getImg();
-        },
-      highImg(){
-        this.$router.push({path:"/invitationLetter"});
-      }
+        }
     }
 </script>
 <style lang="less" rel="stylesheet/less">
