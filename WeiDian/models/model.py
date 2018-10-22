@@ -867,7 +867,8 @@ class RewardTransfer(BaseModel):
     RAnumber = Column(Integer)              # 赠送数量
     RFcreatetime = Column(String(14))       # 转赠时间
     RFendtime = Column(String(14))          # 退回时间
-    RFstatus = Column(Integer, default=0)   # 转赠状态 {0:已领取 1:已退回 2:已使用}
+    RFusetime = Column(String(14))          # 优惠券使用时间
+    RFstatus = Column(Integer, default=0)   # 转赠状态 {0:已领取 1:已退回 2:已使用 }
 
     @orm.reconstructor
     @auto_createtime

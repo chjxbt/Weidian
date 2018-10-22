@@ -17,7 +17,7 @@ from WeiDian import logger
 # from WeiDian.common.weixinmp import mp
 from WeiDian.common.params_require import parameter_required
 from WeiDian.config.response import PARAMS_MISS, SYSTEM_ERROR, NETWORK_ERROR, TOKEN_ERROR
-from WeiDian.common.token_required import verify_token_decorator, usid_to_token, is_admin
+from WeiDian.common.token_required import verify_token_decorator, usid_to_token, is_admin, is_partner
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db
 from WeiDian.common.weixinmp import mp
@@ -432,14 +432,22 @@ class CUser():
 
     @verify_token_decorator
     def get_user_sub(self):
-        if not is_admin():
-            raise TOKEN_ERROR(u'权限不足')
-
         data = request.args.to_dict()
+        sub = data.get('sub')
+        usid = data.get('usid')
+        if sub == None:
+            if not is_admin():
+                raise TOKEN_ERROR(u'权限不足')
+        else:
+            if not is_partner():
+                raise TOKEN_ERROR(u'当前非合伙人')
         logger.debug('get user sub args: %s', data)
-        parameter_required('usid')
+        # parameter_required('usid')
         pagenum, pagesize = self.get_pagesize_pagenum(data)
-        user = self.suser.get_user_by_user_id(data.get('usid'))
+        if usid:
+            user = self.suser.get_user_by_user_id(usid)
+        else:
+            user = self.suser.get_user_by_user_id(request.user.id)
         user_sub, count = self.suser.get_sub_user(user.openid, pagesize, pagenum)
         response = import_status('messages_get_item_ok', 'OK')
         response['data'] = user_sub

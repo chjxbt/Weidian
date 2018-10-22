@@ -3,6 +3,7 @@ import sys
 import os
 from SBase import SBase, close_session
 from WeiDian.models.model import Raward, TaskRaward, UserRaward, RewardToUser, RewardTransfer
+from sqlalchemy import or_
 
 sys.path.append(os.path.dirname(os.getcwd()))
 
@@ -30,6 +31,7 @@ class SRaward(SBase):
         return self.session.query(UserRaward).filter(UserRaward.USid == usid).all()
 
     @close_session
+<<<<<<< HEAD
     def get_reward_by_raid_usid(self, raid, usid):
         return self.session.query(UserRaward).filter(UserRaward.USid == usid, UserRaward.RAid == raid).first()
 
@@ -38,6 +40,25 @@ class SRaward(SBase):
         """两表查询"""
         # return self.session.query(UserRaward, RewardTransfer).filter(UserRaward.USid == usid).filter(RewardTransfer.USid == usid).all()
         return self.session.query(RewardTransfer).filter(RewardTransfer.USid == usid).all()
+=======
+    def get_gifts_by_usfrom_or_usid(self, rtfilter):
+        return self.session.query(RewardTransfer).filter(or_(*rtfilter)).all()
+
+    @close_session
+    def get_gifts_and_reward_by_usfilter(self, usfiler):
+        """在转赠表中根据条件查询拥有券"""
+        return self.session.query(RewardTransfer).filter_by(**usfiler).all()
+
+    @close_session
+    def is_user_hold_reward_in_gift(self, grfilter):
+        """在转增表中查看是否拥有该券"""
+        return self.session.query(RewardTransfer).filter_by(**grfilter).first()
+
+    @close_session
+    def update_reward_transfer_info(self, upfilter, upinfo):
+        """更新转增表中相应的状态"""
+        return self.session.query(RewardTransfer).filter_by(**upfilter).update(upinfo)
+>>>>>>> 2bbc3d4e966ad1eaf8fb2fa754e14784cb465123
 
     @close_session
     def is_user_hold_reward(self, rafilter):

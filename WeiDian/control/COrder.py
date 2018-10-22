@@ -642,9 +642,6 @@ class COrder():
         response = {"message": msg, "status": 200}
         return response
 
-
-
-
     def fix_orderproduct_info(self, sku_list, oiid):
         """
         调整参数以可以持久化到orderproductinfo表
