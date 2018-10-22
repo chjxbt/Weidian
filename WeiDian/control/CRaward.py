@@ -289,11 +289,9 @@ class CRaward():
             raise TOKEN_ERROR(u'未登录')
         args = request.args.to_dict()
         logger.debug("get reward args is %s", args)
-        topay = args.get('topay')
         allow_transfer = args.get('transfer')
         reward_info = self.sraward.get_reward_by_usid(request.user.id)
-        if not reward_info:
-            raise NOT_FOUND(u'用户暂无优惠券')
+
         try:
             for reward in reward_info:
                 reward_detail = self.sraward.get_raward_by_id(reward.RAid)
@@ -301,10 +299,11 @@ class CRaward():
                 reward.fill(reward_detail, 'reward_detail')
                 reward.URcreatetime = get_web_time_str(reward.URcreatetime)
 
-            if str(topay) == 'true':
-                reward_info = filter(lambda r: r.reward_detail['RAtype'] in [0, 2], reward_info)
+            # reward_info = filter(lambda r: r.get('reward_detail')['RAtype'] in [0, 2], reward_list)
+            reward_info = filter(lambda k: k.RAnumber != 0, reward_info)
 
             if str(allow_transfer) == 'true':
+                reward_info = filter(lambda r: r.reward_detail['valid'] == True, reward_info)
                 reward_info = filter(lambda r: r.reward_detail['RAtransfer'] == True, reward_info)
 
             data = import_status('messages_get_item_ok', "OK")
@@ -348,12 +347,6 @@ class CRaward():
                 reward_list.append(reward)
                 reward['urcreatetime'] = get_web_time_str(reward.get('urcreatetime'))
             for gift in gift_reward_info:
-<<<<<<< HEAD
-                if gift.RFfrom == request.user.id:
-                    # todo 是赠送者获取状态，同时也有他人赠送自己的券
-                    pass # pass防报错
-=======
->>>>>>> 2bbc3d4e966ad1eaf8fb2fa754e14784cb465123
                 gift = self.fill_transfer_detail(gift)
                 gift_detail = self.sraward.get_raward_by_id(gift.RAid)
                 gift_detail = self.fill_reward_detail(gift_detail, total_price)
