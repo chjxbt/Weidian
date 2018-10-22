@@ -30,6 +30,7 @@ class AReward(Resource):
             "admin_giving_reward": "self.creward.admin_giving_reward()",
             "give_reward_to_others": "self.creward.give_reward_to_others()",
             "get_user_reward": "self.creward.get_user_pay_reward()",
+            "get_transfer_reward": "self.creward.get_transfer_reward()",
         }
         res = eval(apis[reward])
         return jsonify(res)

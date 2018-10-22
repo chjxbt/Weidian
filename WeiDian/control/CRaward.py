@@ -210,6 +210,11 @@ class CRaward():
         if not presenter:
             raise NOT_FOUND(u'无此赠送用户')
 
+        is_self_reward = self.sraward.is_user_hold_reward({'USid': request.user.id, 'URid': urid})
+        is_self_gift_reward = self.sraward.is_user_hold_reward_in_gift({'RFfrom': request.user.id, 'RFid': urid})
+        if is_self_reward or is_self_gift_reward:
+            raise SYSTEM_ERROR(u'不能领取自己转赠的优惠券')
+
         # 在赠送者的普通券表中有
         is_own_hold = self.sraward.is_user_hold_reward({'USid': presenter.USid, 'URid': urid})
 
@@ -232,7 +237,7 @@ class CRaward():
         is_recivice_gift_hold = self.sraward.is_user_hold_reward_in_gift(
             {'RAid': raid, 'USid': request.user.id, 'RFstatus': 0, 'RFfrom': presenter.USid})
         if is_recivice_gift_hold:
-            raise SYSTEM_ERROR(u'您已赠送过该券给用户')
+            raise SYSTEM_ERROR(u'已领取过该券')
 
         # 接收者已经拥有其他人送的该券, 不影响, 忽略
         # is_recivice_hold_from_other = self.sraward.is_user_hold_reward({'USid': usid, 'RAid': raid})
@@ -242,9 +247,9 @@ class CRaward():
 
         if is_own_gift_hold:
             up_reward_info = self.sraward.update_reward_transfer_info(
-                {'RFfrom': request.user.id, 'RFid': urid, 'RFstatus': 1}, {'USid': usid, 'RFstatus': 0})
+                {'RFfrom': presenter.USid, 'RFid': urid, 'RFstatus': 1}, {'USid': request.user.id, 'RFstatus': 0})
             if not up_reward_info:
-                raise SYSTEM_ERROR(u'再次转送失败')
+                raise SYSTEM_ERROR(u'该券经过再次转送失败')
 
         if is_own_hold and is_recivice_hold:
             if is_own_hold.RAnumber > 0 and is_recivice_hold.RAnumber < reward_info.RAmaxholdnum:
@@ -255,9 +260,9 @@ class CRaward():
                 rfid = str(uuid.uuid1())
                 self.sraward.add_model('RewardTransfer', **{
                     'RFid': rfid,
-                    'USid': usid,
+                    'USid': request.user.id,
                     'RAid': raid,
-                    'URFrom': request.user.id,
+                    'URFrom': presenter.USid,
                     'RAnumber': 1,
                     'RFendtime': (datetime.now() + timedelta(hours=int(return_time))).strftime(format_for_db),
                     'RFstatus': 0
@@ -266,16 +271,16 @@ class CRaward():
                 if not update_reward:
                     raise PARAMS_ERROR(u'更新参数错误')
             else:
-                raise NOT_FOUND(u'您已没有可赠送数量或赠送用户已拥有该券最大可持有数')
+                raise NOT_FOUND(u'赠送者已没有可赠送数量或您已拥有该券最大可持有数')
         elif is_own_hold and not is_recivice_hold:
             if is_own_hold.RAnumber > 0:
                 logger.info("New reward to user")
                 rfid = str(uuid.uuid1())
                 self.sraward.add_model('RewardTransfer', **{
                     'RFid': rfid,
-                    'USid': usid,
+                    'USid': request.user.id,
                     'RAid': raid,
-                    'URFrom': request.user.id,
+                    'URFrom': presenter.USid,
                     'RAnumber': 1,
                     'RFendtime': (datetime.now() + timedelta(hours=int(return_time))).strftime(format_for_db),
                     'RFstatus': 0
