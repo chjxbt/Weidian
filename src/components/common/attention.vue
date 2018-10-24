@@ -112,7 +112,7 @@
           context.font = "bold 58px PingFang-SC";
           context.fillText(price[0], 120, 1150);
           context.font = "bold 30px PingFang-SC";
-          context.fillText(". " + price[1], price[0].length * 20, 1150);
+          context.fillText(". " + price[1], price[0].length * 20 + 120, 1150);
 
           // 添加原价文字
           context.fillStyle = "#a4a4a4";
