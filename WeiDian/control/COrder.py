@@ -19,7 +19,7 @@ from WeiDian.common.TransformToList import dict_add_models, list_add_models
 from WeiDian.common.timeformat import format_for_db, get_web_time_str
 from WeiDian.common.token_required import verify_token_decorator, is_partner, is_admin
 from WeiDian.common.import_status import import_status
-from WeiDian.models.model import OrderProductInfo, OrderInfo, OrderProductResend, UserRaward
+from WeiDian.models.model import OrderProductInfo, OrderInfo, OrderProductResend, UserRaward, OrderProductSendTwice
 from WeiDian.service.SOrder import SOrder
 from WeiDian.service.SProductImage import SProductImage
 from WeiDian.service.SProductSkuKey import SProductSkuKey
@@ -646,13 +646,13 @@ class COrder():
         """买家发货"""
         if is_tourist():
             raise TOKEN_ERROR(u'请登录')
-        data = parameter_required(u'opiid', u'oprresendlogisticcompnay', u'oprresendlogisticsn', u'oprreceivername', u'oprreceiverphone')
+        data = parameter_required(u'opiid', u'oprresendlogisticcompnay', u'oprresendlogisticsn', u'oprreceivername', u'oprreceiverphone', u'oprreceiveraddress')
         opiid = data.get('opiid')
         order_product_resend = self.sorder.get_orderproduct_resend_by_opiid(opiid)
         if not order_product_resend:
             raise NOT_FOUND(u'未申请')
-        if not order_product_resend.OPRschedule != 0:
-            raise NOT_FOUND(u'已发货')
+        if order_product_resend.OPRschedule != 0:
+            raise NOT_FOUND(u'请勿重新发货')
         kd_company_list = [x['expresskey'] for x in kd_list]
         kd_company = data.get('oprresendlogisticcompnay')
         if kd_company not in kd_company_list:
@@ -664,7 +664,8 @@ class COrder():
             'OPRresendLogistictime': datetime.now(),
             'OPRreceivername': data.get('oprreceivername'),
             'OPRreceiverphone': data.get('oprreceiverphone'),
-            'OPRschedule': 3  # 3: 买家已发货
+            'OPRschedule': 2,  # 3: 买家已发货
+            'OPRreceiveraddress': data.get('oprreceiveraddress'),
         }
         updated = self.sorder.update_order_product_resend_by_oprid(oprid, update_dict)
         msg = '发货成功'
@@ -702,13 +703,53 @@ class COrder():
         response = {'message': msg, 'status': 200}
         return response
 
-
-
-
-
     @verify_token_decorator
     def solder_change_send(self):
         """卖家换货发货"""
+        if not is_admin():
+            raise TOKEN_ERROR(u'请使用管理员登录')
+        data = parameter_required(u'opiid', u'opssendsn', u'opssendlogisticcompany', u'opsreceivername', u'opsreceivephone', u'opsreceiveaddress')
+        opiid = data.get('opiid')
+        order_product_resend = self.sorder.get_orderproduct_resend_by_opiid(opiid)
+        if not order_product_resend:
+            raise NOT_FOUND()
+        if order_product_resend.OPRtype == 0:
+            raise NOT_FOUND(u'非换货订单')
+        if order_product_resend.OPRschedule != 3:
+            raise NOT_FOUND(u'请先确认收货')
+        oprid = order_product_resend.OPRid
+        with self.sorder.auto_commit() as session:
+            alreadysend = session.query(OrderProductSendTwice).filter(
+                OrderProductSendTwice.OPRid == oprid
+            ).first()
+            if alreadysend:
+                raise DumpliError(u'重复发货')
+            kd_company_list = [x['expresskey'] for x in kd_list]
+            kd_company = data.get('opssendlogisticcompany')
+            if kd_company not in kd_company_list:
+                raise PARAMS_ERROR(u'不正确的快递公司')
+            # 添加记录
+            model_dict = {
+                'OPSid': str(uuid.uuid4()),
+                'OPRid': oprid,
+                'OPSsendsn': data.get('opssendsn'),
+                'OPSsendLogisticCompany': kd_company,
+                'OPSreceivername': data.get('opsreceivername'),
+                'OPSreceivephone': data.get('opsreceivephone'),
+                'OPSreceiveaddress': data.get('opsreceiveaddress')
+            }
+            opst = OrderProductSendTwice()
+            opst.create(model_dict)
+            # 改变状态
+            session.query(OrderProductResend).filter(
+                OrderProductResend.OPRid == oprid
+            ).update(
+                {'OPRschedule': 4}  # 4: 卖家已发货
+            )
+            session.add(opst)
+        response = {'message': u'卖家换货发货成功', 'status': 200}
+        return response
+
 
     def fix_orderproduct_info(self, sku_list, oiid):
         """
