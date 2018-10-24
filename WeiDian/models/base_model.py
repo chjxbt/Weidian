@@ -54,6 +54,10 @@ class BaseModel(AbstractConcreteBase, Base):
     def __init__(self):
         self.fields = []
 
+    def create(self, data):
+        [setattr(self, k, v) for k, v in data.items()]
+        return self
+
     def auto_creatdatatime(self):
         createtimes = filter(lambda k: 'createtime' in k, self.__table__.columns.keys())
         if createtimes:

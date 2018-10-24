@@ -20,6 +20,10 @@ class AOrder(Resource):
             'apply_refund': 'self.corder.apply_refund()',
             'agree_refund': 'self.corder.agree_refund()', 
             'buyer_send_out': 'self.corder.buyer_send_out()', 
+            'solder_confirm': 'self.corder.solder_confirm()',  # 卖家确认
+            'solder_change_send': 'self.corder.solder_change_send()',   # 卖家换货发货
+
+
          }
         res = eval(apis[order])
         return jsonify(res)
