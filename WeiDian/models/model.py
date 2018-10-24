@@ -440,7 +440,7 @@ class OrderProductInfo(BaseModel):
 
 
 class OrderProductResend(BaseModel):
-    """退款"""
+    """退款(换货)"""
     __tablename__ = 'orderproductresend'
     OPRid = Column(String(64), primary_key=True)
     OPRsn = Column(String(64), comment=u'退货编号')
@@ -455,19 +455,26 @@ class OrderProductResend(BaseModel):
     OPRcreatetime = Column(DateTime, default=datetime.now, comment=u'申请时间')
 
     OPRresendLogisticSn = Column(String(64), comment=u'退货单号')
-    OPRresendLogisticCompany = Column(Text, comment=u'物流公司')
+    OPRresendLogisticCompany = Column(String(16), comment=u'物流公司')
     OPRresendLogisticText = Column(Text, comment=u'退货物流信息')
     OPRresendLogistictime = Column(DateTime, comment=u'退货时间')
     OPRreceivername = Column(String(16), comment=u'收货人信名')
     OPRreceiverphone = Column(String(16), comment=u'收货人手机')
+    OPRreceiveraddress = Column(String(255), comment=u'收货地址')
 
 
-# class OrderProductSendTwice(BaseModel):
-#     """卖家第二次发货"""
-#     __tablename__ = 'ordersendtwice'
-#     OPSid = Column(String(64), primary_key=True)
-
-
+class OrderProductSendTwice(BaseModel):
+    """卖家第二次发货"""
+    __tablename__ = 'ordersendtwice'
+    OPSid = Column(String(64), primary_key=True)
+    OPRid = Column(String(64), nullable=False, comment=u'退货换货id')
+    OPSsendtime = Column(DateTime, default=datetime.now, comment=u'发货时间')
+    OPSsendsn = Column(String(64), nullable=False, comment=u'退货单号')
+    OPSsendLogisticCompany = Column(String(16), nullable=False, comment=u'物流公司')
+    OPSsendLogisticText = Column(Text, comment=u'物流信息')
+    OPSreceivername = Column(String(16), comment=u'姓名')
+    OPSreceivephone = Column(String(16), comment=u'手机')
+    OPRreceiveaddress = Column(String(255), comment=u'收货地址')
 
 
 class ProductCategory(BaseModel):

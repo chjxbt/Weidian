@@ -622,7 +622,7 @@ class COrder():
                 # 如果未发货, 可以直接退款
                 schedule = 1
                 msg = '同意退货, 等待买家发货'
-                if order_product_info.OPIstatus == 0:
+                if order_product_info.OPIstatus == 0:  # 如果商品并未发货
                     schedule = 5  # 完成
                     # todo 退款方法
                     self._refund()
@@ -646,7 +646,8 @@ class COrder():
         """买家发货"""
         if is_tourist():
             raise TOKEN_ERROR(u'请登录')
-        data = parameter_required(u'opiid', 'oprresendlogisticcompnay', 'oprresendlogisticsn', 'oprreceivername', 'oprreceiverphone')
+        data = parameter_required(u'opiid', u'oprresendlogisticcompnay', u'oprresendlogisticsn', u'oprreceivername', u'oprreceiverphone')
+        opiid = data.get('opiid')
         order_product_resend = self.sorder.get_orderproduct_resend_by_opiid(opiid)
         if not order_product_resend:
             raise NOT_FOUND(u'未申请')
@@ -672,7 +673,7 @@ class COrder():
 
     @verify_token_decorator
     def solder_confirm(self):
-        """买家确认收货"""
+        """卖家确认收货"""
         if not is_admin():
             raise TOKEN_ERROR(u'请使用管理员登录')
         data = parameter_required(u'opiid')
@@ -681,6 +682,29 @@ class COrder():
         order_product_resend = self.sorder.get_orderproduct_resend_by_opiid(opiid)
         if not order_product_resend:
             raise NOT_FOUND()
+        with self.sorder.auto_commit() as session:
+            if order_product_resend.OPRtype == 0:
+                # 退货
+                session.query(OrderProductResend).filter(OrderProductResend.OPIid == opiid).update({
+                    'OPRschedule': 5
+                })
+                msg = '退款处理中'
+                # todo 退款操作
+                self._refund()
+            elif order_product_resend.OPRtype == 1:
+                # 换货
+                session.query(OrderProductResend).filter(OrderProductResend.OPIid == opiid).update({
+                    'OPRschedule': 3
+                })
+                msg = '等待卖家发货'
+            else:
+                raise SYSTEM_ERROR()
+        response = {'message': msg, 'status': 200}
+        return response
+
+
+
+
 
     @verify_token_decorator
     def solder_change_send(self):
