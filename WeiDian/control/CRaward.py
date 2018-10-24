@@ -377,7 +377,7 @@ class CRaward():
 
     @verify_token_decorator
     def get_user_reward(self):
-        """用户查看优惠券"""
+        """用户查看（可转赠）优惠券"""
         if is_tourist():
             raise TOKEN_ERROR(u'未登录')
         args = request.args.to_dict()
@@ -385,26 +385,60 @@ class CRaward():
         allow_transfer = args.get('transfer')
         reward_info = self.sraward.get_reward_by_usid(request.user.id)
 
-        try:
-            for reward in reward_info:
-                reward_detail = self.sraward.get_raward_by_id(reward.RAid)
-                reward_detail = self.fill_reward_detail(reward_detail)
-                reward.fill(reward_detail, 'reward_detail')
-                reward.URcreatetime = get_web_time_str(reward.URcreatetime)
+        from WeiDian.models.model import RewardTransfer
+        gift_reward_info = self.sraward.get_gifts_by_usfrom_or_usid(
+            (RewardTransfer.USid == request.user.id, RewardTransfer.RFfrom == request.user.id))
 
-            # reward_info = filter(lambda r: r.get('reward_detail')['RAtype'] in [0, 2], reward_list)
-            reward_info = filter(lambda k: k.RAnumber != 0, reward_info)
+        reward_list = []
+        for reward in reward_info:
+            reward_detail = self.sraward.get_raward_by_id(reward.RAid)
+            reward_detail = self.fill_reward_detail(reward_detail)
+            reward.fill(reward_detail, 'reward_detail')
+            reward = dict(reward)
 
-            if str(allow_transfer) == 'true':
-                reward_info = filter(lambda r: r.reward_detail['valid'] == True, reward_info)
-                reward_info = filter(lambda r: r.reward_detail['RAtransfer'] == True, reward_info)
+            lower_reward = {}
+            for i, j in reward.items():
+                lower_reward[i.lower()] = j
 
-            data = import_status('messages_get_item_ok', "OK")
-            data['data'] = reward_info
-            return data
-        except Exception as e:
-            logger.exception("get user reward error")
-            raise SYSTEM_ERROR(u'获取数据错误')
+            lower_reward['urcreatetime'] = get_web_time_str(lower_reward.get('urcreatetime'))
+            reward_list.append(lower_reward)
+        for gift in gift_reward_info:
+            gift = self.fill_transfer_detail(gift)
+            gift_detail = self.sraward.get_raward_by_id(gift.RAid)
+            gift_detail = self.fill_reward_detail(gift_detail)
+            # 检验转赠券在各情况下的有效性
+            gift_detail.valid = gift_detail.valid and gift.transfer_valid
+            gift.fill(gift_detail, 'reward_detail')
+
+            gift.RFcreatetime = get_web_time_str(gift.RFcreatetime)
+            gift.RFendtime = get_web_time_str(gift.RFendtime)
+            gift_dict = {
+                'urid': gift.RFid,
+                'usid': gift.USid,
+                'raid': gift.RAid,
+                'ranumber': gift.RAnumber,
+                'urcreatetime': gift.RFcreatetime,
+                'reendtime': gift.RFendtime,
+                'rffrom': gift.RFfrom,
+                'rfstatus': gift.RFstatus,
+                'urusetime': gift.RFusetime,
+                'remarks': gift.remarks,
+                'tag': gift.tag,
+                'usheader': gift.usheader,
+                'reward_detail': gift.reward_detail
+            }
+            reward_list.append(gift_dict)
+
+        # reward_info = filter(lambda r: r.get('reward_detail')['RAtype'] in [0, 2], reward_list)
+        reward_info = filter(lambda k: k.get('ranumber') != 0, reward_list)
+
+        if str(allow_transfer) == 'true':
+            reward_info = filter(lambda r: r.get('reward_detail')['valid'] == True, reward_info)
+            reward_info = filter(lambda r: r.get('reward_detail')['RAtransfer'] == True, reward_info)
+
+        data = import_status('messages_get_item_ok', "OK")
+        data['data'] = reward_info
+        return data
 
     @verify_token_decorator
     def get_user_pay_reward(self):
@@ -512,8 +546,8 @@ class CRaward():
         from WeiDian.service.SUser import SUser
         if hasattr(raward, 'RFstatus'):
             reward_info = self.sraward.get_raward_by_id(raward.RAid)
-            if reward_info.RAtransfer == False:
-                raise SYSTEM_ERROR(u'信息错误，该券不能被赠送')
+            # if reward_info.RAtransfer == False:
+            #     raise SYSTEM_ERROR(u'信息错误，该券不能被赠送')
             if not re.match(r'^[0-2]$', str(raward.RFstatus)):
                 raise SYSTEM_ERROR(u'优惠券转赠状态异常')
             if raward.RFstatus == 0:
