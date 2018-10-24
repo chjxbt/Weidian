@@ -204,9 +204,9 @@ class CRaward():
             raise TOKEN_ERROR(u'未登录')
         data = request.json
         urid = data.get('urid')
-        openid = data.get('openid')
+        usid = data.get('usid')
         from WeiDian.service.SUser import SUser
-        presenter = SUser().get_user_by_openid(openid)
+        presenter = SUser.get_user_by_user_id(usid)
         if not presenter:
             raise NOT_FOUND(u'无此赠送用户')
 
@@ -216,11 +216,11 @@ class CRaward():
             raise SYSTEM_ERROR(u'不能领取自己转赠的优惠券')
 
         # 在赠送者的普通券表中有
-        is_own_hold = self.sraward.is_user_hold_reward({'USid': presenter.USid, 'URid': urid})
+        is_own_hold = self.sraward.is_user_hold_reward({'USid': usid, 'URid': urid})
 
         # 赠送者送出去过，但是已退回，可以继续转赠
         is_own_gift_hold = self.sraward.is_user_hold_reward_in_gift(
-            {'RFfrom': presenter.USid, 'RFid': urid, 'RFstatus': 1})
+            {'RFfrom': usid, 'RFid': urid, 'RFstatus': 1})
 
         if is_own_hold:
             raid = is_own_hold.RAid
@@ -235,7 +235,7 @@ class CRaward():
 
         # 已经赠送了该券给接收者，接收者还没用，且未到退回时间
         is_recivice_gift_hold = self.sraward.is_user_hold_reward_in_gift(
-            {'RAid': raid, 'USid': request.user.id, 'RFstatus': 0, 'RFfrom': presenter.USid})
+            {'RAid': raid, 'USid': request.user.id, 'RFstatus': 0, 'RFfrom': usid})
         if is_recivice_gift_hold:
             raise SYSTEM_ERROR(u'已领取过该券')
 
@@ -247,7 +247,7 @@ class CRaward():
 
         if is_own_gift_hold:
             up_reward_info = self.sraward.update_reward_transfer_info(
-                {'RFfrom': presenter.USid, 'RFid': urid, 'RFstatus': 1}, {'USid': request.user.id, 'RFstatus': 0})
+                {'RFfrom': usid, 'RFid': urid, 'RFstatus': 1}, {'USid': request.user.id, 'RFstatus': 0})
             if not up_reward_info:
                 raise SYSTEM_ERROR(u'该券经过再次转送失败')
 
@@ -262,7 +262,7 @@ class CRaward():
                     'RFid': rfid,
                     'USid': request.user.id,
                     'RAid': raid,
-                    'URFrom': presenter.USid,
+                    'URFrom': usid,
                     'RAnumber': 1,
                     'RFendtime': (datetime.now() + timedelta(hours=int(return_time))).strftime(format_for_db),
                     'RFstatus': 0
@@ -280,7 +280,7 @@ class CRaward():
                     'RFid': rfid,
                     'USid': request.user.id,
                     'RAid': raid,
-                    'URFrom': presenter.USid,
+                    'URFrom': usid,
                     'RAnumber': 1,
                     'RFendtime': (datetime.now() + timedelta(hours=int(return_time))).strftime(format_for_db),
                     'RFstatus': 0
@@ -434,16 +434,20 @@ class CRaward():
                 reward.fill(reward_detail, 'reward_detail')
                 reward = dict(reward)
 
+                lower_reward = {}
                 for i, j in reward.items():
-                    reward[i.lower()] = j
+                    lower_reward[i.lower()] = j
 
-                reward_list.append(reward)
-                reward['urcreatetime'] = get_web_time_str(reward.get('urcreatetime'))
+                lower_reward['urcreatetime'] = get_web_time_str(lower_reward.get('urcreatetime'))
+                reward_list.append(lower_reward)
             for gift in gift_reward_info:
                 gift = self.fill_transfer_detail(gift)
                 gift_detail = self.sraward.get_raward_by_id(gift.RAid)
                 gift_detail = self.fill_reward_detail(gift_detail, total_price)
+                # 检验转赠券在各情况下的有效性
+                gift_detail.valid = gift_detail.valid and gift.transfer_valid
                 gift.fill(gift_detail, 'reward_detail')
+
                 gift.RFcreatetime = get_web_time_str(gift.RFcreatetime)
                 gift.RFendtime = get_web_time_str(gift.RFendtime)
                 gift_dict = {
@@ -510,6 +514,8 @@ class CRaward():
             reward_info = self.sraward.get_raward_by_id(raward.RAid)
             if reward_info.RAtransfer == False:
                 raise SYSTEM_ERROR(u'信息错误，该券不能被赠送')
+            if not re.match(r'^[0-2]$', str(raward.RFstatus)):
+                raise SYSTEM_ERROR(u'优惠券转赠状态异常')
             if raward.RFstatus == 0:
                 presenter = SUser().get_user_by_user_id(raward.RFfrom)
                 recipient = SUser().get_user_by_user_id(raward.USid)
@@ -517,10 +523,12 @@ class CRaward():
                     usheader = presenter.USheader
                     remarks = '由{0}赠送'.format((presenter.USname).encode('utf8'))
                     tag = '赠送'
+                    transfer_valid = True
                 elif raward.RFfrom == request.user.id:
                     usheader = recipient.USheader
                     remarks = '已赠送给{0}'.format((recipient.USname).encode('utf8'))
                     tag = '赠送'
+                    transfer_valid = False
             elif raward.RFstatus == 1:
                 recipient = SUser().get_user_by_user_id(raward.USid)
                 presenter = SUser().get_user_by_user_id(raward.RFfrom)
@@ -528,15 +536,20 @@ class CRaward():
                     usheader = presenter.USheader
                     remarks = '因领取后{0}小时未使用已退还给{1}'.format(reward_info.RAtransfereffectivetime, (presenter.USname).encode('utf8'))
                     tag = '已退回'
+                    transfer_valid = False
                 elif raward.RFfrom == request.user.id:
                     usheader = recipient.USheader
                     remarks = '{0}领取后{1}小时未使用还回'.format((recipient.USname).encode('utf8'), reward_info.RAtransfereffectivetime)
-                    tag = '已退回'
+                    tag = '已还回'
+                    transfer_valid = True
             elif raward.RFstatus == 2:
                 recipient = SUser().get_user_by_user_id(raward.USid)
                 usheader = recipient.USheader
                 remarks = '{0}已使用'.format(str(recipient.USname))
                 tag = '已使用'
+                transfer_valid = False
+
+        raward.fill(transfer_valid, 'transfer_valid')
         raward.fill(usheader, 'usheader')
         raward.fill(remarks, 'remarks')
         raward.fill(tag, 'tag')

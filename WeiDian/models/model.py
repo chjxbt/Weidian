@@ -909,7 +909,7 @@ class UserRaward(BaseModel):
     @auto_createtime
     def __init__(self):
         # self.fields = ['TRid', "TAid", "RAid", "RAnumber"]
-        self.fields = ["URid", "RAid", "RAnumber", "URcreatetime"]
+        self.fields = ["URid", "USid", "RAid", "RAnumber", "URcreatetime"]
 
 
 class AdImage(BaseModel):
