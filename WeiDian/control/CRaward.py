@@ -229,7 +229,9 @@ class CRaward():
         else:
             raise NOT_FOUND(u'用户无此优惠券')
         reward_info = self.sraward.get_raward_by_id(raid)
-        if reward_info.RAtransfer == False:
+        if not reward_info:
+            raise NOT_FOUND(u'该券已失效')
+        elif reward_info.RAtransfer == False:
             raise SYSTEM_ERROR(u'该券不允许转赠')
         return_time = reward_info.RAtransfereffectivetime  # 转赠有效时间，退回时间
 
@@ -242,8 +244,8 @@ class CRaward():
         # 接收者已经拥有其他人送的该券, 不影响, 忽略
         # is_recivice_hold_from_other = self.sraward.is_user_hold_reward({'USid': usid, 'RAid': raid})
 
-        # 接收者原来已经拥有此券了
-        is_recivice_hold = self.sraward.is_user_hold_reward({'RAid': raid})
+        # 接收者原有表中已经拥有此券了
+        is_recivice_hold = self.sraward.is_user_hold_reward({'USid': request.user.id, 'RAid': raid})
 
         if is_own_gift_hold:
             up_reward_info = self.sraward.update_reward_transfer_info(
