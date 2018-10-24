@@ -67,22 +67,22 @@ axios.interceptors.response.use(data => {// 响应成功关闭loading
   // loadinginstace.close()
 
   if(data.data.status_code == 403001 ){
-    // axios.get(api.get_config,{
-    //   params:{
-    //     url: window.location.href
-    //   }
-    // } ).then((res) => {
-    //   if(res.data.status == 200){
-    //     const id = res.data.data.appId
-    //     const url = window.location.origin + '/#/index/index';
-    //     // const  url = 'https://daaiti.cn/WeiDian/#/login';
-    //     window.location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid='
-    //       +  id + '&redirect_uri='+ encodeURIComponent(url) + '&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect'
-    //   }
-    //
-    // }).catch((error) => {
-    //   console.log(error ,'1111')
-    // })
+    axios.get(api.get_config,{
+      params:{
+        url: window.location.href
+      }
+    } ).then((res) => {
+      if(res.data.status == 200){
+        const id = res.data.data.appId
+        const url = window.location.origin + '/#/index/index';
+        // const  url = 'https://daaiti.cn/WeiDian/#/login';
+        window.location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid='
+          +  id + '&redirect_uri='+ encodeURIComponent(url) + '&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect'
+      }
+
+    }).catch((error) => {
+      console.log(error ,'1111')
+    })
   }
   Indicator.close();
   return data
