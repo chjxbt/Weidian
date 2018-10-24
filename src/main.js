@@ -33,7 +33,7 @@ import promise from 'es6-promise';//解决axios在ie9下不生效的方法
 promise.polyfill();
 //
 // // let token = "eyJhbGciOiJIUzI1NiIsImV4cCI6MTUzOTYwMjMyOCwiaWF0IjoxNTM5NTk1MTI4fQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0xMC0xNSAxNzoxODo0OCJ9.GPSNz79JnUbsXOQ3BwD-e-Q5_XFrqPE__X2PYQ9XMGc";
-// let token = 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTU0MDIwNzI5MywiaWF0IjoxNTQwMjAwMDkzfQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0xMC0yMiAxNzoyMTozMyJ9.NntQ_8KXxrUT6FmnB3HUSKypSqvyEidOxnHD73otDlA'
+// let token = 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTU0MDM4NTM1NCwiaWF0IjoxNTQwMzc4MTU0fQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0xMC0yNCAxODo0OToxNCJ9.Qaeb4_79RAdzx0b0SLiKJ34EkYYSGW5fmUaEBx2WfW0'
 // localStorage.setItem('token', token);
 
 
@@ -67,22 +67,22 @@ axios.interceptors.response.use(data => {// 响应成功关闭loading
   // loadinginstace.close()
 
   if(data.data.status_code == 403001 ){
-    axios.get(api.get_config,{
-      params:{
-        url: window.location.href
-      }
-    } ).then((res) => {
-      if(res.data.status == 200){
-        const id = res.data.data.appId
-        const url = window.location.origin + '/#/index/index';
-        // const  url = 'https://daaiti.cn/WeiDian/#/login';
-        window.location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid='
-          +  id + '&redirect_uri='+ encodeURIComponent(url) + '&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect'
-      }
-
-    }).catch((error) => {
-      console.log(error ,'1111')
-    })
+    // axios.get(api.get_config,{
+    //   params:{
+    //     url: window.location.href
+    //   }
+    // } ).then((res) => {
+    //   if(res.data.status == 200){
+    //     const id = res.data.data.appId
+    //     const url = window.location.origin + '/#/index/index';
+    //     // const  url = 'https://daaiti.cn/WeiDian/#/login';
+    //     window.location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid='
+    //       +  id + '&redirect_uri='+ encodeURIComponent(url) + '&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect'
+    //   }
+    //
+    // }).catch((error) => {
+    //   console.log(error ,'1111')
+    // })
   }
   Indicator.close();
   return data

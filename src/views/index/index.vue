@@ -234,7 +234,7 @@
               code_src:'',
               components_src:'',
               task_reward:null,
-              is_vip:true,
+              is_vip:false,
               show_fans:false,
               helpPopupVisible:false,
               show_fans_img:false

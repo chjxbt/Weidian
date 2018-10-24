@@ -112,7 +112,7 @@
           <p>买</p>
           <p class="m-ft-24">省￥{{product_info.prsavemonty}}</p>
         </div>
-        <div class="m-vip-btn m-ft-36 active" >
+        <div class="m-vip-btn m-ft-36 active" @click.stop="showShare">
           <p>卖</p>
           <p class="m-ft-24">赚￥{{product_info.prsavemonty}}</p></div>
       </template>
@@ -126,6 +126,7 @@
       </template>
 
     </div>
+    <img src="/static/images/invite.png" v-if="show_invite" @click.stop="closeModal('show_invite')"  class="m-invite-course" alt="">
   </div>
 </template>
 
@@ -166,7 +167,8 @@
         quantity:1,
         click_add:false,
         show_commit:true,
-        click_buy:false
+        click_buy:false,
+        show_invite:false
       }
     },
     components: { productParams },
@@ -176,7 +178,7 @@
         this.wxShare()
       },
       wxShare () {
-        const url =window.location.origin + '/#/index/index?linkUrl=productDetail&prid'+ this.$route.query.prid;
+        const url =window.location.origin + '/#/index/index?linkUrl=productDetail&prid'+ this.$route.query.prid+'&openid='+localStorage.getItem('openid');
         axios.get(api.get_share_params+'?token='+localStorage.getItem('token'),{params:{
           prid:this.$route.query.prid
           }}).then(res => {
@@ -237,6 +239,10 @@
         order = JSON.stringify(order);
         this.$router.push({path: "/submitOrder", query: { order: order }});
       },
+      /*关闭模态框*/
+      closeModal(v){
+        this[v]  = false;
+      },
       // 返回上一页
       backPage() {
         // if(this.$route.query.last == 'activity' && this.$route.query.baid){
@@ -283,10 +289,12 @@
       toService () {
 
       },
-
+      showShare(){
+        this.show_invite = true;
+        this.wxShare();
+      },
       // 立即购买
       buyNow(){
-        console.log(this.product_info,'awdqweqw')
         let order = "";
         // this.$router.push({path: "/submitOrder", query: { order }});
         if(!this.choose){
@@ -358,6 +366,13 @@
 <style lang="less" rel="stylesheet/less" scoped>
   @import "../../common/css/discover";
   @import "../../common/css/index";
+  .m-invite-course{
+    position: fixed;
+    top:0;
+    left:0;
+    width: 100%;
+    height: 100%;
+  }
   .back-img {
     float: left;
     width: 24px;
