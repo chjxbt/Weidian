@@ -148,14 +148,58 @@ class CRaward():
         """获取单张优惠券详情"""
         if is_tourist():
             raise TOKEN_ERROR(u'未登录')
-        parameter_required('raid')
+        # parameter_required('raid')
         args = request.args.to_dict()
         raid = args.get('raid')
+        urid = args.get('urid')
         logger.debug("get reward info is %s", args)
-        reward_info = self.sraward.get_raward_by_id(raid)
-        if not reward_info:
-            raise NOT_FOUND(u'无此券信息')
-        reward_detail = self.fill_reward_detail(reward_info)
+
+        if urid:
+            # 是赠送者原表里的
+            is_presenter_own_hold = self.sraward.is_user_hold_reward({'URid': urid})
+
+            # 在赠送者转赠表中，送出去过，已退回，可以继续转赠
+            is_presenter_gift_hold = self.sraward.is_user_hold_reward_in_gift(
+                {'RFid': urid, 'RFstatus': 1})
+
+            if is_presenter_own_hold:
+                raid = is_presenter_own_hold.RAid
+                reward = self.sraward.get_raward_by_id(raid)
+                reward_detail = self.fill_reward_detail(reward)
+                is_presenter_own_hold.fill(reward_detail, 'reward_detail')
+            elif is_presenter_gift_hold:
+                raid = is_presenter_gift_hold.RAid
+                gift = self.fill_transfer_detail(is_presenter_gift_hold)
+                gift_detail = self.sraward.get_raward_by_id(raid)
+                gift_detail = self.fill_reward_detail(gift_detail)
+                # 检验转赠券在各情况下的有效性
+                gift_detail.valid = gift_detail.valid and gift.transfer_valid
+                gift.fill(gift_detail, 'reward_detail')
+                gift.RFcreatetime = get_web_time_str(gift.RFcreatetime)
+                gift.RFendtime = get_web_time_str(gift.RFendtime)
+                gift_dict = {
+                    'urid': gift.RFid,
+                    'usid': gift.USid,
+                    'raid': gift.RAid,
+                    'ranumber': gift.RAnumber,
+                    'urcreatetime': gift.RFcreatetime,
+                    'reendtime': gift.RFendtime,
+                    'rffrom': gift.RFfrom,
+                    'rfstatus': gift.RFstatus,
+                    'urusetime': gift.RFusetime,
+                    'remarks': gift.remarks,
+                    'tag': gift.tag,
+                    'usheader': gift.usheader,
+                    'reward_detail': gift.reward_detail
+                }
+            else:
+                raise NOT_FOUND(u'无此转赠优惠券信息')
+            reward_detail = is_presenter_own_hold or gift_dict
+        else:
+            reward_info = self.sraward.get_raward_by_id(raid)
+            if not reward_info:
+                raise NOT_FOUND(u'无此券信息')
+            reward_detail = self.fill_reward_detail(reward_info)
         data = import_status("messages_get_item_ok", "OK")
         data['data'] = reward_detail
         return data
