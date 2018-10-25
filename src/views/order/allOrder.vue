@@ -32,7 +32,7 @@
         <el-tabs v-model="activeName" @tab-click="handleClick">
           <div v-for="item in tabList">
             <el-tab-pane :label="item.status" :key="item.status.slice(0, 3)" :name="item.statusnum" :lazy="lazyStatus">
-              <order-table ref="orderTable" :orderList="orderList" :total_page="total_page" @pageChange="pageChange"></order-table>
+              <order-table ref="orderTable" :orderList="orderList" :total_page="total_page" @pageChange="pageChange" @changeNum="getOrderCount"></order-table>
             </el-tab-pane>
           </div>
         </el-tabs>
@@ -74,6 +74,11 @@
       getOrderCount() {
         axios.get(api.get_order_count + '?token=' + localStorage.getItem('token')).then(res => {
           if(res.data.status == 200) {
+            // 重置tabList
+            this.tabList = [
+              { statusnum: "0", status: "全 部" }, { statusnum: "1", status: "待付款" }, { statusnum: "4", status: "待发货" },
+              { statusnum: "5", status: "待收货" }, { statusnum: "6", status: "已完成" }, { statusnum: "11", status: "退换货" }
+            ];
             // 拼接标签页显示的标题
             for(let i = 0; i < res.data.data.length; i ++) {
               for(let j = 0; j < this.tabList.length; j ++) {
@@ -87,7 +92,6 @@
           }
         })
       },
-
       // 依据订单状态获取订单
       getOrder(statusnum) {
         this.statusnum = statusnum;
@@ -114,13 +118,11 @@
           }
         });
       },
-
       // 分页组件的提示
       pageChange(v) {
         this.page_num = v;
         this.getOrder(this.statusnum);      // 依据订单状态获取订单
       },
-
       // tab标签页被选中时触发
       handleClick(tab, event) {
         // this.$refs.orderTable[tab.index].getOrder(tab.name);

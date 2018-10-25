@@ -37,7 +37,9 @@
       <el-table-column align="center" label="留言内容" prop="oileavetext"></el-table-column>
       <el-table-column fixed="right" label="管理" width="150">
         <template slot-scope="scope">
-          <el-button class="color-text" type="text" size="small" @click="productSend(scope, 'order')" v-if="scope.row.opistatus == 4">发货</el-button>
+          <el-button class="color-text" type="text" size="small" @click="productSend(scope, 'order')" v-if="scope.row.oipaystatus == 4">发货</el-button>
+          <el-button class="color-text" type="text" size="small" @click="cancelOrder(scope)" v-if="scope.row.oipaystatus == 1">取消</el-button>
+          <el-button class="color-text" type="text" size="small" @click="deleteOrder(scope)" v-if="scope.row.oipaystatus == 1 || scope.row.oipaystatus == 6">删除</el-button>
           <el-button class="color-text" type="text" size="small" @click="orderDetail(scope, 'dialog')">详情</el-button>
         </template>
       </el-table-column>
@@ -244,7 +246,7 @@
 
     <div class="bottom-box">
       <!--<div class="export-btn" @click="exportClick">批量导出</div>-->
-      <Pagination class="page-box" :total="total_page" @pageChange="pageChange"></Pagination>
+      <Pagination class="page-box" :total="total_page" @pageChange="pageChange" @changeNum="changeNum"></Pagination>
     </div>
   </div>
 </template>
@@ -285,32 +287,48 @@
     },
     components: { Pagination },
     methods: {
-      // 详情按钮
-      detailClick(){
-        this.$emit('detailClick')
-      },
-
-      // 退款按钮
-      returnClick(){
-        this.$emit('returnClick')
-      },
-
       // 表格多选事件
       handleSelectionChange(value) {
         this.orderOutList = value;
       },
-
       // 批量导出
       exportClick(){
         console.log(this.orderOutList);
       },
-
+      // 取消订单
+      cancelOrder(scope) {
+        this.order = scope.row;
+        let params = { oiid: scope.row.oiid };
+        axios.post(api.cancle_order + '?token=' + localStorage.getItem('token'), params).then(res=>{
+          if(res.data.status == 200){
+            this.$message({ message: res.data.message, type: 'success', duration: 1500 });
+            this.orderList.splice(scope.$index, 1);
+            this.changeNum();       // 更新各状态订单的数量
+          }else{
+            this.$message({ message: res.data.message, type: 'error', duration: 1500 });
+          }
+        });
+      },
+      // 删除订单
+      deleteOrder(scope) {
+        this.order = scope.row;
+        let params = { oiid: scope.row.oiid };
+        axios.post(api.delete_order + '?token=' + localStorage.getItem('token'), params).then(res=>{
+          if(res.data.status == 200){
+            this.$message({ message: res.data.message, type: 'success', duration: 1500 });
+            this.orderList.splice(scope.$index, 1);
+            this.changeNum();       // 更新各状态订单的数量
+          }else{
+            this.$message({ message: res.data.message, type: 'error', duration: 1500 });
+          }
+        });
+      },
       // 订单详情
       orderDetail(scope, where) {
         this.orderDetailDialog = true;
         this.order = scope.row;
 
-        console.log(scope.row);
+        console.log(scope.row.oipaystatus);
       },
       // 卖家确认收货(订单)
       solderConfirm() {
@@ -426,7 +444,6 @@
               this.$message({ message: res.data.message, type: 'error', duration: 1500 });
             }
           });
-
         }else {
           this.getCompanies();        // 获取快递公司list
 
@@ -448,12 +465,14 @@
           console.log(this.product.row);
         }
       },
-
       // 分页组件的提示
-      pageChange(v){
-        this.$emit('pageChange', v)
+      pageChange(v) {
+        this.$emit('pageChange', v);
       },
-
+      // 更新各状态订单的数量
+      changeNum() {
+        this.$emit('changeNum');
+      },
       // 获取快递公司list
       getCompanies() {
         axios.get(api.get_kd_list + "?kw=").then(res => {

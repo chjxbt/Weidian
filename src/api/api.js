@@ -51,6 +51,8 @@ const api={
   agree_refund: title + 'order/agree_refund',               // 同意退货/退款的申请
   solder_confirm: title + 'order/solder_confirm',           // 卖家确认收货(订单)
   solder_change_send: title + 'order/solder_change_send',   // 卖家退货(换货)发货(订单)
+  delete_order: title + 'order/delete_order',               // 删除订单
+  cancle_order: title + 'order/cancle_order',               // 取消订单
 
   update_info: title + 'super/update_info',                 // 修改管理员自身基本信息
   get_all_suser: title + 'super/get_all_suser',             // 获取管理员列表
