@@ -227,7 +227,7 @@
               <el-option v-for="item in activityJumpToBannerList" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
             <el-select v-if="activityJumpValue == '2'" v-model="activityJumpToValue" @focus="focusselect('product')" filterable :placeholder="activityJumpToValue" style="width: 4rem; margin-left: 0.5rem">
-              <el-option v-for="item in activityJumpToProductList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+              <el-option v-for="item in activityJumpToProductList" :key="item.value" :label="item.prtitle" :value="item.value"></el-option>
             </el-select>
             <div v-if="activityJumpValue == '2'" style="margin-left: 0.5rem">
               <span>虚拟销量：</span>
@@ -887,7 +887,7 @@
             if(res.data.status == 200) {
               let product = {};
               for(let i = 0; i < res.data.data.length; i ++) {
-                product = { label: res.data.data[i].prname, value: res.data.data[i].prid };
+                product = { label: res.data.data[i].prname, value: res.data.data[i].prid, prtitle: res.data.data[i].prtitle };
                 if(where == "activity") {
                   this.activityJumpToProductList.push(product);
                 }else if(where == "hot") {
