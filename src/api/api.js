@@ -44,6 +44,9 @@ const api={
   get_order_list: title + 'order/admin_get_order_list',     // 后台获取各状态下的订单
   get_kd_list: title + 'order/get_kd_list',                 // 获取快递列表
   send_order: title + 'order/send_order',                   // 商品发货
+  agree_refund: title + 'order/agree_refund',               // 同意退货/退款的申请
+  solder_confirm: title + 'order/solder_confirm',           // 卖家确认收货(订单)
+  solder_change_send: title + 'order/solder_change_send',   // 卖家退货(换货)发货(订单)
 
   update_info: title + 'super/update_info',                 // 修改管理员自身基本信息
   get_all_suser: title + 'super/get_all_suser',             // 获取管理员列表
