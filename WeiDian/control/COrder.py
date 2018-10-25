@@ -582,6 +582,8 @@ class COrder():
                 'OPRimage': json.dumps(voucher_images)
             }
             msg = u'申请换货成功'
+            if OPRtype == 1 and order_product.OPIstatus == 0:
+                raise NOT_FOUND(u'未发货无法申请换货')
             if OPRtype == 0:
                 # 退货退款
                 model_dict['OPRmount'] = oprmount
@@ -738,8 +740,7 @@ class COrder():
                 'OPSreceivephone': data.get('opsreceivephone'),
                 'OPSreceiveaddress': data.get('opsreceiveaddress')
             }
-            opst = OrderProductSendTwice()
-            opst.create(model_dict)
+            opst = OrderProductSendTwice.create(model_dict)
             # 改变状态
             session.query(OrderProductResend).filter(
                 OrderProductResend.OPRid == oprid
@@ -749,6 +750,29 @@ class COrder():
             session.add(opst)
         response = {'message': u'卖家换货发货成功', 'status': 200}
         return response
+
+    def buyer_confirm_again(self):
+        """再次确认收货"""
+        if is_tourist():
+            raise TOKEN_ERROR(u'请登录')
+        data = parameter_required(u'opiid')
+        opiid = data.get('opiid')
+        order_product_resend = self.sorder.get_orderproduct_resend_by_opiid(opiid)
+        if not order_product_resend:
+            raise NOT_FOUND()
+        if order_product_resend.OPRtype == 0:
+            raise NOT_FOUND(u'非换货订单')
+        if order_product_resend.OPRschedule != 4:
+            raise NOT_FOUND(u'卖家未发货或已经确认')
+        oprid = order_product_resend.OPRid
+        with self.sorder.auto_commit() as session:
+            session.query(OrderProductResend).filter(
+                OrderProductResend.OPRid == oprid
+            ).update({
+                'OPRschedule': 5
+            })
+
+
 
 
     def fix_orderproduct_info(self, sku_list, oiid):
