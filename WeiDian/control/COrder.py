@@ -97,7 +97,7 @@ class COrder():
                 else:
                     pass
                 raward = session.query(Raward).filter(Raward.RAid == raid).first()
-                order_dict['oimount'] -= raward.RAamount
+                order_dict['OImount'] -= raward.RAamount
                 order_dict['RAid'] = raid
             orderinfo = OrderInfo.create(order_dict)
             model_beans.append(orderinfo)
@@ -795,6 +795,8 @@ class COrder():
             raise NOT_FOUND(u'不存在的订单')
         if order.USid != usid and not is_admin():
             raise NOT_FOUND(u'他人订单')
+        if order.OIpaystatus not in [1, 7, 6, 11]:
+            raise NOT_FOUND(u'订单未完成, 不可删除')
         updated = self.sorder.update_order_by_oiid(oiid, {
             'OIisdelete': True
         })
@@ -821,7 +823,6 @@ class COrder():
         })
         response = {'message': u'取消成功', 'status': 200}
         return response
-
 
     def fix_orderproduct_info(self, sku_list, oiid):
         """
