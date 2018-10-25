@@ -17,8 +17,6 @@ def close_session(fn):
             result = fn(self, *args, **kwargs)
             if isinstance(result, (tuple, list)) or isinstance(result, BaseModel):
                 self.session.expunge_all()
-            # if not 'update' in fn.__name__ and not 'delete' in fn.__name__ and not 'stop' in fn.__name__:
-            #     self.session.expunge_all()
             self.session.commit()
             return result
         except Exception as e:

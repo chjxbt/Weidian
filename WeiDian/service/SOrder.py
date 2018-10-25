@@ -136,7 +136,7 @@ class SOrder(SBase):
     @close_session
     def get_order_by_oisn(self, oisn):
         """根据订单号获取订单"""
-        return self.session.query(OrderInfo).filter_by(OIsn=oisn, ).first()
+        return self.session.query(OrderInfo).filter_by(OIsn=oisn, OIisdelete=False).first()
 
     @close_session
     def get_orderinfowithproduct_by_opiid(self, oiid):

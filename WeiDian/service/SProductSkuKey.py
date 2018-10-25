@@ -32,8 +32,6 @@ class SProductSkuKey(SBase):
         """获取真实价格"""
         psk = self.session.query(ProductSkuKey).filter(
             ProductSkuKey.PSKid == pskid, ProductSkuKey.PSisdelete != 0).first()
-        import ipdb
-        ipdb.set_trace()
         prid = psk.PRid
         product = self.session.query(Product).filter(Product.PRid == prid).first()
         devide_rule = getattr(product, 'PRdevideRate', '{}')

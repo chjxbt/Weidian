@@ -15,7 +15,7 @@ DB_PARAMS = "{0}://{1}:{2}@{3}/{4}?charset={5}".format(
     cfg.host,
     cfg.database,
     cfg.charset)
-mysql_engine = create_engine(DB_PARAMS, echo=False)
+mysql_engine = create_engine(DB_PARAMS, echo=False, pool_pre_ping=True)
 
 
 class Activity(BaseModel):

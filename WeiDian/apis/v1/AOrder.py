@@ -23,8 +23,7 @@ class AOrder(Resource):
             'solder_confirm': 'self.corder.solder_confirm()',  # 卖家确认
             'solder_change_send': 'self.corder.solder_change_send()',   # 卖家换货发货
             'delete_order': 'self.corder.delete_order()',
-
-
+            'cancle_order': 'self.corder.cancle_order()',
          }
         res = eval(apis[order])
         return jsonify(res)

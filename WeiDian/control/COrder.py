@@ -801,6 +801,7 @@ class COrder():
         response = {'message': u'删除成功', 'status': 200}
         return response
 
+    @verify_token_decorator
     def cancle_order(self):
         """取消订单, 只有未付款的才可以取消"""
         if is_tourist():
@@ -813,6 +814,8 @@ class COrder():
             raise NOT_FOUND(u'不存在的订单')
         if order.USid != usid and not is_admin():
             raise NOT_FOUND(u'他人订单')
+        if order.OIpaystatus != 1:
+            raise NOT_FOUND(u'只可取消待付款的订单')
         updated = self.sorder.update_order_by_oiid(oiid, {
             'OIpaystatus': 7
         })
