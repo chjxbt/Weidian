@@ -411,8 +411,6 @@
             opsreceivephone: this.telephone,
             opsreceiveaddress: this.address
           };
-          console.log(params);
-
           axios.post(api.solder_change_send + '?token=' + localStorage.getItem('token'), params).then(res=>{
             if(res.data.status == 200){
               this.$message({ message: "发货成功", type: 'success', duration: 1500 });
