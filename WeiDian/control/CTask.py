@@ -35,6 +35,8 @@ class CTask(BaseTask):
         self.sbankcard = SBankCard()
         from WeiDian.service.SRaward import SRaward
         self.sraward = SRaward()
+        from WeiDian.control.Cuser import CUser
+        self.cuser = CUser()
         self.add_task_params = [
             'TAname', "TAtype", "TAhead", "TLid"]
         self.do_task_params = [
@@ -297,11 +299,18 @@ class CTask(BaseTask):
     def get_all_raward(self):
         if not is_admin():
             raise AUTHORITY_ERROR(u"权限不足")
-
-        raward_list = self.sraward.get_all_reward()
+        args = request.args.to_dict()
+        page_num, page_size = self.cuser.get_pagesize_pagenum(args)
+        raward_list, count = self.sraward.get_all_reward(page_size, page_num)
+        for reward in raward_list:
+            packet_contact = self.sraward.get_is_where_packet(reward.RAid)
+            if packet_contact:
+                packet_info = self.sraward.get_reward_in_packet_info(packet_contact.RPTid)
+                reward.fill(packet_info.RPTname, 'rptname')
         raward_list = self.fill_reward_detail(raward_list)
         res = import_status('get_task_success', 'OK')
         res['data'] = raward_list
+        res['count'] = count
         return res
 
     @verify_token_decorator

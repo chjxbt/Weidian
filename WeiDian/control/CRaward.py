@@ -26,6 +26,7 @@ class CRaward():
         from WeiDian.service.SSuperUser import SSuperUser
         self.ssuperuser = SSuperUser()
 
+
     @verify_token_decorator
     def create_reward(self):
         """创建优惠券"""
@@ -33,7 +34,6 @@ class CRaward():
             raise AUTHORITY_ERROR(u'当前账号权限不足')
         data = request.json
         logger.debug("create reward data is %s", data)
-        parameter_required('ratype', 'raname')
         raid = str(uuid.uuid1())
         ratype = data.get('ratype')
         rptid = data.get('rptid')
@@ -56,13 +56,16 @@ class CRaward():
         }
         if re.match(r'^[0-2]$', str(ratype)):
             if str(ratype) == '0':
+                parameter_required('rafilter', 'raamount', 'ratype', 'raname')
                 logger.info('This reward type 0 is created')
                 reward_dict['RAfilter'] = data.get('rafilter')
                 reward_dict['RAamount'] = data.get('raamount')
             elif str(ratype) == '1':
+                parameter_required('raratio', 'ratype', 'raname')
                 logger.info('This reward type 1 is created')
                 reward_dict['RAratio'] = data.get('raratio')
             else:
+                parameter_required('raamount', 'ratype', 'raname')
                 logger.info('This reward type 2 is created')
                 reward_dict['RAfilter'] = 0
                 reward_dict['RAamount'] = data.get('raamount')
@@ -623,7 +626,7 @@ class CRaward():
         if not is_admin():
             raise AUTHORITY_ERROR(u'非管理员权限')
         rewardpackets = self.sraward.get_reward_packet_list()
-        logger.info(('get reward packeet list success'))
+        logger.info(('get reward packet list success'))
         data = import_status("messages_get_item_ok", "OK")
         data['data'] = rewardpackets
         return data
@@ -656,6 +659,7 @@ class CRaward():
         logger.debug("del reward packet id is %s", data)
         rptid = data.get('rptid')
         del_info = self.sraward.update_reward_packet({'RPTid': rptid}, {'RPTisdelete': True})
+        self.sraward.del_packet_contact({'RPTid': rptid})
         if not del_info:
             raise NOT_FOUND(u'删除失败')
         data = import_status("delete_success", "OK")
@@ -705,6 +709,8 @@ class CRaward():
             if raward.RFstatus == 0:
                 presenter = SUser().get_user_by_user_id(raward.RFfrom)
                 recipient = SUser().get_user_by_user_id(raward.USid)
+                if not presenter or not recipient:
+                    raise NOT_FOUND(u'转赠信息不正确')
                 if raward.USid == request.user.id:
                     usheader = presenter.USheader
                     remarks = '由{0}赠送'.format((presenter.USname).encode('utf8'))

@@ -24,8 +24,11 @@ class SRaward(SBase):
         return self.session.query(TaskRaward).filter(TaskRaward.TLid == tlid).delete()
 
     @close_session
-    def get_all_reward(self):
-        return self.session.query(Raward).filter(Raward.RAisdelete == False).order_by(Raward.RAcreatetime.desc()).all()
+    def get_all_reward(self, page_size=5, page_num=1):
+        return self.session.query(Raward).filter(Raward.RAisdelete == False) \
+                   .order_by(Raward.RAcreatetime.desc()).offset(page_size * (page_num - 1)) \
+                   .limit(page_size).all(), self.session.query(Raward). \
+                   filter(Raward.RAisdelete == False).count()
 
     @close_session
     def update_reward(self, urfilter, upinfo):
@@ -106,11 +109,25 @@ class SRaward(SBase):
         return self.session.query(RewardPacket).filter_by(**rpfilter).update(upinfo)
 
     @close_session
+    def get_reward_in_packet_info(self, rptid):
+        """获取优惠券所在集合名"""
+        return self.session.query(RewardPacket).filter(RewardPacket.RPTid == rptid).first()
+
+    @close_session
     def del_packet_reward(self, raid):
         """删除集合中的券"""
         return self.session.query(RewardPacketContact).filter(RewardPacketContact.RAid == raid).delete()
 
     @close_session
+    def del_packet_contact(self, pcfilter):
+        return self.session.query(RewardPacketContact).filter_by(**pcfilter).delete()
+
+    @close_session
     def get_reward_packet_detail(self, rptid):
         """获取优惠券集合具体内容"""
         return self.session.query(RewardPacketContact).filter(RewardPacketContact.RPTid == rptid).all()
+
+    @close_session
+    def get_is_where_packet(self, raid):
+        """获取当前券在哪个集合"""
+        return self.session.query(RewardPacketContact).filter(RewardPacketContact.RAid == raid).first()
