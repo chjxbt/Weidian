@@ -398,10 +398,14 @@
             this.$message({ message: res.data.message, type: 'success', duration: 1500 });
 
             // 回显数据
-            for(let i = 0; i < this.collectionList.length; i ++) {
-              if(this.collection == this.collectionList[i].rptid) {
-                this.discountsList[this.discount.$index].rptname = this.collectionList[i].rptname;
+            if(this.collection) {
+              for(let i = 0; i < this.collectionList.length; i ++) {
+                if(this.collection == this.collectionList[i].rptid) {
+                  this.discountsList[this.discount.$index].rptname = this.collectionList[i].rptname;
+                }
               }
+            }else {
+              this.discountsList[this.discount.$index].rptname = "";
             }
             this.discountsList = this.discountsList.concat();
             this.collection = "";
