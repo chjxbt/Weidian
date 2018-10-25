@@ -55,10 +55,19 @@ const api={
   do_task: title +'/task/do_task',//做任务
   get_bigactivity : title + '/bigactivity/get_bigactivity',//专题页
   get_one_product: title + '/product/get_one',//获取商品详情
+  add_one_productlike:title + '/productlike/add_one',//商品点赞
   get_list_shoppingcart: title + '/shoppingcart/get_list',//获取购物车
   delete_shoppingcart: title +'/shoppingcart/delete',//删除购物车
   update_shoppingcart: title + '/shoppingcart/update',///更新购物车
   get_share_params: title + '/mycenter/get_share_params',//获取分享参数
+  create_order: title +'/order/create',//创建订单
+  get_one_address: title + '/mycenter/get_one_address',//获取单个地址信息
+  get_order_info: title + '/order/get_order_info',//获取单个订单
+  confim_order: title + '/order/confim_order',//确认收货
+  get_hand_out_reward: title + '/reward/get_hand_out_reward',//获取平台优惠券
+  get_user_reward:title +'/reward/get_user_reward',//获取用户所有优惠券
+  get_one_reward: title + '/reward/get_one_reward',//获取单个优惠券
+  get_transfer_reward: title +'/reward/get_transfer_reward',//领取优惠券
 };
 
 export default api

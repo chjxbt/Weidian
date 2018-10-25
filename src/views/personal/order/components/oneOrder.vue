@@ -1,14 +1,14 @@
 <template>
   <div class="m-one-order" @click="orderClick(item)">
     <div class="m-one-order-top" >
-      <img :src="item.productinfo.opiproductimages" class="m-product-img" alt="" >
+      <img :src="item.productinfo[0].opiproductimages" class="m-product-img" alt="" >
       <div class="m-product-info">
-        <p class="m-product-name">{{item.productinfo.opiproductname}}</p>
+        <p class="m-product-name">{{item.productinfo[0].opiproductname}}</p>
         <!--<p class="m-complain-p">投诉处理中..</p>-->
         <p class="m-order-code">
           <span>订单号：{{item.oisn}}</span>
           <span v-if="item.oipaystatus == 1" class="m-order-btn">订单付款</span>
-          <span v-else-if="item.oipaystatus == 7" class="m-order-btn active">确认收货</span>
+          <span v-else-if="item.oipaystatus == 5" class="m-order-btn active">确认收货</span>
           <span v-else-if="item.oipaystatus == 8" class="m-flex-center-col" >
                 <span>交易失败</span>
                 <span>（退货）</span>
@@ -51,12 +51,16 @@
           item:{
             type:Object,
             default:null
+          },
+          status:{
+            type:Boolean,
+            default:false
           }
         },
         methods: {
           orderClick(i){
              // if(i.oipaystatusmsg == '待支付'){
-            console.log(i,'订单')
+             if(!this.status)
                this.$router.push({path: '/orderStatus', query: { oiid :i.oiid }});
              // }
           }

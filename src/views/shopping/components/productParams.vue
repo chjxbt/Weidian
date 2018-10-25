@@ -136,7 +136,6 @@
         this.colorSizeList = new Array(this.option.length);
       }
       let _arr = this.sku;
-
       for(let i=0;i<_arr.length;i++){
         let _id = '';
         for(let j=0;j<_arr[i].pskproperkey.length;j++){
@@ -254,7 +253,6 @@
               if(this.colorSizeList[j])
                 _id = _id + this.colorSizeList[j].vid;
             }
-
           // for(let j=0;j<this.colorSizeList.length;j++){
               for(let i =0;i<this.all_sku.length;i++){
                   if(this.all_sku[i].id_arr.length == _id.length && this.all_sku[i].id_arr == _id ){
@@ -313,10 +311,10 @@
           // }
           // this.option = [].concat(options_arr);
         // }
+
         if(arr.length ==1){
             this.num = arr[0].pskproductnum;
         }
-        console.log(arr)
         this.surplus_value = [].concat(arr);
       },
       changeNum(num,i){

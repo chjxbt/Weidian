@@ -28,7 +28,7 @@
 
         <div class="m-myOrder-list" v-if="order_list.length > 0">
           <template v-for="(items,index) in order_list">
-            <one-order :item="items"></one-order>
+            <one-order :item="items" :status="isSell"></one-order>
           </template>
         </div>
         <div class="m-no-order" v-else>暂无订单</div>
@@ -53,7 +53,7 @@
             return {
               name: '',
               order_list:[],
-              page_size:3,
+              page_size:5,
               page_num:1,
               total_count:0,
               isScroll:true,

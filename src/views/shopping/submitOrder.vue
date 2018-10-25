@@ -1,38 +1,45 @@
 <template>
   <div>
     <div class="line-one" v-if="hasAddress"></div>
-    <div class="add-address" v-if="hasAddress" @click="addAddress">
+    <div class="add-address" v-if="!hasAddress" @click="addAddress">
       <span class="add-address-text m-ft-36 m-bg-main-color">+ 添加地址</span>
       <span class="to-add-address m-ft-36 m-bg-main-color">></span>
     </div>
-    <div class="order-address" v-if="!hasAddress" @click="addAddress">
+    <div class="order-address" v-if="hasAddress" @click="addAddress">
       <div class="consignee-info">
         <img src="/static/images/order_address.png" class="order-address-img">
-        <div class="consignee-name m-ft-26 m-black">收货人： 茉莉</div>
-        <div class="consignee-phone m-ft-26 m-black tr">13588718806</div>
+        <div class="consignee-name m-ft-26 m-black">收货人： {{address.oirecvname}}</div>
+        <div class="consignee-phone m-ft-26 m-black tr">{{address.oirecvphone}}</div>
       </div>
-      <div class="consignee-address m-ft-26 m-black">收货地址：北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京北京北京大北京</div>
+      <div class="consignee-address m-ft-26 m-black">收货地址：{{address.oiaddress}}</div>
     </div>
     <div class="line-one"></div>
     <div class="store-product">
       <div class="store-title">
         <img src="/static/images/store-img.png" class="store-img">
-        <div class="store-name m-ft-28 m-black tl">衣衣旗舰店</div>
+        <div class="store-name m-ft-28 m-black tl">衣百惠</div>
       </div>
       <div class="line-two"></div>
-      <div class="order-product">
-        <img src="http://img1.imgtn.bdimg.com/it/u=661395716,3070712851&fm=214&gp=0.jpg" class="product-img">
-        <div class="product-info">
-          <div class="product-name m-ft-24 m-black">2018早秋新款显瘦秋新款显瘦款显瘦瘦2018早秋新款显瘦秋新款显瘦款显瘦瘦</div>
-          <div class="product-params m-ft-24 m-black tl">尺寸：L   颜色：红色</div>
-          <span class="product-price m-ft-24 m-red tl">￥ 149</span>
-          <span class="product-quantity m-ft-20 m-black">X1</span>
+      <template v-for="(item,index) in order">
+        <div class="order-product">
+          <img :src="item.primage" class="product-img">
+          <div class="product-info">
+            <div class="product-name m-ft-24 m-black">{{item.prtitle}}</div>
+            <div class="product-params m-ft-24 m-black tl">
+              <template v-for="(i,j) in item.current_sku.pskproperkey">
+                <span>{{i.key}}: {{i.value}}  </span>
+              </template>
+            </div>
+            <span class="product-price m-ft-24 m-red tl">￥{{item.current_sku.pskprice}}</span>
+            <span class="product-quantity m-ft-20 m-black">X{{item.scnums}}</span>
+          </div>
         </div>
-      </div>
+      </template>
+
       <div class="line-two"></div>
       <p class="user-new">
         <span class="user-new-title m-ft-26 m-grey">使用新衣币</span>
-        <new-currency class="new-currency tr"></new-currency>
+        <new-currency class="new-currency tr" :valid="valid"  :select="select_valid" :unvalid="unvalid" @oneChoose="oneChoose"></new-currency>
       </p>
       <div class="line-two"></div>
       <div class="wechat-pay">
@@ -45,12 +52,12 @@
         <span class="amount-title m-grey tl">支付金额</span>
         <span class="amount-text m-black">运费： 0</span>
         <span class="amount-text m-black">总计：</span>
-        <span class="amount-number m-red">￥149.00</span>
+        <span class="amount-number m-red">￥{{totalPrice}}</span>
       </p>
       <div class="line-two"></div>
       <div class="buyer-msg">
         <div class="msg-title m-ft-26 m-black tl">买家留言：</div>
-        <textarea class="msg-input m-ft-26" placeholder="选填：建议填写和卖家商量好的内容~" rows="3"></textarea>
+        <textarea class="msg-input m-ft-26" v-model="address.oilleavetext" placeholder="选填：建议填写和卖家商量好的内容~" rows="3"></textarea>
       </div>
       <div class="order-pay-box">
         <div class="order-pay m-ft-36 m-bg-main-color" @click="payOrder">支付订单</div>
@@ -61,34 +68,148 @@
 
 <script>
   import newCurrency from "../shopping/components/newCurrency";
-
+ import axios from 'axios';
+ import api from '../../api/api';
   export default {
     data() {
       return {
         name: "submitOrder",
-        hasAddress: true,
-        order: {}
+        hasAddress: false,
+        address:{
+          oiaddress: "",
+          oirecvname: "",
+          oirecvphone: "",
+          oilleavetext: "",
+        },
+        order: {},
+        totalPrice:0,
+        unvalid:[],
+        valid:[],
+        select_valid:null
       }
     },
     components: { newCurrency },
     methods: {
+      //获取优惠券
+      getReward(){
+        let _sku = [];
+        for(let i=0;i<this.order.length;i++){
+          _sku.push({pskid:this.order[i].current_sku.pskid,num:this.order[i].scnums})
+        }
+        axios.post(api.get_user_reward +'?token=' + localStorage.getItem('token'),{
+            sku:_sku,
+            topay: true
+        }).then(res => {
+          if(res.data.status == 200){
+            let arr = res.data.data;
+            let _valid = [];
+            let _unvalid = [];
+            for(let i=0;i<arr.length;i++){
+              arr[i].click =false;
+              if(arr[i].reward_detail.valid){
+                _valid.push(arr[i]);
+              }else{
+                _unvalid.push(arr[i])
+              }
+            }
+            this.valid = [].concat(_valid);
+            this.unvalid = [].concat(_unvalid);
+          }
+        })
+      },
+      //获取地址
+      getInfo(uaid){
+        axios.get(api.get_one_address,{
+          params:{
+            token:localStorage.getItem('token'),
+            uaid:uaid
+          }
+        }).then(res => {
+          if(res.data.status == 200){
+            if(res.data.data.length == 0){
+              this.hasAddress = false;
+              return false;
+            }else{
+              let _arr = res.data.data.addressinfo.reverse();
+              let text = '';
+              for(let i=0;i<_arr.length;i++){
+                text = text + _arr[i].name;
+              }
+              this.address.oiaddress = text + res.data.data.uatext;
+              this.address.oirecvname = res.data.data.uaname;
+              this.address.oirecvphone = res.data.data.uaphone;
+              this.hasAddress = true;
+            }
+          }
+        })
+      },
       // 添加新地址
       addAddress() {
-        if(this.hasAddress) {
-          this.hasAddress = false;
-        }else if(!this.hasAddress) {
-          this.hasAddress = true;
+        if(!this.hasAddress) {
+          this.$router.push({path:'/editAddress',query:{linkUrl:'/submitOrder',order:this.$route.query.order}});
+        }else{
+          this.$router.push({path:'/receiverAddress',query:{linkUrl:'/submitOrder',order:this.$route.query.order}});
         }
       },
       // 支付订单
       payOrder() {
-        let order = this.order;
-        this.$router.push({path: "/orderPayOK", query: { order }});
+        let order = [];
+        let reward =[];
+        for(let a=0;a<this.select_valid.length;a++){
+          reward.push(this.select_valid[a].raid)
+        }
+        console.log(this.select_valid,reward)
+        for(let i =0;i<this.order.length;i++){
+          order.push({pskid:this.order[i].current_sku.pskid,num:this.order[i].scnums})
+        }
+        axios.post(api.create_order+'?token='+localStorage.getItem('token'),{
+          oiaddress: this.address.oiaddress,
+          oirecvname:  this.address.oirecvname,
+          oirecvphone:  this.address.oirecvphone,
+          oilleavetext:  this.address.oilleavetext,
+          sku:order,
+          raid:reward[0]
+          // raids:reward
+        }).then(res => {
+          if(res.data.status == 200){
+            this.$router.push({path: "/orderPayOK", query: { oiid:res.data.data.oiid,price:this.totalPrice}});
+          }
+        })
+
+      },
+      oneChoose(i){
+        if(i === null){
+         this.select_valid = null;
+         return false;
+        }
+        let _arr = this.valid;
+        let valid_arr = [];
+        // if(_arr[i].reward_detail.ramaxholdnum > 1 && _arr[0].reward_detail.ramaxholdnum > 1){
+        //   _arr[i].click = true;
+        //   this.select_valid = this.select_valid.push(_arr[i]);
+        // }else{
+          for(let a=0;a<_arr.length;a++){
+            _arr[a].click = false
+          }
+          _arr[i].click = true;
+          valid_arr.push(_arr[i]);
+          this.select_valid = [].concat(valid_arr);
+        // }
+        if(this.select_valid.length > 0){
+          if(this.select_valid[0].reward_detail.raamount)
+            this.totalPrice = this.totalPrice - this.select_valid[0].reward_detail.raamount;
+        }
+        this.valid = [].concat(_arr);
       }
     },
-    created() {
-      this.order = this.$route.query.order;
-      // console.log("order", this.order);
+    mounted() {
+      this.order = JSON.parse(this.$route.query.order);
+      for(let i = 0; i < this.order.length; i++) {
+        // 计算单价商品的总价
+        this.totalPrice =  this.order[i].current_sku.pskprice *  this.order[i].scnums;
+      }
+      this.getInfo(this.$route.query.UAid);
+      this.getReward();
     }
   }
 </script>
@@ -141,6 +262,7 @@
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 2;
       overflow: hidden;
+      text-align: left;
     }
   }
   .store-product {
@@ -171,6 +293,7 @@
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
+          text-align: left;
         }
         .product-params {
           margin-left: 10px;

@@ -79,4 +79,32 @@
     height: 25px;
   }
 }
+.m-headPortrait-name{
+  position: relative;
+  top:-90px;
+  left: -90px;
+  .m-head-portrait{
+    position: absolute;
+    top:0;
+    left:0;
+    width: 95px;
+    height: 95px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    z-index: 200;
+    background-color: #a4a4a4;
+  }
+  .m-head-name{
+    position: absolute;
+    top:22px;
+    left:70px;
+    z-index: 100;
+    padding: 0 40px;
+    height: 52px;
+    line-height: 52px;
+    background-color: #c3c3c3;
+    border-radius: 25.3px;
+    font-size: 26px;
+  }
+}
 </style>

@@ -2,7 +2,7 @@
 
     <mt-tabbar v-model="selected" :fixed="true">
       <template v-for="(item,index) in tabbar" >
-        <mt-tab-item :id="item.name" @click="tabbarClick(item)">
+        <mt-tab-item :id="item.name" @click.stop="tabbarClick(item)">
           <img slot="icon" :src="item.active_icon" v-if="item.name == selected">
           <img slot="icon" :src="item.icon" v-else>
           {{item.name}}
@@ -30,11 +30,14 @@
           }
         },
       mounted(){
-
+        console.log(this.$store.state.tabbar,'asdasdasd');
       },
       computed:{
         select(){
           return this.$store.state.tabbar_select
+        },
+        tabbars(){
+          return this.$store.state.tabbar;
         }
       },
       watch: {
@@ -95,6 +98,9 @@
           },
           // 深度观察监听
           deep: true
+        },
+        tabbars:function () {
+          this.tabbar =this.$store.state.tabbar;
         }
       },
 

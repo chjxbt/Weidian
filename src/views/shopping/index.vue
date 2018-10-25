@@ -185,6 +185,11 @@
             }
           }
         }
+        if(this.order.length == this.orderList[0].productList.length){
+          this.ifChooseAll = true;
+        }else{
+          this.ifChooseAll = false;
+        }
       },
       // 结算时的全选
       chooseAll() {
@@ -228,7 +233,7 @@
               scid:product.scid
             }).then(res => {
               if(res.data.status == 200){
-                this.getShop()
+                this.getShop();
               }
             })
           }
@@ -241,8 +246,11 @@
       },
       // 去结算
       toOrder() {
-        let order = this.order;
-        this.$router.push({path: "/submitOrder", query: { order }});
+        if(this.order.length == 0){
+          return false;
+        }
+        let order =JSON.stringify(this.order);
+        this.$router.push({path: "/submitOrder", query: { order: order }});
       },
       changeNum(num,i){
         this.orderList[0].productList[i].scnums = num;

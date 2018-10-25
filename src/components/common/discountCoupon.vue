@@ -3,17 +3,17 @@
     <div class="m-new-info-left">
       <p class="m-red m-ft-b tc m-new-info-num">
         <span class="m-ft-30">￥</span>
-        <span class="m-ft-60">5</span>
+        <span class="m-ft-60">{{card.reward_detail.raamount}}</span>
       </p>
-      <p class="m-red">满6元使用</p>
+      <p class="m-red m-center" v-if="card.reward_detail.ratype == 0">满{{card.reward_detail.rafilter}}元使用</p>
+      <p class="m-red m-center" v-else>{{card.reward_detail.zh_ratype}}</p>
     </div>
     <div class="m-new-info-right">
-      <p class="m-ft-24">限时分享贝币</p>
-      <p class="m-red">退回时间：2017.12.11 20:40</p>
+      <p class="m-ft-24">{{card.reward_detail.raname}}</p>
+      <p class="m-red">领取时间：{{card.urcreatetime}}</p>
       <div class="m-new-person-info">
-        <img src="" class="m-new-info-img" alt="">
-        <p>乌冬冬领取后24小时未
-          使用还回</p>
+        <img :src="card.usheader" v-if="card.usheader" class="m-new-info-img" alt="">
+        <p>{{card.remarks}}</p>
       </div>
     </div>
   </div>
@@ -27,7 +27,16 @@
                 name: ''
             }
         },
-        components: {},
+        props: {
+          card:{
+            type:Object,
+            default:null
+          },
+          i:{
+            type:Number,
+            default:null
+          }
+        },
         methods: {},
         created() {
 

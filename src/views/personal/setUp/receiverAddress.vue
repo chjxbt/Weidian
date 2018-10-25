@@ -2,7 +2,7 @@
     <div class="m-receiverAddress">
       <div v-if="address_list.length > 0">
         <template v-for="(item,index) in address_list">
-          <div class="m-one-address" >
+          <div class="m-one-address" @click="sureClick(item)">
             <span class="m-check-icon" :class="item.uadefault?'active':''"></span>
             <div class="m-address-info">
               <div class="m-address-row m-address-row1 ">
@@ -14,7 +14,7 @@
                   <span class="m-mo" v-if="item.uadefault">[ 默认地址 ]</span>
                   <span>{{item.area.province}}{{item.area.city}}{{item.area.area}}{{item.uatext}}</span>
                 </div>
-                <span class="m-edit" @click="addressClick($event,item)">编辑</span>
+                <span class="m-edit" @click.stop="addressClick($event,item)">编辑</span>
               </div>
             </div>
           </div>
@@ -43,13 +43,17 @@
                 province:'',
                 city:'',
                 area:''
-              }
+              },
+              isOrder:false
             }
         },
         components: {},
       mounted(){
           this.getInfo();
         common.changeTitle('收货地址');
+        if(this.$route.query.order){
+          this.isOrder = true;
+        }
       },
         methods: {
           addressClick(e,v){
@@ -67,13 +71,14 @@
                   area:v.area.area,
                   provinceid:v.area.provinceid,
                   cityid:v.area.cityid,
-                  areaid:v.area.areaid
+                  areaid:v.area.areaid,
+                  order:this.$route.query.order,
+                  linkUrl: this.$route.query.order? 'receiverAddress':''
                 }
               })
             }else{
-              this.$router.push('/editAddress')
+              this.$router.push({path:'/editAddress',query:{order:this.$route.query.order,linkUrl: this.$route.query.order? 'receiverAddress':''}})
             }
-
           },
           getInfo(){
             axios.get(api.get_address,{
@@ -110,6 +115,11 @@
                   this.address_list = [].concat(arr);
                 }
             })
+          },
+          sureClick(item){
+            if(this.isOrder){
+              this.$router.push({path:'/submitOrder' ,query:{UAid:item.uaid,order:this.$route.query.order}});
+            }
           }
         },
         created() {

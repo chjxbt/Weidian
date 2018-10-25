@@ -35,9 +35,12 @@
           <div class="m-comment-box">
             <div class="m-comment-content" v-if="item.show_comment">
               <span class="m-comment-s"></span>
-              <p v-for="comment in item.comment">
+              <div class="comment-box" v-for="comment in item.comment">
                 <span class="m-comment-name">{{comment.user.usname}}</span>: {{comment.actext}}
-              </p>
+                <div v-if="comment.reply">
+                  <span class="m-comment-name">{{comment.reply[0].user.suname}}</span>@<span class="m-comment-name">{{comment.user.usname}}</span>: {{comment.reply[0].actext}}
+                </div>
+              </div>
               <div v-if="item.show_input" class="new-comment-box">
                 <input type="text" class="new-comment-input" v-model="comment"/>
                 <div class="new-comment-done" :class="comment!=''?'active':''" @click="commentDone(item, index)">发送</div>

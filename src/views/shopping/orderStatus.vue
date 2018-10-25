@@ -1,12 +1,16 @@
 <template>
-  <div>
+  <div >
     <!--待支付-->
-    <div class="order-status-title" v-if="orderStatus == 1">
+    <div class="order-status-title" v-if="order.oipaystatus == 1">
       <img src="/static/images/order_time.png" class="order-time-img">
-      <div class="order-time m-ft-24 m-bg-main-color">还有 48:00:00 自动关闭交易</div>
+      <div class="order-time m-ft-24 m-bg-main-color">还有 {{remaintime}} 自动关闭交易</div>
+    </div>
+    <div class="order-status-title" v-if="order.oipaystatus == 3">
+      <img src="/static/images/order_time.png" class="order-time-img">
+      <div class="order-time m-ft-24 m-bg-main-color">交易关闭</div>
     </div>
     <!--付款成功-->
-    <div class="order-status-title" v-if="orderStatus == 2">
+    <div class="order-status-title" v-if="order.oipaystatus == 2">
       <img src="/static/images/pay_ok.png" class="pay-ok-img">
       <div class="order-text-box m-bg-main-color tl">
         <div class="pay-ok-text m-ft-36">付款成功</div>
@@ -14,7 +18,7 @@
       </div>
     </div>
     <!--已发货-->
-    <div class="order-status-title" v-if="orderStatus == 3">
+    <div class="order-status-title" v-if="order.oipaystatus == 5">
       <div class="order-text-box m-bg-main-color tl" style="margin: 10px 40px 0 30px">
         <div class="pay-ok-text m-ft-36">卖家已发货</div>
         <div class="ok-title-text">包裹已在路上，请您耐心等待</div>
@@ -22,7 +26,7 @@
       <img src="/static/images/send_ok.png" class="send-ok-img">
     </div>
     <!--查看物流-->
-    <div class="logistics-page" v-if="orderStatus == 3" @click="checkLogistics">
+    <div class="logistics-page" v-if="order.oipaystatus == 5" @click="checkLogistics">
       <img src="/static/images/truck.png" class="truck-img">
       <div class="logistics-info m-ft-26 tl">
         <p class="logistics-text">包裹已签收，签收人[ 吴伟杰 ]</p>
@@ -31,12 +35,12 @@
       <img src="/static/images/icon-more.png" class="more-img">
     </div>
     <!--交易完成-->
-    <div class="order-status-title" v-if="orderStatus == 4">
+    <div class="order-status-title" v-if="order.oipaystatus == 6 || order.oipaystatus == 9">
       <img src="/static/images/order_ok.png" class="order-ok-img">
       <div class="order-ok-text m-ft-40 m-bg-main-color">交易成功</div>
     </div>
     <!--查看物流-->
-    <div class="logistics-page" v-if="orderStatus == 4" @click="checkLogistics">
+    <div class="logistics-page" v-if="order.oipaystatus == 6 || order.oipaystatus == 9" @click="checkLogistics">
       <img src="/static/images/truck.png" class="truck-img">
       <div class="logistics-info m-ft-26 tl">
         <p class="logistics-text">包裹已签收，签收人[ 吴伟杰 ]</p>
@@ -46,27 +50,30 @@
     </div>
     <div class="line"></div>
 
-    <order-product></order-product>
+    <order-product :order="order"></order-product>
 
     <div class="order-btns">
       <img src="/static/images/product_detail_service.png" class="service-img" @click="service">
       <div class="service-text m-ft-26 m-ft-b" @click="service">客服</div>
-      <div class="complaints-text m-ft-26 m-grey m-ft-b" @click="complaints">投诉</div>
+      <div class="complaints-text m-ft-26 m-grey m-ft-b" @click="complaints" ><span v-if="order.oipaystatus != 1 && order.oipaystatus != 2 ">投诉</span></div>
 
       <!--待支付-->
-      <div v-if="orderStatus == 1" class="btn-box">
+      <div v-if="order.oipaystatus == 1" class="btn-box">
         <div class="cancel-order m-ft-24 m-black" @click="cancelOrder">取消订单</div>
         <div class="to-pay m-ft-24 m-red" @click="toPay">立即支付</div>
       </div>
+      <div v-else-if="order.oipaystatus == 2 || order.oipaystatus == 4" class="btn-box">
+        <div class="cancel-order m-ft-24 m-black" @click="cancelOrder">取消订单</div>
+      </div>
       <!--已发货-->
-      <div v-if="orderStatus == 3" class="btn-box">
+      <div v-else-if="order.oipaystatus == 5" class="btn-box">
         <div class="cancel-order m-ft-24 m-black" @click="delayReceiving">延迟收货</div>
         <div class="to-pay m-ft-24 m-red" @click="confirmReceiving">确认收货</div>
       </div>
       <!--交易完成-->
-      <div v-if="orderStatus == 4" class="btn-box">
+      <div v-else-if="order.oipaystatus != 9 && order.oipaystatus != 6" class="btn-box">
         <div class="cancel-order m-ft-24 m-black" @click="deleteOrder">删除订单</div>
-        <div class="to-pay m-ft-24 m-red" @click="toEvaluation">评 价</div>
+        <!--<div class="to-pay m-ft-24 m-red" @click="toEvaluation">评 价</div>-->
       </div>
 
     </div>
@@ -74,7 +81,10 @@
     <div class="line"></div>
     <div class="order-time-box m-ft-24 tl" @click="change">
       <p class="m-black m-ft-b">订单交易时间</p>
-      <div class="m-grey-color" v-for="item in timeList">{{item}}</div>
+      <div class="m-grey-color" >订单备注：{{order.oileavetext}}</div>
+      <div class="m-grey-color" >创建时间：{{createTime}}</div>
+      <div class="m-grey-color" >付款时间：{{payTime}}</div>
+      <div class="m-grey-color" >发货时间：{{sendTime}}</div>
     </div>
     <div class="line-three"></div>
 
@@ -83,7 +93,9 @@
 
 <script>
   import orderProduct from "../shopping/components/orderProduct";
-
+  import { Toast } from 'mint-ui';
+  import axios from 'axios';
+  import api from '../../api/api'
   export default {
     data() {
       return {
@@ -91,11 +103,43 @@
         order: {},
         // 待支付：1，付款成功：2，已发货：3，交易完成：4
         orderStatus: 1,
-        timeList: ["创建时间：2018-08-16 14:28:58", "付款时间：2018-08-16 18:28:58", "发货时间：2018-08-16 20:28:58"]
+        timeList: ["创建时间：2018-08-16 14:28:58", "付款时间：2018-08-16 18:28:58", "发货时间：2018-08-16 20:28:58"],
+        createTime:'',
+        payTime:'',
+        sendTime:'',
+        remaintime:'',
+        interval:''
       }
     },
     components: { orderProduct },
+    mounted(){
+      this.getOrderInfo();
+
+    },
     methods: {
+      //获取订单详情
+      getOrderInfo(){
+        axios.get(api.get_order_info,{
+          params:{
+            token: localStorage.getItem('token'),
+            oiid: this.$route.query.oiid
+          }
+        }).then(res => {
+            if(res.data.status == 200){
+              this.order = res.data.data;
+              // this.order.oipaystatus = 5;
+              this.createTime = res.data.data.oicreatetime.slice(0,4) + '-' +res.data.data.oicreatetime.slice(4,6) + '-' +res.data.data.oicreatetime.slice(6,8) + ' ' +res.data.data.oicreatetime.slice(8,10) + ':' +res.data.data.oicreatetime.slice(10,12) + ':' +res.data.data.oicreatetime.slice(12,14);
+              if(res.data.data.oipaytime)
+                 this.payTime = res.data.data.oipaytime.slice(0,4) + '-' +res.data.data.oipaytime.slice(4,6) + '-' +res.data.data.oipaytime.slice(6,8) + ' ' +res.data.data.oipaytime.slice(8,10) + ':' +res.data.data.oipaytime.slice(10,12) + ':' +res.data.data.oipaytime.slice(12,14);
+              let that = this;
+              if(this.order.oipaystatus == 1){
+                that.interval = window.setInterval(that.getDJS,1000)
+              }else{
+                window.clearInterval(that.interval)
+              }
+            }
+        })
+      },
       // 测试方法
       change() {
         if(this.orderStatus == 4) {
@@ -111,7 +155,7 @@
       },
       // 投诉
       complaints() {
-
+        this.$router.push({path:'/complain',query:{oiid:this.$route.query.oiid}});
       },
       // 取消订单
       cancelOrder() {
@@ -127,7 +171,15 @@
       },
       // 确认收货
       confirmReceiving() {
-
+       axios.post(api.confim_order +'?token=' +localStorage.getItem('token'),{
+         oiid:this.$route.query.oiid
+       }).then(res => {
+         if(res.data.status == 200){
+           this.getOrderInfo();
+         }else{
+           Toast({ message: res.data.message,duration:800, className: 'm-toast-success' });
+         }
+       })
       },
       // 删除订单
       deleteOrder() {
@@ -141,10 +193,32 @@
       checkLogistics() {
         let order = this.order;
         this.$router.push({path: "/logisticsInfo", query: { order }});
-      }
+      },
+      getDJS(){
+        let NowTime = new Date();
+        let start = this.order.oicreatetime;
+        let EndTime= new Date(start.slice(0,4),start.slice(4,6)-1,start.slice(6,8),start.slice(8,10),start.slice(10,12),start.slice(12));//初始化结束日期2016年12月31日23点59分59秒
+        // let  EndTime= new Date(start.slice(0,4),9,20,start.slice(8,10),start.slice(10,12),start.slice(12));//初始化结束日期2016年12月31日23点59分59秒
+        let t =EndTime.getTime() - NowTime.getTime();
+        if(t <= 0){
+          this.order.oipaystatus = 3;
+          return false;
+        }
+        if(t>0){
+          let d=Math.floor(t/1000/60/60/24);
+          let h=Math.floor(t/1000/60/60%24);
+          let m=Math.floor(t/1000/60%60);
+          let s=Math.floor(t/1000%60);
+          let arr = [];
+          arr[0] = d ==1 ?24+h:h;
+          arr[1] = m<10? '0' + m:m;
+          arr[2] = s<10? '0'+s:s;
+          this.remaintime =arr.join(':');
+        }
+      },
     },
     created() {
-      this.order = this.$route.query.order;
+      // this.order = this.$route.query.order;
       // console.log("order", this.order);
     }
   }
@@ -231,6 +305,9 @@
     }
     .btn-box {
       display: flex;
+      flex-flow: row;
+      justify-content: flex-end;
+      width: 390px;
       .cancel-order {
         margin: 20px 10px;
         padding: 10px 36px;
