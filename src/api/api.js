@@ -38,6 +38,7 @@ const api={
   get_all_raward: title + 'task/get_all_raward',            // 获取所有奖励 - 获取所有优惠券
   create_reward: title + 'reward/create_reward',            // 创建优惠券
   hand_out_reward: title + 'reward/hand_out_reward',        // 平台内发放优惠券
+  admin_giving_reward: title + 'reward/admin_giving_reward',// 运营给用户赠送优惠券
 
   get_order_count: title + 'order/admin_get_order_count',   // 后台获取订单数量
   get_order_list: title + 'order/admin_get_order_list',     // 后台获取各状态下的订单

@@ -3,15 +3,29 @@
     <page-title :title="name" ></page-title>
     <div class="m-weidian-content">
 
-      <div class="title-img-box">
-        <h3 class="m-title">平台内发放优惠券</h3>
+      <!--<div class="title-img-box">
+        <h3 class="m-title">发放优惠券</h3>
         <img v-if="handOut" class="table-close-img" src="../../assets/images/table_close.png" @click="handOutOpen">
         <img v-if="!handOut" class="table-close-img" src="../../assets/images/table_open.png" @click="handOutOpen">
       </div>
+      <div class="hand-out-reward" v-if="!handOut">
+        <p class="m-form-label" style="margin-bottom: 0.1rem">平台内发放优惠券</p>
+        <div class="input-box">
+          <div class="box-text">优惠券：</div>
+          <div class="box-right">
+            <el-select v-model="raid" placeholder="请选择优惠券" style="width: 2.3rem" size="mini" clearable>
+              <el-option v-for="item in discountsList" :key="item.raid" :label="item.rewardstr" :value="item.raid"></el-option>
+            </el-select>
+          </div>
+        </div>
+      </div>-->
 
       <div class="coupons-box">
         <p class="m-form-label" style="margin-bottom: 0.1rem; flex: 1;">平台优惠</p>
-        <div class="add-coupons-btn">添加优惠券</div>
+        <el-select v-model="collectionS" filterable style="width: 2.3rem" placeholder="选择集合后可查看">
+          <el-option v-for="item in collectionList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+        </el-select>
+        <div class="coupons-btn">查 看</div>
       </div>
       <div class="content-table">
         <el-table :data="discountsList" border style="width: 100%" v-loading="discountsLoading">
@@ -26,9 +40,9 @@
           <el-table-column prop="ratransfer" label="可否转赠" width="80"></el-table-column>
           <el-table-column prop="ratransfereffectivetime" label="转赠有效时长" width="110"></el-table-column>
           <el-table-column prop="num" label="集合"></el-table-column>
-          <el-table-column prop="num" label="管理" width="120">
+          <el-table-column prop="num" label="管理" width="160">
             <template slot-scope="scope">
-              <el-button type="text" size="small" @click="">编辑</el-button>
+              <el-button type="text" size="small" @click="editDiscount(scope)">编辑集合</el-button>
               <el-button type="text" size="small">|</el-button>
               <el-button type="text" size="small" @click="">删除</el-button>
             </template>
@@ -36,8 +50,8 @@
         </el-table>
       </div>
 
-      <p class="m-form-label" style="margin: 0.1rem 0; font-size: 0.14rem">优惠编辑</p>
-      <div class="input-boxs">
+      <p class="m-form-label" style="margin: 0.1rem 0; font-size: 0.14rem">优惠券编辑</p>
+      <div class="input-boxs" v-if="!editDiscounts">
         <div class="input-box">
           <div class="box-text">优惠类型：</div>
           <div class="box-right">
@@ -105,9 +119,20 @@
           </div>
         </div>
       </div>
+      <div class="input-boxs">
+        <div class="input-box">
+          <div class="box-text">所属集合：</div>
+          <div class="box-right">
+            <el-select v-model="collection" filterable allow-create style="width: 2.3rem" placeholder="输入可创建新集合">
+              <el-option v-for="item in collectionList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+            </el-select>
+          </div>
+        </div>
+      </div>
       <div class="input-btns">
-        <div class="input-btn">取 消</div>
-        <div class="input-btn">保 存</div>
+        <div class="input-btn" v-if="editDiscounts" @click="cancelDiscounts">取 消</div>
+        <div class="input-btn" v-if="editDiscounts" @click="saveDiscounts">保 存</div>
+        <div class="input-btn" v-if="!editDiscounts" @click="addDiscounts">保 存</div>
       </div>
     </div>
   </div>
@@ -122,8 +147,10 @@
     data(){
       return{
         name:'活动中心',
+        raid: "",                 // 平台内发放优惠券时选中的优惠券id
         discountsList: [],        // 平台优惠list
         discountsLoading: false,  // 平台优惠list加载中
+        editDiscounts: false,     // 编辑优惠
         handOut: true,           // 平台内发放优惠券
         discountsName: "",        // 优惠名称
         ramaxusenum: "",          // 允许叠加使用的张数
@@ -149,10 +176,21 @@
           { value: "60", label: "60%" }, { value: "70", label: "70%" }, { value: "80", label: "80%" }, { value: "90", label: "90%" }, { value: "100", label: "100%" }
         ],
         threshold: "",            // 优惠门槛
+        collection: "",           // 集合选中值
+        collectionS: "",          // 头部查看 - 集合选中值
+        collectionList: [],       // 集合list
       }
     },
     components:{ pageTitle },
     methods:{
+      // 打开/关闭任务表格
+      handOutOpen() {
+        if(this.handOut) {
+          this.handOut = false;
+        }else if(!this.handOut) {
+          this.handOut = true;
+        }
+      },
       // 获取所有优惠券
       getAllRaward() {
         this.discountsLoading = true;
@@ -172,14 +210,23 @@
           }
         });
       },
-      // 打开/关闭任务表格
-      handOutOpen() {
-        if(this.handOut) {
-          this.handOut = false;
-        }else if(!this.handOut) {
-          this.handOut = true;
-        }
+      // 添加优惠券时编辑框的保存按钮
+      addDiscounts() {
+
       },
+      // 优惠券编辑框的保存按钮
+      saveDiscounts() {
+
+      },
+      // 取消编辑优惠券的按钮
+      cancelDiscounts() {
+        this.editDiscounts = false;
+      },
+      // 编辑优惠券
+      editDiscount(scope) {
+        this.editDiscounts = true;
+        console.log(scope.row);
+      }
     },
     mounted() {
       this.getAllRaward();      // 获取所有优惠券
@@ -192,36 +239,37 @@
 
   .coupons-box {
     display: flex;
-    .add-coupons-btn {
-      width: 0.6rem;
+    margin-bottom: 0.1rem;
+    .coupons-btn {
       color: #ffffff;
       font-size: 0.12rem;
       padding: 0.05rem 0.2rem;
       white-space: nowrap;
       background-color: #91aeb5;
-      border-radius: 0.1rem;
-      margin-bottom: 0.1rem;
+      border-radius: 0.05rem;
+      margin: 0.02rem 0 0.1rem 0.1rem;
     }
   }
 
   .input-boxs {
     display: flex;
     flex-wrap: wrap;
-    .input-box {
-      display: flex;
-      padding: 0 0.5rem 0.2rem 0;
-      .box-text {
-        width: 0.65rem;
-        white-space: nowrap;
-        font-size: 0.12rem;
-        line-height: 0.3rem;
-        margin-right: 0.2rem;
-      }
-      .box-right {
-        margin-right: 0.1rem;
-      }
+  }
+  .input-box {
+    display: flex;
+    padding: 0 0.5rem 0.2rem 0;
+    .box-text {
+      width: 0.65rem;
+      white-space: nowrap;
+      font-size: 0.12rem;
+      line-height: 0.3rem;
+      margin-right: 0.2rem;
+    }
+    .box-right {
+      margin-right: 0.1rem;
     }
   }
+
   .input-btns {
     display: flex;
     flex-flow: row;
@@ -249,5 +297,8 @@
       height: 0.12rem;
       padding: 0.02rem 0 0 0.2rem;
     }
+  }
+  .hand-out-reward {
+    margin: 0 0 0.1rem 0.1rem;
   }
 </style>
