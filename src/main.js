@@ -32,8 +32,8 @@ FastClick.attach(document.body);
 import promise from 'es6-promise';//解决axios在ie9下不生效的方法
 promise.polyfill();
 //
-// let token = "eyJhbGciOiJIUzI1NiIsImV4cCI6MTUzOTU4NjcyMSwiaWF0IjoxNTM5NTc5NTIxfQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0xMC0xNSAxMjo1ODo0MSJ9.eDxYtMhZHPYl21mKkzEA9E2ouvFIS9-ZMS4isUIBg08";
-let token = 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTUzOTU3NjI1NSwiaWF0IjoxNTM5NTY5MDU1fQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0xMC0xNSAxMDowNDoxNSJ9.joP_TR6OgFI1zmZWR9vZCru1RQoXHfpg4EqoO_mqkL8'
+let token = "eyJhbGciOiJIUzI1NiIsImV4cCI6MTUzOTU4NjcyMSwiaWF0IjoxNTM5NTc5NTIxfQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0xMC0xNSAxMjo1ODo0MSJ9.eDxYtMhZHPYl21mKkzEA9E2ouvFIS9-ZMS4isUIBg08";
+// let token = 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTUzOTU3NjI1NSwiaWF0IjoxNTM5NTY5MDU1fQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0xMC0xNSAxMDowNDoxNSJ9.joP_TR6OgFI1zmZWR9vZCru1RQoXHfpg4EqoO_mqkL8'
 localStorage.setItem('token', token);
 
 
@@ -67,13 +67,21 @@ axios.interceptors.response.use(data => {// 响应成功关闭loading
   // loadinginstace.close()
 
   if(data.data.status_code == 403001 ){
-    axios.post(api.wx_login,{
-      url: window.location.href
-    } ).then((res) => {
-      if(res.data.status == 302){
-        window.location.href = res.data.data.redirect_url
+    axios.get(api.get_config,{
+      params:{
+        url: window.location.href
       }
+    } ).then((res) => {
+      if(res.data.status == 200){
+        const id = res.data.data.appId
+        const url = window.location.href;
+        // const  url = 'https://daaiti.cn/WeiDian/#/login';
+        window.location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid='
+          +  id + '&redirect_uri='+ encodeURIComponent(url) + '&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect'
+      }
+
     }).catch((error) => {
+      console.log(error ,'1111')
     })
   }
   Indicator.close();

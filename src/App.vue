@@ -52,13 +52,21 @@ export default {
       this.$router.go(-1);
     },
     login(){
-      axios.post(api.wx_login,{
-        url: window.location.href
-      } ).then((res) => {
-        if(res.data.status == 302){
-          window.location.href = res.data.data.redirect_url
+      axios.get(api.get_config,{
+        params:{
+          url: window.location.href
         }
+      } ).then((res) => {
+        if(res.data.status == 200){
+          const id = res.data.data.appId
+          const url = window.location.href;
+          // const  url = 'https://daaiti.cn/WeiDian/#/login';
+          window.location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid='
+            +  id + '&redirect_uri='+ encodeURIComponent(url) + '&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect'
+        }
+
       }).catch((error) => {
+        console.log(error ,'1111')
       })
     },
     isWeiXin() {
