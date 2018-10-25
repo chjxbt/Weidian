@@ -98,13 +98,14 @@ class CRaward():
             upinfo = self.sraward.update_reward({'RAid': raid}, {'RAisdelete': raisdelete})
             if not upinfo:
                 raise NOT_FOUND(u'删除失败')
-        elif rptid:
+        elif rptid is not None:
             self.sraward.del_packet_reward(raid)
-            self.sraward.add_model('RewardPacketContact', **{
-                'RPCid': str(uuid.uuid1()),
-                'RAid': raid,
-                'RPTid': rptid
-            })
+            if rptid:
+                self.sraward.add_model('RewardPacketContact', **{
+                    'RPCid': str(uuid.uuid1()),
+                    'RAid': raid,
+                    'RPTid': rptid
+                })
         data = import_status("update_success", "OK")
         data['data'] = {'raid': raid}
         return data
