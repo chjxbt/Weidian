@@ -34,7 +34,6 @@ class CRaward():
             raise AUTHORITY_ERROR(u'当前账号权限不足')
         data = request.json
         logger.debug("create reward data is %s", data)
-        parameter_required('ratype', 'raname')
         raid = str(uuid.uuid1())
         ratype = data.get('ratype')
         rptid = data.get('rptid')
@@ -57,13 +56,16 @@ class CRaward():
         }
         if re.match(r'^[0-2]$', str(ratype)):
             if str(ratype) == '0':
+                parameter_required('rafilter', 'raamount', 'ratype', 'raname')
                 logger.info('This reward type 0 is created')
                 reward_dict['RAfilter'] = data.get('rafilter')
                 reward_dict['RAamount'] = data.get('raamount')
             elif str(ratype) == '1':
+                parameter_required('raratio', 'ratype', 'raname')
                 logger.info('This reward type 1 is created')
                 reward_dict['RAratio'] = data.get('raratio')
             else:
+                parameter_required('raamount', 'ratype', 'raname')
                 logger.info('This reward type 2 is created')
                 reward_dict['RAfilter'] = 0
                 reward_dict['RAamount'] = data.get('raamount')
@@ -707,6 +709,8 @@ class CRaward():
             if raward.RFstatus == 0:
                 presenter = SUser().get_user_by_user_id(raward.RFfrom)
                 recipient = SUser().get_user_by_user_id(raward.USid)
+                if not presenter or not recipient:
+                    raise NOT_FOUND(u'转赠信息不正确')
                 if raward.USid == request.user.id:
                     usheader = presenter.USheader
                     remarks = '由{0}赠送'.format((presenter.USname).encode('utf8'))

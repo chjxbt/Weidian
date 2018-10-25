@@ -109,6 +109,11 @@ class SRaward(SBase):
         return self.session.query(RewardPacket).filter_by(**rpfilter).update(upinfo)
 
     @close_session
+    def get_reward_in_packet_info(self, rptid):
+        """获取优惠券所在集合名"""
+        return self.session.query(RewardPacket).filter(RewardPacket.RPTid == rptid).first()
+
+    @close_session
     def del_packet_reward(self, raid):
         """删除集合中的券"""
         return self.session.query(RewardPacketContact).filter(RewardPacketContact.RAid == raid).delete()
@@ -121,3 +126,8 @@ class SRaward(SBase):
     def get_reward_packet_detail(self, rptid):
         """获取优惠券集合具体内容"""
         return self.session.query(RewardPacketContact).filter(RewardPacketContact.RPTid == rptid).all()
+
+    @close_session
+    def get_is_where_packet(self, raid):
+        """获取当前券在哪个集合"""
+        return self.session.query(RewardPacketContact).filter(RewardPacketContact.RAid == raid).first()

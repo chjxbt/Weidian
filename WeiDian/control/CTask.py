@@ -301,8 +301,12 @@ class CTask(BaseTask):
             raise AUTHORITY_ERROR(u"权限不足")
         args = request.args.to_dict()
         page_num, page_size = self.cuser.get_pagesize_pagenum(args)
-
         raward_list, count = self.sraward.get_all_reward(page_size, page_num)
+        for reward in raward_list:
+            packet_contact = self.sraward.get_is_where_packet(reward.RAid)
+            if packet_contact:
+                packet_info = self.sraward.get_reward_in_packet_info(packet_contact.RPTid)
+                reward.fill(packet_info.RPTname, 'rptname')
         raward_list = self.fill_reward_detail(raward_list)
         res = import_status('get_task_success', 'OK')
         res['data'] = raward_list
