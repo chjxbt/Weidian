@@ -33,8 +33,8 @@ import promise from 'es6-promise';//解决axios在ie9下不生效的方法
 promise.polyfill();
 //
 // // let token = "eyJhbGciOiJIUzI1NiIsImV4cCI6MTUzOTYwMjMyOCwiaWF0IjoxNTM5NTk1MTI4fQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0xMC0xNSAxNzoxODo0OCJ9.GPSNz79JnUbsXOQ3BwD-e-Q5_XFrqPE__X2PYQ9XMGc";
-// let token = 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTU0MDQzOTM4MiwiaWF0IjoxNTQwNDMyMTgyfQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0xMC0yNSAwOTo0OTo0MiJ9.mAsQgw5wISfRcCHZqv8p8CoKt2KsgvW-rsgPQ8wSLbE'
-// localStorage.setItem('token', token);
+let token = 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTU0MDQ2MTMzOCwiaWF0IjoxNTQwNDU0MTM4fQ.eyJtb2RlbCI6IlVzZXIiLCJpZCI6Impma3NhZGpmLWZkYXNsa2pmLTMyMTMtMzEyMzEiLCJ0aW1lIjoiMjAxOC0xMC0yNSAxNTo1NTozOCJ9.fsB4kaW_HdlfdwH3B_AfW0XdyiSA-DVVU_LWccf6CZA'
+localStorage.setItem('token', token);
 
 
 

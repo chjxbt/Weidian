@@ -163,7 +163,9 @@
       }
     };
   })('scroll');
-    export default {
+
+
+  export default {
       mixins: [wxapi],
         data() {
             return {

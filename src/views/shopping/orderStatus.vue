@@ -159,7 +159,14 @@
       },
       // 取消订单
       cancelOrder() {
-
+        axios.post(api.cancle_order+'?token=' + localStorage.getItem('token'),{
+          oiid:this.$route.query.oiid
+        }).then(res => {
+          if(res.data.status == 200){
+            this.$router.push('/order')
+            Toast({ message: res.data.message,duration:800, className: 'm-toast-success' });
+          }
+        })
       },
       // 立即支付
       toPay() {
@@ -183,7 +190,14 @@
       },
       // 删除订单
       deleteOrder() {
-
+        axios.post(api.delete_order+'?token=' + localStorage.getItem('token'),{
+          oiid:this.$route.query.oiid
+        }).then(res => {
+          if(res.data.status == 200){
+            this.$router.push('/order')
+            Toast({ message: res.data.message,duration:800, className: 'm-toast-success' });
+          }
+        })
       },
       // 评 价
       toEvaluation() {

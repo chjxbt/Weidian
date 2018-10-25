@@ -5,7 +5,7 @@
       <span @click="inputClick">搜索商品、品牌</span>
     </div>
     <div class="m-input" v-if="!search" >
-      <input type="text" v-model="value" autofocus="!search" placeholder="" />
+      <input type="text" v-model="value" autofocus="!search" @keypress="keyPress" placeholder="" />
       <span @click.stop="searchClick">搜索</span>
     </div>
 
@@ -33,6 +33,12 @@
         },
         searchClick(){
           this.$emit('searchClick',this.value)
+        },
+        keyPress(e){
+
+          if(e.keyCode == 13){
+            this.$emit('searchClick',this.value)
+          }
         }
       }
     }

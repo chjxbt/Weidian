@@ -1,19 +1,23 @@
 <template>
-  <div>
-    <div class="product-info">
-      <img class="product-img" src="/static/images/product1.png">
+  <div class="m-return-content">
+    <div class="product-info" v-if="product_info">
+      <img class="product-img" :src="product_info.opiproductimages">
       <div class="product-info-right">
-        <div class="product-name m-ft-26 tl">商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称100商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称商品名称</div>
-        <div class="product-params m-grey tl">规格：M-中型</div>
+        <div class="product-name m-ft-26 tl">{{product_info.opiproductname}}</div>
+        <div class="product-params m-grey tl">
+          <template v-for="(i,j) in product_info.pskproperkey">
+          <span>{{i.key}}: {{i.value}}  </span>
+        </template>
+        </div>
       </div>
     </div>
     <div class="return-address">
       <div class="m-ft-30 m-black tl">退货地址：</div>
       <div class="address-two">
-        <div class="address-people address-text">收货人：XXX</div>
-        <div class="address-phone address-text">电话：12345678912</div>
+        <div class="address-people address-text">收货人：<input type="text" class="m-input" placeholder="请输入收件人姓名"></div>
+        <div class="address-phone address-text">电话：<input type="text" class="m-input" placeholder="请输入收件人电话"></div>
       </div>
-      <div class="address-text">地址：浙江省 杭州市 滨江区 浦沿街道新城路33号 只是控股 创客空间</div>
+      <div class="address-text">地址：<input type="text" class="m-input-l" placeholder="请输入收件人地址"></div>
     </div>
     <div class="return-reason" @click="choose_show = true">
       <div class="m-ft-28 m-black tl">退款原因</div>
@@ -79,7 +83,8 @@
 
 <script>
   // import { Picker } from 'mint-ui';
-
+ import axios from 'axios';
+ import api from '../../api/api'
   export default {
     name: "returnProduct",
     data() {
@@ -92,10 +97,33 @@
         reason: "",
         memo: "",
         courierCompany: "",
-        courierNo: ""
+        courierNo: "",
+        product_info:null,
+        address_info:null
       }
     },
+    mounted(){
+      this.getOrderInfo()
+    },
     methods: {
+      //获取订单详情
+      getOrderInfo(){
+        axios.get(api.get_order_info,{
+          params:{
+            token: localStorage.getItem('token'),
+            oiid: this.$route.query.oiid
+          }
+        }).then(res => {
+          if(res.data.status == 200){
+            for(let i=0;i<res.data.data.productinfo.length;i++){
+              if(res.data.data.productinfo[i].prid == this.$route.query.prid){
+                this.product_info = res.data.data.productinfo[i]
+              }
+            }
+            this.address_info = res.data.data;
+          }
+        })
+      },
       // 退货原因选择器-确定
       reasonDone() {
         this.choose_show = false;
@@ -129,7 +157,10 @@
     font-size: 24px;
     line-height: 28px;
   }
-
+.m-return-content{
+  width: 100%;
+  overflow-x: hidden;
+}
   .product-info {
     width: 100%;
     display: flex;
@@ -172,6 +203,14 @@
       color: @black;
       font-size: 26px;
       text-align: left;
+      .flex-row(flex-start);
+      input{
+        width: 200px;
+        &.m-input-l{
+          width: 560px;
+          display: inline-block;
+        }
+      }
     }
   }
   .return-reason {

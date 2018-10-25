@@ -68,6 +68,8 @@ const api={
   get_user_reward:title +'/reward/get_user_reward',//获取用户所有优惠券
   get_one_reward: title + '/reward/get_one_reward',//获取单个优惠券
   get_transfer_reward: title +'/reward/get_transfer_reward',//领取优惠券
+  delete_order: title + '/order/delete_order',//删除订单
+  cancle_order: title + '/order/cancle_order',//取消订单
 };
 
 export default api

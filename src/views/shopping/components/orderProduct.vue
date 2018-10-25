@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="m-order-product">
     <div class="order-no-box">
       <div class="order-no m-ft-26 m-black tl">订单号：{{order.oiid}}</div>
       <div class="copy-order-no m-ft-20 m-grey" @click="copyText">复制</div>
@@ -26,7 +26,7 @@
           <div class="product-info">
             <div class="product-name m-ft-24 m-black">
               <span class="name">{{item.opiproductname}}</span>
-              <span>退/换</span>
+              <span @click.stop="changeProduct(index)">退/换</span>
             </div>
             <div class="product-params m-ft-24 m-black tl">
               <template v-for="(i,j) in item.pskproperkey">
@@ -57,6 +57,49 @@
       </div>
       <div class="line-one"></div>
     </div>
+    <div class="m-change-modal" v-if="show_change" @click.stop="closeModel('show_change')">
+      <div class="m-change-modal-state">
+        <div class="m-change-modal-head">
+          <span @click.stop="closeModel('show_change')">X</span>
+        </div>
+        <div class="m-change-modal-content">
+          <p class="m-change-head">请选择</p>
+          <ul class="m-change-ul">
+            <li @click.stop="changeState">
+              <span class="m-icon"></span>
+              <div class="m-change-text">
+                <p>退货退款</p>
+                <p class="m-grey">已收到货，需要退掉已收到的货物</p>
+              </div>
+              <span class="m-icon-more"> </span>
+            </li>
+            <li>
+              <span class="m-icon"></span>
+              <div class="m-change-text">
+                <p>换货</p>
+                <p class="m-grey">已收到货，需要更换已收到的货物</p>
+              </div>
+              <span class="m-icon-more"> </span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="m-modal" v-if="show_modal" @click.stop="closeModel('show_modal')">
+      <div class="m-modal-state">
+        <div class="m-modal-content">
+          <img src="" class="m-apply-success" alt="">
+          <p class="m-ft-30 m-ft-b">提交成功</p>
+          <div class="m-apply-result-info">
+            我们将在3个工作日内完成审核，
+            请及时关注退货状态。
+          </div>
+          <div class="m-apply-result-btn">
+            <span @click.stop="closeModel('show_modal')">我知道了</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -66,6 +109,9 @@
     data() {
       return {
         name: "orderProduct",
+        show_change:false,
+        select:null,
+        show_modal:false
       }
     },
     props:{
@@ -82,6 +128,19 @@
         this.$copyText(this.order.oiid).then(function (e) {
           Toast({ message: "复制成功", className: 'm-toast-success' });
         })
+      },
+      changeProduct(index){
+        this.show_change =true;
+        this.select = this.order.productinfo[index];
+      },
+      closeModel(v){
+        this[v] =false;
+        this.select = null
+      },
+      changeState(){
+          // this.$router.push({path:'/returnProduct',query:{oiid:this.order.oiid,prid:this.select.prid}})
+        this.show_change =false;
+        this.show_modal =true
       }
     },
     created() {
@@ -92,6 +151,7 @@
 
 <style lang="less" rel="stylesheet/less" scoped>
   @import "../../../common/css/index";
+  @import "../../../common/css/modal";
   .order-no-box {
     display: flex;
     flex-flow: row;
@@ -219,6 +279,112 @@
       }
       .total-price-total {
         margin: 30px;
+      }
+    }
+  }
+  .m-change-modal{
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0,0,0,0.2);
+    z-index: 1001;
+    transition: opacity .5s;
+    .m-change-modal-state{
+      background-color: #fff;
+      position: absolute;
+      width: 600px;
+      height: 415px;
+      top: 0;
+      left: 0;
+      right:0;
+      bottom:0;
+      margin: auto;
+      border: 1px solid @borderColor;
+      border-radius: 10px;
+      -webkit-transition: height 0.88s;
+      transition: height 0.88s;
+      .m-change-modal-head{
+        padding: 10px 20px;
+        width: 93%;
+        margin: 0!important;
+        text-align: right;
+      }
+      .m-change-head{
+        font-size: 34px;
+        margin-bottom: 40px;
+      }
+      .m-change-ul{
+        width: 100%;
+        li{
+          padding: 20px 0;
+          border-top: 1px solid @borderColor;
+          .flex-row(flex-start);
+          text-align: left;
+          .m-icon{
+            display: block;
+            width: 35px;
+            height: 35px;
+            margin: 0 40px 30px;
+            background: url("/static/images/back.png") no-repeat  center top;
+            background-size: 100%;
+
+          }
+          .m-icon-more{
+            display: block;
+            width: 10px;
+            height: 15px;
+            margin: 0 20px;
+            background: url("/static/images/icon-more.png") no-repeat  center;
+            background-size: 100% 100%;
+          }
+          .m-change-text{
+            width: 460px;
+            line-height: 36px;
+          }
+        }
+      }
+    }
+  }
+  .m-order-product{
+    .m-modal {
+      .m-modal-state {
+        width: 520px;
+        height: 600px;
+        border-radius: 30px;
+        .m-modal-content {
+          padding-top: 120px;
+          p {
+            color: #000;
+          }
+          .m-apply-success {
+            display: inline-block;
+            width: 85px;
+            height: 85px;
+            background: url("/static/images/icon-result-personal.png") no-repeat;
+            background-size: 100%;
+            margin-bottom: 36px;
+          }
+          .m-apply-result-info {
+            margin: 40px 0;
+            font-size: 24px;
+            line-height: 35px;
+          }
+          .m-apply-result-btn {
+            span {
+              display: inline-block;
+              width: 250px;
+              height: 70px;
+              line-height: 70px;
+              background-color: @mainColor;
+              color: #fff;
+              border-radius: 50px;
+              box-shadow: 2px 8px 8px 0 rgba(0, 0, 0, 0.16);
+            }
+          }
+        }
+
       }
     }
   }
