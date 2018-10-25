@@ -15,7 +15,7 @@ DB_PARAMS = "{0}://{1}:{2}@{3}/{4}?charset={5}".format(
     cfg.host,
     cfg.database,
     cfg.charset)
-mysql_engine = create_engine(DB_PARAMS, echo=False)
+mysql_engine = create_engine(DB_PARAMS, echo=False, pool_pre_ping=True)
 
 
 class Activity(BaseModel):
@@ -189,6 +189,8 @@ class Product(BaseModel):
     PRoductId = Column(Integer)  # 微点系统商品id
     PRtarget = Column(String(64))  # {101: 首页, 102: 发现页}
     PRpushCode = Column(String(16))  # 微点推送人的标识
+    # 新改动, 对应三级合伙人的佣金, 待定
+    # PRdevideRate = Column(String(64), comment=u'佣金三级分成比例, json, ')  # {'one': 0.1, 'two': 0.2,..}
 
     @orm.reconstructor
     @auto_createtime

@@ -661,7 +661,7 @@ class COrder():
         order_product_resend = self.sorder.get_orderproduct_resend_by_opiid(opiid)
         if not order_product_resend:
             raise NOT_FOUND(u'未申请')
-        if order_product_resend.OPRschedule != 0:
+        if order_product_resend.OPRschedule != 1:
             raise NOT_FOUND(u'请勿重新发货')
         kd_company_list = [x['expresskey'] for x in kd_list]
         kd_company = data.get('oprresendlogisticcompnay')
@@ -781,6 +781,47 @@ class COrder():
             })
         response = {'message': u'确认收货成功, 交易完成', 'status': 200}
         return response
+
+    @verify_token_decorator
+    def delete_order(self):
+        """删除订单"""
+        if is_tourist():
+            raise TOKEN_ERROR(u'请登录')
+        data = parameter_required(u'oiid')
+        oiid = data.get('oiid')
+        order = self.sorder.get_order_by_oiid(oiid)
+        usid = request.user.id
+        if not order:
+            raise NOT_FOUND(u'不存在的订单')
+        if order.USid != usid and not is_admin():
+            raise NOT_FOUND(u'他人订单')
+        updated = self.sorder.update_order_by_oiid(oiid, {
+            'OIisdelete': True
+        })
+        response = {'message': u'删除成功', 'status': 200}
+        return response
+
+    @verify_token_decorator
+    def cancle_order(self):
+        """取消订单, 只有未付款的才可以取消"""
+        if is_tourist():
+            raise TOKEN_ERROR(u'请登录')
+        data = parameter_required(u'oiid')
+        oiid = data.get('oiid')
+        order = self.sorder.get_order_by_oiid(oiid)
+        usid = request.user.id
+        if not order:
+            raise NOT_FOUND(u'不存在的订单')
+        if order.USid != usid and not is_admin():
+            raise NOT_FOUND(u'他人订单')
+        if order.OIpaystatus != 1:
+            raise NOT_FOUND(u'只可取消待付款的订单')
+        updated = self.sorder.update_order_by_oiid(oiid, {
+            'OIpaystatus': 7
+        })
+        response = {'message': u'取消成功', 'status': 200}
+        return response
+
 
     def fix_orderproduct_info(self, sku_list, oiid):
         """
