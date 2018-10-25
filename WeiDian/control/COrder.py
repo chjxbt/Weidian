@@ -801,6 +801,25 @@ class COrder():
         response = {'message': u'删除成功', 'status': 200}
         return response
 
+    def cancle_order(self):
+        """取消订单, 只有未付款的才可以取消"""
+        if is_tourist():
+            raise TOKEN_ERROR(u'请登录')
+        data = parameter_required(u'oiid')
+        oiid = data.get('oiid')
+        order = self.sorder.get_order_by_oiid(oiid)
+        usid = request.user.id
+        if not order:
+            raise NOT_FOUND(u'不存在的订单')
+        if order.USid != usid and not is_admin():
+            raise NOT_FOUND(u'他人订单')
+        updated = self.sorder.update_order_by_oiid(oiid, {
+            'OIpaystatus': 7
+        })
+        response = {'message': u'取消成功', 'status': 200}
+        return response
+
+
     def fix_orderproduct_info(self, sku_list, oiid):
         """
         调整参数以可以持久化到orderproductinfo表
