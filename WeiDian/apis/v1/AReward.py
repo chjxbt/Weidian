@@ -17,6 +17,8 @@ class AReward(Resource):
             "get_one_reward": "self.creward.get_one_reward()",
             "get_user_reward": "self.creward.get_user_reward()",
             "get_hand_out_reward": "self.creward.get_hand_out_reward()",
+            "get_reward_packets": "self.creward.get_rewardpacket()",
+            "get_reward_packet_detail": "self.creward.get_reward_packet_detail()",
         }
         res = eval(apis[reward])
         return jsonify(res)
@@ -31,6 +33,9 @@ class AReward(Resource):
             "give_reward_to_others": "self.creward.give_reward_to_others()",
             "get_user_reward": "self.creward.get_user_pay_reward()",
             "get_transfer_reward": "self.creward.get_transfer_reward()",
+            "create_rewardpacket": "self.creward.create_rewardpacket()",
+            "del_rewardpacket": "self.creward.del_rewardpacket()",
+            "update_reward": "self.creward.update_reward()",
         }
         res = eval(apis[reward])
         return jsonify(res)

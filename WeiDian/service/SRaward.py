@@ -2,7 +2,8 @@
 import sys
 import os
 from SBase import SBase, close_session
-from WeiDian.models.model import Raward, TaskRaward, UserRaward, RewardToUser, RewardTransfer
+from WeiDian.models.model import Raward, TaskRaward, UserRaward, RewardToUser, RewardTransfer, RewardPacket, \
+    RewardPacketContact
 from sqlalchemy import or_
 
 sys.path.append(os.path.dirname(os.getcwd()))
@@ -24,7 +25,13 @@ class SRaward(SBase):
 
     @close_session
     def get_all_reward(self):
-        return self.session.query(Raward).all()
+        return self.session.query(Raward).filter(Raward.RAisdelete == False).order_by(Raward.RAcreatetime.desc()).all()
+
+    @close_session
+    def update_reward(self, urfilter, upinfo):
+        """更改优惠券信息"""
+        return self.session.query(Raward).filter_by(**urfilter).update(upinfo)
+
 
     @close_session
     def get_reward_by_usid(self, usid):
@@ -87,3 +94,23 @@ class SRaward(SBase):
     def update_is_hand_out(self, rtfilter, change_info):
         """更改已在页面发放优惠券的状态"""
         return self.session.query(RewardToUser).filter_by(rtfilter).update(change_info)
+
+    @close_session
+    def get_reward_packet_list(self):
+        """获取所有优惠券集合"""
+        return self.session.query(RewardPacket).filter(RewardPacket.RPTisdelete == False).order_by(RewardPacket.RPTcreatetime.desc()).all()
+
+    @close_session
+    def update_reward_packet(self, rpfilter, upinfo):
+        """更改优惠券集合名信息"""
+        return self.session.query(RewardPacket).filter_by(**rpfilter).update(upinfo)
+
+    @close_session
+    def del_packet_reward(self, raid):
+        """删除集合中的券"""
+        return self.session.query(RewardPacketContact).filter(RewardPacketContact.RAid == raid).delete()
+
+    @close_session
+    def get_reward_packet_detail(self, rptid):
+        """获取优惠券集合具体内容"""
+        return self.session.query(RewardPacketContact).filter(RewardPacketContact.RPTid == rptid).all()

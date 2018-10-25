@@ -845,6 +845,7 @@ class Raward(BaseModel):
     RAfilter = Column(Float)        # 条件
     RAamount = Column(Float)        # 减少金额
     RAratio = Column(Float)         # 上调比例
+    SUid = Column(String(64))       # 创建者id
     RAmaxusenum = Column(Integer, default=1)        # 允许叠加使用张数
     RAmaxholdnum = Column(Integer, default=1)       # 同种券最大可拥有数量
     RAcreatetime = Column(String(14))               # 创建时间
@@ -873,7 +874,31 @@ class RewardToUser(BaseModel):
     def __init__(self):
         self.fields = ['RTid', 'RAid', 'RUcreatetime']
 
-# TODO 转赠表 / 优惠券集合
+class RewardPacket(BaseModel):
+    """优惠券集合"""
+    __tablename__ = 'rewardpacket'
+    RPTid = Column(String(64), primary_key=True)
+    SUid = Column(String(64))                       # 创建者id
+    RPTname = Column(String(64))                    # 优惠券集合名
+    RPTcreatetime = Column(String(14))              # 创建时间
+    RPTisdelete = Column(Boolean, default=False)    # 删除
+
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = ['RPTid', 'RPTname']
+
+class RewardPacketContact(BaseModel):
+    """优惠券集合关联表"""
+    __tablename__ = 'rewardpacketcontact'
+    RPCid = Column(String(64), primary_key=True)
+    RAid = Column(String(64), nullable=True)    # 优惠券id
+    RPTid = Column(String(64), nullable=True)   # 优惠券集合id
+
+    @orm.reconstructor
+    def __init__(self):
+        self.fields = self.all
+
 class RewardTransfer(BaseModel):
     """优惠券转赠表"""
     __tablename__ = 'rewardtransfer'
