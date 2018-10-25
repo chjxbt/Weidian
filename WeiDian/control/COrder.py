@@ -19,7 +19,9 @@ from WeiDian.common.TransformToList import dict_add_models, list_add_models
 from WeiDian.common.timeformat import format_for_db, get_web_time_str
 from WeiDian.common.token_required import verify_token_decorator, is_partner, is_admin
 from WeiDian.common.import_status import import_status
-from WeiDian.models.model import OrderProductInfo, OrderInfo, OrderProductResend, UserRaward, OrderProductSendTwice
+from WeiDian.control.CRaward import CRaward
+from WeiDian.models.model import OrderProductInfo, OrderInfo, OrderProductResend, UserRaward, OrderProductSendTwice, \
+    RewardTransfer, Raward
 from WeiDian.service.SOrder import SOrder
 from WeiDian.service.SProductImage import SProductImage
 from WeiDian.service.SProductSkuKey import SProductSkuKey
@@ -58,45 +60,51 @@ class COrder():
         if missed:
             return PARAMS_MISS('必要参数缺失: ' + '/'.join(missed))
         with self.sorder.auto_commit() as session:
-            pass
-        # 建立订单
-        order_dict = dict(
-            oiid=str(uuid.uuid4()),
-            usid=request.user.id,
-            oisn=self._geceric_sn(),
-            oileavetext=data.get('oileavetext') or '',
-            oiaddress=data.get('oiaddress'),
-            oirecvname=data.get('oirecvname'),
-            oirecvphone=data.get('oirecvphone'),
-            Sellerid=request.user.UPPerd
-        )
-        # 建立订单详情
-        sku = data.get('sku')
-        orderproductinfo_dict_list = self.fix_orderproduct_info(sku, order_dict['oiid'])
-        list_add_models('OrderProductInfo', orderproductinfo_dict_list)
-        order_dict['oimount'] = sum([x['SmallTotal'] for x in orderproductinfo_dict_list]) # 总价
-        # 判断优惠券是否符合条件
-        raid = data.get('raid')
-        if raid:
-            # 判断优惠券
-            raward = self.sraward.get_raward_by_id(raid)
-            if not raward:
-                raise NOT_FOUND(u'不正确的优惠券')
-            user_raward = self.sraward.get_reward_by_raid_usid(raid, usid)
-            if not user_raward:
-                raise NOT_FOUND(u'不正确的优惠券')
-            self.sraward.update_reward_by_raid_usid(raid, usid, {
-                'RAnumber': UserRaward.RAnumber - 1
-            })
-
-            # todo 可使用的转赠优惠券
-            if raward.RAtype == 0:
+            # 建立订单
+            model_beans = []
+            order_dict = dict(
+                OIid=str(uuid.uuid4()),
+                USid=usid,
+                OIsn=self._geceric_sn(),
+                OIleavetext=data.get('oileavetext') or '',
+                OIaddress=data.get('oiaddress'),
+                OIrecvname=data.get('oirecvname'),
+                OIrecvphone=data.get('oirecvphone'),
+                Sellerid=request.user.UPPerd
+            )
+            # 建立订单详情
+            sku = data.get('sku')
+            orderproductinfo_dict_list = self.fix_orderproduct_info(sku, order_dict['OIid'])
+            for order_product in orderproductinfo_dict_list:
+                orderproduct_instance = OrderProductInfo.create(order_product)
+                model_beans.append(orderproduct_instance)
+            order_dict['OImount'] = sum([x['SmallTotal'] for x in orderproductinfo_dict_list])  # 总价
+            urid = data.get('urid')
+            if urid:
+                # 判断优惠券
+                raward_type = self._raward_can_use(urid, order_dict['OImount'])
+                if raward_type == 'is_gift':
+                    gift = session.query(RewardTransfer).filter(RewardTransfer.RFid == urid).first()
+                    gift.RFstatus = 2
+                    gift.RFusetime = datetime.strftime(datetime.now(), format_for_db)
+                    raid = gift.RAid
+                    model_beans.append(gift)
+                elif raward_type == 'is_own':
+                    user_raward = session.query(UserRaward).filter(UserRaward.URid == urid).first()
+                    user_raward.RAnumber -= 1
+                    raid = user_raward.RAid
+                    model_beans.append(user_raward)
+                else:
+                    pass
+                raward = session.query(Raward).filter(Raward.RAid == raid).first()
                 order_dict['oimount'] -= raward.RAamount
-            order_dict['RAid'] = raid
-        dict_add_models('OrderInfo', order_dict)
+                order_dict['RAid'] = raid
+            orderinfo = OrderInfo.create(order_dict)
+            model_beans.append(orderinfo)
+            session.add_all(model_beans)
         data = import_status('add_order_success', 'OK')
         data['data'] = {
-            'oiid': order_dict['oiid']
+            'oiid': order_dict['OIid']
         }
         return data
 
@@ -582,6 +590,8 @@ class COrder():
                 'OPRimage': json.dumps(voucher_images)
             }
             msg = u'申请换货成功'
+            if OPRtype == 1 and order_product.OPIstatus == 0:
+                raise NOT_FOUND(u'未发货无法申请换货')
             if OPRtype == 0:
                 # 退货退款
                 model_dict['OPRmount'] = oprmount
@@ -634,7 +644,7 @@ class COrder():
             with self.sorder.auto_commit() as session:
                 session.query(OrderProductResend).filter(
                         OrderProductResend.OPIid == opiid
-                ).update({'OPRschedule': 5})
+                ).update({'OPRschedule': 6})
                 msg = '拒绝成功'
         else:
             raise PARAMS_MISS()
@@ -738,8 +748,7 @@ class COrder():
                 'OPSreceivephone': data.get('opsreceivephone'),
                 'OPSreceiveaddress': data.get('opsreceiveaddress')
             }
-            opst = OrderProductSendTwice()
-            opst.create(model_dict)
+            opst = OrderProductSendTwice.create(model_dict)
             # 改变状态
             session.query(OrderProductResend).filter(
                 OrderProductResend.OPRid == oprid
@@ -750,6 +759,28 @@ class COrder():
         response = {'message': u'卖家换货发货成功', 'status': 200}
         return response
 
+    def buyer_confirm_again(self):
+        """买家再次确认收货"""
+        if is_tourist():
+            raise TOKEN_ERROR(u'请登录')
+        data = parameter_required(u'opiid')
+        opiid = data.get('opiid')
+        order_product_resend = self.sorder.get_orderproduct_resend_by_opiid(opiid)
+        if not order_product_resend:
+            raise NOT_FOUND()
+        if order_product_resend.OPRtype == 0:
+            raise NOT_FOUND(u'非换货订单')
+        if order_product_resend.OPRschedule != 4:
+            raise NOT_FOUND(u'卖家未发货或已经确认')
+        oprid = order_product_resend.OPRid
+        with self.sorder.auto_commit() as session:
+            session.query(OrderProductResend).filter(
+                OrderProductResend.OPRid == oprid
+            ).update({
+                'OPRschedule': 5  # 完成
+            })
+        response = {'message': u'确认收货成功, 交易完成', 'status': 200}
+        return response
 
     def fix_orderproduct_info(self, sku_list, oiid):
         """
@@ -771,17 +802,17 @@ class COrder():
             if not product:
                 raise NOT_FOUND(u'商品不存在')
             orderproductinfo_dict = dict(
-                opiid=str(uuid.uuid4()),
-                oiid=oiid,
-                prid=prid,
+                OPIid=str(uuid.uuid4()),
+                OIid=oiid,
+                PRid=prid,
                 PSKproperkey=productskukey.PSKproperkey,  # 商品属性组合(sku)
             )
-            orderproductinfo_dict['opiproductname'] = product.PRname
-            orderproductinfo_dict['opiproductimages'] = product.PRmainpic
-            orderproductinfo_dict['opiproductnum'] = int(sku.get('num', 1))
+            orderproductinfo_dict['OPIproductname'] = product.PRname
+            orderproductinfo_dict['OPIproductimages'] = product.PRmainpic
+            orderproductinfo_dict['OPIproductnum'] = int(sku.get('num', 1))
             orderproductinfo_dict['OIproductprice'] = self.sproductskukey.get_true_price(pskid, partner=is_partner())
             orderproductinfo_dict['SmallTotal'] = self.sproductskukey.get_true_price(pskid, partner=is_partner()) *\
-                                                            orderproductinfo_dict['opiproductnum']
+                                                            orderproductinfo_dict['OPIproductnum']
             sku_dict_list.append(orderproductinfo_dict)
         return sku_dict_list
 
@@ -816,8 +847,9 @@ class COrder():
                 product_resend.add('zh_OPRtype', 'zh_OPRschedule')
                 productinfo.fill(True, 'resend')
                 productinfo.fill(product_resend, 'product_resend')
-
-
+                logistic_name = self.get_current_kd(product_resend.OPRresendLogisticCompany)
+                if logistic_name:
+                    product_resend.fill(logistic_name, 'zh_logistic_compnay')
             productinfo.fill(order_product_info_status.get(productinfo.OPIstatus, u'异常'), 'zh_status')
         order.add('productinfo')
         return order
@@ -846,5 +878,54 @@ class COrder():
     def _refund(self):
         pass
 
+    def _raward_can_use(self, urid, total_price):
+        """返回是否可以使用"""
+        reward = self.sraward.is_user_hold_reward({'URid': urid})
+        gift = self.sraward.is_user_hold_reward_in_gift(
+            {'RFid': urid, 'RFstatus': 1})
+        craward = CRaward()
+        if reward:
+            reward_detail = craward.sraward.get_raward_by_id(reward.RAid)
+            reward_detail = craward.fill_reward_detail(reward_detail, total_price)
+            reward.fill(reward_detail, 'reward_detail')
+            reward = dict(reward)
+            lower_reward = {}
+            for i, j in reward.items():
+                lower_reward[i.lower()] = j
+            lower_reward['urcreatetime'] = get_web_time_str(lower_reward.get('urcreatetime'))
+            res = lower_reward
+        elif gift:
+            gift = craward.fill_transfer_detail(gift)
+            gift_detail = self.sraward.get_raward_by_id(gift.RAid)
+            gift_detail = craward.fill_reward_detail(gift_detail, total_price)
+            # 检验转赠券在各情况下的有效性
+            gift_detail.valid = gift_detail.valid and gift.transfer_valid
+            gift.fill(gift_detail, 'reward_detail')
+            gift.RFcreatetime = get_web_time_str(gift.RFcreatetime)
+            gift.RFendtime = get_web_time_str(gift.RFendtime)
+            gift_dict = {
+                'urid': gift.RFid,
+                'usid': gift.USid,
+                'raid': gift.RAid,
+                'ranumber': gift.RAnumber,
+                'urcreatetime': gift.RFcreatetime,
+                'reendtime': gift.RFendtime,
+                'rffrom': gift.RFfrom,
+                'rfstatus': gift.RFstatus,
+                'urusetime': gift.RFusetime,
+                'remarks': gift.remarks,
+                'tag': gift.tag,
+                'usheader': gift.usheader,
+                'reward_detail': gift.reward_detail
+            }
+            res = gift_dict
+        else:
+            raise NOT_FOUND(u'不存在的优惠券')
+        can_use = res.get('reward_detail')['RAtype'] in [0, 2] and \
+               res.get('ranumber') != 0 and \
+               res.get('reward_detail')['valid'] == True
+        if not can_use:
+            raise NOT_FOUND(u'优惠券不可使用')
+        return 'is_gift' if gift else 'is_own'
     
 
