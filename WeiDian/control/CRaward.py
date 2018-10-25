@@ -21,7 +21,10 @@ class CRaward():
     def __init__(self):
         from WeiDian.service.SRaward import SRaward
         self.sraward = SRaward()
-
+        from WeiDian.service.SUser import SUser
+        self.suser = SUser()
+        from WeiDian.service.SSuperUser import SSuperUser
+        self.ssuperuser = SSuperUser()
 
     @verify_token_decorator
     def create_reward(self):
@@ -33,6 +36,7 @@ class CRaward():
         parameter_required('ratype', 'raname')
         raid = str(uuid.uuid1())
         ratype = data.get('ratype')
+        rptid = data.get('rptid')
         if not re.match(r'^[0-4]$', str(ratype)):
             raise PARAMS_ERROR(u'ratype, 参数异常')
         now_time = get_db_time_str()
@@ -48,6 +52,7 @@ class CRaward():
             'RAendtime': reendtime,
             'RAname': data.get('raname'),
             'RAtransfer': ratransfer,
+            'SUid': request.user.id
         }
         if re.match(r'^[0-2]$', str(ratype)):
             if str(ratype) == '0':
@@ -65,7 +70,39 @@ class CRaward():
             reward_dict['RAtransfereffectivetime'] = data.get('ratransfereffectivetime', 24)
         self.sraward.add_model('Raward', **reward_dict)
 
+        if rptid:
+            self.sraward.add_model('RewardPacketContact', **{
+                'RPCid': str(uuid.uuid1()),
+                'RAid': raid,
+                'RPTid': rptid
+            })
+
         data = import_status("create_reward_success", "OK")
+        data['data'] = {'raid': raid}
+        return data
+
+    @verify_token_decorator
+    def update_reward(self):
+        """更换优惠券集合或删除"""
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'非管理员权限')
+        data = request.json
+        logger.debug("del reward id is %s", data)
+        raid = data.get('raid')
+        raisdelete = data.get('raisdelete')
+        rptid = data.get('rptid')
+        if raisdelete:
+            upinfo = self.sraward.update_reward({'RAid': raid}, {'RAisdelete': raisdelete})
+            if not upinfo:
+                raise NOT_FOUND(u'删除失败')
+        elif rptid:
+            self.sraward.del_packet_reward(raid)
+            self.sraward.add_model('RewardPacketContact', **{
+                'RPCid': str(uuid.uuid1()),
+                'RAid': raid,
+                'RPTid': rptid
+            })
+        data = import_status("update_success", "OK")
         data['data'] = {'raid': raid}
         return data
 
@@ -73,7 +110,7 @@ class CRaward():
     def admin_giving_reward(self):
         """后台赠送用户优惠券"""
         if not is_admin():
-            raise AUTHORITY_ERROR(u'当前账号权限不足')
+            raise AUTHORITY_ERROR(u'非管理员权限')
         data = request.json
         logger.debug("admin giving reward data is %s", data)
         parameter_required('raid', 'usid')
@@ -97,7 +134,7 @@ class CRaward():
             'RAnumber': ranumber
         })
         data = import_status("hand_out_reward_success", "OK")
-        data['data'] = {'urid': urid }
+        data['data'] = {'urid': urid}
         return data
 
     @verify_token_decorator
@@ -200,7 +237,13 @@ class CRaward():
             if not reward_info:
                 raise NOT_FOUND(u'无此券信息')
             reward_detail = self.fill_reward_detail(reward_info)
+
+        presenter = self.suser.get_user_by_user_id(request.user.id)
+
         data = import_status("messages_get_item_ok", "OK")
+        data['usname'] = presenter.USname
+        data['usheader'] = presenter.USheader
+
         data['data'] = reward_detail
         return data
 
@@ -247,10 +290,10 @@ class CRaward():
         if is_tourist():
             raise TOKEN_ERROR(u'未登录')
         data = request.json
+        logger.debug('get transfer data is %s', data)
         urid = data.get('urid')
         usid = data.get('usid')
-        from WeiDian.service.SUser import SUser
-        presenter = SUser.get_user_by_user_id(usid)
+        presenter = self.suser.get_user_by_user_id(usid)
         if not presenter:
             raise NOT_FOUND(u'无此赠送用户')
 
@@ -341,7 +384,7 @@ class CRaward():
 
     @verify_token_decorator
     def give_reward_to_others(self):
-        """转赠优惠券"""
+        """转赠优惠券（暂时用不到）"""
         if is_tourist():
             raise TOKEN_ERROR(u'未登录')
         data = request.json
@@ -423,7 +466,7 @@ class CRaward():
 
     @verify_token_decorator
     def get_user_reward(self):
-        """用户查看（可转赠）优惠券"""
+        """获取用户（可转赠）优惠券"""
         if is_tourist():
             raise TOKEN_ERROR(u'未登录')
         args = request.args.to_dict()
@@ -556,6 +599,69 @@ class CRaward():
         except Exception as e:
             logger.exception("get user reward error")
             raise SYSTEM_ERROR(u'获取数据错误')
+
+    @verify_token_decorator
+    def create_rewardpacket(self):
+        """创建优惠券集合"""
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'非管理员权限')
+        data = request.json
+        logger.debug("create reward packet data is %s", data)
+        rptid = str(uuid.uuid1())
+        self.sraward.add_model('RewardPacket', **{
+            'RPTid': rptid,
+            'SUid': request.user.id,
+            'RPTname': data.get('name')
+        })
+        data = import_status("create_reward_packet_success", "OK")
+        data['data'] = {'rptid': rptid}
+        return data
+
+    @verify_token_decorator
+    def get_rewardpacket(self):
+        """获取优惠券集合"""
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'非管理员权限')
+        rewardpackets = self.sraward.get_reward_packet_list()
+        logger.info(('get reward packeet list success'))
+        data = import_status("messages_get_item_ok", "OK")
+        data['data'] = rewardpackets
+        return data
+
+    @verify_token_decorator
+    def get_reward_packet_detail(self):
+        """获取单个集合详情"""
+        if is_tourist():
+            raise TOKEN_ERROR(u"未登录")
+        args = request.args.to_dict()
+        rptid = args.get('rptid')
+        logger.debug("get reward packet detail args is %s", args)
+        reward_packet = self.sraward.get_reward_packet_detail(rptid)
+        for reward_one in reward_packet:
+            raid = reward_one.RAid
+            reward = self.sraward.get_raward_by_id(raid)
+            reward_detail = self.fill_reward_detail(reward)
+            reward_one.fill(reward_detail, 'reward_detail')
+        data = import_status("messages_get_item_ok", "OK")
+        data['data'] = reward_packet
+        return data
+
+
+    @verify_token_decorator
+    def del_rewardpacket(self):
+        """删除优惠券集合"""
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'非管理员权限')
+        data = request.json
+        logger.debug("del reward packet id is %s", data)
+        rptid = data.get('rptid')
+        del_info = self.sraward.update_reward_packet({'RPTid': rptid}, {'RPTisdelete': True})
+        if not del_info:
+            raise NOT_FOUND(u'删除失败')
+        data = import_status("delete_success", "OK")
+        data['data'] = {'rptid': rptid}
+        return data
+
 
 
     def fill_reward_detail(self, raward, price=None):
