@@ -644,7 +644,7 @@ class COrder():
             with self.sorder.auto_commit() as session:
                 session.query(OrderProductResend).filter(
                         OrderProductResend.OPIid == opiid
-                ).update({'OPRschedule': 5})
+                ).update({'OPRschedule': 6})
                 msg = '拒绝成功'
         else:
             raise PARAMS_MISS()
