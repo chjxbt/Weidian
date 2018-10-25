@@ -35,10 +35,14 @@ const api={
   add_comment: title + 'activitycomment/add_comment',       // 回复评论
   del_comment: title + 'activitycomment/del_comment',       // 删除评论
 
-  get_all_raward: title + 'task/get_all_raward',            // 获取所有奖励 - 获取所有优惠券
-  create_reward: title + 'reward/create_reward',            // 创建优惠券
   hand_out_reward: title + 'reward/hand_out_reward',        // 平台内发放优惠券
   admin_giving_reward: title + 'reward/admin_giving_reward',// 运营给用户赠送优惠券
+  get_all_raward: title + 'task/get_all_raward',            // 获取所有奖励 - 获取所有优惠券
+  create_reward: title + 'reward/create_reward',            // 创建优惠券
+  update_reward: title + 'reward/update_reward',            // 编辑优惠券所属集合或删除
+  get_reward_packets: title + 'reward/get_reward_packets',  // 获取所有优惠券集合名
+  create_rewardpacket: title + 'reward/create_rewardpacket',// 新建优惠券集合
+  del_rewardpacket: title + 'reward/del_rewardpacket',      // 删除优惠券集合名
 
   get_order_count: title + 'order/admin_get_order_count',   // 后台获取订单数量
   get_order_list: title + 'order/admin_get_order_list',     // 后台获取各状态下的订单

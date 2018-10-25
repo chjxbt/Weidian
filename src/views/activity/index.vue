@@ -39,65 +39,46 @@
           <el-table-column prop="ramaxusenum" label="可叠加张数" width="95"></el-table-column>
           <el-table-column prop="ratransfer" label="可否转赠" width="80"></el-table-column>
           <el-table-column prop="ratransfereffectivetime" label="转赠有效时长" width="110"></el-table-column>
-          <el-table-column prop="num" label="集合"></el-table-column>
+          <el-table-column prop="rptname" label="集合名称"></el-table-column>
           <el-table-column prop="num" label="管理" width="160">
             <template slot-scope="scope">
-              <el-button type="text" size="small" @click="editDiscount(scope)">编辑集合</el-button>
+              <el-button type="text" size="small" @click="editDiscount(scope, 'update')">编辑集合</el-button>
               <el-button type="text" size="small">|</el-button>
-              <el-button type="text" size="small" @click="">删除</el-button>
+              <el-button type="text" size="small" @click="editDiscount(scope, 'delete')">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
+        <Pagination class="page-box" :total="total_page" @pageChange="pageChange"></Pagination>
       </div>
 
       <p class="m-form-label" style="margin: 0.1rem 0; font-size: 0.14rem">优惠券编辑</p>
       <div class="input-boxs" v-if="!editDiscounts">
         <div class="input-box">
+          <div class="box-text">优惠券名称：</div>
+          <div class="box-right">
+            <el-input v-model="discountsName" style="width: 2.3rem" size="small" placeholder="请输入优惠名称"></el-input>
+          </div>
+        </div>
+        <div class="input-box">
           <div class="box-text">优惠类型：</div>
           <div class="box-right">
-            <el-select v-model="type" placeholder="请选择优惠类型" style="width: 2.3rem" size="mini" clearable>
+            <el-select v-model="type" placeholder="请选择优惠类型" style="width: 2.3rem" size="mini">
               <el-option v-for="item in typeList" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
           </div>
         </div>
-        <div class="input-box">
-          <div class="box-text">优惠名称：</div>
+        <div class="input-box" v-if="type == 0">
+          <div class="box-text">优惠门槛：</div>
           <div class="box-right">
-            <el-input v-model="discountsName" style="width: 2.3rem" size="small" placeholder="请输入优惠名称" clearable></el-input>
-          </div>
-        </div>
-        <div class="input-box">
-          <div class="box-text">可叠加张数：</div>
-          <div class="box-right">
-            <el-input v-model="ramaxusenum" style="width: 2.3rem" size="small" placeholder="请输入允许叠加使用的张数" clearable></el-input>
-          </div>
-        </div>
-        <div class="input-box">
-          <div class="box-text">最大拥有数：</div>
-          <div class="box-right">
-            <el-input v-model="ramaxholdnum" style="width: 2.3rem" size="small" placeholder="请输入同种券最大可拥有数量" clearable></el-input>
-          </div>
-        </div>
-        <div class="input-box">
-          <div class="box-text">可否转赠：</div>
-          <div class="box-right">
-            <el-select v-model="giveToOne" placeholder="请选择是否允许转赠" style="width: 2.3rem" size="mini" clearable>
-              <el-option v-for="item in giveToOneList" :key="item.value" :label="item.label" :value="item.value"></el-option>
-            </el-select>
-          </div>
-        </div>
-        <div class="input-box" v-if="giveToOne">
-          <div class="box-text">有效时长：</div>
-          <div class="box-right">
-            <el-input v-model="raendtime" style="width: 2.3rem" placeholder="请输入转赠有效时长" clearable>
-              <template slot="append">小时</template>
+            <el-input v-model="threshold" style="width: 2.3rem" placeholder="请输入优惠门槛">
+              <template slot="append">元</template>
             </el-input>
           </div>
         </div>
         <div class="input-box" v-if="type != 1">
           <div class="box-text">优惠金额：</div>
           <div class="box-right">
-            <el-input v-model="amount" style="width: 2.3rem" placeholder="请输入优惠金额" clearable>
+            <el-input v-model="amount" style="width: 2.3rem" placeholder="请输入优惠金额">
               <template slot="append">元</template>
             </el-input>
           </div>
@@ -105,16 +86,42 @@
         <div class="input-box" v-if="type == 1">
           <div class="box-text">佣金加成：</div>
           <div class="box-right">
-            <el-select v-model="bonus" placeholder="请选择佣金加成比率" style="width: 2.3rem" size="mini" clearable>
+            <el-select v-model="bonus" placeholder="请选择佣金加成比率" style="width: 2.3rem" size="mini">
               <el-option v-for="item in bonusList" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
           </div>
         </div>
-        <div class="input-box" v-if="type != 2">
-          <div class="box-text">优惠门槛：</div>
+        <div class="input-box">
+          <div class="box-text">可叠加张数：</div>
           <div class="box-right">
-            <el-input v-model="threshold" style="width: 2.3rem" placeholder="请输入优惠门槛" clearable>
-              <template slot="append">元</template>
+            <el-input v-model="ramaxusenum" style="width: 2.3rem" size="small" placeholder="请输入允许叠加使用的张数"></el-input>
+          </div>
+        </div>
+        <div class="input-box">
+          <div class="box-text">最大拥有数：</div>
+          <div class="box-right">
+            <el-input v-model="ramaxholdnum" style="width: 2.3rem" size="small" placeholder="请输入同种券最大可拥有数量"></el-input>
+          </div>
+        </div>
+        <div class="input-box">
+          <div class="box-text">到期时间：</div>
+          <div class="box-right">
+            <el-date-picker v-model="endTime" style="width: 2.3rem" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择到期时间"></el-date-picker>
+          </div>
+        </div>
+        <div class="input-box">
+          <div class="box-text">可否转赠：</div>
+          <div class="box-right">
+            <el-select v-model="giveToOne" placeholder="请选择是否允许转赠" style="width: 2.3rem" size="mini">
+              <el-option v-for="item in giveToOneList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+            </el-select>
+          </div>
+        </div>
+        <div class="input-box" v-if="giveToOne">
+          <div class="box-text">有效时长：</div>
+          <div class="box-right">
+            <el-input v-model="raendtime" style="width: 2.3rem" placeholder="请输入转赠有效时长">
+              <template slot="append">小时</template>
             </el-input>
           </div>
         </div>
@@ -123,16 +130,43 @@
         <div class="input-box">
           <div class="box-text">所属集合：</div>
           <div class="box-right">
-            <el-select v-model="collection" filterable allow-create style="width: 2.3rem" placeholder="输入可创建新集合">
-              <el-option v-for="item in collectionList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+            <el-select v-model="collection" style="width: 2.3rem" placeholder="请选择集合" clearable>
+              <el-option v-for="item in collectionList" :key="item.rptid" :label="item.rptname" :value="item.rptid"></el-option>
             </el-select>
           </div>
+          <div class="add-btn" @click="addCollection('')">+</div>
         </div>
       </div>
+      <!--添加集合-->
+      <el-dialog title="新建优惠券集合" :visible.sync="addDialog" width="4rem">
+        <div class="send-box">
+          <el-table :data="collectionList" border style="width: 100%; margin-bottom: 0.1rem;" v-loading="discountsLoading">
+            <el-table-column prop="rptname" label="集合名称">
+              <template slot-scope="scope">
+                <el-input class="search-input" v-model="scope.row.rptname" :disabled="scope.row.disabled"></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column prop="rptid" label="管理" width="160">
+              <template slot-scope="scope">
+                <el-button type="text" v-if="!scope.row.disabled" @click="addCollection('save', scope)">保存</el-button>
+                <el-button type="text" v-if="scope.row.disabled" @click="deleteCollection(scope)">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <div class="add-btn" @click="addCollection('add')">+</div>
+
+          <div slot="footer" class="dialog-footer">
+            <el-button class="at-img-dialog-btn" @click="closeDialog">关 闭</el-button>
+            <!--<el-button class="at-img-dialog-btn" @click="closeDialog">取 消</el-button>-->
+            <!--<el-button class="at-img-dialog-btn btn-color" type="primary" @click="closeDialog">确 定</el-button>-->
+          </div>
+        </div>
+      </el-dialog>
+
       <div class="input-btns">
+        <div class="input-btn" v-if="!editDiscounts" @click="addDiscounts">保 存</div>
         <div class="input-btn" v-if="editDiscounts" @click="cancelDiscounts">取 消</div>
         <div class="input-btn" v-if="editDiscounts" @click="saveDiscounts">保 存</div>
-        <div class="input-btn" v-if="!editDiscounts" @click="addDiscounts">保 存</div>
       </div>
     </div>
   </div>
@@ -140,6 +174,7 @@
 
 <script>
   import pageTitle from '../../components/common/title';
+  import Pagination from "../../components/common/page";
   import axios from 'axios';
   import api from '../../api/api';
 
@@ -161,27 +196,34 @@
           { value: "0", label: "满减" },
           { value: "1", label: "佣金加成" },
           { value: "2", label: "无门槛" },
-          { value: "3", label: "邀请粉丝券" },
-          { value: "4", label: "开店大礼包专用" }
+          // { value: "3", label: "邀请粉丝券" },
+          // { value: "4", label: "开店大礼包专用" }
         ],
-        giveToOne: "",            // 可否转赠
+        endTime: "",              // 优惠券的到期时间
+        giveToOne: false,         // 可否转赠
         giveToOneList: [          // 可否转赠list
           { value: true, label: "可转增" },
           { value: false, label: "不可转增" }
         ],
-        amount: "",               // 优惠金额
         bonus: "",                // 佣金加成
         bonusList: [              // 佣金加成list
           { value: "10", label: "10%" }, { value: "20", label: "20%" }, { value: "30", label: "30%" }, { value: "40", label: "40%" }, { value: "50", label: "50%" },
           { value: "60", label: "60%" }, { value: "70", label: "70%" }, { value: "80", label: "80%" }, { value: "90", label: "90%" }, { value: "100", label: "100%" }
         ],
         threshold: "",            // 优惠门槛
+        amount: "",               // 优惠金额
         collection: "",           // 集合选中值
         collectionS: "",          // 头部查看 - 集合选中值
         collectionList: [],       // 集合list
+        addDialog: false,         // 添加集合的dialog
+        saveCollection: true,    // 添加集合的dialog
+        discount: {},             // 暂存优惠券
+        page_size: 5,             // 每页请求的数量
+        page_num: 1,              // 第几页
+        total_page: 1,            // 总页数
       }
     },
-    components:{ pageTitle },
+    components:{ pageTitle, Pagination },
     methods:{
       // 打开/关闭任务表格
       handOutOpen() {
@@ -191,12 +233,20 @@
           this.handOut = true;
         }
       },
+
+      // 分页点击方法
+      pageChange(v) {
+        this.page_num = v;
+        this.getAllRaward();      // 获取所有优惠券
+      },
       // 获取所有优惠券
       getAllRaward() {
         this.discountsLoading = true;
-        axios.get(api.get_all_raward + '?token=' + localStorage.getItem('token')).then(res => {
+        axios.get(api.get_all_raward + '?token=' + localStorage.getItem('token') + "&page_num=" + this.page_num + "&page_size=" + this.page_size).then(res => {
           if(res.data.status == 200){
             this.discountsList = res.data.data;
+            this.total_page = Math.ceil(res.data.count / this.page_size);
+
             for(let i = 0; i < this.discountsList.length; i ++ ){
               for(let j = 0; j < this.typeList.length; j ++) {
                 if(this.discountsList[i].ratype == this.typeList[j].value) {
@@ -210,26 +260,188 @@
           }
         });
       },
+      // 获取所有优惠券集合名
+      getRewardPackets() {
+        axios.get(api.get_reward_packets + '?token=' + localStorage.getItem('token')).then(res => {
+          if(res.data.status == 200){
+            this.collectionList = res.data.data;
+            for(let i = 0; i < this.collectionList.length; i ++) {
+              this.collectionList[i].disabled = true;
+            }
+          }else{
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+          }
+        });
+      },
       // 添加优惠券时编辑框的保存按钮
       addDiscounts() {
-
+        if(this.discountsName == "" || this.type == "" || this.ramaxusenum == "" || this.ramaxholdnum == "") {
+          this.$message({ message: "请完整填写1", type: 'warning', duration: 1500 });
+        }else {
+          let params = {
+            ratype: this.type,              // 优惠类型
+            ramaxusenum: this.ramaxusenum,  // 可叠加张数
+            ramaxholdnum: this.ramaxholdnum,// 最大持有数
+            raname: this.discountsName,     // 优惠名称
+            ratransfer: this.giveToOne,     // 是否允许转赠
+          };
+          if(this.raendtime) {          // 允许转赠时设置失效时长，为空时默认24小时
+            params.ratransfereffectivetime = this.raendtime;
+          }
+          if(this.endTime) {            // 设置优惠券的到期时间，为空时默认30天
+            params.raendtime = this.endTime;
+          }
+          if(this.type == "0") {       // 满减
+            if(this.threshold == "" || this.amount == "") {
+              this.$message({ message: "请完整填写2", type: 'warning', duration: 1500 });
+            }else {
+              params.rafilter = this.threshold;
+              params.raamount = this.amount;
+              this.addDiscount(params);     // 保存添加的优惠券
+            }
+          }else if(this.type == "1") { // 佣金加成
+            if(this.bonus == "") {
+              this.$message({ message: "请完整填写3", type: 'warning', duration: 1500 });
+            }else {
+              params.raratio = this.bonus;
+              this.addDiscount(params);     // 保存添加的优惠券
+            }
+          }else if(this.type == "2") { // 无门槛
+            if(this.amount == "") {
+              this.$message({ message: "请完整填写4", type: 'warning', duration: 1500 });
+            }else {
+              params.raamount = this.amount;
+              this.addDiscount(params);     // 保存添加的优惠券
+            }
+          }
+        }
       },
-      // 优惠券编辑框的保存按钮
-      saveDiscounts() {
+      // 保存添加的优惠券
+      addDiscount(params) {
+        console.log(params);
 
+        axios.post(api.create_reward + '?token=' + localStorage.getItem('token'), params).then(res=>{
+          if(res.data.status == 200){
+            this.$message({ message: res.data.message, type: 'success', duration: 1500 });
+
+            this.type = "";
+            this.ramaxusenum = "";
+            this.ramaxholdnum = "";
+            this.raendtime = "";
+            this.discountsName = "";
+            this.giveToOne = false;
+            this.collection = "";
+            this.threshold = "";
+            this.amount = "";
+            this.endTime = "";
+          }else{
+            this.$message({ message: res.data.message, type: 'error', duration: 1500 });
+          }
+        });
+      },
+      // 添加优惠券
+      addCollection(where, scope) {
+        if(where == "") {
+          this.addDialog = true;
+        }else if(where == "add") {    // 新建优惠券集合
+          this.saveCollection = false;
+          let index = this.collectionList.length;
+          this.collectionList[index] = {};
+          this.collectionList[index].rptname = "";
+          this.collectionList[index].disabled = false;
+          this.collectionList = this.collectionList.concat();
+        }else if(where == "save") {
+          let params = { name: scope.row.rptname };
+          axios.post(api.create_rewardpacket + '?token=' + localStorage.getItem('token'), params).then(res=>{
+            if(res.data.status == 200){
+              this.$message({ message: res.data.message, type: 'success', duration: 1500 });
+              this.getRewardPackets();      // 获取所有优惠券集合名
+
+              this.saveCollection = true;
+            }else{
+              this.$message({ message: res.data.message, type: 'error', duration: 1500 });
+            }
+          });
+        }else if(where == "close") {
+
+        }
+      },
+      // 删除优惠券
+      deleteCollection(scope) {
+        this.$confirm("此操作将删除该优惠券集合，是否继续?", '提示',
+          {confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'}).then(() => {
+          let params = { rptid: scope.row.rptid };
+          axios.post(api.del_rewardpacket + '?token=' + localStorage.getItem('token'), params).then(res=>{
+            if(res.data.status == 200){
+              this.$message({ message: res.data.message, type: 'success', duration: 1500 });
+              this.collectionList.splice(scope.$index, 1);
+            }else{
+              this.$message({ message: res.data.message, type: 'error', duration: 1500 });
+            }
+          });
+        }).catch(() => {  });
+      },
+      // 关闭dialog
+      closeDialog() {
+        if(!this.saveCollection) {
+          this.collectionList.splice(this.collectionList.length - 1, 1);
+          this.addDialog = false;
+        }else {
+          this.addDialog = false;
+        }
+      },
+      // 保存优惠券 - 编辑优惠券所属集合
+      saveDiscounts() {
+        let params = { raid: this.discount.row.raid, rptid: this.collection };
+        axios.post(api.update_reward + '?token=' + localStorage.getItem('token'), params).then(res=>{
+          if(res.data.status == 200){
+            this.$message({ message: res.data.message, type: 'success', duration: 1500 });
+
+            // 回显数据
+            for(let i = 0; i < this.collectionList.length; i ++) {
+              if(this.collection == this.collectionList[i].rptid) {
+                this.discountsList[this.discount.$index].rptname = this.collectionList[i].rptname;
+              }
+            }
+            this.discountsList = this.discountsList.concat();
+            this.collection = "";
+            this.editDiscounts = false;
+          }else{
+            this.$message({ message: res.data.message, type: 'error', duration: 1500 });
+          }
+        });
       },
       // 取消编辑优惠券的按钮
       cancelDiscounts() {
         this.editDiscounts = false;
+        this.collection = "";
       },
       // 编辑优惠券
-      editDiscount(scope) {
-        this.editDiscounts = true;
-        console.log(scope.row);
+      editDiscount(scope, operate) {
+        this.discount = scope;
+        let params = { raid: scope.row.raid };
+        if(operate == "update") {         // 编辑优惠券的集合
+          this.editDiscounts = true;
+          this.collection = scope.row.rptname;
+        }else if(operate == "delete") {   // 删除优惠券
+          params.raisdelete = true;
+          this.$confirm("此操作将删除该优惠券，是否继续?", '提示',
+            {confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'}).then(() => {
+            axios.post(api.update_reward + '?token=' + localStorage.getItem('token'), params).then(res=>{
+              if(res.data.status == 200){
+                this.$message({ message: res.data.message, type: 'success', duration: 1500 });
+                this.discountsList.splice(scope.$index, 1);
+              }else{
+                this.$message({ message: res.data.message, type: 'error', duration: 1500 });
+              }
+            });
+          }).catch(() => {  });
+        }
       }
     },
     mounted() {
-      this.getAllRaward();      // 获取所有优惠券
+      this.getAllRaward();          // 获取所有优惠券
+      this.getRewardPackets();      // 获取所有优惠券集合名
     }
   }
 </script>
@@ -250,6 +462,13 @@
       margin: 0.02rem 0 0.1rem 0.1rem;
     }
   }
+  .content-table {
+    padding-bottom: 0 !important;
+    .page-box {
+      text-align: right;
+      margin-top: 0.1rem;
+    }
+  }
 
   .input-boxs {
     display: flex;
@@ -268,6 +487,10 @@
     .box-right {
       margin-right: 0.1rem;
     }
+  }
+  .add-btn {
+    font-size: 0.18rem;
+    margin: auto 0.1rem;
   }
 
   .input-btns {
@@ -300,5 +523,31 @@
   }
   .hand-out-reward {
     margin: 0 0 0.1rem 0.1rem;
+  }
+  .send-box {
+    .box-row {
+      display: flex;
+      padding: 0.1rem 0.4rem 0.1rem 0.3rem;
+      .title-text {
+        width: 0.8rem;
+        line-height: 0.23rem;
+        white-space: nowrap;
+      }
+      .search-input {
+        width: 2rem;
+      }
+    }
+  }
+  .dialog-footer {
+    text-align: right;
+    margin: 0.1rem 0.2rem 0 0;
+    .at-img-dialog-btn {
+      padding: 0.05rem 0.1rem;
+      font-size: 14px;
+    }
+    .btn-color {
+      border-color: @btnActiveColor;
+      background-color: @btnActiveColor;
+    }
   }
 </style>
