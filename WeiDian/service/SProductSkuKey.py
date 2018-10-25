@@ -1,9 +1,11 @@
 # *- coding:utf8 *-
+import json
 import sys
 import os
 from WeiDian.common.divide import Partner
 from SBase import SBase, close_session
-from WeiDian.models.model import ProductSkuKey
+from WeiDian.models.model import ProductSkuKey, Product
+
 sys.path.append(os.path.dirname(os.getcwd()))
 
 
@@ -26,12 +28,18 @@ class SProductSkuKey(SBase):
             ProductSkuKey.PSKid==pskid, ProductSkuKey.PSisdelete != 0).first()
 
     @close_session
-    def get_true_price(self, pskid, partner=False):
+    def get_true_price(self, pskid=None, partner=False):
         """获取真实价格"""
         psk = self.session.query(ProductSkuKey).filter(
-            ProductSkuKey.PSKid==pskid, ProductSkuKey.PSisdelete != 0).first()
+            ProductSkuKey.PSKid == pskid, ProductSkuKey.PSisdelete != 0).first()
+        import ipdb
+        ipdb.set_trace()
+        prid = psk.PRid
+        product = self.session.query(Product).filter(Product.PRid == prid).first()
+        devide_rule = getattr(product, 'PRdevideRate', '{}')
+        divide_json = json.loads(devide_rule)
         if partner:
-            return Partner().one_level_divide * psk.PSKprice
+            return divide_json.get('one') * psk.PSKprice if divide_json else Partner().one_level_divide * psk.PSKprice
         return psk.PSKprice
 
     @close_session

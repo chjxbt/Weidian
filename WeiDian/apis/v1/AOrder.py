@@ -22,6 +22,7 @@ class AOrder(Resource):
             'buyer_send_out': 'self.corder.buyer_send_out()', 
             'solder_confirm': 'self.corder.solder_confirm()',  # 卖家确认
             'solder_change_send': 'self.corder.solder_change_send()',   # 卖家换货发货
+            'delete_order': 'self.corder.delete_order()',
 
 
          }
