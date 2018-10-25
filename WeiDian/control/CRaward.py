@@ -26,6 +26,7 @@ class CRaward():
         from WeiDian.service.SSuperUser import SSuperUser
         self.ssuperuser = SSuperUser()
 
+
     @verify_token_decorator
     def create_reward(self):
         """创建优惠券"""
@@ -623,7 +624,7 @@ class CRaward():
         if not is_admin():
             raise AUTHORITY_ERROR(u'非管理员权限')
         rewardpackets = self.sraward.get_reward_packet_list()
-        logger.info(('get reward packeet list success'))
+        logger.info(('get reward packet list success'))
         data = import_status("messages_get_item_ok", "OK")
         data['data'] = rewardpackets
         return data
@@ -656,6 +657,7 @@ class CRaward():
         logger.debug("del reward packet id is %s", data)
         rptid = data.get('rptid')
         del_info = self.sraward.update_reward_packet({'RPTid': rptid}, {'RPTisdelete': True})
+        self.sraward.del_packet_contact({'RPTid': rptid})
         if not del_info:
             raise NOT_FOUND(u'删除失败')
         data = import_status("delete_success", "OK")

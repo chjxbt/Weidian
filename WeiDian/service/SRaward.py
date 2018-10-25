@@ -24,8 +24,11 @@ class SRaward(SBase):
         return self.session.query(TaskRaward).filter(TaskRaward.TLid == tlid).delete()
 
     @close_session
-    def get_all_reward(self):
-        return self.session.query(Raward).filter(Raward.RAisdelete == False).order_by(Raward.RAcreatetime.desc()).all()
+    def get_all_reward(self, page_size=5, page_num=1):
+        return self.session.query(Raward).filter(Raward.RAisdelete == False) \
+                   .order_by(Raward.RAcreatetime.desc()).offset(page_size * (page_num - 1)) \
+                   .limit(page_size).all(), self.session.query(Raward). \
+                   filter(Raward.RAisdelete == False).count()
 
     @close_session
     def update_reward(self, urfilter, upinfo):
@@ -109,6 +112,10 @@ class SRaward(SBase):
     def del_packet_reward(self, raid):
         """删除集合中的券"""
         return self.session.query(RewardPacketContact).filter(RewardPacketContact.RAid == raid).delete()
+
+    @close_session
+    def del_packet_contact(self, pcfilter):
+        return self.session.query(RewardPacketContact).filter_by(**pcfilter).delete()
 
     @close_session
     def get_reward_packet_detail(self, rptid):
