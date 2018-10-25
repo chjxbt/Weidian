@@ -57,7 +57,8 @@ class BaseModel(AbstractConcreteBase, Base):
     @classmethod
     def create(cls, data):
         instance = cls()
-        [setattr(instance, k, v) for k, v in data.items()]
+        for k, v in data.items():
+            setattr(instance, k, v)
         return instance
 
     def auto_creatdatatime(self):
