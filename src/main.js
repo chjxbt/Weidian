@@ -53,7 +53,13 @@ loadinginstace.close()
 
 // http响应拦截器
 axios.interceptors.response.use(data => {// 响应成功关闭loading
-  loadinginstace.close()
+  loadinginstace.close();
+
+  // token失效
+  if(data.data.status_code == 403001) {
+    router.replace({ path: '/login'});        // 到登录页重新获取token
+  }
+
   return data
 }, error => {
   Message({
