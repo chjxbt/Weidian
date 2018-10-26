@@ -188,6 +188,11 @@ export const constantRouterMap = [
         component: () => import('../views/content/modal'),
         name: 'modal',
         meta: { title: 'modal', icon: 'modal', noCache: true }
+      },{
+        path: 'product',
+        component: () => import('../views/content/product'),
+        name: 'product',
+        meta: { title: 'product', icon: 'product', noCache: true }
       }
     ],
   },

@@ -36,6 +36,11 @@
           "MNname":"弹框管理",
           "MNurl":"modal",
           "MNicon":"none"
+        },
+        {
+          "MNname":"商品管理",
+          "MNurl":"product",
+          "MNicon":"none"
         }
       ]
     },
