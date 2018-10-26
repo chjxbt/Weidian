@@ -15,7 +15,7 @@ DB_PARAMS = "{0}://{1}:{2}@{3}/{4}?charset={5}".format(
     cfg.host,
     cfg.database,
     cfg.charset)
-mysql_engine = create_engine(DB_PARAMS, echo=False, pool_pre_ping=True)
+mysql_engine = create_engine(DB_PARAMS, echo=False)
 
 
 class Activity(BaseModel):
@@ -396,7 +396,6 @@ class OrderInfo(BaseModel):
     RAid = Column(String(64), comment=u'优惠券id')
 
     @orm.reconstructor
-    @auto_createtime
     def __init__(self):
         self.fields = self.all
 

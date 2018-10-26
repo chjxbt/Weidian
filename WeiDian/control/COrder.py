@@ -583,7 +583,7 @@ class COrder():
                 'OPIid': opiid,
                 'OPRtype': OPRtype,
             }
-            model_dict = {k: v for k, v in model_dict.items()}
+            # model_dict = {k: v for k, v in model_dict.items() if v}
             msg = u'申请换货成功'
             if OPRtype == 1 and order_product.OPIstatus == 0:
                 raise NOT_FOUND(u'未发货无法申请换货')
