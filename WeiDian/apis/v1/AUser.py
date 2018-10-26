@@ -29,6 +29,7 @@ class AUser(Resource):
             'get_all_user': 'self.cuser.get_all_user()',
             'get_user_sub': 'self.cuser.get_user_sub()',
             'wechat_callback': 'self.cuser.weixin_callback()',
+            'search_user': 'self.cuser.get_user_by_usphone_or_usname()',
         }
         res = eval(apis[user])
         from werkzeug.wrappers import Response

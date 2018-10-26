@@ -10,7 +10,7 @@ from flask import request
 from WeiDian import logger
 from WeiDian.common.import_status import import_status
 from WeiDian.common.params_require import parameter_required
-from WeiDian.common.timeformat import get_db_time_str, format_for_db
+from WeiDian.common.timeformat import get_db_time_str, format_for_db, get_web_time_str
 from WeiDian.common.token_required import verify_token_decorator, is_tourist, is_admin
 from WeiDian.config.enums import TASK_TYPE
 from WeiDian.config.setting import QRCODEHOSTNAME
@@ -307,6 +307,8 @@ class CTask(BaseTask):
             if packet_contact:
                 packet_info = self.sraward.get_reward_in_packet_info(packet_contact.RPTid)
                 reward.fill(packet_info.RPTname, 'rptname')
+            reward.RAcreatetime = get_web_time_str(reward.RAcreatetime)
+            reward.RAendtime = get_web_time_str(reward.RAendtime)
         raward_list = self.fill_reward_detail(raward_list)
         res = import_status('get_task_success', 'OK')
         res['data'] = raward_list

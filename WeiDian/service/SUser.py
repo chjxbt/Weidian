@@ -4,7 +4,8 @@ import os
 from werkzeug.security import check_password_hash
 from SBase import SBase, close_session
 from WeiDian.models.model import User, Activity, UserLoginTime
-from sqlalchemy import func
+from sqlalchemy import func, or_
+
 sys.path.append(os.path.dirname(os.getcwd()))
 
 
@@ -71,5 +72,12 @@ class SUser(SBase):
     def get_partner_count_in_current_level(self, level):
         """该等级的合伙人总数"""
         return self.session.query(User).filter(User.USlevel == level).count()
+
+    @close_session
+    def get_user_by_phone_or_name(self, usfilter):
+        """条件筛选用户"""
+        return self.session.query(User).filter(or_(*usfilter)).all()
+
+
 
 

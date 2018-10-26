@@ -646,6 +646,10 @@ class CRaward():
             reward = self.sraward.get_raward_by_id(raid)
             reward_detail = self.fill_reward_detail(reward)
             reward_one.fill(reward_detail, 'reward_detail')
+            packet_contact = self.sraward.get_is_where_packet(raid)
+            if packet_contact:
+                packet_info = self.sraward.get_reward_in_packet_info(packet_contact.RPTid)
+                reward.fill(packet_info.RPTname, 'rptname')
         data = import_status("messages_get_item_ok", "OK")
         data['data'] = reward_packet
         return data

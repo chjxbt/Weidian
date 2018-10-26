@@ -16,7 +16,7 @@ from WeiDian.common.get_url_params import GetUrlParams
 from WeiDian import logger
 # from WeiDian.common.weixinmp import mp
 from WeiDian.common.params_require import parameter_required
-from WeiDian.config.response import PARAMS_MISS, SYSTEM_ERROR, NETWORK_ERROR, TOKEN_ERROR
+from WeiDian.config.response import PARAMS_MISS, SYSTEM_ERROR, NETWORK_ERROR, TOKEN_ERROR, AUTHORITY_ERROR
 from WeiDian.common.token_required import verify_token_decorator, usid_to_token, is_admin, is_partner
 from WeiDian.common.import_status import import_status
 from WeiDian.common.timeformat import format_for_db
@@ -452,7 +452,19 @@ class CUser():
         response = import_status('messages_get_item_ok', 'OK')
         response['data'] = user_sub
         response['count'] = count
+        return response
 
+    @verify_token_decorator
+    def get_user_by_usphone_or_usname(self):
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'非管理员权限')
+        data = request.args.to_dict()
+        keywords = data.get('keywords').encode('utf8')
+        from WeiDian.models.model import User
+        usfilter = (User.USname.like("%{0}%".format(keywords)), User.USphone.like("%{0}%".format(keywords)))
+        user_res = self.suser.get_user_by_phone_or_name(usfilter)
+        response = import_status('messages_get_item_ok', 'OK')
+        response['data'] = user_res
         return response
 
     def get_pagesize_pagenum(self, data):
