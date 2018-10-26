@@ -1,15 +1,9 @@
 <template>
-  <div class="m-weidians">
+  <div class="m-weidian">
     <page-title :title="name" ></page-title>
-    <div class="m-weidian-contents">
-
+    <div class="m-weidian-content">
       <div class="content-table">
-        <div class="search-box">
-          <div class="search-title">店主ID：</div>
-          <el-input class="search-input" v-model="userID" size="mini" clearable></el-input>
-          <div class="search-btn">查 询</div>
-        </div>
-        <el-table :data="commissionList" border style="width: 100%" v-loading="commissionLoading">
+        <el-table :data="withdrawalList" border style="width: 100%" v-loading="withdrawalLoading">
           <el-table-column prop="product" label="店主ID"></el-table-column>
           <el-table-column prop="product" label="店主等级"></el-table-column>
           <el-table-column prop="product" label="联系方式"></el-table-column>
@@ -42,23 +36,25 @@
   import api from '../../api/api';
 
   export default {
-    data(){
-      return{
-        name:'佣金管理',
-        userID: "",                     // 查询的店主ID
-        commissionList: [],             // 佣金管理的list
-        commissionLoading: false,       // 佣金管理表格加载中
-        page_size: 10,                  // 每页请求的数量
-        total_page: 1,                  // 总页数
+    name: "withdrawal",
+    data() {
+      return {
+        name:'提现审核',
+        withdrawalList: [],           // 提现管理的list
+        withdrawalLoading: false,     // 提现管理表格加载中
+        page_size: 10,                // 每页请求的数量
+        total_page: 1,                // 总页数
       }
     },
     components:{ pageTitle, Pagination },
-    methods:{
-
+    methods: {
       // 分页点击方法
       pageChange(v) {
 
       }
+    },
+    mounted() {
+
     }
   }
 </script>
@@ -66,36 +62,11 @@
 <style lang="less" rel="stylesheet/less" scoped>
   @import "../../common/css/weidian";
 
-  .m-weidians {
-    background-color: #fff;
-    .m-weidian-contents {
-      padding: 0.25rem 0.45rem 0.25rem;
-      .content-table {
-        .search-box {
-          display: flex;
-          font-size: 0.12rem;
-          .search-title {
-            line-height: 0.2rem;
-          }
-          .search-input {
-            width: 1.5rem;
-          }
-          .search-btn {
-            width: 0.28rem;
-            white-space: nowrap;
-            align-items: center;
-            padding: 0.03rem 0.15rem;
-            margin: 0 0 0.1rem 0.3rem;
-            border-radius: 0.05rem;
-            color: #ffffff;
-            background-color: #9fd0bf;
-          }
-        }
-        .page-box {
-          text-align: right;
-          margin-top: 0.1rem;
-        }
-      }
+  .content-table {
+    padding-bottom: 0 !important;
+    .page-box {
+      text-align: right;
+      padding-top: 0.1rem;
     }
   }
 </style>

@@ -159,6 +159,12 @@ export const constantRouterMap = [
         component: () => import('../views/commission/set'),
         name: 'set',
         meta: { title: 'set', icon: 'set', noCache: true }
+      },
+      {
+        path: 'withdrawal',
+        component: () => import('../views/commission/withdrawal'),
+        name: 'withdrawal',
+        meta: { title: 'withdrawal', icon: 'withdrawal', noCache: true }
       }
     ],
   },

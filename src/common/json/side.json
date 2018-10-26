@@ -77,6 +77,11 @@
           "MNname":"佣金设置",
           "MNurl":"set",
           "MNicon":"none"
+        },
+        {
+          "MNname":"提现审核",
+          "MNurl":"withdrawal",
+          "MNicon":"none"
         }
       ]
     },
