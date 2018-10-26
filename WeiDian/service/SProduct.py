@@ -3,6 +3,8 @@ import sys
 import os
 from SBase import SBase, close_session
 from WeiDian.models.model import Product, ProductLike, Recommend, RecommendProduct, Activity, ProductTarget
+from sqlalchemy import or_
+
 sys.path.append(os.path.dirname(os.getcwd()))
 
 
@@ -36,13 +38,18 @@ class SProduct(SBase):
     @close_session
     def get_product_filter(self, kw=None, isdelete=None, status=None, page=None, count=None):
         """模糊搜索商品名字"""
-        return self.session.query(Product).\
+        if kw == None:
+            # return self.session.query(Product).filter_without_none(Product.PRstatus == 1, Product.PReditstate == 1, Product.PRstatus == status, Product.PRisdelete == isdelete).contain(Product.PRtitle == kw).all_with_page(page, count)
+            return self.session.query(Product).filter_without_none(Product.PRstatus == 1, Product.PReditstate == 1, Product.PRstatus == status, Product.PRisdelete == isdelete).all_with_page(page, count)
+        else:
+            return self.session.query(Product).\
             filter_without_none(
                 Product.PRstatus == 1,
                 Product.PReditstate == 1,
                 Product.PRstatus == status,
                 Product.PRisdelete == isdelete
-            ).contain(Product.PRtitle == kw).all_with_page(page, count)
+            ).filter(or_(Product.PRname.like("%{0}%".format(kw)), Product.PRtitle.like("%{0}%".format(kw)),
+                         Product.PRoductId.like("%{0}%".format(kw)))).all_with_page(page, count)
 
     @close_session
     def get_all_by_filter(self, pagenum, pagesize):

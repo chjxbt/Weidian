@@ -73,6 +73,17 @@ class Query(_Query):
             return self
         return self.filter(cen.left.contains(cen.right))
 
+    def in_(self, *criterion):
+        """
+        session.query(User).in_(User.age == 18, User.age == 19, User.name == None)
+        等同: session.query(user).filter(or_(User.age == 18, User.age == 19))
+
+        """
+        criterion = filter(lambda x: not isinstance(x.right.type, NullType), list(criterion))
+        if not criterion:
+            return self
+        return super(Query, self).filter(or_(*criterion))
+
     def gt(self, cen):
         """
         使用session.query(User).filter(User.age > 13)

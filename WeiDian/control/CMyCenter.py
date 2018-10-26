@@ -13,7 +13,7 @@ from WeiDian.common.get_model_return_list import get_model_return_dict
 from WeiDian.common.import_status import import_status
 from WeiDian.common.params_require import parameter_required
 from WeiDian.common.token_required import verify_token_decorator, is_tourist, is_partner, is_admin
-from WeiDian.config.enums import BANK_MAP, finished_pay_status
+from WeiDian.config.enums import BANK_MAP, finished_pay_status, userlevel
 from WeiDian.config.response import AUTHORITY_ERROR, SYSTEM_ERROR, TOKEN_ERROR, PARAMS_ERROR, TIME_ERROR, PARAMS_MISS, \
     NOT_FOUND
 from WeiDian.control.BaseControl import BaseMyCenterControl
@@ -55,8 +55,11 @@ class CMyCenter(BaseMyCenterControl):
             data = dict()
             my_info = request.user
             level = my_info.level
+            uslevel = userlevel.get(str(level), '普通用户')
             level = 'partner' if level > 0 else 'ordinary'
+
             my_info.fill(level, 'level')
+            my_info.fill(uslevel, 'uslevel')
             data.setdefault('user', my_info)
             usid = my_info.id
             print (my_info.USname).encode('utf8')
