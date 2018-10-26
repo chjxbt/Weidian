@@ -3,22 +3,41 @@
     <page-title :title="name" ></page-title>
     <div class="m-weidian-content">
 
-      <!--<div class="title-img-box">
+      <div class="title-img-box">
         <h3 class="m-title">发放优惠券</h3>
-        <img v-if="handOut" class="table-close-img" src="../../assets/images/table_close.png" @click="handOutOpen">
-        <img v-if="!handOut" class="table-close-img" src="../../assets/images/table_open.png" @click="handOutOpen">
+        <img v-if="!handOut" class="table-close-img" src="../../assets/images/table_close.png" @click="handOutOpen">
+        <img v-if="handOut" class="table-close-img" src="../../assets/images/table_open.png" @click="handOutOpen">
       </div>
-      <div class="hand-out-reward" v-if="!handOut">
-        <p class="m-form-label" style="margin-bottom: 0.1rem">平台内发放优惠券</p>
+      <div class="hand-out-reward" v-if="handOut">
+        <p class="m-form-label" style="margin-bottom: 0.1rem">给个人发放优惠券</p>
         <div class="input-box">
-          <div class="box-text">优惠券：</div>
+          <div class="box-text" style="width: 0.4rem">用 户：</div>
           <div class="box-right">
-            <el-select v-model="raid" placeholder="请选择优惠券" style="width: 2.3rem" size="mini" clearable>
+            <el-select v-model="usid" placeholder="请输入手机号或用户名搜索" style="width: 2.3rem"
+                       filterable remote :remote-method="remoteMethod" :loading="loading" clearable>
+              <el-option v-for="item in userList" :key="item.usid" :label="item.usname" :value="item.usid">
+                <span style="float: left">{{item.usname}}</span>
+                <span style="float: right; margin-right: 0.2rem">{{item.usphone}}</span>
+              </el-option>
+            </el-select>
+          </div>
+          <div class="box-text" style="width: 0.4rem; margin-left: 0.2rem">优惠券：</div>
+          <div class="box-right">
+            <el-select v-model="raid" placeholder="请选择优惠券" style="width: 2.3rem" filterable clearable>
               <el-option v-for="item in discountsList" :key="item.raid" :label="item.rewardstr" :value="item.raid"></el-option>
             </el-select>
           </div>
         </div>
-      </div>-->
+        <div class="input-box">
+          <div class="box-text" style="width: 0.4rem">数 量：</div>
+          <div class="box-right">
+            <el-input v-model="discountNum" style="width: 2.3rem" placeholder="请输入赠送的数量">
+              <template slot="append">张</template>
+            </el-input>
+          </div>
+          <div class="coupons-btn" style="margin-left: 1.5rem" @click="giveDiscount">发 放</div>
+        </div>
+      </div>
 
       <div class="coupons-box">
         <p class="m-form-label" style="margin-bottom: 0.1rem; flex: 1;">平台优惠</p>
@@ -185,11 +204,14 @@
     data(){
       return{
         name:'活动中心',
-        raid: "",                 // 平台内发放优惠券时选中的优惠券id
+        raid: "",                 // 给个人发放优惠券时选中的优惠券id
+        usid: "",                 // 给个人发放优惠券时选中的用户id
+        userList: [],             // 给个人发放优惠券时供选择的用户list
+        discountNum: "",          // 给个人发放优惠券时选中的用户id
         discountsList: [],        // 平台优惠list
         discountsLoading: false,  // 平台优惠list加载中
         editDiscounts: false,     // 编辑优惠
-        handOut: true,           // 平台内发放优惠券
+        handOut: false,           // 平台内发放优惠券
         discountsName: "",        // 优惠名称
         ramaxusenum: "",          // 允许叠加使用的张数
         ramaxholdnum: "",         // 同种券最大可拥有数量
@@ -228,7 +250,8 @@
           disabledDate(time) {
             return time.getTime() < Date.now() - 8.64e7;
           }
-        }
+        },
+        loading: false,           // 远程查找用户
       }
     },
     components:{ pageTitle, Pagination },
@@ -246,6 +269,41 @@
       pageChange(v) {
         this.page_num = v;
         this.getAllRaward();      // 获取所有优惠券
+      },
+      // 输入值发生变化时调用 - 查找用户
+      remoteMethod(query) {
+        if(query != "") {
+          this.loading = true;
+          axios.get(api.search_user + '?token=' + localStorage.getItem('token') + "&keywords=" + query).then(res => {
+            if(res.data.status == 200){
+              this.loading = false;
+              this.userList = res.data.data;
+            }else{
+              this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+            }
+          });
+        }else {
+          this.userList = [];
+        }
+      },
+      // 给个人发放优惠券
+      giveDiscount() {
+        if(this.usid == "" || this.raid == "" || this.discountNum == "") {
+          this.$message({ message: "请完整填写", type: 'warning', duration: 1500 });
+        }else {
+          let params = { usid: this.usid, raid: this.raid, ranumber: this.discountNum };
+          console.log(params);
+          axios.post(api.admin_giving_reward + '?token=' + localStorage.getItem('token'), params).then(res=>{
+            if(res.data.status == 200){
+              this.$message({ message: res.data.message, type: 'success', duration: 1500 });
+              this.usid = "";
+              this.raid = "";
+              this.discountNum = "";
+            }else{
+              this.$message({ message: res.data.message, type: 'error', duration: 1500 });
+            }
+          });
+        }
       },
       // 按集合查找优惠券
       searchDiscounts() {
@@ -319,7 +377,7 @@
       // 添加优惠券时编辑框的保存按钮
       addDiscounts() {
         if(this.discountsName == "" || this.type == "" || this.ramaxusenum == "" || this.ramaxholdnum == "") {
-          this.$message({ message: "请完整填写1", type: 'warning', duration: 1500 });
+          this.$message({ message: "请完整填写", type: 'warning', duration: 1500 });
         }else {
           let params = {
             ratype: this.type,              // 优惠类型
@@ -339,7 +397,7 @@
           }
           if(this.type == "0") {       // 满减
             if(this.threshold == "" || this.amount == "") {
-              this.$message({ message: "请完整填写2", type: 'warning', duration: 1500 });
+              this.$message({ message: "请完整填写", type: 'warning', duration: 1500 });
             }else {
               params.rafilter = this.threshold;
               params.raamount = this.amount;
@@ -347,14 +405,14 @@
             }
           }else if(this.type == "1") { // 佣金加成
             if(this.bonus == "") {
-              this.$message({ message: "请完整填写3", type: 'warning', duration: 1500 });
+              this.$message({ message: "请完整填写", type: 'warning', duration: 1500 });
             }else {
               params.raratio = this.bonus;
               this.addDiscount(params);     // 保存添加的优惠券
             }
           }else if(this.type == "2") { // 无门槛
             if(this.amount == "") {
-              this.$message({ message: "请完整填写4", type: 'warning', duration: 1500 });
+              this.$message({ message: "请完整填写", type: 'warning', duration: 1500 });
             }else {
               params.raamount = this.amount;
               this.addDiscount(params);     // 保存添加的优惠券
@@ -503,15 +561,15 @@
   .coupons-box {
     display: flex;
     margin-bottom: 0.1rem;
-    .coupons-btn {
-      color: #ffffff;
-      font-size: 0.12rem;
-      padding: 0.05rem 0.2rem;
-      white-space: nowrap;
-      background-color: #91aeb5;
-      border-radius: 0.05rem;
-      margin: 0.02rem 0 0.1rem 0.1rem;
-    }
+  }
+  .coupons-btn {
+    color: #ffffff;
+    font-size: 0.12rem;
+    padding: 0.05rem 0.2rem;
+    white-space: nowrap;
+    background-color: #91aeb5;
+    border-radius: 0.05rem;
+    margin: 0.02rem 0 0.1rem 0.1rem;
   }
   .content-table {
     padding-bottom: 0 !important;

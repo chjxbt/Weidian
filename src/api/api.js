@@ -37,6 +37,7 @@ const api={
 
   hand_out_reward: title + 'reward/hand_out_reward',        // 平台内发放优惠券
   admin_giving_reward: title + 'reward/admin_giving_reward',// 运营给用户赠送优惠券
+  search_user: title + 'user/search_user',                  // 通过手机号或昵称查找用户
   get_all_raward: title + 'task/get_all_raward',            // 获取所有奖励 - 获取所有优惠券
   create_reward: title + 'reward/create_reward',            // 创建优惠券
   update_reward: title + 'reward/update_reward',            // 编辑优惠券所属集合或删除
