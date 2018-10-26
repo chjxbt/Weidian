@@ -386,11 +386,11 @@ class OrderInfo(BaseModel):
     OIpaytype = Column(Integer)  # 支付类型: {0: 银行卡支付, 1: 微信支付}
     OIleavetext = Column(String(255))  # 订单留言
     OImount = Column(Float)  # 金额
-    OIpaytime = Column(String(14))  # 支付时间
+    OIpaytime = Column(DateTime)  # 支付时间
     OIaddress = Column(String(255), nullable=False)  # 地址
     OIrecvname = Column(String(64), nullable=False)  # 收货人
     OIrecvphone = Column(String(16), nullable=False)  # 收货人电话
-    OIcreatetime = Column(String(14))  # 订单创建时间
+    OIcreatetime = Column(DateTime)  # 订单创建时间
     OIisdelete = Column(Boolean, default=False)  # 是否删除
     Sellerid = Column(String(64))  # 卖家id
     RAid = Column(String(64), comment=u'优惠券id')

@@ -19,13 +19,15 @@ def get_db_time_str(time_info=None):
             return datetime.datetime.strptime(time_info, format_for_web_second).strftime(format_for_db)
         else:
             return datetime.datetime.strptime(time_info, format_forweb_no_second).strftime(format_for_db)
-    return datetime.datetime.now().strftime(format_for_db)
 
 
 def get_web_time_str(time_str, formattype=format_for_web_second):
+
     if not time_str:
         return
-    return datetime.datetime.strptime(time_str, format_for_db).strftime(formattype)
+    if isinstance(time_str, str):
+        return datetime.datetime.strptime(time_str, format_for_db).strftime(formattype)
+    return time_str
 
 
 if __name__ == "__main__":
