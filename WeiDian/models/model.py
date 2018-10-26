@@ -210,7 +210,8 @@ class Product(BaseModel):
             'PRstock',
             'PRsalestatus',
             'PRtarget',
-            'PRpushCode'
+            'PRpushCode',
+            'PRoductId'
         ]
 
 

@@ -3,7 +3,7 @@
 import math
 
 from flask import request
-from sqlalchemy import inspection, log, util
+from sqlalchemy import inspection, log, util, or_
 from sqlalchemy.orm import Query as _Query, Session as _Session
 from sqlalchemy.sql.sqltypes import NullType
 
@@ -72,6 +72,17 @@ class Query(_Query):
         if isinstance(cen.right.type, NullType):
             return self
         return self.filter(cen.left.contains(cen.right))
+
+    def in_(self, *criterion):
+        """
+        session.query(User).in_(User.age == 18, User.age == 19, User.name == None)
+        等同: session.query(user).filter(or_(User.age == 18, User.age == 19))
+
+        """
+        criterion = filter(lambda x: not isinstance(x.right.type, NullType), list(criterion))
+        if not criterion:
+            return self
+        return super(Query, self).filter(or_(*criterion))
 
     def gt(self, cen):
         """

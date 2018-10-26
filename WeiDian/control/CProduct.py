@@ -225,9 +225,12 @@ class CProduct(BaseProductControl):
 
     def get_product_list(self):
         args = request.args.to_dict()
-        page = int(args.get('page', 1))  # 页码
-        count = int(args.get('count', 15))  # 取出条数
+        logger.debug("get product list args is %s", args)
+        page = int(args.get('page_num', 1))  # 页码
+        count = int(args.get('page_size', 15))  # 取出条数
         kw = args.get('kw')
+        if kw not in ['', None]:
+            kw = kw.encode('utf8')
         status = args.get('status')
         try:
             isdelete = int(args.get('isdelete'))  # 0  or  1
