@@ -1,7 +1,7 @@
 # *- coding:utf8 *-
 import sys
 import os
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 from WeiDian.common.timeformat import format_for_db
 from WeiDian.models.model import OrderInfo, OrderProductInfo, OrderProductResend
@@ -219,10 +219,18 @@ class SOrder(SBase):
 
     @close_session
     def get_order_all(self):
-        return self.session.query(OrderInfo).filter(OrderInfo.OIisdelete == False).all()
+        """所有订单"""
+        return self.session.query(OrderInfo).\
+            filter(OrderInfo.OIisdelete == False).all()
 
     @close_session
-    def get_order_all_24_hour(OrderInfo):
-        today_start = ''
-        # return self.session.query(OrderInfo).filter(OrderInfo.)
+    def get_yestoday_order_all(self):
+        """昨日订单"""
+        yesterday = datetime.now() - timedelta(days=1)
+        return self.session.query(OrderInfo).filter(
+            extract('day', OrderInfo.OIcreatetime) == yesterday.day,
+            extract('month', OrderInfo.OIcreatetime) == yesterday.month,
+            extract('year', OrderInfo.OIcreatetime) == yesterday.year,
+            OrderInfo.OIisdelete == False
+        ).all()
 

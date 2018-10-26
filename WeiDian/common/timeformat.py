@@ -25,9 +25,10 @@ def get_web_time_str(time_str, formattype=format_for_web_second):
 
     if not time_str:
         return
-    if isinstance(time_str, str):
-        return datetime.datetime.strptime(time_str, format_for_db).strftime(formattype)
-    return time_str
+    if isinstance(time_str, datetime.datetime):
+        return time_str
+    return datetime.datetime.strptime(time_str, format_for_db).strftime(formattype)
+
 
 
 if __name__ == "__main__":
