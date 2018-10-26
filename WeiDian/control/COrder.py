@@ -11,7 +11,7 @@ from flask import request
 
 from WeiDian import logger
 from WeiDian.common.loggers import generic_log
-from WeiDian.common.params_require import parameter_required
+from WeiDian.common.params_require import parameter_required, validate_phone
 from WeiDian.config.enums import ORDER_STATUS, order_product_info_status, ORDER_STATUS_, OrderResend, OrderResendType
 from WeiDian.config.kd import kd_list
 from WeiDian.config.setting import QRCODEHOSTNAME, APP_ID, MCH_ID, MCH_KEY, notify_url
@@ -555,7 +555,8 @@ class COrder():
         """申请退货(换货)"""
         if is_tourist():
             raise TOKEN_ERROR(u'请登录')
-        data = parameter_required(u'opiid', u'oprreason', u'oprtype')
+        # data = parameter_required(u'opiid', u'oprreason', u'oprtype')
+        data = parameter_required(u'opiid', u'oprtype')
         opiid = data.get('opiid')
         OPRtype = data.get('oprtype')
         if OPRtype not in [0, 1]:
@@ -576,25 +577,18 @@ class COrder():
         with self.suser.auto_commit() as session:
             session_list = []
             # 创建退款记录
-            voucher_images = data.get('oprimage')
-            oprmount = data.get('oprmount')
-            if oprmount > order_product.SmallTotal or oprmount is None:
-                oprmount = order_product.SmallTotal
             model_dict = {
                 'OPRid': str(uuid.uuid4()),
                 'OPRsn': self._geceric_sn(),
                 'OPIid': opiid,
                 'OPRtype': OPRtype,
-                'OPRreason': data.get('oprreason'),
-                'OPRdesc': data.get('oprdesc'),
-                'OPRimage': json.dumps(voucher_images)
             }
+            model_dict = {k: v for k, v in model_dict.items()}
             msg = u'申请换货成功'
             if OPRtype == 1 and order_product.OPIstatus == 0:
                 raise NOT_FOUND(u'未发货无法申请换货')
             if OPRtype == 0:
                 # 退货退款
-                model_dict['OPRmount'] = oprmount
                 msg = u'申请退货成功'
             new_resend = OrderProductResend()
             [setattr(new_resend, k, v) for k, v in model_dict.items() if v is not None]
@@ -616,7 +610,7 @@ class COrder():
         """同意退货"""
         if not is_admin():
             raise TOKEN_ERROR(u'请使用管理员登录')
-        data = parameter_required(u'opiid')
+        data = parameter_required(u'opiid', u'oprreceiverphone', u'oprreceiveraddress', u'oprreceivername')
         agree = data.get('agree', 1)
         opiid = data.get('opiid')
         order_product_info = self.sorder.get_orderproductinfo_by_opiid(opiid)
@@ -625,26 +619,33 @@ class COrder():
         order_product_resend = self.sorder.get_orderproduct_resend_by_opiid(opiid)
         if not order_product_resend or order_product_resend.OPRschedule != 0:
             raise DumpliError(u'未申请或已处理')
+        phone = validate_phone(data.get('oprreceiverphone'))
+        update_dict = {
+            'OPRreceivername': data.get('oprreceivername'),
+            'OPRreceiverphone': phone,
+            'OPRreceiveraddress': data.get('oprreceiveraddress'),
+        }
         # 判断状态
         if agree == 1:
             with self.sorder.auto_commit() as session:
                 # 更改退款表状态
                 # 如果未发货, 可以直接退款
-                schedule = 1
+                update_dict['OPRschedule'] = 1
                 msg = '同意退货, 等待买家发货'
                 if order_product_info.OPIstatus == 0:  # 如果商品并未发货
-                    schedule = 5  # 完成
+                    update_dict['OPRschedule'] = 5  # 完成
                     # todo 退款方法
                     self._refund()
                     msg = '已执行退款'
                 session.query(OrderProductResend).filter(
                         OrderProductResend.OPIid == opiid
-                ).update({'OPRschedule': schedule})
+                ).update(update_dict)
         elif agree == 0:
             with self.sorder.auto_commit() as session:
+                update_dict['OPRschedule'] = 6
                 session.query(OrderProductResend).filter(
                         OrderProductResend.OPIid == opiid
-                ).update({'OPRschedule': 6})
+                ).update(update_dict)
                 msg = '拒绝成功'
         else:
             raise PARAMS_MISS()
@@ -656,7 +657,8 @@ class COrder():
         """买家发货"""
         if is_tourist():
             raise TOKEN_ERROR(u'请登录')
-        data = parameter_required(u'opiid', u'oprresendlogisticcompnay', u'oprresendlogisticsn', u'oprreceivername', u'oprreceiverphone', u'oprreceiveraddress')
+        # data = parameter_required(u'opiid', u'oprresendlogisticcompnay', u'oprresendlogisticsn', u'oprreceivername', u'oprreceiverphone', u'oprreceiveraddress')
+        data = parameter_required(u'opiid', u'oprresendlogisticcompnay', u'oprresendlogisticsn',)
         opiid = data.get('opiid')
         order_product_resend = self.sorder.get_orderproduct_resend_by_opiid(opiid)
         if not order_product_resend:
@@ -668,6 +670,8 @@ class COrder():
         if kd_company not in kd_company_list:
             raise PARAMS_ERROR(u'不正确的快递公司')
         oprid = order_product_resend.OPRid
+        voucher_images = data.get('oprimage')
+
         update_dict = {
             'OPRresendLogisticCompany': data.get('oprresendlogisticcompnay'),
             'OPRresendLogisticSn': data.get('oprresendlogisticsn'),
@@ -676,7 +680,19 @@ class COrder():
             'OPRreceiverphone': data.get('oprreceiverphone'),
             'OPRschedule': 2,  # 3: 买家已发货
             'OPRreceiveraddress': data.get('oprreceiveraddress'),
+            'OPRreason': data.get('oprreason'),
+            'OPRdesc': data.get('oprdesc'),
+            'OPRimage': json.dumps(voucher_images)
         }
+
+        oprmount = data.get('oprmount')
+        order_product = self.sorder.get_orderproductinfo_by_opiid(opiid)
+        if oprmount is None or oprmount > order_product.SmallTotal:
+            oprmount = order_product.SmallTotal
+        if order_product_resend.OPRtype == 0:
+            # 退货退款
+            update_dict['OPRmount'] = oprmount
+        update_dict = {k: v for k, v in update_dict.items() if v is not None}
         updated = self.sorder.update_order_product_resend_by_oprid(oprid, update_dict)
         msg = '发货成功'
         response = {'message': msg, 'status': 200}
@@ -969,5 +985,5 @@ class COrder():
         if not can_use:
             raise NOT_FOUND(u'优惠券不可使用')
         return 'is_gift' if gift else 'is_own'
-    
+
 

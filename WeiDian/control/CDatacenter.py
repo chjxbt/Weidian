@@ -10,7 +10,6 @@ class GMV(object):
         """获取gmv详情"""
         # todo
         data = {
-
         }
         return data
 
