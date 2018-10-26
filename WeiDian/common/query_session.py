@@ -3,7 +3,7 @@
 import math
 
 from flask import request
-from sqlalchemy import inspection, log, util
+from sqlalchemy import inspection, log, util, or_
 from sqlalchemy.orm import Query as _Query, Session as _Session
 from sqlalchemy.sql.sqltypes import NullType
 
