@@ -209,7 +209,8 @@
           </div>
         </div>
         <div class="detail-box">
-          <div class="dialog-title">订单编号： {{order.oisn}}</div>
+          <!--<div class="dialog-title">订单编号： {{order.oisn}}</div>-->
+          <div class="dialog-title">商品详情</div>
           <div class="product-box" v-for="product in order.productinfo">
             <div class="box-row">
               <div class="row-label">商品名称：</div>
@@ -297,31 +298,37 @@
       },
       // 取消订单
       cancelOrder(scope) {
-        this.order = scope.row;
-        let params = { oiid: scope.row.oiid };
-        axios.post(api.cancle_order + '?token=' + localStorage.getItem('token'), params).then(res=>{
-          if(res.data.status == 200){
-            this.$message({ message: res.data.message, type: 'success', duration: 1500 });
-            this.orderList.splice(scope.$index, 1);
-            this.changeNum();       // 更新各状态订单的数量
-          }else{
-            this.$message({ message: res.data.message, type: 'error', duration: 1500 });
-          }
-        });
+        this.$confirm("此操作将取消该订单，是否继续?", '提示',
+          {confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'}).then(() => {
+          this.order = scope.row;
+          let params = { oiid: scope.row.oiid };
+          axios.post(api.cancle_order + '?token=' + localStorage.getItem('token'), params).then(res=>{
+            if(res.data.status == 200){
+              this.$message({ message: res.data.message, type: 'success', duration: 1500 });
+              this.orderList.splice(scope.$index, 1);
+              this.changeNum();       // 更新各状态订单的数量
+            }else{
+              this.$message({ message: res.data.message, type: 'error', duration: 1500 });
+            }
+          });
+        }).catch(() => {  });
       },
       // 删除订单
       deleteOrder(scope) {
-        this.order = scope.row;
-        let params = { oiid: scope.row.oiid };
-        axios.post(api.delete_order + '?token=' + localStorage.getItem('token'), params).then(res=>{
-          if(res.data.status == 200){
-            this.$message({ message: res.data.message, type: 'success', duration: 1500 });
-            this.orderList.splice(scope.$index, 1);
-            this.changeNum();       // 更新各状态订单的数量
-          }else{
-            this.$message({ message: res.data.message, type: 'error', duration: 1500 });
-          }
-        });
+        this.$confirm("此操作将删除该订单，是否继续?", '提示',
+          {confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'}).then(() => {
+          this.order = scope.row;
+          let params = { oiid: scope.row.oiid };
+          axios.post(api.delete_order + '?token=' + localStorage.getItem('token'), params).then(res=>{
+            if(res.data.status == 200){
+              this.$message({ message: res.data.message, type: 'success', duration: 1500 });
+              this.orderList.splice(scope.$index, 1);
+              this.changeNum();       // 更新各状态订单的数量
+            }else{
+              this.$message({ message: res.data.message, type: 'error', duration: 1500 });
+            }
+          });
+        }).catch(() => {  });
       },
       // 订单详情
       orderDetail(scope, where) {
