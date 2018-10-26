@@ -1,7 +1,9 @@
 # -*- coding:utf8 -*-
+import re
+
 from flask import request
 
-from WeiDian.config.response import PARAMS_MISS
+from WeiDian.config.response import PARAMS_MISS, PARAMS_ERROR
 from WeiDian import logger
 
 
@@ -30,3 +32,18 @@ def parameter_required(*required):
             raise PARAMS_MISS(u'必要参数缺失: ' + missed_params)
     return body_data
     # TODO 校验参数待重新修改
+
+
+def validate_phone(arg):
+    regex_phone = "^1\d{10}$"
+    return validate_arg(regex_phone, arg, str(arg) + u'不是手机号码')
+
+
+def validate_arg(regex, arg, msg=None):
+    if arg is None:
+        return
+    res = re.match(regex, str(arg))
+    if not res:
+        raise PARAMS_ERROR(msg)
+    return arg
+

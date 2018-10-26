@@ -10,7 +10,7 @@ class GMV(object):
         """获取gmv详情"""
         # todo
         data = {
-
+            self.sorder.get_sellorder_fitler
         }
         return data
 

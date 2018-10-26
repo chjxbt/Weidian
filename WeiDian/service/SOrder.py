@@ -1,7 +1,7 @@
 # *- coding:utf8 *-
 import sys
 import os
-from datetime import datetime
+from datetime import datetime, date
 
 from WeiDian.common.timeformat import format_for_db
 from WeiDian.models.model import OrderInfo, OrderProductInfo, OrderProductResend
@@ -11,7 +11,7 @@ sys.path.append(os.path.dirname(os.getcwd()))
 
 class SOrder(SBase):
 
-    @close_session
+    # @close_session
     # def get_order_by_usid(self, sell, usid, page_num, page_size):
     #     """获取用户的订单"""
     #     if sell:
@@ -216,3 +216,13 @@ class SOrder(SBase):
     def update_order_product_resend_by_oprid(self, oprid, data):
         """更新退货信息的状态"""
         return self.session.query(OrderProductResend).filter(OrderProductResend.OPRid == oprid).update(data)
+
+    @close_session
+    def get_order_all(self):
+        return self.session.query(OrderInfo).filter(OrderInfo.OIisdelete == False).all()
+
+    @close_session
+    def get_order_all_24_hour(OrderInfo):
+        today_start = ''
+        # return self.session.query(OrderInfo).filter(OrderInfo.)
+
