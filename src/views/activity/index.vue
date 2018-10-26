@@ -22,25 +22,27 @@
 
       <div class="coupons-box">
         <p class="m-form-label" style="margin-bottom: 0.1rem; flex: 1;">平台优惠</p>
-        <el-select v-model="collectionS" filterable style="width: 2.3rem" placeholder="选择集合后可查看">
-          <el-option v-for="item in collectionList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+        <el-select v-model="collectionS" filterable style="width: 2.3rem" placeholder="选择集合后可查看" clearable @clear="getAllRaward">
+          <el-option v-for="item in collectionList" :key="item.rptid" :label="item.rptname" :value="item.rptid"></el-option>
         </el-select>
-        <div class="coupons-btn">查 看</div>
+        <div class="coupons-btn" @click="searchDiscounts">查 看</div>
       </div>
       <div class="content-table">
         <el-table :data="discountsList" border style="width: 100%" v-loading="discountsLoading">
-          <el-table-column prop="raname" label="优惠名称"></el-table-column>
+          <el-table-column prop="raname" label="优惠名称" width="120"></el-table-column>
           <el-table-column prop="raType" label="优惠类型" width="120"></el-table-column>
-          <el-table-column prop="rewardstr" label="优惠内容" width="140"></el-table-column>
+          <el-table-column prop="rewardstr" label="优惠内容" width="160"></el-table-column>
+          <el-table-column prop="rptname" label="集合名称"></el-table-column>
           <el-table-column prop="rafilter" label="优惠门槛" width="80"></el-table-column>
           <el-table-column prop="raamount" label="优惠金额" width="80"></el-table-column>
-          <el-table-column prop="raratio" label="上涨比率" width="80"></el-table-column>
+          <el-table-column prop="raratio" label="加成比率" width="80"></el-table-column>
           <el-table-column prop="ramaxholdnum" label="最大拥有数" width="95"></el-table-column>
           <el-table-column prop="ramaxusenum" label="可叠加张数" width="95"></el-table-column>
-          <el-table-column prop="ratransfer" label="可否转赠" width="80"></el-table-column>
-          <el-table-column prop="ratransfereffectivetime" label="转赠有效时长" width="110"></el-table-column>
-          <el-table-column prop="rptname" label="集合名称"></el-table-column>
-          <el-table-column prop="num" label="管理" width="160">
+          <el-table-column prop="racreatetime" label="创建时间" width="155"></el-table-column>
+          <el-table-column prop="raendtime" label="到期时间" width="155"></el-table-column>
+          <el-table-column prop="ratransfers" label="可否转赠" width="80"></el-table-column>
+          <el-table-column prop="ratransfereffectivetime" label="转赠时长" width="80"></el-table-column>
+          <el-table-column prop="num" fixed="right" label="管理" width="160">
             <template slot-scope="scope">
               <el-button type="text" size="small" @click="editDiscount(scope, 'update')">编辑集合</el-button>
               <el-button type="text" size="small">|</el-button>
@@ -106,7 +108,8 @@
         <div class="input-box">
           <div class="box-text">到期时间：</div>
           <div class="box-right">
-            <el-date-picker v-model="endTime" style="width: 2.3rem" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择到期时间"></el-date-picker>
+            <el-date-picker v-model="endTime" style="width: 2.3rem" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"
+                            placeholder="请选择到期时间" :picker-options="pickerOptions"></el-date-picker>
           </div>
         </div>
         <div class="input-box">
@@ -134,7 +137,7 @@
               <el-option v-for="item in collectionList" :key="item.rptid" :label="item.rptname" :value="item.rptid"></el-option>
             </el-select>
           </div>
-          <div class="add-btn" @click="addCollection('')">+</div>
+          <div class="admin-btn" @click="addCollection('')">管理</div>
         </div>
       </div>
       <!--添加集合-->
@@ -216,11 +219,16 @@
         collectionS: "",          // 头部查看 - 集合选中值
         collectionList: [],       // 集合list
         addDialog: false,         // 添加集合的dialog
-        saveCollection: true,    // 添加集合的dialog
+        saveCollection: true,     // 判断是否已保存集合名
         discount: {},             // 暂存优惠券
-        page_size: 5,             // 每页请求的数量
+        page_size: 10,            // 每页请求的数量
         page_num: 1,              // 第几页
         total_page: 1,            // 总页数
+        pickerOptions: {          // 到期时间不可选择之前时间
+          disabledDate(time) {
+            return time.getTime() < Date.now() - 8.64e7;
+          }
+        }
       }
     },
     components:{ pageTitle, Pagination },
@@ -239,6 +247,35 @@
         this.page_num = v;
         this.getAllRaward();      // 获取所有优惠券
       },
+      // 按集合查找优惠券
+      searchDiscounts() {
+        this.discountsLoading = true;
+        axios.get(api.get_r_p_detail + '?token=' + localStorage.getItem('token') + "&rptid=" + this.collectionS).then(res => {
+          if(res.data.status == 200){
+            this.discountsList = [];
+            for(let i = 0; i < res.data.data.length; i ++) {
+              this.discountsList.push(res.data.data[i].reward_detail);
+            }
+
+            for(let i = 0; i < this.discountsList.length; i ++ ){
+              // 判断是否可转增
+              if(this.discountsList[i].ratransfer) {
+                this.discountsList[i].ratransfers = "是";
+              }else if(!this.discountsList[i].ratransfer) {
+                this.discountsList[i].ratransfers = "否";
+              }
+              for(let j = 0; j < this.typeList.length; j ++) {
+                if(this.discountsList[i].ratype == this.typeList[j].value) {
+                  this.discountsList[i].raType = this.typeList[j].label;
+                }
+              }
+            }
+            this.discountsLoading = false;
+          }else{
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+          }
+        });
+      },
       // 获取所有优惠券
       getAllRaward() {
         this.discountsLoading = true;
@@ -248,6 +285,12 @@
             this.total_page = Math.ceil(res.data.count / this.page_size);
 
             for(let i = 0; i < this.discountsList.length; i ++ ){
+              // 判断是否可转增
+              if(this.discountsList[i].ratransfer) {
+                this.discountsList[i].ratransfers = "是";
+              }else if(!this.discountsList[i].ratransfer) {
+                this.discountsList[i].ratransfers = "否";
+              }
               for(let j = 0; j < this.typeList.length; j ++) {
                 if(this.discountsList[i].ratype == this.typeList[j].value) {
                   this.discountsList[i].raType = this.typeList[j].label;
@@ -291,6 +334,9 @@
           if(this.endTime) {            // 设置优惠券的到期时间，为空时默认30天
             params.raendtime = this.endTime;
           }
+          if(this.collection) {         // 集合id
+            params.rptid = this.collection;
+          }
           if(this.type == "0") {       // 满减
             if(this.threshold == "" || this.amount == "") {
               this.$message({ message: "请完整填写2", type: 'warning', duration: 1500 });
@@ -323,6 +369,7 @@
         axios.post(api.create_reward + '?token=' + localStorage.getItem('token'), params).then(res=>{
           if(res.data.status == 200){
             this.$message({ message: res.data.message, type: 'success', duration: 1500 });
+            this.getAllRaward();          // 获取所有优惠券
 
             this.type = "";
             this.ramaxusenum = "";
@@ -491,6 +538,11 @@
     .box-right {
       margin-right: 0.1rem;
     }
+  }
+  .admin-btn {
+    color: #4169E1;
+    font-size: 0.12rem;
+    margin: auto 0.1rem;
   }
   .add-btn {
     font-size: 0.18rem;

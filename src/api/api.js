@@ -43,6 +43,7 @@ const api={
   get_reward_packets: title + 'reward/get_reward_packets',  // 获取所有优惠券集合名
   create_rewardpacket: title + 'reward/create_rewardpacket',// 新建优惠券集合
   del_rewardpacket: title + 'reward/del_rewardpacket',      // 删除优惠券集合名
+  get_r_p_detail: title + 'reward/get_reward_packet_detail',// 查看券集合具体包含
 
   get_order_count: title + 'order/admin_get_order_count',   // 后台获取订单数量
   get_order_list: title + 'order/admin_get_order_list',     // 后台获取各状态下的订单
