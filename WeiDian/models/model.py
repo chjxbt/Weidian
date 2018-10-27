@@ -225,6 +225,7 @@ class ProductSkuKey(BaseModel):
     PSKproductnum = Column(Integer, nullable=False)  # 库存
     PSKalias = Column(String(64), nullable=False)  # 商品别名
     PSKprice = Column(Float, default=0.00)  # 价格
+    PSKprofict = Column(Float, default=5, comment=u'利润')
     PSKpostfee = Column(Float, nullable=False)  # 物流费
     PSKactiviyid = Column(String(64))  # 活动id, 不知用处
     PSskuid = Column(Integer)  # 微点商品sku id
@@ -1112,7 +1113,7 @@ class UserCommision(BaseModel):
 
 
 class UserCommisionPriview(BaseModel):
-    """用户预估到帐流水表"""
+    """用户预估佣金流水表"""
     __tablename__ = 'usercommsionprivew'
     UCPid = Column(String(64), primary_key=True)
     OPIid = Column(String(64), comment=u'订单商品详情')  # 记录预估值的来源订单详情, 收货时方便获取

@@ -83,13 +83,11 @@ class COrder():
             for commsion in commission_list:
                 user_commsion_instance = UserCommisionPriview.create(commsion)
                 model_beans.append(user_commsion_instance)
-                import ipdb
-                ipdb.set_trace()
-            order_dict['OImount'] = sum([x['SmallTotal'] for x in orderproductinfo_dict_list])  # 总价
+            OImount= sum([Decimal(x['SmallTotal']) for x in orderproductinfo_dict_list])
+            # 判断优惠券
             urid = data.get('urid')
             if urid:
-                # 判断优惠券
-                raward_type = self._raward_can_use(urid, order_dict['OImount'])
+                raward_type = self._raward_can_use(urid, OImount)
                 if raward_type == 'is_gift':
                     gift = session.query(RewardTransfer).filter(RewardTransfer.RFid == urid).first()
                     gift.RFstatus = 2
@@ -104,8 +102,9 @@ class COrder():
                 else:
                     pass
                 raward = session.query(Raward).filter(Raward.RAid == raid).first()
-                order_dict['OImount'] -= raward.RAamount
+                OImount -= raward.RAamount
                 order_dict['RAid'] = raid
+            order_dict['OImount'] = float(OImount)  # 总价
             orderinfo = OrderInfo.create(order_dict)
             model_beans.append(orderinfo)
             session.add_all(model_beans)
@@ -638,6 +637,10 @@ class COrder():
                 # 更改退款表状态
                 # 如果未发货, 可以直接退款
                 update_dict['OPRschedule'] = 1
+                # 预估佣金不可用
+                session.query(UserCommisionPriview).filter(UserCommisionPriview.OPIid == opiid).update({
+                    'UCPstatus': 20
+                })
                 msg = '同意退货, 等待买家发货'
                 if order_product_info.OPIstatus == 0:  # 如果商品并未发货
                     update_dict['OPRschedule'] = 5  # 完成
@@ -876,19 +879,12 @@ class COrder():
             orderproductinfo_dict['OPIproductname'] = product.PRname
             orderproductinfo_dict['OPIproductimages'] = product.PRmainpic
             orderproductinfo_dict['OPIproductnum'] = int(sku.get('num', 1))
-            orderproductinfo_dict['OIproductprice'] = self.sproductskukey.get_true_price(pskid, partner=is_partner())
-            orderproductinfo_dict['SmallTotal'] = self.sproductskukey.get_true_price(pskid, partner=is_partner()) *\
-                                                            orderproductinfo_dict['OPIproductnum']
+            true_price = Decimal(str(self.sproductskukey.get_true_price(pskid, partner=is_partner())))
+            orderproductinfo_dict['OIproductprice'] = float(round(true_price, 2))
+            orderproductinfo_dict['SmallTotal'] = float(round(true_price * orderproductinfo_dict['OPIproductnum'], 2))
             sku_dict_list.append(orderproductinfo_dict)
             # 三级佣金计算
-            # p = Partner()
-            # commission = [
-            #     profict * Decimal(str(p.one_level_divide)),
-            #     profict * Decimal(str(p.two_level_divide)),
-            #     profict * Decimal(str(p.three_level_divide)),
-            # ]
-            # commission = list(map(float, commission))
-            commission = self._caculate_commison_by_profit(profict, request.user.id, orderproductinfo_dict['OPIid'])
+            commission = self._caculate_commison_by_profit(profict, request.user.id, orderproductinfo_dict['OPIid'], orderproductinfo_dict['OPIproductnum'])
             commission_list.extend(commission)
         return sku_dict_list, commission_list
 
@@ -961,7 +957,9 @@ class COrder():
             {'RFid': urid, 'RFstatus': 1})
         craward = CRaward()
         if reward:
-            reward_detail = craward.sraward.get_raward_by_id(reward.RAid)
+            reward_detail = self.sraward.get_raward_by_id(reward.RAid)
+            if not reward_detail:
+                raise NOT_FOUND(u'该优惠券不存在或已失效')
             reward_detail = craward.fill_reward_detail(reward_detail, total_price)
             reward.fill(reward_detail, 'reward_detail')
             reward = dict(reward)
@@ -971,6 +969,9 @@ class COrder():
             lower_reward['urcreatetime'] = get_web_time_str(lower_reward.get('urcreatetime'))
             res = lower_reward
         elif gift:
+            reward_info = self.sraward.get_raward_by_id(gift.RAid)
+            if not reward_info:
+                raise NOT_FOUND(u'该优惠券不存在或已失效')
             gift = craward.fill_transfer_detail(gift)
             gift_detail = self.sraward.get_raward_by_id(gift.RAid)
             gift_detail = craward.fill_reward_detail(gift_detail, total_price)
@@ -1004,10 +1005,10 @@ class COrder():
             raise NOT_FOUND(u'优惠券不可使用')
         return 'is_gift' if gift else 'is_own'
 
-    def _caculate_commison_by_profit(self, profict, usid, opiid):
+    def _caculate_commison_by_profit(self, profict, usid, opiid, nums):
         # 三级佣金计算
         user = self.suser.get_user_by_user_id(usid)
-        profict = Decimal(str(profict))
+        profict = Decimal(str(profict * nums))
         p = Partner()
         commissions = []
         if user.UPPerd:
@@ -1034,7 +1035,7 @@ class COrder():
                 commissions.append(commsion_dict)
                 user_upper_s_upperd = self.suser.get_user_by_user_id(user_upperd.UPPerd)
                 if user_upper_s_upperd.UPPerd:
-                    commission_without_ordercount = profict * Decimal(str(p.three_level_divide))  # 上两级级佣金, 未根据订单数量加成
+                    commission_without_ordercount = profict * Decimal(str(p.three_level_divide))  # 上3级佣金, 未根据订单数量加成
                     commsion_price = self._caculate_devite_rate(commission_without_ordercount, user_order_count)
                     commsion_dict = {
                         'UCPid': str(uuid.uuid4()),
@@ -1054,7 +1055,7 @@ class COrder():
             rate = Decimal('1.07')
         else:
             rate = Decimal('1.1')
-        return float(item * rate)
+        return float(round(item * rate, 2))
 
 
 

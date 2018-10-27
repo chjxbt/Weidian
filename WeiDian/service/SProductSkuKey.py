@@ -36,7 +36,7 @@ class SProductSkuKey(SBase):
             ProductSkuKey.PSKid == pskid, ProductSkuKey.PSisdelete != 0).first()
         # prid = psk.PRid
         # product = self.session.query(Product).filter(Product.PRid == prid).first()
-        profit = Decimal(str(getattr(psk, 'PSKprofict', 5)))
+        profit = Decimal(str(getattr(psk, 'PSKprofict', 5) or 5))
         if partner:
             temp = profit * Decimal(str(Partner().one_level_divide))
             return float(Decimal(str(psk.PSKprice)) - temp)
