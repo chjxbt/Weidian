@@ -78,6 +78,3 @@ class SUser(SBase):
         """条件筛选用户"""
         return self.session.query(User).filter(or_(*usfilter)).all()
 
-
-
-

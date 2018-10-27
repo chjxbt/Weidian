@@ -5,11 +5,13 @@ import os
 import uuid
 import random
 from datetime import datetime
+from decimal import Decimal
 
 from weixin import WeixinPay
 from flask import request
 
 from WeiDian import logger
+from WeiDian.common.divide import Partner
 from WeiDian.common.loggers import generic_log
 from WeiDian.common.params_require import parameter_required, validate_phone
 from WeiDian.config.enums import ORDER_STATUS, order_product_info_status, ORDER_STATUS_, OrderResend, OrderResendType
@@ -21,7 +23,7 @@ from WeiDian.common.token_required import verify_token_decorator, is_partner, is
 from WeiDian.common.import_status import import_status
 from WeiDian.control.CRaward import CRaward
 from WeiDian.models.model import OrderProductInfo, OrderInfo, OrderProductResend, UserRaward, OrderProductSendTwice, \
-    RewardTransfer, Raward
+    RewardTransfer, Raward, UserCommisionPriview
 from WeiDian.service.SOrder import SOrder
 from WeiDian.service.SProductImage import SProductImage
 from WeiDian.service.SProductSkuKey import SProductSkuKey
@@ -74,10 +76,15 @@ class COrder():
             )
             # 建立订单详情
             sku = data.get('sku')
-            orderproductinfo_dict_list = self.fix_orderproduct_info(sku, order_dict['OIid'])
+            orderproductinfo_dict_list, commission_list = self.fix_orderproduct_info(sku, order_dict['OIid'])
             for order_product in orderproductinfo_dict_list:
                 orderproduct_instance = OrderProductInfo.create(order_product)
                 model_beans.append(orderproduct_instance)
+            for commsion in commission_list:
+                user_commsion_instance = UserCommisionPriview.create(commsion)
+                model_beans.append(user_commsion_instance)
+                import ipdb
+                ipdb.set_trace()
             order_dict['OImount'] = sum([x['SmallTotal'] for x in orderproductinfo_dict_list])  # 总价
             urid = data.get('urid')
             if urid:
@@ -671,7 +678,6 @@ class COrder():
             raise PARAMS_ERROR(u'不正确的快递公司')
         oprid = order_product_resend.OPRid
         voucher_images = data.get('oprimage')
-
         update_dict = {
             'OPRresendLogisticCompany': data.get('oprresendlogisticcompnay'),
             'OPRresendLogisticSn': data.get('oprresendlogisticsn'),
@@ -850,11 +856,13 @@ class COrder():
                         opiproductimages, opiproductnum, opiproductprice
        """
         sku_dict_list = []
+        commission_list = []
         for sku in sku_list:
             pskid = sku.get('pskid')
             productskukey = self.sproductskukey.get_psk_by_pskid(pskid)
             if not productskukey:
                 raise NOT_FOUND(u'不存在sku')
+            profict = Decimal(str(productskukey.PSKprofict or 5))  # 利润默认5
             prid = productskukey.PRid
             product = self.sproduct.get_product_by_prid(prid)
             if not product:
@@ -872,7 +880,17 @@ class COrder():
             orderproductinfo_dict['SmallTotal'] = self.sproductskukey.get_true_price(pskid, partner=is_partner()) *\
                                                             orderproductinfo_dict['OPIproductnum']
             sku_dict_list.append(orderproductinfo_dict)
-        return sku_dict_list
+            # 三级佣金计算
+            # p = Partner()
+            # commission = [
+            #     profict * Decimal(str(p.one_level_divide)),
+            #     profict * Decimal(str(p.two_level_divide)),
+            #     profict * Decimal(str(p.three_level_divide)),
+            # ]
+            # commission = list(map(float, commission))
+            commission = self._caculate_commison_by_profit(profict, request.user.id, orderproductinfo_dict['OPIid'])
+            commission_list.extend(commission)
+        return sku_dict_list, commission_list
 
     def fill_productinfo(self, order):
         oiid = order.OIid
@@ -985,5 +1003,58 @@ class COrder():
         if not can_use:
             raise NOT_FOUND(u'优惠券不可使用')
         return 'is_gift' if gift else 'is_own'
+
+    def _caculate_commison_by_profit(self, profict, usid, opiid):
+        # 三级佣金计算
+        user = self.suser.get_user_by_user_id(usid)
+        profict = Decimal(str(profict))
+        p = Partner()
+        commissions = []
+        if user.UPPerd:
+            user_order_count = self.sorder.get_sell_ordercount_by_item_status(usid)
+            commission_without_ordercount = profict * Decimal(str(p.one_level_divide))   # 上一级佣金, 未根据订单数量加成
+            commsion_price = self._caculate_devite_rate(commission_without_ordercount, user_order_count)
+            commsion_dict = {
+                'UCPid': str(uuid.uuid4()),
+                'OPIid': opiid,
+                'USid': user.UPPerd,
+                'UCPnums': commsion_price,
+            }
+            commissions.append(commsion_dict)
+            user_upperd = self.suser.get_user_by_user_id(user.UPPerd)
+            if user_upperd.UPPerd:
+                commission_without_ordercount = profict * Decimal(str(p.two_level_divide))  # 上两级级佣金, 未根据订单数量加成
+                commsion_price = self._caculate_devite_rate(commission_without_ordercount, user_order_count)
+                commsion_dict = {
+                    'UCPid': str(uuid.uuid4()),
+                    'OPIid': opiid,
+                    'USid': user_upperd.UPPerd,
+                    'UCPnums': commsion_price,
+                }
+                commissions.append(commsion_dict)
+                user_upper_s_upperd = self.suser.get_user_by_user_id(user_upperd.UPPerd)
+                if user_upper_s_upperd.UPPerd:
+                    commission_without_ordercount = profict * Decimal(str(p.three_level_divide))  # 上两级级佣金, 未根据订单数量加成
+                    commsion_price = self._caculate_devite_rate(commission_without_ordercount, user_order_count)
+                    commsion_dict = {
+                        'UCPid': str(uuid.uuid4()),
+                        'OPIid': opiid,
+                        'USid': user_upperd.UPPerd,
+                        'UCPnums': commsion_price,
+                    }
+                    commissions.append(commsion_dict)
+
+        return commissions
+
+    @staticmethod
+    def _caculate_devite_rate(item, user_order_count):
+        if 0 <= user_order_count <= 4:
+            rate = Decimal('1.04')
+        elif 5 <= user_order_count <= 19:
+            rate = Decimal('1.07')
+        else:
+            rate = Decimal('1.1')
+        return float(item * rate)
+
 
 
