@@ -1108,7 +1108,7 @@ class UserCommision(BaseModel):
     __tablename__ = 'commision'
     UCid = Column(String(64), primary_key=True)
     USid = Column(String(64), nullable=False, comment=u'用户')
-    UCnum = Column(Integer, default=0, comment=u'到帐金额')
+    UCnum = Column(Float, default=0, comment=u'到帐金额')
     # UCpreviewnum = Column(Integer, default=0, comment=u'预估到帐金额')   # 用户创建订单后即增加上级预估到帐
 
 

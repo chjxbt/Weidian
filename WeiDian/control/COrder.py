@@ -23,7 +23,7 @@ from WeiDian.common.token_required import verify_token_decorator, is_partner, is
 from WeiDian.common.import_status import import_status
 from WeiDian.control.CRaward import CRaward
 from WeiDian.models.model import OrderProductInfo, OrderInfo, OrderProductResend, UserRaward, OrderProductSendTwice, \
-    RewardTransfer, Raward, UserCommisionPriview
+    RewardTransfer, Raward, UserCommisionPriview, UserCommision
 from WeiDian.service.SOrder import SOrder
 from WeiDian.service.SProductImage import SProductImage
 from WeiDian.service.SProductSkuKey import SProductSkuKey
@@ -544,6 +544,7 @@ class COrder():
         with self.sorder.auto_commit() as session:
             if len(filter(lambda x: x.OPIstatus in [0], order_product_list)):
                 raise PARAMS_MISS(u'部分商品未发货')
+            add_list = []
             # 判断订单中的所有商品是否都已经完成, 如果已经完成则更改订单状态为交易成功
             session.query(OrderInfo).filter(OrderInfo.OIid == oiid).update({
                 'OIpaystatus': 6  # 交易完成
@@ -551,7 +552,28 @@ class COrder():
             session.query(OrderProductInfo).filter(OrderProductInfo.OIid == oiid).update({
                 'OPIstatus': 2  # 已发货
             })
-            # 上级福利
+            # 佣金到帐
+            order_products = session.query(OrderProductInfo).filter(OrderProductInfo.OIid == oiid).all()
+            for order_product in order_products:
+                user_commsion_previews = session.query(UserCommisionPriview).filter(
+                    UserCommisionPriview.OPIid == order_product.OPIid,
+                    UserCommisionPriview.UCPstatus == 0
+                ).all()  # 预估佣金
+                for user_commsion_preview in user_commsion_previews:
+                    user_commsion_preview.UCPstatus = 10  # 设置为已到帐
+                    usid = user_commsion_preview.USid
+                    user_commsion = session.query(UserCommision).filter(UserCommision.USid == usid).first()
+                    if user_commsion:
+                        user_commsion.UCnum += user_commsion_preview.UCPnums
+                    else:
+                        new_user_commsion = UserCommision.create({
+                            'UCid': str(uuid.uuid4()),
+                            'USid': usid,
+                            'UCnum': user_commsion_preview.UCPnums
+                        })  # 佣金到帐
+                        add_list.append(new_user_commsion)
+
+            session.add_all(add_list)
 
         response = import_status('confirm_order_success', 'OK')
         return response
