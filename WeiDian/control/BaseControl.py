@@ -517,22 +517,23 @@ class BaseTask():
         rawards = []
         for task_raward in rewardlist:
             raward = self.sraward.get_raward_by_id(task_raward.RAid)
-            if raward.RAtype == 0:
-                reward_str = self.reward_number.format(int(task_raward.RAnumber)) + self.filter_str.format(
-                    int(raward.RAfilter), int(raward.RAamount))
-            elif raward.RAtype == 1:
-                reward_str = self.ratio_str.format(int(raward.RAratio))
-                reward_number = self.reward_number_ratio.format(
-                    task_raward.RAnumber) if task_raward.RAnumber != 1 else "首单"
-                reward_str = reward_number + reward_str
-            else:
-                reward_str = self.reward_number.format(int(task_raward.RAnumber)) + self.amout_str.format(
-                    int(raward.RAamount))
-            # raward.RAnumber = task_raward.RAnumber
-            #
-            # raward.add("RAnumber")
+            if raward:
+                if raward.RAtype == 0:
+                    reward_str = self.reward_number.format(int(task_raward.RAnumber)) + self.filter_str.format(
+                        int(raward.RAfilter), int(raward.RAamount))
+                elif raward.RAtype == 1:
+                    reward_str = self.ratio_str.format(int(raward.RAratio))
+                    reward_number = self.reward_number_ratio.format(
+                        task_raward.RAnumber) if task_raward.RAnumber != 1 else "首单"
+                    reward_str = reward_number + reward_str
+                else:
+                    reward_str = self.reward_number.format(int(task_raward.RAnumber)) + self.amout_str.format(
+                        int(raward.RAamount))
+                # raward.RAnumber = task_raward.RAnumber
+                #
+                # raward.add("RAnumber")
 
-            rawards.append(reward_str)
+                rawards.append(reward_str)
         return rawards
 
     def fill_reward_detail(self, rewardlist):
