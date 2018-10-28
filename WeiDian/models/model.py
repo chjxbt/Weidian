@@ -225,6 +225,7 @@ class ProductSkuKey(BaseModel):
     PSKproductnum = Column(Integer, nullable=False)  # 库存
     PSKalias = Column(String(64), nullable=False)  # 商品别名
     PSKprice = Column(Float, default=0.00)  # 价格
+    PSKprofict = Column(Float, default=5, comment=u'利润')
     PSKpostfee = Column(Float, nullable=False)  # 物流费
     PSKactiviyid = Column(String(64))  # 活动id, 不知用处
     PSskuid = Column(Integer)  # 微点商品sku id
@@ -378,7 +379,7 @@ class OrderInfo(BaseModel):
     USid = Column(String(64))  # 用户
     OItradenum = Column(String(125))  # 交易号, (如果有)
     """
-    订单状态: {0:全部, 1: 待付款, 2: 支付成功, 3: 支付超时关闭（交易关闭）, 4:待发货, 5: 已发货, 
+    订单状态: {0:全部, 1: 待付款, 2: 支付成功, 3: 支付超时关闭（交易关闭）, 4:待发货, 5: 已发货,
     6:已完成, 7:已取消, 8:交易失败（退货）,  10:待评价(评价放到), 11:退换货, 12: 换货(买家退回中),
     13: 换货(卖家发货中), 14: 卖家已发货
      }
@@ -395,6 +396,7 @@ class OrderInfo(BaseModel):
     OIisdelete = Column(Boolean, default=False)  # 是否删除
     Sellerid = Column(String(64))  # 卖家id
     RAid = Column(String(64), comment=u'优惠券id')
+    OIcomfirmtime = Column(DateTime, comment=u'确认收货时间')
 
     @orm.reconstructor
     def __init__(self):
@@ -953,7 +955,7 @@ class AdImage(BaseModel):
     AIimage = Column(String(255))  # 图片地址
     AItype = Column(Integer)
     """
-     图片类型{0: 我的导师， 1:小静态广告图, 2:大静态广告图, 3: 发现弹框图片, 
+     图片类型{0: 我的导师， 1:小静态广告图, 2:大静态广告图, 3: 发现弹框图片,
      4: 等级规则图片(未开店), 5: 等级规则(已开店), 6: 专属粉丝管理规则，
      7：开店邀请海报规则， 8：邀请开店海报，9：邀请专属粉丝海报, 10：专属粉丝分享海报, 11: 提现帮助,
      12: 客服, 13: 开店邀请函, 14: 收益详情 }
@@ -1095,12 +1097,45 @@ class PartnerSellOrInviteMatch(BaseModel):
     PSIMtype = Column(String(8), default=u'sell', comment=u'活动类型: sell, invite')
     PSIMisclose = Column(Boolean, default=False, comment=u'是否关闭')
     PSIMisdelete = Column(Boolean, default=False, comment=u'是否删除')
+
     @orm.reconstructor
     def __init__(self):
         self.fields = self.all
 
-#
-# class PersonalInfo(BaseModel):
+
+class UserCommision(BaseModel):
+    """佣金"""
+    __tablename__ = 'commision'
+    UCid = Column(String(64), primary_key=True)
+    USid = Column(String(64), nullable=False, comment=u'用户')
+    UCnum = Column(Float, default=0, comment=u'到帐金额')
+    # UCpreviewnum = Column(Integer, default=0, comment=u'预估到帐金额')   # 用户创建订单后即增加上级预估到帐
+
+
+class UserCommisionPriview(BaseModel):
+    """用户预估佣金流水表"""
+    __tablename__ = 'usercommsionprivew'
+    UCPid = Column(String(64), primary_key=True)
+    OPIid = Column(String(64), comment=u'订单商品详情')  # 记录预估值的来源订单详情, 收货时方便获取
+    USid = Column(String(64), nullable=False, comment=u'用户')
+    UCPtime = Column(DateTime, default=datetime.now, comment=u'时间')
+    UCPnums = Column(Float, default=0, comment=u'佣金金额')
+    UCPstatus = Column(Integer, default=0, comment=u'状态: 0: 预估佣金, 10: 已到帐, 20: 不可用')
+
+
+class CommisionToCash(BaseModel):
+    """用户佣金提现"""
+    __tablename__ = 'commiontocash'
+    CTCid = Column(String(64), primary_key=True)
+    CTCtime = Column(DateTime, default=datetime.now, comment=u'申请时间')
+    CTCamount = Column(Integer, nullable=False, comment=u'金额')
+    CTCtowxacount = Column(Boolean, default=False, comment=u'是否提款到微信,如为false提款到银行卡')
+    CTCname = Column(String(16), nullable=False, comment=u'姓名')
+    CTCbankname = Column(String(64), nullable=False, comment=u'银行')
+    CTCbankaddress = Column(String(125), comment=u'开户行')
+
+
+# class PersonalInfo(BaseModel)
 #     """账号设置个人信息"""
 #     __tablename__ = "personalinfo"
 #     PIid = Column(String(64), primary_key=True)

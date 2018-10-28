@@ -2,6 +2,8 @@
 import json
 import sys
 import os
+from decimal import Decimal
+
 from WeiDian.common.divide import Partner
 from SBase import SBase, close_session
 from WeiDian.models.model import ProductSkuKey, Product
@@ -32,13 +34,13 @@ class SProductSkuKey(SBase):
         """获取真实价格"""
         psk = self.session.query(ProductSkuKey).filter(
             ProductSkuKey.PSKid == pskid, ProductSkuKey.PSisdelete != 0).first()
-        prid = psk.PRid
-        product = self.session.query(Product).filter(Product.PRid == prid).first()
-        devide_rule = getattr(product, 'PRdevideRate', '{}')
-        divide_json = json.loads(devide_rule)
+        # prid = psk.PRid
+        # product = self.session.query(Product).filter(Product.PRid == prid).first()
+        profit = Decimal(str(getattr(psk, 'PSKprofict', 5) or 5))
         if partner:
-            return divide_json.get('one') * psk.PSKprice if divide_json else Partner().one_level_divide * psk.PSKprice
-        return psk.PSKprice
+            temp = profit * Decimal(str(Partner().one_level_divide))
+            return float(Decimal(str(psk.PSKprice)) - temp)
+        return float(Decimal(str(psk.PSKprice)))
 
     @close_session
     def update_product_sku(self, skuid, prid, ps):

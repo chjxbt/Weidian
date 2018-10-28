@@ -21,7 +21,7 @@ class MakeData():
                                          autoflush=False,
                                          bind=model.mysql_engine))
         self.user_id = self.generic_uuid()
-        self.activity_id = self.generic_uuid() 
+        self.activity_id = self.generic_uuid()
         self.media_id = self.generic_uuid()
         self.comment_id = self.generic_uuid()
         self.tag_id = self.generic_uuid()
@@ -108,10 +108,10 @@ class MakeData():
 
     def add_hotmessage(self):
         from model import HotMessage
-        for i in self.hotmessege_id: 
+        for i in self.hotmessege_id:
             hm = HotMessage()
             hm.HMid = str(i)
-            hm.PRid = random.choice(self.product_id) 
+            hm.PRid = random.choice(self.product_id)
             hm.HMstarttime = str(random.randint(2017, 2019))+'0510000000'
             hm.HMendtime = str( random.randint(2017, 2019))+'0510000000'
             hm.HMtext = 'hello 这是热文' + str(i)
@@ -176,7 +176,7 @@ class MakeData():
         user.USpassword = generate_password_hash('pass')
         self.session.add(user)
         self.session.commit()
-    
+
     def add_user_partner(self):
         from model import User
         from werkzeug.security import generate_password_hash
@@ -184,7 +184,7 @@ class MakeData():
         user.USid = 'jfksadjf-fdaslkjf-3213-31231'
         user.USname = 'part'
         user.USpassword = generate_password_hash('pass')
-        user.USlevel = 2 
+        user.USlevel = 2
         self.session.add(user)
         self.session.commit()
 
