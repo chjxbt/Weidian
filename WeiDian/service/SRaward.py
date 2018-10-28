@@ -3,7 +3,7 @@ import sys
 import os
 from SBase import SBase, close_session
 from WeiDian.models.model import Raward, TaskRaward, UserRaward, RewardToUser, RewardTransfer, RewardPacket, \
-    RewardPacketContact
+    RewardPacketContact, RewardGrantRecord
 from sqlalchemy import or_
 
 sys.path.append(os.path.dirname(os.getcwd()))
@@ -25,10 +25,9 @@ class SRaward(SBase):
 
     @close_session
     def get_all_reward(self, page_size=5, page_num=1):
-        return self.session.query(Raward).filter(Raward.RAisdelete == False) \
-                   .order_by(Raward.RAcreatetime.desc()).offset(page_size * (page_num - 1)) \
-                   .limit(page_size).all(), self.session.query(Raward). \
-                   filter(Raward.RAisdelete == False).count()
+        return (self.session.query(Raward).filter(Raward.RAisdelete == False).order_by(Raward.RAcreatetime.desc())
+                .offset(page_size * (page_num - 1)).limit(page_size).all(), self.session.query(Raward)
+                .filter(Raward.RAisdelete == False).count())
 
     @close_session
     def update_reward(self, urfilter, upinfo):
@@ -131,3 +130,10 @@ class SRaward(SBase):
     def get_is_where_packet(self, raid):
         """获取当前券在哪个集合"""
         return self.session.query(RewardPacketContact).filter(RewardPacketContact.RAid == raid).first()
+
+    @close_session
+    def get_grant_record(self, page_num, page_size):
+        """获取运营赠券记录"""
+        return (self.session.query(RewardGrantRecord).order_by(RewardGrantRecord.RGRcreatetime.desc())
+                .offset(page_size * (page_num - 1)).limit(page_size).all(), self.session.query(Raward)
+                .filter(Raward.RAisdelete == False).count())

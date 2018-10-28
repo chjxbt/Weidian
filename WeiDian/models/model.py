@@ -919,6 +919,23 @@ class RewardTransfer(BaseModel):
     def __init__(self):
         self.fields = ['RAid', 'USid', 'RAnumber', 'RFfrom', 'RFcreatetime', 'RFendtime', 'RFstatus']
 
+
+class RewardGrantRecord(BaseModel):
+    """平台赠送优惠券记录"""
+    __tablename__ = 'rewardgrantrecord'
+    RGRid = Column(String(64), primary_key=True)
+    USid = Column(String(64))               # 接收用户
+    SUid = Column(String(64))               # 运营id
+    RAid = Column(String(64))               # 优惠券id
+    RAnumber = Column(Integer)              # 赠送数量
+    RGRcreatetime = Column(String(14))      # 创建时间
+
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = ['USid', 'SUid', 'RAid', 'RAnumber', 'RGRcreatetime']
+
+
 # 奖励和任务的关联表
 class TaskRaward(BaseModel):
     __tablename__ = "taskreward"
