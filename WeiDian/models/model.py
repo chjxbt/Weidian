@@ -1108,12 +1108,12 @@ class UserCommision(BaseModel):
     __tablename__ = 'commision'
     UCid = Column(String(64), primary_key=True)
     USid = Column(String(64), nullable=False, comment=u'用户')
-    UCnum = Column(Float, default=0, comment=u'到帐金额')
-    # UCpreviewnum = Column(Integer, default=0, comment=u'预估到帐金额')   # 用户创建订单后即增加上级预估到帐
+    UCnum = Column(Float, default=0, comment=u'余额')
+    UCtotal = Column(Float, default=0, comment=u'总获得, 只做加法运算')
 
 
 class UserCommisionPriview(BaseModel):
-    """用户预估佣金流水表"""
+    """用户预估佣金流水表, 粉丝购买商品获得"""
     __tablename__ = 'usercommsionprivew'
     UCPid = Column(String(64), primary_key=True)
     OPIid = Column(String(64), comment=u'订单商品详情')  # 记录预估值的来源订单详情, 收货时方便获取
@@ -1121,6 +1121,16 @@ class UserCommisionPriview(BaseModel):
     UCPtime = Column(DateTime, default=datetime.now, comment=u'时间')
     UCPnums = Column(Float, default=0, comment=u'佣金金额')
     UCPstatus = Column(Integer, default=0, comment=u'状态: 0: 预估佣金, 10: 已到帐, 20: 不可用')
+
+
+class UserCommisionFlow(BaseModel):
+    """用户资金到帐流水表"""
+    __tablename__ = 'usercommisionflow'
+    UCfid = Column(String(64), primary_key=True)
+    USid = Column(String(64), comment=u'用户')
+    UCFnums = Column(Float, comment=u'金额')
+    UCFtype = Column(Integer, default=0, comment=u'佣金来源: 0: 销售获得, 10 邀请开店, 20: 转粉支出, 30 团队佣金 40 奖励佣金')
+    UCFtime = Column(DateTime, default=datetime.now, comment=u'时间')
 
 
 class CommisionToCash(BaseModel):

@@ -17,13 +17,12 @@ from WeiDian.common.params_require import parameter_required, validate_phone
 from WeiDian.config.enums import ORDER_STATUS, order_product_info_status, ORDER_STATUS_, OrderResend, OrderResendType
 from WeiDian.config.kd import kd_list
 from WeiDian.config.setting import QRCODEHOSTNAME, APP_ID, MCH_ID, MCH_KEY, notify_url
-from WeiDian.common.TransformToList import dict_add_models, list_add_models
 from WeiDian.common.timeformat import format_for_db, get_web_time_str
 from WeiDian.common.token_required import verify_token_decorator, is_partner, is_admin
 from WeiDian.common.import_status import import_status
 from WeiDian.control.CRaward import CRaward
 from WeiDian.models.model import OrderProductInfo, OrderInfo, OrderProductResend, UserRaward, OrderProductSendTwice, \
-    RewardTransfer, Raward, UserCommisionPriview, UserCommision
+    RewardTransfer, Raward, UserCommisionPriview, UserCommision, UserCommisionFlow
 from WeiDian.service.SOrder import SOrder
 from WeiDian.service.SProductImage import SProductImage
 from WeiDian.service.SProductSkuKey import SProductSkuKey
@@ -550,7 +549,7 @@ class COrder():
                 'OIpaystatus': 6  # 交易完成
             })
             session.query(OrderProductInfo).filter(OrderProductInfo.OIid == oiid).update({
-                'OPIstatus': 2  # 已发货
+                'OPIstatus': 2  # 交易成功
             })
             # 佣金到帐
             order_products = session.query(OrderProductInfo).filter(OrderProductInfo.OIid == oiid).all()
@@ -565,6 +564,7 @@ class COrder():
                     user_commsion = session.query(UserCommision).filter(UserCommision.USid == usid).first()
                     if user_commsion:
                         user_commsion.UCnum += user_commsion_preview.UCPnums
+                        user_commsion.UCtotal += user_commsion_preview.UCtotal
                     else:
                         new_user_commsion = UserCommision.create({
                             'UCid': str(uuid.uuid4()),
@@ -572,7 +572,13 @@ class COrder():
                             'UCnum': user_commsion_preview.UCPnums
                         })  # 佣金到帐
                         add_list.append(new_user_commsion)
-
+                    # 佣金流水表
+                    new_commsion_flow = UserCommisionFlow.create({
+                        'UCfid': str(uuid.uuid4()),
+                        'UCFnums': user_commsion_preview.UCPnums,
+                        'USid': usid
+                    })
+                    add_list.append(new_commsion_flow)
             session.add_all(add_list)
 
         response = import_status('confirm_order_success', 'OK')

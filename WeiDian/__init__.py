@@ -8,7 +8,6 @@ from flask.wrappers import Request as _Request
 import platform
 import logging
 import os
-
 logger = logging.getLogger(__name__)
 logger.setLevel(level=logging.DEBUG)
 
@@ -32,7 +31,7 @@ logger.warning("that is warning")
 from werkzeug.exceptions import HTTPException
 from WeiDian.apis.v1 import AActivity, AHotMessage, ABanner, ASearchField, ATopNav, \
     ASuperUser, AProduct, ARecommendBanner, AShoppingCart, AActivityComment, AUser, ARecommend, AOrder, AProductLike, \
-    ARecommendLike, AActivityLike, AMyCenter, AComplain, AAdImage, ATask, ABigActivity, AReward
+    ARecommendLike, AActivityLike, AMyCenter, AComplain, AAdImage, ATask, ABigActivity, AReward, ACommision
 
 # from test.test_maketoken import create_test_url
 
@@ -113,6 +112,7 @@ def register_route(app):
     app.add_url_rule('/task/<string:task>', view_func=ATask.as_view('task'))
     app.add_url_rule('/bigactivity/<string:bigactivity>', view_func=ABigActivity.as_view('bigactivity'))
     app.add_url_rule('/reward/<string:reward>', view_func=AReward.as_view('reward'))
+    app.add_url_rule('/commision/<string:comm>', view_func=ACommision.as_view('comm'))
 
 
 def create_app():
