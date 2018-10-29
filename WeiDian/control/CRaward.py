@@ -25,7 +25,8 @@ class CRaward():
         self.suser = SUser()
         from WeiDian.service.SSuperUser import SSuperUser
         self.ssuperuser = SSuperUser()
-
+        from WeiDian.control.Cuser import CUser
+        self.cuser = CUser()
 
     @verify_token_decorator
     def create_reward(self):
@@ -137,9 +138,45 @@ class CRaward():
             'RAid': raid,
             'RAnumber': ranumber
         })
+        logger.info("now to write distribution the record")
+        self.sraward.add_model('RewardGrantRecord', **{
+            'RGRid': str(uuid.uuid1()),
+            'SUid': request.user.id,
+            'USid': usid,
+            'RAid': raid,
+            'RAnumber': ranumber
+        })
         data = import_status("hand_out_reward_success", "OK")
         data['data'] = {'urid': urid}
         return data
+
+    @verify_token_decorator
+    def get_grant_record(self):
+        """获取运营发放记录"""
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'非管理员权限')
+        args = request.args.to_dict()
+        logger.debug('get grant record args : %s', args)
+        pagenum, pagesize = self.cuser.get_pagesize_pagenum(args)
+        record_list, count = self.sraward.get_grant_record(pagenum, pagesize)
+        for record in record_list:
+            if record:
+                user = self.suser.get_user_by_user_id(record.USid)
+                usname = user.USname
+                suser = self.ssuperuser.get_one_super_by_suid(record.SUid)
+                susername = suser.SUname
+                reward_info = self.sraward.get_raward_by_id(record.RAid)
+                reward_info = self.fill_reward_detail(reward_info)
+                record_str = '运营 {0} 发放给 {1} {2}优惠券 {3}张'.format(susername.encode('utf8'), usname.encode('utf8'), reward_info.rewardstr, record.RAnumber)
+                record.fill(reward_info.rewardstr, 'rewardname')
+                record.fill(usname, 'usname')
+                record.fill(susername, 'susername')
+                record.fill(record_str, 'record_str')
+                record.RGRcreatetime = get_web_time_str(record.RGRcreatetime)
+        response = import_status('messages_get_item_ok', 'OK')
+        response['data'] = record_list
+        response['count'] = count
+        return response
 
     @verify_token_decorator
     def user_receive_reward(self):

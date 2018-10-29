@@ -856,12 +856,15 @@ class Raward(BaseModel):
     RAtransfer = Column(Boolean, default=False)     # 是否允许转赠
     RAtransfereffectivetime = Column(Integer)       # 转赠有效时长(单位:小时), 超时则返回
     RAisdelete = Column(Boolean, default=False)     # 删除
+    RAreceiveimg = Column(String(255))              # 领取成功弹框图
+    RArefuseimg = Column(String(255))               # 拒绝领取弹框图
 
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['RAid', "RAtype", "RAfilter", "RAamount", "RAratio", "RAname", "RAmaxusenum", "RAmaxholdnum",
-                       "RAcreatetime", "RAendtime", "RAtransfer", "RAtransfereffectivetime"]
+        self.fields = ["RAid", "RAtype", "RAfilter", "RAamount", "RAratio", "RAname", "RAmaxusenum", "RAmaxholdnum",
+                       "RAcreatetime", "RAendtime", "RAtransfer", "RAtransfereffectivetime", "RAreceiveimg",
+                       "RArefuseimg"]
 
 class RewardToUser(BaseModel):
     """平台页面内发放给用户的优惠券"""
@@ -918,6 +921,23 @@ class RewardTransfer(BaseModel):
     @auto_createtime
     def __init__(self):
         self.fields = ['RAid', 'USid', 'RAnumber', 'RFfrom', 'RFcreatetime', 'RFendtime', 'RFstatus']
+
+
+class RewardGrantRecord(BaseModel):
+    """平台赠送优惠券记录"""
+    __tablename__ = 'rewardgrantrecord'
+    RGRid = Column(String(64), primary_key=True)
+    USid = Column(String(64))               # 接收用户
+    SUid = Column(String(64))               # 运营id
+    RAid = Column(String(64))               # 优惠券id
+    RAnumber = Column(Integer)              # 赠送数量
+    RGRcreatetime = Column(String(14))      # 创建时间
+
+    @orm.reconstructor
+    @auto_createtime
+    def __init__(self):
+        self.fields = ['USid', 'SUid', 'RAid', 'RAnumber', 'RGRcreatetime']
+
 
 # 奖励和任务的关联表
 class TaskRaward(BaseModel):
