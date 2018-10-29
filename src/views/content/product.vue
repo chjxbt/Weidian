@@ -23,7 +23,7 @@
           <div class="group-title middle-symbol">~</div>
           <el-input class="price-input" v-model="rightPrice" placeholder="最高价" size="mini" clearable></el-input>
         </div>
-        <div class="search-btn" @click="">搜 索</div>
+        <div class="search-btn" @click="searchProduct">搜 索</div>
       </div>
 
       <div class="content-table">
@@ -78,6 +78,7 @@
         productList: [],              // 商品管理的list
         productLoading: false,        // 商品管理表格加载中
         page_size: 10,                // 每页请求的数量
+        page_num: 1,                  // 第几页
         total_page: 1,                // 总页数
       }
     },
@@ -85,11 +86,34 @@
     methods: {
       // 分页点击方法
       pageChange(v) {
+        this.page_num = v;
+        this.getProduct();      // 获取商品list
+      },
+      // 顶部查找商品的按钮
+      searchProduct() {
 
-      }
+      },
+      // 获取商品list
+      getProduct() {
+        this.productLoading = true;
+        let params = {
+
+        };
+        /*axios.get(api. + '?token=' + localStorage.getItem('token'), params).then(res => {
+          if(res.data.status == 200) {
+            this.activityList = res.data.data;
+            this.total_page = Math.ceil(res.data.count / this.page_size);
+
+
+            this.productLoading = false;
+          }else{
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+          }
+        });*/
+      },
     },
     mounted() {
-
+      // this.getProduct();      // 获取商品list
     }
   }
 </script>
