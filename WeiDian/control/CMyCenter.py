@@ -276,7 +276,7 @@ class CMyCenter(BaseMyCenterControl):
         uaid = request.args.to_dict().get('uaid')
         usid = request.user.id
         logger.debug("get uaid is %s", uaid)
-        if uaid:
+        if uaid is not None:
             uafilter = {'UAid': uaid}
         else:
             uafilter = {'USid': usid,

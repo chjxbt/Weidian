@@ -899,6 +899,7 @@ class RewardPacketContact(BaseModel):
     RPCid = Column(String(64), primary_key=True)
     RAid = Column(String(64), nullable=True)    # 优惠券id
     RPTid = Column(String(64), nullable=True)   # 优惠券集合id
+    RPCnumber = Column(Integer, default=1)      # 优惠券数量
 
     @orm.reconstructor
     def __init__(self):
