@@ -167,8 +167,12 @@ class CRaward():
                 susername = suser.SUname
                 reward_info = self.sraward.get_raward_by_id(record.RAid)
                 reward_info = self.fill_reward_detail(reward_info)
-                record_str = '{0}赠送给{1} {2}优惠券{3}张'.format(susername, usname, reward_info.rewardstr, record.RAnumber)
+                record_str = '运营 {0} 发放给 {1} {2}优惠券 {3}张'.format(susername.encode('utf8'), usname.encode('utf8'), reward_info.rewardstr, record.RAnumber)
+                record.fill(reward_info.rewardstr, 'rewardname')
+                record.fill(usname, 'usname')
+                record.fill(susername, 'susername')
                 record.fill(record_str, 'record_str')
+                record.RGRcreatetime = get_web_time_str(record.RGRcreatetime)
         response = import_status('messages_get_item_ok', 'OK')
         response['data'] = record_list
         response['count'] = count

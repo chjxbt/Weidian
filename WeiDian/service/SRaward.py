@@ -135,5 +135,5 @@ class SRaward(SBase):
     def get_grant_record(self, page_num, page_size):
         """获取运营赠券记录"""
         return (self.session.query(RewardGrantRecord).order_by(RewardGrantRecord.RGRcreatetime.desc())
-                .offset(page_size * (page_num - 1)).limit(page_size).all(), self.session.query(Raward)
-                .filter(Raward.RAisdelete == False).count())
+                .offset(page_size * (page_num - 1)).limit(page_size).all(),
+                self.session.query(RewardGrantRecord).count())

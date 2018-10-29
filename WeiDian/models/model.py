@@ -856,12 +856,15 @@ class Raward(BaseModel):
     RAtransfer = Column(Boolean, default=False)     # 是否允许转赠
     RAtransfereffectivetime = Column(Integer)       # 转赠有效时长(单位:小时), 超时则返回
     RAisdelete = Column(Boolean, default=False)     # 删除
+    RAreceiveimg = Column(String(255))              # 领取成功弹框图
+    RArefuseimg = Column(String(255))               # 拒绝领取弹框图
 
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
-        self.fields = ['RAid', "RAtype", "RAfilter", "RAamount", "RAratio", "RAname", "RAmaxusenum", "RAmaxholdnum",
-                       "RAcreatetime", "RAendtime", "RAtransfer", "RAtransfereffectivetime"]
+        self.fields = ["RAid", "RAtype", "RAfilter", "RAamount", "RAratio", "RAname", "RAmaxusenum", "RAmaxholdnum",
+                       "RAcreatetime", "RAendtime", "RAtransfer", "RAtransfereffectivetime", "RAreceiveimg",
+                       "RArefuseimg"]
 
 class RewardToUser(BaseModel):
     """平台页面内发放给用户的优惠券"""

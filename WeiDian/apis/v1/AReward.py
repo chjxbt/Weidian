@@ -19,6 +19,7 @@ class AReward(Resource):
             "get_hand_out_reward": "self.creward.get_hand_out_reward()",
             "get_reward_packets": "self.creward.get_rewardpacket()",
             "get_reward_packet_detail": "self.creward.get_reward_packet_detail()",
+            "get_grant_record": "self.creward.get_grant_record()",
         }
         res = eval(apis[reward])
         return jsonify(res)
