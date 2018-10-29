@@ -17,7 +17,7 @@
             <el-table-column prop="cotype" label="平台商品佣金支出"></el-table-column>
             <el-table-column prop="cotype" label="邀请开店支出"></el-table-column>
             <el-table-column prop="cotype" label="周周奖"></el-table-column>
-            <el-table-column prop="cotype" label="月月奖"></el-table-column>
+            <el-table-column prop="cotype" label="周周奖"></el-table-column>
             <el-table-column prop="cotype" label="额外奖励"></el-table-column>
             <el-table-column prop="cotype" label="专粉佣金支出"></el-table-column>
             <el-table-column prop="cotype" label="新店主任务佣金支出"></el-table-column>

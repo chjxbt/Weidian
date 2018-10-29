@@ -53,7 +53,7 @@
       </div>
       <div class="num-list">
         <div class="num-box">
-          <p class="m-form-label two-title">团队月月奖时间：</p>
+          <p class="m-form-label two-title">团队周周奖时间：</p>
           <div class="m-item-content">
             <div class="m-item-row">
               <el-date-picker v-model="monthRewardTime" type="datetimerange" range-separator="至" value-format="yyyy-MM-dd HH:mm:ss"
@@ -65,10 +65,10 @@
       </div>
       <div class="num-list">
         <div class="num-box">
-          <p class="m-form-label two-title">团队月月奖金额：</p>
+          <p class="m-form-label two-title">团队周周奖金额：</p>
           <div class="m-item-content">
             <div class="m-item-row">
-              <el-input v-model="rewardAmount" class="m-input-s" size="mini" placeholder="请输入月月奖金额">
+              <el-input v-model="rewardAmount" class="m-input-s" size="mini" placeholder="请输入周周奖金额">
                 <template slot="append">元</template>
               </el-input>
             </div>
@@ -113,8 +113,8 @@
         limitNum: "",             // 额度条件
         salesPercentage: "",      // 销售百分比
         giftAmount: "",           // 合伙人大礼包金额
-        monthRewardTime: [],      // 团队月月奖时间
-        rewardAmount: "",         // 团队月月奖金额
+        monthRewardTime: [],      // 团队周周奖时间
+        rewardAmount: "",         // 团队周周奖金额
         activityTime: [],         // 活动期间奖项时间
       }
     },
