@@ -5,11 +5,11 @@
       <div class="search-box">
         <div class="search-group">
           <div class="group-title">订单编号：</div>
-          <el-input class="group-content search-input" v-model="orderNo" size="mini" clearable></el-input>
+          <el-input class="search-input" v-model="orderNo" size="mini" clearable></el-input>
         </div>
         <div class="search-group">
           <div class="group-title">物流单号：</div>
-          <el-input class="group-content search-input" v-model="logisticsNo" size="mini" clearable></el-input>
+          <el-input class="search-input" v-model="logisticsNo" size="mini" clearable></el-input>
         </div>
         <div class="search-group">
           <div class="group-title">下单时间：</div>
@@ -19,11 +19,11 @@
         </div>
         <div class="search-group">
           <div class="group-title">收货电话：</div>
-          <el-input class="group-content search-input" v-model="buyerTel" size="mini" clearable></el-input>
+          <el-input class="search-input" v-model="buyerTel" size="mini" clearable></el-input>
         </div>
         <div class="search-group">
           <div class="group-title">退回单号：</div>
-          <el-input class="group-content search-input" v-model="returnNo" size="mini" clearable></el-input>
+          <el-input class="search-input" v-model="returnNo" size="mini" clearable></el-input>
         </div>
         <div class="search-btn color-btn" @click="">搜 索</div>
       </div>
@@ -140,6 +140,7 @@
 </script>
 <style lang="less" rel="stylesheet/less">
   @import "../../common/css/weidian";
+  @import "../../common/css/weidian";
 
   .m-weidians {
     background-color: #fff;
@@ -158,9 +159,6 @@
           .group-title {
             font-size: 0.12rem;
             line-height: 0.2rem;
-          }
-          .group-content {
-
           }
           .search-input {
             width: 2rem;
