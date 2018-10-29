@@ -19,7 +19,7 @@ def get_db_time_str(time_info=None):
             return datetime.datetime.strptime(time_info, format_for_web_second).strftime(format_for_db)
         else:
             return datetime.datetime.strptime(time_info, format_forweb_no_second).strftime(format_for_db)
-
+    return datetime.datetime.now().strftime(format_for_db)
 
 def get_web_time_str(time_str, formattype=format_for_web_second):
 
