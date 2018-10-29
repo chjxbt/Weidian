@@ -14,6 +14,10 @@ class SUserAddress(SBase):
         return self.session.query(UserAddress).filter_by(USid=usid, UAdefault=True, UAisdelete=False).first()
 
     @close_session
+    def get_first_no_default_address(self, usid):
+        return self.session.query(UserAddress).filter_by(USid=usid, UAisdelete=False, UAdefault=False).first()
+
+    @close_session
     def get_address_list_by_usid(self, usid):
         """获取所有地址"""
         return self.session.query(UserAddress).filter_by(USid=usid, UAisdelete=False).order_by(UserAddress.UAcreatetime.desc()).all()
@@ -31,7 +35,7 @@ class SUserAddress(SBase):
     @close_session
     def delete_address(self, uaid):
         """删除地址"""
-        return self.session.query(UserAddress).filter_by(UAid=uaid).update({"UAisdelete":True})
+        return self.session.query(UserAddress).filter_by(UAid=uaid).update({"UAisdelete": True})
 
 
     @close_session
