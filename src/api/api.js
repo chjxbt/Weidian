@@ -17,7 +17,7 @@ const api={
   get_all_hot_message: title + 'hotmessage/get_all',        //获取全部热文 - 首页
   add_one_hot_message: title + 'hotmessage/add_one',        //添加热文 - 首页
   update_one_hot_message: title + 'hotmessage/update_one',  //编辑热文 - 首页
-  get_product: title + 'product/get_all',                   //模糊搜索商品
+  get_product: title + 'product/get_all',                   //模糊搜索商品 - 全部商品
   get_activity_list_by_actitle: title + 'activity/get_activity_list_by_actitle',  //模糊搜索公告/教程
   create_hbact: title + 'bigactivity/create_hbact',         // 添加首页专题（轮播图）
   create_dbact: title + 'bigactivity/create_dbact',         // 添加发现页专题（轮播图）

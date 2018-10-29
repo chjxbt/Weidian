@@ -6,7 +6,7 @@
       <p class="m-form-label" style="margin-bottom: 0.2rem">专题管理</p>
       <div class="content-table">
         <el-table :data="bannerList" border style="width: 100%" v-loading="bannerLoading">
-          <!--<el-table-column prop="baid" label="Id" width="300"></el-table-column>-->
+          <el-table-column prop="baid" label="Id" width="300"></el-table-column>
           <el-table-column prop="batext" label="专题名称" width="150">
             <template slot-scope="scope">
               <el-input v-model="scope.row.batext" placeholder="请输入专题名称" :disabled="scope.row.disabled"></el-input>
@@ -38,7 +38,7 @@
               </el-select>
             </template>
           </el-table-column>
-          <el-table-column prop="product" label="图片" width="220">
+          <el-table-column prop="product" label="图片" width="80">
             <template slot-scope="scope">
               <div @click="rowClick(scope.$index, 'img')" v-if="scope.row.showPicture">
                 <el-upload class="jump-uploader" action="https://weidian.daaiti.cn/task/upload_task_img" :show-file-list="false"
@@ -46,6 +46,9 @@
                   <img v-if="scope.row.balongimg" :src="scope.row.balongimg" class="jump-img">
                   <i v-else class="el-icon-plus jump-img"></i>
                 </el-upload>
+              </div>
+              <div @click="rowClick(scope.$index, 'img')" v-if="!scope.row.showPicture">
+                <span style="color: #4169E1" @click="productDialog = true">绑定推文</span>
               </div>
             </template>
           </el-table-column>
@@ -68,6 +71,31 @@
             </template>
           </el-table-column>
         </el-table>
+        <!--绑定推文-->
+        <el-dialog title="绑定推文" :visible.sync="productDialog" width="5rem">
+          <div class="send-box">
+            <el-table :data="activitiesList" border style="width: 100%" v-loading="activitiesLoading">
+              <el-table-column prop="rptname" label="集合名称">
+                <template slot-scope="scope">
+                  <!--<el-input class="search-input" v-model="scope.row.rptname" :disabled="scope.row.disabled"></el-input>-->
+                </template>
+              </el-table-column>
+              <el-table-column prop="rptid" label="管理" width="160">
+                <template slot-scope="scope">
+                  <!--<el-button type="text" v-if="!scope.row.disabled" @click="addCollection('save', scope)">保存</el-button>-->
+                  <!--<el-button type="text" v-if="scope.row.disabled" @click="deleteCollection(scope)">删除</el-button>-->
+                </template>
+              </el-table-column>
+            </el-table>
+            <div class="add-btn" @click="addProduct">+</div>
+
+            <div slot="footer" class="dialog-footer">
+              <el-button class="at-img-dialog-btn" @click="productDialog = false">取 消</el-button>
+              <el-button class="at-img-dialog-btn btn-color" type="primary" @click="productDialog = false">确 定</el-button>
+            </div>
+          </div>
+        </el-dialog>
+
         <div style="display: flex; margin-top: 0.1rem">
           <div class="add-box" style="flex: 1;">
             <el-tooltip class="item" effect="light" content="添加专题" placement="right">
@@ -191,7 +219,6 @@
         </el-tooltip>
         <div class="banner-btn" @click="toBannerClick('2')" v-if="activityToBanner" :disabled="true">绑定专题</div>
       </div>
-
 
       <div>
         <div class="m-form-item">
@@ -380,13 +407,13 @@
           { value: '1', label: '专题' },
           { value: '2', label: '商品' }
         ],
-        activityJumpToValue: '',    // 推文-跳转类型选择后具体的跳转id
-        activityJumpToList: [],     // 推文-跳转类型选择后可选择的跳转项
-        activityJumpToBannerList: [],     // 推文-跳转类型选择后可选择的跳转项
-        activityJumpToProductList: [],     // 推文-跳转类型选择后可选择的跳转项
-        activityActivityTime: [],   // 推文-活动时间
-        acidTemp: "",             // 用来暂存acid
-        bannerToList: [           // 专题跳转去向的可选择项
+        activityJumpToValue: '',            // 推文-跳转类型选择后具体的跳转id
+        activityJumpToList: [],             // 推文-跳转类型选择后可选择的跳转项
+        activityJumpToBannerList: [],       // 推文-跳转类型选择后可选择的跳转项
+        activityJumpToProductList: [],      // 推文-跳转类型选择后可选择的跳转项
+        activityActivityTime: [],           // 推文-活动时间
+        acidTemp: "",                       // 用来暂存acid
+        bannerToList: [                     // 专题跳转去向的可选择项
           { value: '0', label: '长图' },
           { value: '1', label: '专题页' }
         ],
@@ -396,6 +423,9 @@
         page_size: 5,     // 推文每页请求的数量
         total_page: 1,    // 推文 - 总页数
         tnid: "",         // 暂存导航栏的tnid
+        productDialog: false,         // 绑定商品的dialog
+        activitiesList: [],           // 专题绑定推文list
+        activitiesLoading: false,     // 专题绑定推文表格加载中
       }
     },
     components:{ pageTitle, Pagination, wTab, tags },
@@ -476,7 +506,14 @@
       activityTimeClick(scope) {
         this.activityList = this.activityList.concat();
       },
-
+      // 绑定推文
+      addProduct() {
+        // let index = this.activitiesList.length;
+        // this.activitiesList[index] = {};
+        // this.activitiesList[index].rptname = "";
+        // this.activitiesList[index].disabled = false;
+        // this.activitiesList = this.activitiesList.concat();
+      },
       // 添加banner的 + 号按钮
       addBanner() {
         this.addBannerBtn = false;
@@ -1365,5 +1402,23 @@
     font-size: 0.12rem;
     margin: 0.22rem 0 0 0.1rem;
     border-bottom: 1px solid #4169E1;
+  }
+  .send-box {
+    .add-btn {
+      font-size: 0.18rem;
+      margin: auto 0.1rem;
+    }
+    .dialog-footer {
+      text-align: right;
+      margin: 0.2rem 0.1rem 0 0;
+      .at-img-dialog-btn {
+        padding: 0.05rem 0.1rem;
+        font-size: 14px;
+      }
+      .btn-color {
+        border-color: @btnActiveColor;
+        background-color: @btnActiveColor;
+      }
+    }
   }
 </style>
