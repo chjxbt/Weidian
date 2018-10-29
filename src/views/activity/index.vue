@@ -31,12 +31,31 @@
         <div class="input-box">
           <div class="box-text" style="width: 0.4rem">数 量：</div>
           <div class="box-right">
-            <el-input v-model="discountNum" style="width: 2.3rem" placeholder="请输入赠送的数量">
+            <el-input v-model="discountNum" style="width: 2.3rem" placeholder="请输入赠送的数量" clearable>
               <template slot="append">张</template>
             </el-input>
           </div>
-          <div class="coupons-btn" style="margin-left: 1.5rem" @click="giveDiscount">发 放</div>
+          <div class="coupons-btn" style="margin-left: 1rem" @click="giveDiscount">赠 送</div>
+          <div class="blue-btn coupons-text" @click="getGrantRecord">赠券记录</div>
         </div>
+
+        <!--运营赠券记录-->
+        <el-dialog title="运营赠券记录" :visible.sync="recordDialog" width="7rem">
+          <div class="content-table" style="margin-bottom: -0.2rem">
+            <el-table :data="recordList" border style="width: 100%" v-loading="recordLoading">
+              <el-table-column prop="usname" label="用户名"></el-table-column>
+              <el-table-column prop="rewardname" label="优惠券"></el-table-column>
+              <el-table-column prop="ranumber" label="数量（张）" width="100"></el-table-column>
+              <el-table-column prop="susername" label="操作人"></el-table-column>
+              <el-table-column prop="rgrcreatetime" label="操作时间" width="160"></el-table-column>
+            </el-table>
+            <Pagination class="page-box" :total="total_page" @pageChange="pageChangeR"></Pagination>
+          </div>
+
+          <div slot="footer" class="dialog-footer">
+            <el-button class="at-img-dialog-btn btn-color" type="primary" @click="recordDialog = false">关闭</el-button>
+          </div>
+        </el-dialog>
       </div>
 
       <div class="coupons-box">
@@ -160,7 +179,7 @@
         </div>
       </div>
       <!--添加集合-->
-      <el-dialog title="新建优惠券集合" :visible.sync="addDialog" width="4rem">
+      <el-dialog title="新建优惠券集合" :visible.sync="addDialog" width="5rem">
         <div class="send-box">
           <el-table :data="collectionList" border style="width: 100%; margin-bottom: 0.1rem;" v-loading="discountsLoading">
             <el-table-column prop="rptname" label="集合名称">
@@ -208,10 +227,13 @@
         usid: "",                 // 给个人发放优惠券时选中的用户id
         userList: [],             // 给个人发放优惠券时供选择的用户list
         discountNum: "",          // 给个人发放优惠券时选中的用户id
+        recordDialog: false,      // 运营赠券记录
+        recordList: [],           // 运营赠券记录表格
+        recordLoading: false,     // 运营赠券记录表格加载中
         discountsList: [],        // 平台优惠list
         discountsLoading: false,  // 平台优惠list加载中
         editDiscounts: false,     // 编辑优惠
-        handOut: false,           // 平台内发放优惠券
+        handOut: true,           // 平台内发放优惠券
         discountsName: "",        // 优惠名称
         ramaxusenum: "",          // 允许叠加使用的张数
         ramaxholdnum: "",         // 同种券最大可拥有数量
@@ -264,11 +286,15 @@
           this.handOut = true;
         }
       },
-
       // 分页点击方法
       pageChange(v) {
         this.page_num = v;
         this.getAllRaward();      // 获取所有优惠券
+      },
+      // 分页点击方法 - 运营赠券记录
+      pageChangeR(v) {
+        this.page_num = v;
+        this.getGrantRecord();    // 运营赠券记录
       },
       // 输入值发生变化时调用 - 查找用户
       remoteMethod(query) {
@@ -285,6 +311,20 @@
         }else {
           this.userList = [];
         }
+      },
+      // 获取运营赠券记录
+      getGrantRecord() {
+        this.recordDialog = true;
+        this.recordLoading = true;
+        axios.get(api.get_grant_record + '?token=' + localStorage.getItem('token') + "&page_num=" + this.page_num + "&page_size=" + this.page_size).then(res => {
+          if(res.data.status == 200){
+            this.recordList = res.data.data;
+            this.total_page = Math.ceil(res.data.count / this.page_size);
+            this.recordLoading = false;
+          }else{
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+          }
+        });
       },
       // 给个人发放优惠券
       giveDiscount() {
@@ -562,6 +602,9 @@
     display: flex;
     margin-bottom: 0.1rem;
   }
+  .coupons-text {
+    margin: 0.07rem 0 0 0.7rem;
+  }
   .coupons-btn {
     color: #ffffff;
     font-size: 0.12rem;
@@ -654,7 +697,7 @@
   }
   .dialog-footer {
     text-align: right;
-    margin: 0.1rem 0.2rem 0 0;
+    margin: 0.1rem 0.1rem 0 0;
     .at-img-dialog-btn {
       padding: 0.05rem 0.1rem;
       font-size: 14px;
