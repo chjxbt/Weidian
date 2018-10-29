@@ -276,11 +276,12 @@ class CMyCenter(BaseMyCenterControl):
         uaid = request.args.to_dict().get('uaid')
         usid = request.user.id
         logger.debug("get uaid is %s", uaid)
-        if uaid:
+        if uaid is not None:
             uafilter = {'UAid': uaid}
         else:
             uafilter = {'USid': usid,
-                        'UAdefault': True
+                        'UAdefault': True,
+                        'UAisdelete': False
                         }
         address = self.suesraddress.get_one_or_default_address(uafilter)
         if not address:
@@ -336,17 +337,19 @@ class CMyCenter(BaseMyCenterControl):
         logger.debug("this is address args %s", args)
         data = request.json
         logger.debug("this is address data %s", data)
+        uaid = args.get('uaid')
+        uadefault = data.get("UAdefault")
         try:
             exist_default = self.suesraddress.get_default_address_by_usid(request.user.id)
             parameter_required("uaid", "areaid", "UAname", "UAphone", "UAtext", "UAdefault")
-            if data.get("UAdefault") is True and exist_default:
+            if uadefault == True and exist_default:
                 self.suesraddress.change_default_address_status(exist_default.UAid, {'UAdefault': False})
-            update_address = self.suesraddress.update_address(args["uaid"], {"areaid": data.get("areaid"),
-                                                                             "UAname": data.get("UAname"),
-                                                                             "UAphone": data.get("UAphone"),
-                                                                             "UAtext": data.get("UAtext"),
-                                                                             "UAdefault":data.get("UAdefault")
-                                                                             })
+            update_address = self.suesraddress.update_address(uaid, {"areaid": data.get("areaid"),
+                                                                    "UAname": data.get("UAname"),
+                                                                    "UAphone": data.get("UAphone"),
+                                                                    "UAtext": data.get("UAtext"),
+                                                                    "UAdefault": uadefault
+                                                                    })
             logger.info("update address succress ")
             if not update_address:
                 raise SYSTEM_ERROR(u'数据更新错误')
@@ -359,7 +362,7 @@ class CMyCenter(BaseMyCenterControl):
 
     @verify_token_decorator
     def del_address(self):
-        if not hasattr(request, 'user'):
+        if is_tourist():
             return TOKEN_ERROR(u"未登录, 或token错误")
         data = request.json
         logger.info("this is del address data %s", data)
@@ -369,6 +372,11 @@ class CMyCenter(BaseMyCenterControl):
             del_address = self.suesraddress.delete_address(data.get("UAid"))
             if not del_address:
                 return SYSTEM_ERROR
+            exist_default = self.suesraddress.get_default_address_by_usid(request.user.id)
+            if not exist_default:
+                no_default_address = self.suesraddress.get_first_no_default_address(request.user.id)
+                if no_default_address:
+                    self.suesraddress.change_default_address_status(no_default_address.UAid, {'UAdefault': True})
             response = import_status("delete_useraddress_success", "OK")
             response['data'] = {"uaid": data.get("UAid")}
             return response

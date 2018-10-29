@@ -15,7 +15,7 @@ DB_PARAMS = "{0}://{1}:{2}@{3}/{4}?charset={5}".format(
     cfg.host,
     cfg.database,
     cfg.charset)
-mysql_engine = create_engine(DB_PARAMS, echo=False)
+mysql_engine = create_engine(DB_PARAMS, echo=False, pool_size=10, max_overflow=20, pool_pre_ping=True)
 
 
 class Activity(BaseModel):
@@ -856,15 +856,15 @@ class Raward(BaseModel):
     RAtransfer = Column(Boolean, default=False)     # 是否允许转赠
     RAtransfereffectivetime = Column(Integer)       # 转赠有效时长(单位:小时), 超时则返回
     RAisdelete = Column(Boolean, default=False)     # 删除
-    RAreceiveimg = Column(String(255))              # 领取成功弹框图
-    RArefuseimg = Column(String(255))               # 拒绝领取弹框图
+    RAreceiveimg = Column(String(255))              # 领取优惠券弹框图
+    RAinvalidimg = Column(String(255))               # 优惠券失效弹框图
 
     @orm.reconstructor
     @auto_createtime
     def __init__(self):
         self.fields = ["RAid", "RAtype", "RAfilter", "RAamount", "RAratio", "RAname", "RAmaxusenum", "RAmaxholdnum",
                        "RAcreatetime", "RAendtime", "RAtransfer", "RAtransfereffectivetime", "RAreceiveimg",
-                       "RArefuseimg"]
+                       "RAinvalidimg"]
 
 class RewardToUser(BaseModel):
     """平台页面内发放给用户的优惠券"""
@@ -899,6 +899,7 @@ class RewardPacketContact(BaseModel):
     RPCid = Column(String(64), primary_key=True)
     RAid = Column(String(64), nullable=True)    # 优惠券id
     RPTid = Column(String(64), nullable=True)   # 优惠券集合id
+    RPCnumber = Column(Integer, default=1)      # 优惠券数量
 
     @orm.reconstructor
     def __init__(self):

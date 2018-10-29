@@ -593,10 +593,11 @@ class CRaward():
         try:
             reward_list = []
             for reward in reward_info:
-                reward_detail = self.sraward.get_raward_by_id(reward.RAid)
-                reward_detail = self.fill_reward_detail(reward_detail, total_price)
-                reward.fill(reward_detail, 'reward_detail')
-                reward = dict(reward)
+                if reward:
+                    reward_detail = self.sraward.get_raward_by_id(reward.RAid)
+                    reward_detail = self.fill_reward_detail(reward_detail, total_price)
+                    reward.fill(reward_detail, 'reward_detail')
+                    reward = dict(reward)
 
                 lower_reward = {}
                 for i, j in reward.items():
@@ -605,34 +606,35 @@ class CRaward():
                 lower_reward['urcreatetime'] = get_web_time_str(lower_reward.get('urcreatetime'))
                 reward_list.append(lower_reward)
             for gift in gift_reward_info:
-                gift = self.fill_transfer_detail(gift)
-                gift_detail = self.sraward.get_raward_by_id(gift.RAid)
-                gift_detail = self.fill_reward_detail(gift_detail, total_price)
-                # 检验转赠券在各情况下的有效性
-                gift_detail.valid = gift_detail.valid and gift.transfer_valid
-                gift.fill(gift_detail, 'reward_detail')
+                if gift not in ['', [], {}, None]:
+                    gift = self.fill_transfer_detail(gift)
+                    gift_detail = self.sraward.get_raward_by_id(gift.RAid)
+                    gift_detail = self.fill_reward_detail(gift_detail, total_price)
+                    # 检验转赠券在各情况下的有效性
+                    gift_detail.valid = gift_detail.valid and gift.transfer_valid
+                    gift.fill(gift_detail, 'reward_detail')
 
-                gift.RFcreatetime = get_web_time_str(gift.RFcreatetime)
-                gift.RFendtime = get_web_time_str(gift.RFendtime)
-                gift_dict = {
-                    'urid': gift.RFid,
-                    'usid': gift.USid,
-                    'raid': gift.RAid,
-                    'ranumber': gift.RAnumber,
-                    'urcreatetime': gift.RFcreatetime,
-                    'reendtime': gift.RFendtime,
-                    'rffrom': gift.RFfrom,
-                    'rfstatus': gift.RFstatus,
-                    'urusetime': gift.RFusetime,
-                    'remarks': gift.remarks,
-                    'tag': gift.tag,
-                    'usheader': gift.usheader,
-                    'reward_detail': gift.reward_detail
-                }
-                reward_list.append(gift_dict)
-
-            reward_info = filter(lambda r: r.get('reward_detail')['RAtype'] in [0, 2], reward_list)
-            reward_info = filter(lambda k: k.get('ranumber') != 0, reward_info)
+                    gift.RFcreatetime = get_web_time_str(gift.RFcreatetime)
+                    gift.RFendtime = get_web_time_str(gift.RFendtime)
+                    gift_dict = {
+                        'urid': gift.RFid,
+                        'usid': gift.USid,
+                        'raid': gift.RAid,
+                        'ranumber': gift.RAnumber,
+                        'urcreatetime': gift.RFcreatetime,
+                        'reendtime': gift.RFendtime,
+                        'rffrom': gift.RFfrom,
+                        'rfstatus': gift.RFstatus,
+                        'urusetime': gift.RFusetime,
+                        'remarks': gift.remarks,
+                        'tag': gift.tag,
+                        'usheader': gift.usheader,
+                        'reward_detail': gift.reward_detail
+                    }
+                    reward_list.append(gift_dict)
+            if reward_list not in [None, [], {}]:
+                reward_info = filter(lambda r: r.get('reward_detail')['RAtype'] in [0, 2], reward_list)
+                reward_info = filter(lambda k: k.get('ranumber') != 0, reward_info)
 
             data = import_status('messages_get_item_ok', "OK")
             data['data'] = reward_info
@@ -716,28 +718,30 @@ class CRaward():
         filter_str = '满{0}-{1}新衣币'
         ratio_str = '佣金上涨{0}%'
         amout_str = '{0}元无门槛新衣币'
-        if re.match(r'^[0-2]$', str(raward.RAtype)):
-            if raward.RAtype == 0:
-                reward_str = filter_str.format(int(raward.RAfilter), int(raward.RAamount))
-            elif raward.RAtype == 1:
-                reward_str = ratio_str.format(int(raward.RAratio))
+        price_use = False
+        if raward not in ['', None, [], {}]:
+            if re.match(r'^[0-2]$', str(raward.RAtype)):
+                if raward.RAtype == 0:
+                    reward_str = filter_str.format(int(raward.RAfilter), int(raward.RAamount))
+                elif raward.RAtype == 1:
+                    reward_str = ratio_str.format(int(raward.RAratio))
+                else:
+                    reward_str = amout_str.format(int(raward.RAamount))
+            zh_ratype = REWARD_TYPE.get(str(raward.RAtype))
+            raward.fill(zh_ratype, 'zh_ratype')
+            raward.fill(reward_str, 'rewardstr')
+            time_valid = raward.RAcreatetime < get_db_time_str() < raward.RAendtime and not raward.RAisdelete
+            if price:
+                if raward.RAtype == 0:
+                    price_use = price > raward.RAfilter
+                elif raward.RAtype == 2:
+                    price_use = True
+                valid = time_valid and price_use
             else:
-                reward_str = amout_str.format(int(raward.RAamount))
-        zh_ratype = REWARD_TYPE.get(str(raward.RAtype))
-        raward.fill(zh_ratype, 'zh_ratype')
-        raward.fill(reward_str, 'rewardstr')
-        time_valid = raward.RAcreatetime < get_db_time_str() < raward.RAendtime
-        if price:
-            if raward.RAtype == 0:
-                price_use = price > raward.RAfilter
-            elif raward.RAtype == 2:
-                price_use = True
-            valid = time_valid and price_use
-        else:
-            valid = time_valid
-        raward.fill(valid, 'valid')
-        raward.RAendtime = get_web_time_str(raward.RAendtime)
-        raward.RAcreatetime = get_web_time_str(raward.RAcreatetime)
+                valid = time_valid
+            raward.fill(valid, 'valid')
+            raward.RAendtime = get_web_time_str(raward.RAendtime)
+            raward.RAcreatetime = get_web_time_str(raward.RAcreatetime)
         return raward
 
     def fill_transfer_detail(self, raward):

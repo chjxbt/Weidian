@@ -13,7 +13,7 @@ class SRaward(SBase):
 
     @close_session
     def get_raward_by_id(self, raid):
-        return self.session.query(Raward).filter(Raward.RAid == raid, Raward.RAisdelete == False).first()
+        return self.session.query(Raward).filter(Raward.RAid == raid).first()
 
     @close_session
     def get_raward_by_tlid(self, tlid):
