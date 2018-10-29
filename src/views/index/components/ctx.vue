@@ -48,6 +48,9 @@
   import mLabel from '../../../components/common/mLabel';
   // import iconList from '../../../components/common/iconList';
   import wxapi from '../../../common/js/mixins';
+  import api from '../../../api/api';
+  import axios from 'axios';
+  import {Toast} from 'mint-ui';
     export default {
       mixins: [wxapi],
       data(){
@@ -89,7 +92,26 @@
           wxapi.previewImage(options);
         },
         iconClick(v){
-          this.$emit('iconClick', v, this.index);
+          if(v == 0) {
+            let acid = this.list.acid;
+            axios.post(api.ac_like+'?token=' +  localStorage.getItem('token'),{ acid: acid }).then(res => {
+              if(res.data.status == 200){
+                if(this.iconList[0].alreadylike) {
+                  this.iconList[0].name -= 1;
+                  this.iconList[0].alreadylike = false;
+                  Toast({ message: res.data.message,duration: 800, className: 'm-toast-warning' });
+                }else if(!this.iconList[0].alreadylike) {
+                  this.iconList[0].name += 1;
+                  this.iconList[0].alreadylike = true;
+                  Toast({ message: res.data.message, duration: 800, className: 'm-toast-success' });
+                }
+              }else{
+                Toast({ message: res.data.message, className: 'm-toast-fail' });
+              }
+            });
+          }else {
+            this.$emit('iconClick', v, this.index);
+          }
         },
         showMoreText(v){
           this.$emit('showMoreText',v,this.index)

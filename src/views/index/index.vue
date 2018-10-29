@@ -284,7 +284,7 @@
                 this.init();
                 // this.$router.push('/index/index');
               }else{
-                Toast({ message: res.data.message, className: 'm-toast-fail' });
+                Toast({ message: res.data.message, className: 'm-toast-warning' });
               }
             });
           }
@@ -652,7 +652,7 @@
             }
           },
           /*点赞*/
-          changeLike(id,index){
+          /*changeLike(id,index){
             let arr = this.activity_list[index].icon[0];
               axios.post(api.ac_like+'?token=' +  localStorage.getItem('token'),{
                   acid:id
@@ -675,7 +675,7 @@
                     Toast({ message: res.data.message, className: 'm-toast-fail' });
                   }
               })
-          },
+          },*/
           /*搜索*/
           inputClick(){
             this.search = false;
@@ -738,7 +738,7 @@
           iconClick(v,list){
             switch (v){
               case 0:
-                this.changeLike(this.activity_list[list].acid,list);
+                // this.changeLike(this.activity_list[list].acid,list);
                 break;
               case 1:
                 // this.show_fixed = true;

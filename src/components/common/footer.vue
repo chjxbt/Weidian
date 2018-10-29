@@ -30,7 +30,7 @@
           }
         },
       mounted(){
-        console.log(this.$store.state.tabbar,'asdasdasd');
+        // console.log(this.$store.state.tabbar,'asdasdasd');
       },
       computed:{
         select(){

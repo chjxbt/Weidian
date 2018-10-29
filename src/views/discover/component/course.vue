@@ -230,7 +230,7 @@
             if (hour < 10) hour = "0" + hour;
             if (minu < 10) minu = "0" + minu;
             if (sec < 10) sec = "0" + sec;
-            let time = ''+year + month + date + hour + minu + sec;
+            let time = '' + year + month + date + hour + minu + sec;
             let time1 = time.slice(0,4);// 当前年份
             let time2 = time.slice(4,8);// 当前日期
 
