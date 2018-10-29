@@ -70,6 +70,7 @@ const api={
   get_transfer_reward: title +'/reward/get_transfer_reward',//领取优惠券
   delete_order: title + '/order/delete_order',//删除订单
   cancle_order: title + '/order/cancle_order',//取消订单
+  apply_refund: title + '/order/apply_refund',///退换申请
 };
 
 export default api

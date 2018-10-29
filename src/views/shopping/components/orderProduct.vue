@@ -26,7 +26,7 @@
           <div class="product-info">
             <div class="product-name m-ft-24 m-black">
               <span class="name">{{item.opiproductname}}</span>
-              <span @click.stop="changeProduct(index)">退/换</span>
+              <span @click.stop="changeProduct(index)" v-if="item.oipaystatus > 5">退/换</span>
             </div>
             <div class="product-params m-ft-24 m-black tl">
               <template v-for="(i,j) in item.pskproperkey">
@@ -65,7 +65,7 @@
         <div class="m-change-modal-content">
           <p class="m-change-head">请选择</p>
           <ul class="m-change-ul">
-            <li @click.stop="changeState">
+            <li @click.stop="changeState(0)">
               <span class="m-icon"></span>
               <div class="m-change-text">
                 <p>退货退款</p>
@@ -73,7 +73,7 @@
               </div>
               <span class="m-icon-more"> </span>
             </li>
-            <li>
+            <li @click.stop="changeState(1)">
               <span class="m-icon"></span>
               <div class="m-change-text">
                 <p>换货</p>
@@ -105,6 +105,8 @@
 
 <script>
   import { Toast } from 'mint-ui';
+  import axios from 'axios';
+  import api from '../../../api/api';
   export default {
     data() {
       return {
@@ -137,10 +139,17 @@
         this[v] =false;
         this.select = null
       },
-      changeState(){
-          // this.$router.push({path:'/returnProduct',query:{oiid:this.order.oiid,prid:this.select.prid}})
-        this.show_change =false;
-        this.show_modal =true
+      changeState(n){
+        axios.post(api.apply_refund + '?token=' +localStorage.getItem('token'),{
+          opiid:this.select.opiid,
+          oprtype:n
+        }).then(res => {
+          if(res.data.status == 200){
+            this.show_change =false;
+            this.show_modal =true
+          }
+        })
+
       }
     },
     created() {
