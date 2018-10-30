@@ -2,8 +2,13 @@
   <div v-if="product_info != null">
     <!--/static/images/icon-more.png-->
     <!--<span class="back-img" @click="backPage"></span>-->
-    <!--<img src="http://dummyimage.com/750x750" class="product-img">-->
-    <img :src="product_info.prmainpic"  class="product-img">
+
+    <mt-swipe :auto="0">
+      <mt-swipe-item class="product-swipe" v-for="item in product_info.images" :key="item.piid">
+        <img :src="item.piurl" class="product-img">
+      </mt-swipe-item>
+    </mt-swipe>
+
     <div class="product-activity m-ft-26 m-bg-main-color">
       <span class="activity-text-one">限时特卖</span>
       <span class="activity-text-two tr">距离结束仅剩</span>
@@ -94,8 +99,8 @@
     </div>
     <div class="product-detail-text m-ft-22 m-grey-color">—— 详情 ——</div>
     <ul style="margin-bottom: 15%">
-      <li v-for="brand in product_info.images">
-        <img v-lazy="brand.piurl"  class="detail-img">
+      <li v-for="brand in brandList">
+        <img v-lazy="brand"  class="detail-img">
       </li>
     </ul>
     <div class="to-buy">
@@ -158,7 +163,6 @@
                              "http://img0.imgtn.bdimg.com/it/u=12035839,3404122673&fm=26&gp=0.jpg", "http://image3.suning.cn/content/catentries/00000000010295/000000000102955143/fullimage/000000000102955143_2f.jpg"],
         brandList: [],
         product_info:null,
-        // brandList: [{img: "http://pic1.win4000.com/wallpaper/8/599d1d60036a2.jpg"}, {img: "http://bbsfiles.vivo.com.cn/vivobbs/attachment/forum/201804/25/145712qjc3gwcbtvgoct9w.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/57eb314a3c143.jpg"}, {img: "http://pic1.win4000.com/wallpaper/8/57eb322625b50.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc06f60ecf.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc080092c6.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc07478a17.jpg"}, {img: "http://pic1.win4000.com/wallpaper/6/59bcc08474821.jpg"}]
         params_options:null,
         sku:[],
         is_vip:false,
@@ -198,13 +202,11 @@
             // this.show_invite = true;
           }
         })
-
       },
       getInfo(){
-        axios.get(api.get_one_product,{
-          params:{
-            prid:this.$route.query.prid,
-            token:localStorage.getItem('token')
+        axios.get(api.get_one_product,{ params: {
+            prid: this.$route.query.prid,
+            token: localStorage.getItem('token')
           }
         }).then(res => {
           if(res.data.status == 200){
@@ -324,15 +326,13 @@
         let that = this;
         let imgurl = "https://html.weidiango.com/FpwgKaxAfZdnsiIyDV2ZCbWLNmt8";
         this.$http.get(imgurl).then(function(response){
-          // console.log('success', response.data);   // response.data中获取ResponseData实体
-
           that.brandList = response.data.split("data-src=");
           that.brandList.splice(0, 1);
           for(let i = 0; i < that.brandList.length; i ++) {
             that.brandList[i] = that.brandList[i].match(/"(\S*)" data-ext="jpeg"/)[1];
             that.brandList[i] = "https://img.weidiango.com/" + that.brandList[i];
           }
-          console.log(that.brandList)
+          console.log(that.brandList);
         },function(response){
           console.log('error', response);   // 发生错误
         });
@@ -384,10 +384,23 @@
     background: url("/static/images/icon-list-left.png") no-repeat;
     background-size: 100% 100%;
   }
-  .product-img {
-    max-width: 750px;
-    max-height: 750px;
-    margin-bottom: -6px;
+  .product-swipe {
+    width: 750px;
+    height: 750px;
+    .product-img {
+      max-width: 750px;
+      max-height: 750px;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+    }
+  }
+  .mint-swipe {
+    width: 750px;
+    height: 750px;
   }
   .product-activity {
     width: 750px;
