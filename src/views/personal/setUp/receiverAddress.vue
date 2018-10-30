@@ -1,9 +1,9 @@
 <template>
     <div class="m-receiverAddress">
       <div v-if="address_list.length > 0">
-        <template v-for="(item,index) in address_list">
+        <template v-for="(item, index) in address_list">
           <div class="m-one-address" @click="sureClick(item)">
-            <span class="m-check-icon" :class="item.uadefault?'active':''"></span>
+            <span class="m-check-icon" :class="item.uadefault ? 'active': ''"></span>
             <div class="m-address-info">
               <div class="m-address-row m-address-row1 ">
                 <span>{{item.uaname}}</span>
@@ -14,7 +14,7 @@
                   <span class="m-mo" v-if="item.uadefault">[ 默认地址 ]</span>
                   <span>{{item.area.province}}{{item.area.city}}{{item.area.area}}{{item.uatext}}</span>
                 </div>
-                <span class="m-edit" @click.stop="addressClick($event,item)">编辑</span>
+                <span class="m-edit" @click.stop="addressClick($event, item)">编辑</span>
               </div>
             </div>
           </div>
@@ -35,96 +35,90 @@
   import api from '../../../api/api';
   import common from '../../../common/js/common';
     export default {
-        data() {
-            return {
-              have_address:true,
-              address_list:[],
-              area:{
-                province:'',
-                city:'',
-                area:''
-              },
-              isOrder:false
-            }
+      data() {
+        return {
+          have_address: true,
+          address_list: [],
+          area: {
+            province: '',
+            city: '',
+            area: ''
+          },
+          isOrder: false
+        }
+      },
+      components: { },
+      methods: {
+        addressClick(e, v){
+          console.log(v)
+          if(v){
+            this.$router.push({
+              path: '/editAddress',
+              query: {
+                UAdefault: v.uadefault,
+                UAname: v.uaname,
+                UAphone: v.uaphone,
+                UAtext: v.uatext,
+                UAid: v.uaid,
+                province: v.area.province,
+                city: v.area.city,
+                area: v.area.area,
+                provinceid: v.area.provinceid,
+                cityid: v.area.cityid,
+                areaid: v.area.areaid,
+                order: this.$route.query.order,
+                linkUrl: this.$route.query.order ? 'receiverAddress': ''
+              }
+            })
+          }else{
+            this.$router.push({ path: '/editAddress', query: { order: this.$route.query.order, linkUrl: this.$route.query.order ? 'receiverAddress': '' }})
+          }
         },
-        components: {},
+        getInfo(){
+          axios.get(api.get_address + "?token=" + localStorage.getItem('token')).then(res => {
+              if(res.data.status == 200){
+                let arr = [];
+                let _arr = [];
+                for(let i = 0; i < res.data.data.length; i ++){
+                  res.data.data[i].area = {
+                    province: '',
+                    city: '',
+                    area: ''
+                  };
+                  if(res.data.data[i].uadefault){
+                    arr.push(res.data.data[i])
+                  }else{
+                    _arr.push(res.data.data[i])
+                  }
+
+                }
+                arr = arr.concat(_arr);
+                for(let i = 0; i < arr.length; i ++){
+                    arr[i].area.province = arr[i].addressinfo[2].name;
+                    arr[i].area.area = arr[i].addressinfo[0].name;
+                    arr[i].area.city = arr[i].addressinfo[1].name;
+                    arr[i].area.provinceid = arr[i].addressinfo[2].provinceid;
+                    arr[i].area.areaid = arr[i].addressinfo[0].areaid;
+                    arr[i].area.cityid = arr[i].addressinfo[1].cityid;
+                }
+                this.address_list = [].concat(arr);
+              }
+          })
+        },
+        sureClick(item){
+          if(this.isOrder){
+            this.$router.push({ path: '/submitOrder', query: { UAid: item.uaid, order: this.$route.query.order }});
+          }
+        }
+      },
       mounted(){
-          this.getInfo();
+        this.getInfo();
         common.changeTitle('收货地址');
+
         if(this.$route.query.order){
           this.isOrder = true;
         }
-      },
-        methods: {
-          addressClick(e,v){
-            if(v){
-              this.$router.push({
-                path:'/editAddress',
-                query:{
-                  UAdefault: v.uadefault,
-                  UAname:v.uaname,
-                  UAphone:v.uaphone,
-                  UAtext:v.uatext,
-                  UAid:v.uaid,
-                  province:v.area.province,
-                  city:v.area.city,
-                  area:v.area.area,
-                  provinceid:v.area.provinceid,
-                  cityid:v.area.cityid,
-                  areaid:v.area.areaid,
-                  order:this.$route.query.order,
-                  linkUrl: this.$route.query.order? 'receiverAddress':''
-                }
-              })
-            }else{
-              this.$router.push({path:'/editAddress',query:{order:this.$route.query.order,linkUrl: this.$route.query.order? 'receiverAddress':''}})
-            }
-          },
-          getInfo(){
-            axios.get(api.get_address,{
-              params:{
-                token:localStorage.getItem('token')
-              }
-            }).then(res => {
-                if(res.data.status == 200){
-
-                  let arr = [];
-                  let _arr =[];
-                  for(let i=0;i<res.data.data.length;i++){
-                    res.data.data[i].area = {
-                      province:'',
-                      city:'',
-                      area:''
-                    };
-                    if(res.data.data[i].uadefault){
-                      arr.push(res.data.data[i])
-                    }else{
-                      _arr.push(res.data.data[i])
-                    }
-
-                  }
-                  arr = arr.concat(_arr);
-                  for(let i=0;i<arr.length;i++){
-                      arr[i].area.province = arr[i].addressinfo[2].name;
-                      arr[i].area.area = arr[i].addressinfo[0].name;
-                      arr[i].area.city = arr[i].addressinfo[1].name;
-                      arr[i].area.provinceid = arr[i].addressinfo[2].provinceid;
-                      arr[i].area.areaid = arr[i].addressinfo[0].areaid;
-                      arr[i].area.cityid = arr[i].addressinfo[1].cityid;
-                  }
-                  this.address_list = [].concat(arr);
-                }
-            })
-          },
-          sureClick(item){
-            if(this.isOrder){
-              this.$router.push({path:'/submitOrder' ,query:{UAid:item.uaid,order:this.$route.query.order}});
-            }
-          }
-        },
-        created() {
-
-        }
+      }
     }
 </script>
 <style lang="less" rel="stylesheet/less" scoped>
