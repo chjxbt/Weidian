@@ -215,34 +215,30 @@ class CMyCenter(BaseMyCenterControl):
         if is_tourist():
             return AUTHORITY_ERROR(u"未登录")
         usid = request.user.id
-        try:
-            user = self.suser.get_user_by_user_id(usid)
-            logger.debug("get user info by usid")
-            user.wxnum = '1234000暂取不到'
-            # TODO 微信号暂时获取不到
-            address = self.suesraddress.get_default_address_by_usid(usid)
-            if address:
-                # return SYSTEM_ERROR(u"该用户无默认地址")
-                location = self.suesraddress.get_addressinfo_by_areaid(address.areaid)
-                for area, city, provice in location:
-                    locationname = getattr(provice, "name", '') + getattr(city, "name", '') + getattr(area, "name", '')
-            else:
-                locationname = ''
-            # print ''.join([x[1] for x in area])
-            logger.debug("get address info by usid")
-            bankcard = self.sbankcard.get_bankcard_by_usid(usid)
-            logger.debug("get bankcard info by usid")
-            response = import_status("get_accountinfo_success", "OK")
-            response['data'] = {
-                "user": user.add('wxnum').hide('USid'),
-                # "address": '%s%s' %(locationname, address.UAtext),
-                "address": '%s%s' % (locationname, getattr(address, "UAtext", '')),
-                "bankcard": getattr(bankcard, "BCnumber", '')
-            }
-            return response
-        except:
-            logger.exception("get account info error")
-            return SYSTEM_ERROR
+        user = self.suser.get_user_by_user_id(usid)
+        logger.debug("get info success, this user is %s", user.USname)
+        default_address = self.suesraddress.get_default_address_by_usid(usid)
+        if not default_address:
+            first_address = self.suesraddress.get_first_no_default_address(usid)
+        address = default_address or first_address
+        if address:
+            logger.info("get user address success")
+            location = self.suesraddress.get_addressinfo_by_areaid(address.areaid)
+            logger.info("get address detail success")
+            for area, city, provice in location:
+                locationname = getattr(provice, "name", '') + getattr(city, "name", '') + getattr(area, "name", '')
+        else:
+            locationname = ''
+        # print ''.join([x[1] for x in area])
+        bankcard = self.sbankcard.get_bankcard_by_usid(usid)
+        response = import_status("get_accountinfo_success", "OK")
+        response['data'] = {
+            "user": user.hide('USid'),
+            # "address": '%s%s' %(locationname, address.UAtext),
+            "address": '%s%s' % (locationname, getattr(address, "UAtext", '')),
+            "bankcard": getattr(bankcard, "BCnumber", '')
+        }
+        return response
 
     """用户地址信息"""
     @verify_token_decorator
@@ -283,10 +279,14 @@ class CMyCenter(BaseMyCenterControl):
                         'UAdefault': True,
                         'UAisdelete': False
                         }
-        address = self.suesraddress.get_one_or_default_address(uafilter)
-        if not address:
-            raise NOT_FOUND(u'该用户无默认地址信息')
-        logger.info("get address success, now to fill detail")
+        default_address = self.suesraddress.get_one_or_default_address(uafilter)
+        if not default_address:
+            any_address =self.suesraddress.get_first_no_default_address(usid)
+            if not any_address:
+                raise NOT_FOUND(u'该用户未设置地址信息')
+        address = default_address or any_address
+        if address:
+            logger.info("get address success, now to fill detail")
         addressinfoes = self.suesraddress.get_addressinfo_by_areaid(address.areaid)
         for addressinfo in addressinfoes:
             address.addressinfo = addressinfo
