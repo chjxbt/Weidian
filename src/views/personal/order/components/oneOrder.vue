@@ -35,7 +35,9 @@
         <span class="m-red m-ft-b">省钱了29.36</span>
       </li>
     </ul>
-    <p class="m-order-time">{{item.oicreatetime.slice(0,4)}}-{{item.oicreatetime.slice(4,6)}}-{{item.oicreatetime.slice(6,8)}} {{item.oicreatetime.slice(8,10)}}:{{item.oicreatetime.slice(10,12)}}:{{item.oicreatetime.slice(12,14)}}  创建</p>
+    <p class="m-order-time" v-if="item.oicreatetime">
+      {{item.oicreatetime.slice(0,4)}}-{{item.oicreatetime.slice(4,6)}}-{{item.oicreatetime.slice(6,8)}} {{item.oicreatetime.slice(8,10)}}:{{item.oicreatetime.slice(10,12)}}:{{item.oicreatetime.slice(12,14)}}  创建
+    </p>
   </div>
 
 </template>
