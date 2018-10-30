@@ -323,13 +323,17 @@
       justify-content: flex-end;
       width: 390px;
       .cancel-order {
-        margin: 20px 10px;
+        width: 100px;
+        line-height: 30px;
+        margin: auto;
         padding: 10px 36px;
         border-radius: 25.5px;
         border: solid 2px @greyColor;
       }
       .to-pay {
-        margin: 20px 10px;
+        width: 100px;
+        line-height: 30px;
+        margin: auto;
         padding: 10px 36px;
         border-radius: 25.5px;
         border: solid 2px @mainColor;
