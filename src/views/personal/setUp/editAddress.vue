@@ -36,7 +36,7 @@
         <span class="m-red" >删除收货地址</span>
       </div>
 
-      <div class="m-address-btn" @click="saveClick">保存</div>
+      <div class="m-address-btn" @click="saveClick">保 存</div>
       <picker :slots="slots" :params="params" :show_picker="show_picker" @pickerSave="pickerSave"></picker>
 
     </div>
@@ -132,18 +132,15 @@
               });
               break;
           }
-
         },
         radioChange(){
           this.form.UAdefault = !this.form.UAdefault;
         },
-        pickerSave(v,target,id){
-
+        pickerSave(v, target, id) {
           // 取消按钮
           if(!v) {
             this.show_picker = v;
           }
-
           if(id == 'province') {
             this.show_picker = v;
           }else if(id == 'city') {
@@ -171,33 +168,37 @@
             this.params = id;
             this.getSlot(id);
           }
-
         },
-        saveClick(){
+        saveClick() {
           this.form.UAdefault = Boolean(this.form.UAdefault);
           this.form.areaid = this.address_id.areaid;
-          console.log(this.$route.query)
+          // console.log(this.$route.query)
           if(this.form.UAname && this.form.UAphone != '' && this.form.UAtext && this.form.areaid) {
+            // 编辑地址
             if(this.form.UAid){
               axios.post(api.update_address +'?token='+localStorage.getItem('token') + '&uaid=' + this.form.UAid,this.form).then(res => {
                 if(res.data.status == 200 ){
                   Toast({ message: '修改成功', className: 'm-toast-success' });
                   if(this.$route.query.linkUrl){
-                    this.$router.push({path:'/' +this.$route.query.linkUrl ,query:{UAid:res.data.data.UAid,order:this.$route.query.order}});
+                    // 支付订单前进入的地址编辑页
+                    this.$router.push({ path: '/' + this.$route.query.linkUrl, query: { UAid: res.data.data.UAid, order: this.$route.query.order }});
                   }else{
+                    // 从账号设置进入的地址编辑页
                     this.$router.push('/receiverAddress');
                   }
                 }else{
                   Toast({ message: res.data.message, className: 'm-toast-warning' });
                 }
-              })
-            }else{
+              });
+            }else{      // 新建地址
               axios.post(api.add_address +'?token='+localStorage.getItem('token'),this.form).then(res => {
                 if(res.data.status == 200 ){
                   Toast({ message: '添加成功', className: 'm-toast-success' });
                   if(this.$route.query.linkUrl){
-                    this.$router.push({path:'/' +this.$route.query.linkUrl ,query:{UAid:res.data.data.UAid,order:this.$route.query.order}});
+                    // 支付订单前进入的地址编辑页
+                    this.$router.push({ path: '/' + this.$route.query.linkUrl, query: { UAid: res.data.data.UAid, order: this.$route.query.order }});
                   }else{
+                    // 从账号设置进入的地址编辑页
                     this.$router.push('/receiverAddress');
                   }
                 }else{
@@ -206,13 +207,14 @@
               })
             }
           }else {
-            Toast('请完整填写收货地址');
-            console.log(this.form.UAdefault, this.form.UAname, this.form.UAphone != '', this.form.UAtext, this.form.areaid)
+            Toast({ message: '请完整填写', className: 'm-toast-warning' });
+            // console.log(this.form.UAdefault, this.form.UAname, this.form.UAphone != '', this.form.UAtext, this.form.areaid)
           }
         },
-        delClick(){
-        // MessageBox.confirm('确定执行此操作?').then(action => {
-        //   if(action == 'confirm'){
+        // 删除地址
+        delClick() {
+        MessageBox.confirm('确定执行此操作?').then(action => {
+          if(action == 'confirm'){
             axios.post(api.del_address +'?token='+ localStorage.getItem('token'),{
               UAid:this.form.UAid
             }).then(res => {
@@ -223,9 +225,8 @@
                 Toast({ message: res.data.message, className: 'm-toast-warning' });
               }
             })
-        //   }else{
-        //   }
-        // })
+          }else{ }
+        })
 
         },
         dealArr(list){
