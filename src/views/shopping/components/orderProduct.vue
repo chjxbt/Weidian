@@ -1,7 +1,7 @@
 <template>
   <div class="m-order-product">
     <div class="order-no-box">
-      <div class="order-no m-ft-26 m-black tl">订单号：{{order.oiid}}</div>
+      <div class="order-no m-ft-26 m-black tl">订单号：{{order.oisn}}</div>
       <div class="copy-order-no m-ft-20 m-grey" @click="copyText">复制</div>
     </div>
     <div class="line-one"></div>
@@ -25,7 +25,7 @@
           <img src="http://img1.imgtn.bdimg.com/it/u=661395716,3070712851&fm=214&gp=0.jpg" class="product-img">
           <div class="product-info">
             <div class="product-name m-ft-24 m-black">
-              <span class="name">{{item.opiproductname}}</span>
+              <span class="name">{{item.opiproducttitle}}</span>
               <span @click.stop="changeProduct(index)" v-if="item.oipaystatus > 5">退/换</span>
             </div>
             <div class="product-params m-ft-24 m-black tl">
@@ -127,7 +127,7 @@
       // 复制
       copyText() {
         let link = "订单号";
-        this.$copyText(this.order.oiid).then(function (e) {
+        this.$copyText(this.order.oisn).then(function (e) {
           Toast({ message: "复制成功", className: 'm-toast-success' });
         })
       },
@@ -167,15 +167,15 @@
     justify-content: space-between;
     padding: 0 20px;
     .order-no {
-      margin: 35px 0 20px 0;
+      margin: 25px 0 20px 0;
       white-space: nowrap;
     }
     .copy-order-no {
       width: 50px;
-      height: 35px;
+      line-height: 35px;
       padding: 5px 21px;
       white-space: nowrap;
-      margin: 28px 0 0 25px;
+      margin: auto 0;
       border-radius: 6px;
       border: solid 2px @grey;
     }
