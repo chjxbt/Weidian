@@ -20,7 +20,7 @@
         <div class="store-name m-ft-28 m-black tl">衣百惠</div>
       </div>
       <div class="line-two"></div>
-      <template v-for="(item,index) in order">
+      <template v-for="(item, index) in order">
         <div class="order-product">
           <img :src="item.primage" class="product-img">
           <div class="product-info">
@@ -60,7 +60,7 @@
         <textarea class="msg-input m-ft-26" v-model="address.oilleavetext" placeholder="选填：建议填写和卖家商量好的内容~" rows="3"></textarea>
       </div>
       <div class="order-pay-box">
-        <div class="order-pay m-ft-36 m-bg-main-color" @click="payOrder">支付订单</div>
+        <div class="order-pay m-ft-36 m-bg-main-color" @click="createOrder">支付订单</div>
       </div>
     </div>
   </div>
@@ -70,22 +70,19 @@
   import newCurrency from "../shopping/components/newCurrency";
  import axios from 'axios';
  import api from '../../api/api';
+  import { Toast } from 'mint-ui';
+
   export default {
     data() {
       return {
         name: "submitOrder",
         hasAddress: false,
-        address:{
-          oiaddress: "",
-          oirecvname: "",
-          oirecvphone: "",
-          oilleavetext: "",
-        },
+        address: { oiaddress: "", oirecvname: "", oirecvphone: "", oilleavetext: "" },
         order: {},
-        totalPrice:0,
-        unvalid:[],
-        valid:[],
-        select_valid:null
+        totalPrice: 0,
+        unvalid: [],
+        valid: [],
+        select_valid: null
       }
     },
     components: { newCurrency },
@@ -146,37 +143,90 @@
       // 添加新地址
       addAddress() {
         if(!this.hasAddress) {
-          this.$router.push({path:'/editAddress',query:{linkUrl:'/submitOrder',order:this.$route.query.order}});
+          // 无收货地址时直接进入编辑地址页
+          this.$router.push({ path: '/editAddress', query: { linkUrl: '/submitOrder', order: this.$route.query.order }});
         }else{
-          this.$router.push({path:'/receiverAddress',query:{linkUrl:'/submitOrder',order:this.$route.query.order}});
+          // 有收获地址时进入收货地址管理页
+          this.$router.push({ path: '/receiverAddress', query: { linkUrl: '/submitOrder', order: this.$route.query.order }});
         }
+      },
+      // 创建订单
+      createOrder() {
+        let order = [];
+        let reward = [];
+        // 如果选择了优惠券
+        if(this.select_valid) {
+          for(let a = 0; a < this.select_valid.length; a ++){
+            reward.push(this.select_valid[a].raid);
+          }
+        }
+        // 商品型号id和数量
+        for(let i = 0; i < this.order.length; i ++){
+          order.push({ pskid: this.order[i].current_sku.pskid, num: this.order[i].scnums })
+        }
+        let params = {
+          oiaddress: this.address.oiaddress,
+          oirecvname: this.address.oirecvname,
+          oirecvphone: this.address.oirecvphone,
+          oilleavetext: this.address.oilleavetext,
+          sku: order
+        };
+        if(reward) {  // 选择优惠券
+          params.urid = reward[0];
+        }
+        console.log(params);
+        axios.post(api.create_order + '?token=' + localStorage.getItem('token'), params).then(res => {
+          if(res.data.status == 200){     // 订单创建成功
+            // this.$router.push({ path: "/orderPayOK", query: { oiid: res.data.data.oiid, price: this.totalPrice }});
+
+            this.payOrder();      // 支付订单
+          }else{
+            Toast({ message: res.data.message, className: 'm-toast-warning' });
+          }
+        })
       },
       // 支付订单
       payOrder() {
-        let order = [];
-        let reward =[];
-        for(let a=0;a<this.select_valid.length;a++){
-          reward.push(this.select_valid[a].raid)
-        }
-        console.log(this.select_valid,reward)
-        for(let i =0;i<this.order.length;i++){
-          order.push({pskid:this.order[i].current_sku.pskid,num:this.order[i].scnums})
-        }
-        axios.post(api.create_order+'?token='+localStorage.getItem('token'),{
-          oiaddress: this.address.oiaddress,
-          oirecvname:  this.address.oirecvname,
-          oirecvphone:  this.address.oirecvphone,
-          oilleavetext:  this.address.oilleavetext,
-          sku:order,
-          raid:reward[0]
-          // raids:reward
-        }).then(res => {
+        /*let params = { oiid: "" };
+        axios.post(api.pay_order + '?token=' + localStorage.getItem('token'), params).then(res=>{
           if(res.data.status == 200){
-            this.$router.push({path: "/orderPayOK", query: { oiid:res.data.data.oiid,price:this.totalPrice}});
-          }
-        })
+            // console.log(res.data.data);
 
+            // 微信支付接口
+            function onBridgeReady(){
+              WeixinJSBridge.invoke(
+                'getBrandWCPayRequest', {
+                  "appId": res.data.data.appId,                 // 公众号名称，由商户传入
+                  "timeStamp": res.data.data.timeStamp,         // 时间戳，自1970年以来的秒数
+                  "nonceStr": res.data.data.nonceStr,           // 随机串
+                  "package": res.data.data.package,             // 统一下单接口返回的prepay_id参数值
+                  "signType": res.data.data.signType,           // 微信签名方式：
+                  "paySign": res.data.data.paySign              // 微信签名
+                },
+                function(res){
+                  console.log(res);
+                  if(res.err_msg == "get_brand_wcpay_request:ok" ){
+                    // 使用以上方式判断前端返回,微信团队郑重提示：
+                    //res.err_msg将在用户支付成功后返回ok，但并不保证它绝对可靠。
+                  }
+                });
+            }
+            if (typeof WeixinJSBridge == "undefined"){
+              if( document.addEventListener ){
+                document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+              }else if (document.attachEvent){
+                document.attachEvent('WeixinJSBridgeReady', onBridgeReady);
+                document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+              }
+            }else{
+              onBridgeReady();
+            }
+          }else{
+            Toast({ message: res.data.message, className: 'm-toast-warning' });
+          }
+        });*/
       },
+
       oneChoose(i){
         if(i === null){
          this.select_valid = null;
