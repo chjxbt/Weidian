@@ -10,6 +10,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+let vConsolePlugin = require('vconsole-webpack-plugin');
 
 const env = process.env.NODE_ENV === 'testing'
   ? require('../config/test.env')
@@ -31,6 +32,10 @@ const webpackConfig = merge(baseWebpackConfig, {
     publicPath: "./"
   },
   plugins: [
+    new vConsolePlugin({
+      filter: [],  // 需要过滤的入口文件
+      enable: false // 发布代码前记得改回 false
+    }),
     // http://vuejs.github.io/vue-loader/en/workflow/production.html
     new webpack.DefinePlugin({
       'process.env': env
