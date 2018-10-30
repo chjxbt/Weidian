@@ -2,7 +2,7 @@
   <div v-if="product_info != null">
     <!--/static/images/icon-more.png-->
     <!--<span class="back-img" @click="backPage"></span>-->
-    <!--<img src="http://s9.rr.itc.cn/r/wapChange/20167_8_22/a87n9v8965341955628.jpg" class="product-img">-->
+    <!--<img src="http://dummyimage.com/750x750" class="product-img">-->
     <img :src="product_info.prmainpic"  class="product-img">
     <div class="product-activity m-ft-26 m-bg-main-color">
       <span class="activity-text-one">限时特卖</span>
@@ -385,9 +385,9 @@
     background-size: 100% 100%;
   }
   .product-img {
-    width: 640px;
-    height: 640px;
-    margin: -20px 54px 40px 54px;
+    max-width: 750px;
+    max-height: 750px;
+    margin-bottom: -6px;
   }
   .product-activity {
     width: 750px;
