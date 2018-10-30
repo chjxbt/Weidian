@@ -174,26 +174,23 @@
         if(reward) {  // 选择优惠券
           params.urid = reward[0];
         }
-        console.log(params);
+        // console.log(params);
         axios.post(api.create_order + '?token=' + localStorage.getItem('token'), params).then(res => {
           if(res.data.status == 200){     // 订单创建成功
-            // this.$router.push({ path: "/orderPayOK", query: { oiid: res.data.data.oiid, price: this.totalPrice }});
 
-            this.payOrder();      // 支付订单
+            this.payOrder(res.data.data.oiid);      // 支付订单
           }else{
             Toast({ message: res.data.message, className: 'm-toast-warning' });
           }
         })
       },
       // 支付订单
-      payOrder() {
-        /*let params = { oiid: "" };
+      payOrder(oiid) {
+        let that = this;
+        let params = { oiid: oiid };
         axios.post(api.pay_order + '?token=' + localStorage.getItem('token'), params).then(res=>{
           if(res.data.status == 200){
-            // console.log(res.data.data);
-
-            // 微信支付接口
-            function onBridgeReady(){
+            function onBridgeReady(){      // 微信支付接口
               WeixinJSBridge.invoke(
                 'getBrandWCPayRequest', {
                   "appId": res.data.data.appId,                 // 公众号名称，由商户传入
@@ -205,9 +202,15 @@
                 },
                 function(res){
                   console.log(res);
-                  if(res.err_msg == "get_brand_wcpay_request:ok" ){
-                    // 使用以上方式判断前端返回,微信团队郑重提示：
-                    //res.err_msg将在用户支付成功后返回ok，但并不保证它绝对可靠。
+                  if(res.err_msg == "get_brand_wcpay_request:ok" ){             // 支付成功
+                    // 支付成功进入支付成功页
+                    that.$router.push({ path: "/orderPayOK", query: { oiid: oiid, price: that.totalPrice }});
+                  }else if(res.err_msg == "get_brand_wcpay_request:cancel" ){   // 支付过程中用户取消
+                    Toast({ message: "支付已取消", className: 'm-toast-warning' });
+                    that.$router.push({ path: "/orderStatus", query: { oiid }});
+                  }else if(res.err_msg == "get_brand_wcpay_request:fail" ){     // 支付失败
+                    Toast({ message: "支付失败", className: 'm-toast-fail' });
+                    that.$router.push({ path: "/orderStatus", query: { oiid }});
                   }
                 });
             }
@@ -224,7 +227,7 @@
           }else{
             Toast({ message: res.data.message, className: 'm-toast-warning' });
           }
-        });*/
+        });
       },
 
       oneChoose(i){
