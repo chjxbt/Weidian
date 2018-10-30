@@ -20,9 +20,9 @@ LinuxUserHead = '/opt/WeiDian/imgs/head'
 APP_ID = 'wx8206635590c9cc0e'
 APP_SECRET_KEY = 'ba8c532bfd8e7390e3cfc91ac17c0472'
 wximg = 'https://daaiti.cn/imgs/WeiDian/qrcode/wx.jpg'
-MCH_ID = ''
-MCH_KEY = ''
-notify_url = ''
+MCH_ID = '1499302922'
+MCH_KEY = '332b49192d9f174f78691d1a8de294d9'
+notify_url = 'https://weidian.daaiti.cn/order/pay_error'
 
 # platform
 

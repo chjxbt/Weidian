@@ -396,15 +396,18 @@ class COrder():
         if not order or order.USid != request.user.id or order.OIpaystatus != 1:
             raise NOT_FOUND()
         openid = request.user.openid
-        total_fee = order.OImount * 100
+        # total_fee = order.OImount * 100
+        total_fee = 1
         oisn = order.OIsn  # 订单号
         raw = self.pay.jsapi(trade_type="JSAPI", openid=openid,
                              out_trade_no=oisn,
                              total_fee=int(total_fee),
-                             spbill_create_ip=request.remote_addr)
+                             spbill_create_ip=request.remote_addr,
+                             body='1234')
         res = dict(raw)
         res['paySign'] = res.get('sign')
-        data = import_status('messages_get_item_ok', res)
+        data = import_status('messages_get_item_ok', 'OK')
+        data['data'] = res
         return data
 
     def pay_callback(self):
@@ -1039,7 +1042,7 @@ class COrder():
         profict = Decimal(str(profict * nums))
         p = Partner()
         commissions = []
-        if user.UPPerd:
+        if user and user.UPPerd:
             user_order_count = self.sorder.get_sell_ordercount_by_item_status(usid)
             commission_without_ordercount = profict * Decimal(str(p.one_level_divide))   # 上一级佣金, 未根据订单数量加成
             commsion_price = self._caculate_devite_rate(commission_without_ordercount, user_order_count)
@@ -1051,7 +1054,7 @@ class COrder():
             }
             commissions.append(commsion_dict)
             user_upperd = self.suser.get_user_by_user_id(user.UPPerd)
-            if user_upperd.UPPerd:
+            if user_upperd and user_upperd.UPPerd:
                 commission_without_ordercount = profict * Decimal(str(p.two_level_divide))  # 上两级级佣金, 未根据订单数量加成
                 commsion_price = self._caculate_devite_rate(commission_without_ordercount, user_order_count)
                 commsion_dict = {
@@ -1062,7 +1065,7 @@ class COrder():
                 }
                 commissions.append(commsion_dict)
                 user_upper_s_upperd = self.suser.get_user_by_user_id(user_upperd.UPPerd)
-                if user_upper_s_upperd.UPPerd:
+                if user_upper_s_upperd and user_upper_s_upperd.UPPerd:
                     commission_without_ordercount = profict * Decimal(str(p.three_level_divide))  # 上3级佣金, 未根据订单数量加成
                     commsion_price = self._caculate_devite_rate(commission_without_ordercount, user_order_count)
                     commsion_dict = {
@@ -1085,5 +1088,11 @@ class COrder():
             rate = Decimal('1.1')
         return float(round(item * rate, 2))
 
-
+    def pay_error(self):
+        data = request.data
+        print data
+        return {
+            "return_code": "SUCCESS",
+            "return_msg": "OK"
+        }
 

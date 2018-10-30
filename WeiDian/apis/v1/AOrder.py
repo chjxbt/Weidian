@@ -24,6 +24,7 @@ class AOrder(Resource):
             'solder_change_send': 'self.corder.solder_change_send()',   # 卖家换货发货
             'delete_order': 'self.corder.delete_order()',
             'cancle_order': 'self.corder.cancle_order()',
+            'pay_order': 'self.corder.pay_order()',
          }
         res = eval(apis[order])
         return jsonify(res)
@@ -38,6 +39,7 @@ class AOrder(Resource):
             'admin_get_order_count': 'self.corder.admin_get_order_count()',
             'admin_get_order_list': 'self.corder.admin_get_order_list()',
             'get_order_info': 'self.corder.get_order_info()',  # 单个订单详情
+            'pay_error': 'self.corder.pay_error()',  # 微信支付回调接口
         }
         res = eval(apis[order])
         return jsonify(res)
