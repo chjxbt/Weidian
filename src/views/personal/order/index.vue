@@ -49,133 +49,122 @@
   import common from '../../../common/js/common';
   import {Toast} from 'mint-ui';
     export default {
-        data() {
-            return {
-              name: '',
-              order_list:[],
-              page_size:5,
-              page_num:1,
-              total_count:0,
-              isScroll:true,
-              order_num:[],
-              isOpen:true,
-              isSell:true,
-              bottom_show:false
+      data() {
+        return {
+          name: '',
+          order_list: [],
+          page_size: 5,
+          page_num: 1,
+          total_count: 0,
+          isScroll: true,
+          order_num: [],
+          isOpen: true,
+          isSell: true,
+          bottom_show: false
+        }
+      },
+      components: { oneOrder },
+      methods: {
+        // 获取订单预览数量
+        getOrderNum(){
+          axios.get(api.get_order_count, { params:{ token: localStorage.getItem('token'), sell: this.isSell }}).then(res => {
+            if(res.data.status == 200){
+              this.order_num = [].concat(res.data.data);
+
+              for(let i = 0; i < this.order_num.length; i ++){
+                this.order_num[i].click = false;
+                if(this.order_num[i].status == this.$route.query.name){
+                  this.order_num[i].click = true;
+                }
+              }
+              if(!this.$route.query.name){
+                this.order_num[0].click = true;
+              }
+              this.getOrder();
+            }else{
+              Toast({ message: res.data.message, className: 'm-toast-fail' });
             }
+          },error => {
+            Toast({ message: error.data.message, className: 'm-toast-fail' });
+          });
         },
-        components: {
-          oneOrder
+        /*获取订单*/
+        getOrder(page){
+          let status ='';
+          for(let a = 0; a < this.order_num.length; a ++){
+            if(this.order_num[a].click){
+              status = this.order_num[a].statusnum;
+            }
+          }
+          axios.get(api.get_list_order, {
+            params: {
+              token: localStorage.getItem('token'),
+              page_num: page || 1,
+              page_size: this.page_size || 10,
+              sell: this.isSell,
+              paystatus: status
+            }}).then(res => {
+            if(res.data.status == 200){
+              for(let i = 0; i < res.data.data.length; i ++){
+                res.data.data[i].click = false;
+              }
+              this.total_count = res.data.totalcount;
+              if(page){
+                this.order_list = this.order_list.concat(res.data.data);
+              }else{
+                this.order_list = [].concat(res.data.data);
+              }
+            }else{
+              Toast({ message: res.data.message, className: 'm-toast-fail' });
+            }
+          },error => {
+            Toast({ message: error.data.message, className: 'm-toast-fail' });            })
         },
+        sellClick(v){
+          if(this.sell == v){
+            return false;
+          }
+          this.isSell = v;
+          this.getOrderNum();
+          this.getOrder();
+        },
+        /*状态切换*/
+        statusClick(i){
+          if(this.order_num[i].click)
+            return false;
+          let arr =[].concat(this.order_num);
+          for (let a=0;a<arr.length;a++){
+            arr[a].click = false;
+          }
+          arr[i].click = true;
+          this.order_num = [].concat(arr);
+          this.getOrder();
+        },
+        /*加载更多*/
+        touchMove(){
+          let scrollTop = common.getScrollTop();
+          let scrollHeight = common.getScrollHeight();
+          let ClientHeight = common.getClientHeight()
+          if (scrollTop + ClientHeight >= scrollHeight - 10) {
+            if(this.isScroll){
+              this.isScroll = false;
+              if(this.order_list.length == this.total_count){
+                this.bottom_show = true;
+                // Toast({ message: '数据已加载完', className: 'm-toast-warning' });
+              }else{
+                this.page_num = this.page_num +1;
+                this.getOrder(this.page_num);
+              }
+            }
+          }
+        },
+      },
       mounted(){
-          this.isOpen = localStorage.getItem('level') == 'partner'? true:false;
+        this.isOpen = localStorage.getItem('level') == 'partner'? true:false;
         this.isSell = this.$route.query.status == '销售订单'? true:false;
         this.getOrderNum();
         common.changeTitle('我的订单');
-      },
-        methods: {
-          /*获取订单数量*/
-          getOrderNum(){
-            axios.get(api.get_order_count,{
-              params:{
-                token:localStorage.getItem('token'),
-                sell:this.isSell
-              }
-            }).then(res => {
-              if(res.data.status == 200){
-                this.order_num = [].concat(res.data.data);
-
-                for(let i=0;i<this.order_num.length;i++){
-                  this.order_num[i].click = false;
-                  if(this.order_num[i].status == this.$route.query.name){
-                    this.order_num[i].click = true;
-                  }
-                }
-                if(!this.$route.query.name){
-                  this.order_num[0].click = true;
-                }
-                this.getOrder();
-              }else{
-                Toast({ message: res.data.message, className: 'm-toast-fail' });
-              }
-            },error => {
-              Toast({ message: error.data.message, className: 'm-toast-fail' });            })
-          },
-          /*获取订单*/
-          getOrder(page){
-            let status ='';
-            for(let a=0;a<this.order_num.length;a++){
-              if(this.order_num[a].click){
-                status = this.order_num[a].statusnum
-              }
-            }
-            axios.get(api.get_list_order,{
-              params:{
-                token: localStorage.getItem('token'),
-                page_num: page || 1,
-                page_size:this.page_size || 10,
-                sell:this.isSell,
-                paystatus:status
-              }
-            }).then(res => {
-              if(res.data.status == 200){
-                for(let i=0;i<res.data.data.length;i++){
-                  res.data.data[i].click = false;
-                }
-                this.total_count = res.data.totalcount;
-                if(page){
-                  this.order_list = this.order_list.concat(res.data.data);
-                }else{
-                  this.order_list = [].concat(res.data.data);
-                }
-
-              }else{
-                Toast({ message: res.data.message, className: 'm-toast-fail' });
-              }
-            },error => {
-              Toast({ message: error.data.message, className: 'm-toast-fail' });            })
-          },
-          sellClick(v){
-            if(this.sell == v){
-              return false;
-            }
-            this.isSell = v;
-            this.getOrderNum();
-            this.getOrder();
-          },
-          /*状态切换*/
-          statusClick(i){
-            if(this.order_num[i].click)
-              return false;
-            let arr =[].concat(this.order_num);
-            for (let a=0;a<arr.length;a++){
-              arr[a].click = false;
-            }
-            arr[i].click = true;
-            this.order_num = [].concat(arr);
-            this.getOrder();
-          },
-          /*加载更多*/
-          touchMove(){
-            let scrollTop = common.getScrollTop();
-            let scrollHeight = common.getScrollHeight();
-            let ClientHeight = common.getClientHeight()
-            if (scrollTop + ClientHeight >= scrollHeight - 10) {
-              if(this.isScroll){
-                this.isScroll = false;
-                if(this.order_list.length == this.total_count){
-                  this.bottom_show = true;
-                  // Toast({ message: '数据已加载完', className: 'm-toast-warning' });
-                }else{
-                  this.page_num = this.page_num +1;
-                  this.getOrder(this.page_num);
-                }
-              }
-            }
-          },        },
-        created() {
-
-
-        }
+      }
     }
 </script>
 <style lang="less" rel="stylesheet/less" scoped>
