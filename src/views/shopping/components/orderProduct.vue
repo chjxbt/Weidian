@@ -25,7 +25,7 @@
           <img src="http://img1.imgtn.bdimg.com/it/u=661395716,3070712851&fm=214&gp=0.jpg" class="product-img">
           <div class="product-info">
             <div class="product-name m-ft-24 m-black">
-              <span class="name">{{item.opiproducttitle}}</span>
+              <span class="name">{{item.opiproductname}}</span>
               <span @click.stop="changeProduct(index)" v-if="item.oipaystatus > 5">退/换</span>
             </div>
             <div class="product-params m-ft-24 m-black tl">
