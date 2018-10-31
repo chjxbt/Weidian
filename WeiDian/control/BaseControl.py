@@ -155,7 +155,8 @@ class BaseProductControl():
         self.prid_list = []
         for item in items:
             prid = str(uuid.uuid4())  # 生成商品id
-            prtarget_items = item.pop("prtarget")  # 每个商品对应多个专题
+            prtarget_items = item.pop("prtarget")  # 每个商品对应多个模块（上新/热卖）
+            prbaid_items = item.pop("prbaid")  # 每个商品对应多个专题
             self.prid_list.append(prid)
             psvid = str(uuid.uuid4())  # 每一个商品对应一个psv
             image_items = item.pop('images')  # 取出image列表
@@ -167,6 +168,8 @@ class BaseProductControl():
             sku_items = self.fix_sku_list(sku_items, prid, psvid)
             productskuvalue = self.fix_sku_value(sku_value, prid, psvid)
             prtarget_items = self.fix_tartget_list(prtarget_items, prid)
+            prbaid_items = self.fix_baid_list(prbaid_items, prid)
+            list_add_models('ProductBigActivity', prbaid_items)
             list_add_models('ProductTarget', prtarget_items)
             list_add_models('ProductImage', image_items)
             list_add_models('ProductSkuKey', sku_items)
@@ -193,6 +196,13 @@ class BaseProductControl():
                                  for prtarget in target_list]
 
         return targer_model_list[:3]
+
+    def fix_baid_list(self, baid_list, prid):
+        if not isinstance(baid_list, list) or not baid_list:
+            return []
+        else:
+            baid_model_list = [{'prid': prid, 'baid': baid, 'pbid': str(uuid.uuid1())} for baid in baid_list]
+        return baid_model_list[:3]
 
     def fix_sku_list(self, sku_items, prid, psvid):
         """
@@ -237,6 +247,12 @@ class BaseProductControl():
         target_list = [target.PRtarget for target in self.sproduct.get_product_target_by_productid(prid)]
         # if '101' in target_list:
         product.PRtarget = target_list
+        return product
+
+    def fill_prbaid(self, product):
+        prid = product.PRid
+        baid_list = [prbaid.BAid for prbaid in self.sproduct.get_product_baid_by_prid(prid)]
+        product.prbaid = baid_list
         return product
 
     def fill_product_sku_key(self, product):

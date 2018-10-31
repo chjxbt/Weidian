@@ -1,6 +1,8 @@
 # *- coding:utf8 *-
 import sys
 import os
+
+from WeiDian.config.enums import activity_edit_status
 from flask import request
 import re
 import json
@@ -11,7 +13,7 @@ from WeiDian.common.token_required import verify_token_decorator, is_admin, is_t
 from WeiDian.common.TransformToList import list_add_models
 from WeiDian.common.import_status import import_status
 from WeiDian.common.divide import Partner
-from WeiDian.common.timeformat import get_db_time_str
+from WeiDian.common.timeformat import get_db_time_str, get_web_time_str
 from WeiDian.config.response import TOKEN_ERROR, AUTHORITY_ERROR, PARAMS_MISS, SYSTEM_ERROR, NOT_FOUND
 from WeiDian.control.BaseControl import BaseProductControl
 sys.path.append(os.path.dirname(os.getcwd()))
@@ -31,6 +33,9 @@ class CProduct(BaseProductControl):
         self.sactivity = SActivity()
         from WeiDian.service.SProductLike import SProductLike
         self.sproductlike = SProductLike()
+        from WeiDian.control.Cuser import CUser
+        self.cuser = CUser()
+        self.empty = ['', [], {}, None]
         # 后续修改
         self.partner = Partner()
         self.update_sku_params = ['PRid', "PSVid", 'PSKproductnum',
@@ -62,6 +67,7 @@ class CProduct(BaseProductControl):
             'PRfakeviewnum',
             'PRfakelikenum',
             'PRsalefakenum',
+            'PRbaid'
         ]
 
     @verify_token_decorator
@@ -223,6 +229,75 @@ class CProduct(BaseProductControl):
 
         return import_status('update_product_image_success', 'OK')
 
+    @verify_token_decorator
+    def get_product_pools(self):
+        """后台获取商品池列表内容"""
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'请使用管理员账号重新登录')
+        args = request.args.to_dict()
+        logger.debug("Get Commodity Pools data is %s", args)
+        page, count = self.cuser.get_pagesize_pagenum(args)
+        price_start = args.get('price_start')
+        if price_start:
+            price_start = int(price_start)
+        price_end = args.get('price_end')
+        if price_end:
+            price_end = int(price_end)
+        time_start = args.get('time_start')
+        if time_start:
+            time_start = get_db_time_str(time_start)
+        time_end = args.get('time_end')
+        if time_end:
+            time_end = get_db_time_str(time_end)
+        status = args.get('status')
+        kw = args.get('kw')
+        if kw not in self.empty:
+            kw = kw.encode('utf8')
+        isdelete = args.get('isdelete', 0)  # 0  or  1
+        if str(isdelete) == '0':
+            isdelete = False
+        elif str(isdelete) == '1':
+            isdelete = True
+        else:
+            isdelete = None
+        product_list = self.sproduct.get_product_filter(kw, isdelete, status, page, count)
+        for product in product_list:
+            self.sproduct.update_view_num(product.PRid)
+            self.fill_prbaid(product)
+            self.fill_prtarget(product)
+            if product.PRcreatetime:
+                prcreatetime = get_web_time_str(product.PRcreatetime)
+                product.fill(prcreatetime, 'prcreatetime')
+            isclaim = True if product.SUmodifyid else False
+            product.fill(product.SUmodifyid, "claimid")
+            product.fill(isclaim, "isclaim")
+            isbig = False
+            if product.PRtarget:
+                isbig = True if product.PRtarget[0] == '101' else False
+            product.fill(isbig, 'isbig')
+            pv = product.PRfakeviewnum or product.PRviewnum
+            product.fill(pv, 'pv')
+            salesvolume = product.PRsalefakenum or product.PRsalesvolume
+            transform = float(salesvolume)/int(pv)
+            ortransform = "%.2f%%" % (transform * 100)
+            product.fill(ortransform, 'ortransform')
+            product.fill(product.prbaid, 'prbaid')
+            product.fill(product.PRstatus, 'prstatus')
+            #todo 推文编辑状态
+            activitystatus = 0
+            zh_activitystatus = activity_edit_status.get(str(activitystatus))
+            product.fill(activitystatus, 'activitystatus')
+            product.fill(zh_activitystatus, 'zh_activitystatus')
+
+        data = import_status('get_product_list_success', 'OK')
+        data['data'] = product_list
+        data["count"] = request.all_count
+        data["page_count"] = request.page_count
+        return data
+
+
+
+
     def get_product_list(self):
         args = request.args.to_dict()
         logger.debug("get product list args is %s", args)
@@ -232,12 +307,15 @@ class CProduct(BaseProductControl):
         if kw not in ['', None]:
             kw = kw.encode('utf8')
         status = args.get('status')
+        status = 1 if status in self.empty else int(status)
         try:
             isdelete = int(args.get('isdelete'))  # 0  or  1
             isdelete = False if isdelete else True
         except Exception as e:
             isdelete = None
         product_list = self.sproduct.get_product_filter(kw, isdelete, status, page, count)
+        for product in product_list:
+            self.sproduct.update_view_num(product.PRid)
         data = import_status('get_product_list_success', 'OK')
         data['data'] = product_list
         data["count"] = request.all_count
@@ -275,6 +353,7 @@ class CProduct(BaseProductControl):
         self.fill_product_alreadylike(product, usid)
         self.fill_images(product)
         self.fill_prtarget(product)
+        self.fill_prbaid(product)
         self.fill_product_sku_key(product)
         self.fill_product_sku_value(product)
         self.sproduct.update_view_num(prid)
