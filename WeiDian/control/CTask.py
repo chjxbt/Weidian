@@ -304,14 +304,14 @@ class CTask(BaseTask):
         page_num, page_size = self.cuser.get_pagesize_pagenum(args)
         raward_list, count = self.sraward.get_all_reward(page_size, page_num)
         for reward in raward_list:
-            packet_contact = self.sraward.get_is_where_packet(reward.RAid)
-            if packet_contact:
-                packet_info = self.sraward.get_reward_in_packet_info(packet_contact.RPTid)
-                rptname = packet_info.RPTname
-                if rptname:
-                    reward.fill(packet_info.RPTname, 'rptname')
-            reward.RAcreatetime = get_web_time_str(reward.RAcreatetime)
-            reward.RAendtime = get_web_time_str(reward.RAendtime)
+            if reward:
+                packet_contact = self.sraward.get_is_where_packet(reward.RAid)
+                if packet_contact:
+                    packet_info = self.sraward.get_reward_in_packet_info(packet_contact.RPTid)
+                    rptname = getattr(packet_info, 'RPTname', '')
+                    reward.fill(rptname, 'rptname')
+                reward.RAcreatetime = get_web_time_str(reward.RAcreatetime)
+                reward.RAendtime = get_web_time_str(reward.RAendtime)
         raward_list = self.fill_reward_detail(raward_list)
         res = import_status('get_task_success', 'OK')
         res['data'] = raward_list
