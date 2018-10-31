@@ -652,7 +652,8 @@ class User(BaseModel):
     USlastlogin = Column(String(64))             # 用户上次登录时间
     # 用户级别: {0 普通用户, 1 普通合伙人, 2 中级合伙人, 3 高级合伙人}
     USlevel = Column(Integer, default=0)
-    UPPerd = Column(String(64), default=0)       # 上级
+    UPPerd = Column(String(64), default=0)       # 店主 -> 对应专粉
+    USshopkeeper = Column(String(64), default=0) # 上级 -> 对应三级合伙人
     openid = Column(String(64))                  # 微信唯一值
     unionid = Column(String(255))                # 绑定公众号会出现
     accesstoken = Column(String(255))            # 微信token
@@ -1141,6 +1142,7 @@ class UserCommisionPriview(BaseModel):
     USid = Column(String(64), nullable=False, comment=u'用户')
     UCPtime = Column(DateTime, default=datetime.now, comment=u'时间')
     UCPnums = Column(Float, default=0, comment=u'佣金金额')
+    UCtype = Column(Float, default=0, comment=u'佣金类型： 0: 开店佣金收益， 1: 专粉收益')
     UCPstatus = Column(Integer, default=0, comment=u'状态: 0: 预估佣金, 10: 已到帐, 20: 不可用')
 
 
@@ -1164,6 +1166,14 @@ class CommisionToCash(BaseModel):
     CTCname = Column(String(16), nullable=False, comment=u'姓名')
     CTCbankname = Column(String(64), nullable=False, comment=u'银行')
     CTCbankaddress = Column(String(125), comment=u'开户行')
+
+
+class TeamCommision(BaseModel):
+    __tablename__ = 'teamcommision'
+    TCid = Column(String(64), primary_key=True)
+    USid = Column(String(64), primary_key=True)
+    TCtotal = Column(Float, default=0, comment=u'团队总额')
+    TCtime = Column(DateTime, default=datetime.now(), comment=u'时间')
 
 
 # class PersonalInfo(BaseModel)
