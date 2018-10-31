@@ -70,20 +70,15 @@
       <!--商品sku-->
       <el-dialog title="商品SKU" :visible.sync="skuDialog" width="8rem">
         <div class="content-table" style="margin: -0.3rem 0 0 0">
-          <el-table :data="skuList" border style="width: 100%" v-loading="skuLoading">
+          <el-table :data="skuList" border style="width: 100%" v-loading="skuLoading" height="550">
             <el-table-column prop="pskalias" label="SKU别名"></el-table-column>
-            <el-table-column prop="pskproperKey" label="SKU"></el-table-column>
+            <el-table-column prop="pskproperKey" label="SKU" width="200"></el-table-column>
             <el-table-column prop="pskpurchase" label="进货价"></el-table-column>
             <el-table-column prop="pskprice" label="售价"></el-table-column>
             <el-table-column prop="pskprofict" label="支出佣金"></el-table-column>
             <el-table-column prop="pskpostfee" label="物流费"></el-table-column>
             <el-table-column prop="pskproductnum" label="库存"></el-table-column>
           </el-table>
-          <Pagination class="page-box" :total="total_page" @pageChange="skuPageChange"></Pagination>
-        </div>
-
-        <div slot="footer" class="dialog-footer">
-          <el-button class="at-img-dialog-btn btn-color" type="primary" @click="skuDialog = false">关闭</el-button>
         </div>
       </el-dialog>
 
@@ -150,10 +145,6 @@
           this.getProduct();      // 获取商品list
         }
       },
-      // sku分页点击方法
-      skuPageChange(v) {
-
-      },
       // 顶部查找商品的按钮
       searchProduct() {
         // console.log(this.keyword != "", this.createTime.length != 0, this.leftPrice != "", this.rightPrice != "");
@@ -183,6 +174,8 @@
         axios.get(api.get_one, { params: params }).then(res => {
           if(res.data.status == 200) {
             this.skuList = res.data.data.sku;
+            this.total_page = Math.ceil(res.data.count / this.page_size);
+
             for(let i = 0; i < this.skuList.length; i ++) {
               this.skuList[i].pskproperKey = "";
               for(let j = 0; j < this.skuList[i].pskproperkey.length; j ++) {
