@@ -1,5 +1,6 @@
 // const title ='https://daaiti.cn/';
 const title ='https://weidian.daaiti.cn/';
+// const title ='https://dsn.apizza.net/mock/e4811e0cd9658bcb8efa01d13fee5608/';
 
 const api={
   login: title + 'super/login',       // 管理员登录
@@ -13,17 +14,17 @@ const api={
   del_task: title + 'task/del_task',                        // 删除任务
   del_task_level: title + 'task/del_task_level',            // 删除任务等级
 
-  get_bigactivitys: title + 'bigactivity/get_bigactivitys', //获取专题列表-后台
-  get_all_hot_message: title + 'hotmessage/get_all',        //获取全部热文 - 首页
-  add_one_hot_message: title + 'hotmessage/add_one',        //添加热文 - 首页
-  update_one_hot_message: title + 'hotmessage/update_one',  //编辑热文 - 首页
-  get_product: title + 'product/get_all',                   //模糊搜索商品 - 全部商品
-  get_activity_list_by_actitle: title + 'activity/get_activity_list_by_actitle',  //模糊搜索公告/教程
+  get_bigactivitys: title + 'bigactivity/get_bigactivitys', // 获取专题列表-后台
+  get_all_hot_message: title + 'hotmessage/get_all',        // 获取全部热文 - 首页
+  add_one_hot_message: title + 'hotmessage/add_one',        // 添加热文 - 首页
+  update_one_hot_message: title + 'hotmessage/update_one',  // 编辑热文 - 首页
+  get_activity_list_by_actitle: title + 'activity/get_activity_list_by_actitle',  // 模糊搜索公告/教程
   create_hbact: title + 'bigactivity/create_hbact',         // 添加首页专题（轮播图）
   create_dbact: title + 'bigactivity/create_dbact',         // 添加发现页专题（轮播图）
   update_bact: title + 'bigactivity/update_bact',           // 修改专题/删除轮播图（测试）
   get_home: title + 'topnav/get_home',                      // 获取上部导航 - 首页
   get_dp: title + 'topnav/get_dp',                          // 获取上部导航 - 发现页
+  get_all_topnav: title + 'topnav/get_all_topnav',          // 获取所有导航
   get_all_activity: title + 'activity/get_all',             // 获取首页/发现页活动/推文内容列表
   add_one_activity: title + 'activity/add_one',             // 添加首页活动/推文（测试）
   update_act: title + 'activity/update_act',                // 修改/删除活动/推文 - 首页/发现页
@@ -83,6 +84,9 @@ const api={
   get_all_complain: title + 'complain/get_all',             // 查看投诉记录
   update_status: title + 'complain/update_status',          // 更新投诉状态
 
+  get_product: title + 'product/get_all',                   // 模糊搜索商品 - 全部商品
+  get_list: title + 'product/get_list',                     // 获取商品池商品list
+  get_one: title + 'product/get_one',                       // 获取商品池商品list
 };
 
 export default api
