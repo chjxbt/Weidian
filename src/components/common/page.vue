@@ -12,7 +12,8 @@
 
     <div class="page-button">
       <!--<span @click="change(1)">首页</span>-->
-      <el-pagination background layout="prev, pager, next" :page-count="total" @current-change="change">
+      <!--<el-pagination background layout="total, prev, pager, next, jumper" :total="num" :page-count="total" @current-change="change">-->
+      <el-pagination background layout="prev, pager, next, jumper" :page-count="total" @current-change="change">
       </el-pagination>
       <!--<span @click="change(total)">尾页</span>-->
     </div>
