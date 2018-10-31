@@ -22,7 +22,7 @@ from WeiDian.common.token_required import verify_token_decorator, is_partner, is
 from WeiDian.common.import_status import import_status
 from WeiDian.control.CRaward import CRaward
 from WeiDian.models.model import OrderProductInfo, OrderInfo, OrderProductResend, UserRaward, OrderProductSendTwice, \
-    RewardTransfer, Raward, UserCommisionPriview, UserCommision, UserCommisionFlow
+    RewardTransfer, Raward, UserCommisionPriview, UserCommision, UserCommisionFlow, Product
 from WeiDian.service.SOrder import SOrder
 from WeiDian.service.SProductImage import SProductImage
 from WeiDian.service.SProductSkuKey import SProductSkuKey
@@ -53,6 +53,7 @@ class COrder():
         if is_tourist():
             return TOKEN_ERROR
         data = request.json
+        logger.debug("create order data is %s", data)
         if not data:
             return PARAMS_MISS
         required = ['oiaddress', 'oirecvname', 'oirecvphone', 'sku']
@@ -79,6 +80,21 @@ class COrder():
             for order_product in orderproductinfo_dict_list:
                 orderproduct_instance = OrderProductInfo.create(order_product)
                 model_beans.append(orderproduct_instance)
+
+                # 更新对应商品销量
+                product = session.query(Product).filter(Product.PRid == order_product['PRid']).first()
+                logger.debug("PRID is %s", order_product['PRid'])
+                logger.debug("user buy OPIproductnum is %s", order_product['OPIproductnum'])
+                logger.debug("is product there %s", product)
+                logger.debug("get soldvolume is %s", product.PRsalesvolume)
+                product.PRsalesvolume = product.PRsalesvolume + order_product['OPIproductnum']
+                logger.debug("After modification soldvolume is %s", product.PRsalesvolume)
+                if product.PRsalefakenum:
+                    logger.debug("get fakesoldvolume is %s", product.PRsalefakenum)
+                    product.PRsalefakenum = product.PRsalefakenum + order_product['OPIproductnum']
+                    logger.debug("After modification fakesoldvolume is %s", product.PRsalefakenum)
+
+            # 佣金
             for commsion in commission_list:
                 user_commsion_instance = UserCommisionPriview.create(commsion)
                 model_beans.append(user_commsion_instance)
@@ -127,7 +143,7 @@ class COrder():
         status = ['2', '4', '5', '7', '9', '10', '11'] if status == '20' else status
         print status
         try:
-            if sell == 'true':
+            if str(sell) == 'true':
                 order_list = self.sorder.get_sell_order_by_status(request.user.id, status, int(args["page_num"]), int(args["page_size"]))
                 # order_list_count = self.sorder.get_sell_ordercount_by_status(request.user.id, status)
             else:
@@ -163,7 +179,7 @@ class COrder():
         sell = args.get('sell')
         print (request.user.id)
         all_status = ['1', '4', '5', '6', '11']
-        if sell == 'true':
+        if str(sell) == 'true':
             json_data = [
                 {
                     'status': u'全部',
@@ -913,6 +929,15 @@ class COrder():
         updated = self.sorder.update_order_by_oiid(oiid, {
             'OIpaystatus': 7
         })
+        # 取消订单时同时减少商品销量数
+        try:
+            cancel_product_list = self.sorder.get_orderproductinfo_by_oiid(oiid)
+            for prinfo in cancel_product_list:
+                self.sproduct.update_prsalesvolume(prinfo.PRid, -int(prinfo.OPIproductnum))
+            logger.debug("update salevolume success when cancel order, OPIproductnum is %s", prinfo.OPIproductnum)
+        except Exception as e:
+            logger.debug("cancel salevolume error %s", e)
+
         response = {'message': u'取消成功', 'status': 200}
         return response
 
@@ -943,7 +968,7 @@ class COrder():
                 PRid=prid,
                 PSKproperkey=productskukey.PSKproperkey,  # 商品属性组合(sku)
             )
-            orderproductinfo_dict['OPIproductname'] = product.PRname
+            orderproductinfo_dict['OPIproductname'] = product.PRtitle
             orderproductinfo_dict['OPIproductimages'] = product.PRmainpic
             orderproductinfo_dict['OPIproductnum'] = int(sku.get('num', 1))
             true_price = Decimal(str(self.sproductskukey.get_true_price(pskid, partner=is_partner())))

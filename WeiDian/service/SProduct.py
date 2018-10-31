@@ -2,19 +2,13 @@
 import sys
 import os
 from SBase import SBase, close_session
-from WeiDian.models.model import Product, ProductLike, Recommend, RecommendProduct, Activity, ProductTarget
+from WeiDian.models.model import Product, RecommendProduct, ProductTarget, ProductBigActivity
 from sqlalchemy import or_
 
 sys.path.append(os.path.dirname(os.getcwd()))
 
 
 class SProduct(SBase):
-
-    @close_session
-    def get_soldnum_by_pid(self, prid):
-        """获取销售总量, 真实的"""
-        product = self.session.query(Product).filter_by(PRid=prid).first()
-        return product.PRsalesvolume
 
     @close_session
     def get_product_by_prid(self, prid):
@@ -36,15 +30,15 @@ class SProduct(SBase):
         return product_list
 
     @close_session
-    def get_product_filter(self, kw=None, isdelete=None, status=None, page=None, count=None):
+    def get_product_filter(self, kw=None, isdelete=False, status=None, page=None, count=None):
         """模糊搜索商品名字"""
         if kw == None:
-            # return self.session.query(Product).filter_without_none(Product.PRstatus == 1, Product.PReditstate == 1, Product.PRstatus == status, Product.PRisdelete == isdelete).contain(Product.PRtitle == kw).all_with_page(page, count)
-            return self.session.query(Product).filter_without_none(Product.PRstatus == 1, Product.PReditstate == 1, Product.PRstatus == status, Product.PRisdelete == isdelete).all_with_page(page, count)
+            return self.session.query(Product).filter_without_none(
+                Product.PReditstate == 1,
+                Product.PRstatus == status,
+                Product.PRisdelete == isdelete).all_with_page(page, count)
         else:
-            return self.session.query(Product).\
-            filter_without_none(
-                Product.PRstatus == 1,
+            return self.session.query(Product).filter_without_none(
                 Product.PReditstate == 1,
                 Product.PRstatus == status,
                 Product.PRisdelete == isdelete
@@ -52,14 +46,19 @@ class SProduct(SBase):
                          Product.PRoductId.like("%{0}%".format(kw)))).all_with_page(page, count)
 
     @close_session
-    def get_all_by_filter(self, pagenum, pagesize):
-        pass
-
-    @close_session
     def get_product_list_by_reid(self, reid):
         return self.session.query(Product).join(
             RecommendProduct, Product.PRid == RecommendProduct.PRid).filter(
             RecommendProduct.REid == reid).order_by(RecommendProduct.RPsort.asc()).all()
+
+    @close_session
+    def update_prsalesvolume(self, prid, num=1):
+        """下单时更新商品销量"""
+        product = self.session.query(Product).filter(Product.PRid == prid).first()
+        product.PRsalesvolume = product.PRsalesvolume + num
+        if product.PRsalefakenum:
+            product.PRsalefakenum = product.PRsalefakenum + num
+        self.session.add(product)
 
     @close_session
     def update_view_num(self, prid):
@@ -69,7 +68,6 @@ class SProduct(SBase):
         if product.PRfakeviewnum:
             product.PRfakeviewnum = product.PRfakeviewnum + 1
         self.session.add(product)
-        # self.session.commit()
 
     @close_session
     def update_like_num(self, prid, num=1):
@@ -95,6 +93,10 @@ class SProduct(SBase):
     @close_session
     def get_product_target_by_prid(self, prid):
         return self.session.query(ProductTarget).filter(ProductTarget.PRid == prid).all()
+
+    @close_session
+    def get_product_baid_by_prid(self, prid):
+        return self.session.query(ProductBigActivity).filter(ProductBigActivity.PRid == prid).all()
 
 
 if __name__ == '__main__':

@@ -13,6 +13,12 @@ activity_type = {
     '10': 'x元x件',
 }
 
+activity_edit_status = {
+    '0': '未绑定',
+    '1': '草稿',
+    '2': '编辑完成',
+    '3': '已下架'
+}
 
 complain_type = {
     '201': "客服态度差",

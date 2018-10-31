@@ -15,7 +15,8 @@ class SUserAddress(SBase):
 
     @close_session
     def get_first_no_default_address(self, usid):
-        return self.session.query(UserAddress).filter_by(USid=usid, UAisdelete=False, UAdefault=False).first()
+        return (self.session.query(UserAddress).filter_by(USid=usid, UAisdelete=False, UAdefault=False)
+                .order_by(UserAddress.UAcreatetime.desc()).first())
 
     @close_session
     def get_address_list_by_usid(self, usid):

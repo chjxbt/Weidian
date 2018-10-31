@@ -91,7 +91,7 @@ class CRaward():
         if not is_admin():
             raise AUTHORITY_ERROR(u'非管理员权限')
         data = request.json
-        logger.debug("del reward id is %s", data)
+        logger.debug("update or del reward id is %s", data)
         raid = data.get('raid')
         raisdelete = data.get('raisdelete')
         rptid = data.get('rptid')

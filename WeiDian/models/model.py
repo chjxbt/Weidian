@@ -173,7 +173,7 @@ class Product(BaseModel):
     PRishhare = Column(Boolean, default=True)  # 是否共享
     SUid = Column(String(64))  # 发布者, 创建人
     PRcreatetime = Column(String(14))  # 创建时间
-    SUmodifyid = Column(String(64))  # 修改人id
+    SUmodifyid = Column(String(64))  # 认领推文运营id
     PRmodifytime = Column(String(14))  # 修改时间
     PRstatus = Column(Integer, default=1)  # 商品状态: {0 下架, 1 正常, 2 禁用}
     PRprice = Column(Float, nullable=False)  # 显示价格
@@ -226,6 +226,7 @@ class ProductSkuKey(BaseModel):
     PSKalias = Column(String(64), nullable=False)  # 商品别名
     PSKprice = Column(Float, default=0.00)  # 价格
     PSKprofict = Column(Float, default=5, comment=u'利润')
+    PSKpurchase = Column(Float, comment=u'进货价')
     PSKpostfee = Column(Float, nullable=False)  # 物流费
     PSKactiviyid = Column(String(64))  # 活动id, 不知用处
     PSskuid = Column(Integer)  # 微点商品sku id
@@ -283,12 +284,19 @@ class ProductImage(BaseModel):
 
 
 class ProductTarget(BaseModel):
-    """商品关联专题"""
+    """商品关联模块"""
     __tablename__ = 'producttarget'
     PTid = Column(String(64), primary_key=True)
     PRid = Column(String(64), nullable=False)      # 商品id
     PRtarget = Column(String(64), nullable=False)  # 对应模块id
 
+
+class ProductBigActivity(BaseModel):
+    """商品关联专题"""
+    __tablename__ = 'productbigactivity'
+    PBid = Column(String(64), primary_key=True)
+    PRid = Column(String(64), nullable=False)      # 商品id
+    BAid = Column(String(64), nullable=False)      # 对应专题id
 
 class ProductLike(BaseModel):
     """商品收藏(喜欢)"""
@@ -392,7 +400,7 @@ class OrderInfo(BaseModel):
     OIaddress = Column(String(255), nullable=False)  # 地址
     OIrecvname = Column(String(64), nullable=False)  # 收货人
     OIrecvphone = Column(String(16), nullable=False)  # 收货人电话
-    OIcreatetime = Column(DateTime)  # 订单创建时间
+    OIcreatetime = Column(DateTime, default=datetime.now)  # 订单创建时间
     OIisdelete = Column(Boolean, default=False)  # 是否删除
     Sellerid = Column(String(64))  # 卖家id
     RAid = Column(String(64), comment=u'优惠券id')
