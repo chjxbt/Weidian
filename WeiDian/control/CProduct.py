@@ -324,7 +324,7 @@ class CProduct(BaseProductControl):
                     'PRtarget': '101'
                 })
             else:
-                topnav_list = self.stopnav.get_all_topnav()
+                topnav_list = self.stopnav.get_all_tnid()
                 tnid_list = []
                 [tnid_list.append(topnav.TNid) for topnav in topnav_list]
                 with self.sproduct.auto_commit() as session:
