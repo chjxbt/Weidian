@@ -20,6 +20,7 @@ class AProduct(Resource):
             'update_sku': 'self.cproduct.update_sku()',
             'update_product': 'self.cproduct.update_product()',
             'update_product_image': 'self.cproduct.update_product_image()',
+            'update_product_bigactivity': 'self.cproduct.update_product_relate_bigactivity()',
         }
         res = eval(apis[product])
         return jsonify(res)
@@ -30,7 +31,8 @@ class AProduct(Resource):
             "get_all": 'self.cproduct.get_product_list()',
             'get_one': 'self.cproduct.get_product_one()',
             "get_one_by_productid": "self.cproduct.get_one_by_productid()",
-            "get_list": "self.cproduct.get_product_pools()"
+            "get_list": "self.cproduct.get_product_pools()",
+            "get_product_bigactivity": "self.cproduct.get_product_relate_bigactivity()",
         }
         res = eval(apis[product])
         return jsonify(res)

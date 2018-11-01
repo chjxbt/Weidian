@@ -35,6 +35,8 @@ class CProduct(BaseProductControl):
         self.sproductlike = SProductLike()
         from WeiDian.control.Cuser import CUser
         self.cuser = CUser()
+        from WeiDian.service.SBigActivity import SBigActivity
+        self.sbigactivity = SBigActivity()
         self.empty = ['', [], {}, None]
         # 后续修改
         self.partner = Partner()
@@ -295,8 +297,70 @@ class CProduct(BaseProductControl):
         data["page_count"] = request.page_count
         return data
 
+    @verify_token_decorator
+    def get_product_relate_bigactivity(self):
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'请使用管理员账号重新登录')
+        prid = request.args.to_dict().get('prid')
+        parameter_required('prid')
+        logger.debug("get product relate bigactivity PRID is %s", prid)
+        prbaids = self.sproduct.get_product_baid_by_prid(prid)
+        list_baid = []
+        for prbaid in prbaids:
+            dict_baid = {
+                'pbid': prbaid.PBid,
+                'baid': prbaid.BAid,
+                'claimid': "73cfdf7a-130a-4a73-b180-d87efba872cd",
+                'clainname': "这是用户名称"
+            }
+            # todo 创建记录表/从操作记录表查询 运营id
+            # todo 商品上架状态已有，推文上下架状态待添加
+            # todo 整体商品修改
+            list_baid.append(dict_baid)
+        response = import_status("messages_get_item_ok", "OK")
+        response['data'] = list_baid
+        return response
 
-
+    @verify_token_decorator
+    def update_product_relate_bigactivity(self):
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'请使用管理员账号重新登录')
+        data = request.json
+        pbid = data.get('pbid')
+        baid = data.get('baid')
+        prid = data.get('prid')
+        option = data.get('option')
+        if not re.match(r'^[0-2]$', str(option)):
+            raise PARAMS_MISS(u'option 参数异常')
+        if baid not in self.empty:
+            bigact = self.sbigactivity.get_one_big_act(baid)
+            if not bigact:
+                raise NOT_FOUND(u'输入的关联专题不存在')
+        if prid not in self.empty:
+            product = self.sproduct.get_product_by_prid(prid)
+            if not product:
+                raise NOT_FOUND(u'商品信息不存在')
+        if str(option) == '0':
+            parameter_required('pbid')
+            del_info = self.sproduct.del_productbigactivity_by_filter({'PBid': pbid})
+            if not del_info:
+                raise NOT_FOUND(u'错误，未找到要删除的关联专题')
+        elif str(option) == '1':
+            parameter_required('prid', 'baid')
+            pbid = str(uuid.uuid1())
+            self.sproduct.add_model('ProductBigActivity', **{
+                'PBid': pbid,
+                'PRid': prid,
+                'BAid': baid
+            })
+        elif str(option) == '2':
+            parameter_required('pbid', 'baid')
+            pbact = self.sproduct.get_productbigactivity_by_filter({'PBid': pbid}, {'BAid': baid})
+            if not pbact:
+                raise NOT_FOUND(u'修改失败')
+        response = import_status("update_success", "OK")
+        response['data'] = {'pbid': pbid}
+        return response
 
     def get_product_list(self):
         args = request.args.to_dict()

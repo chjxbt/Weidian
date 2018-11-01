@@ -13,8 +13,7 @@ class SProduct(SBase):
     @close_session
     def get_product_by_prid(self, prid):
         """根据商品id获取商品"""
-        product = self.session.query(Product).filter_by(PRid=prid).first()
-        return product
+        return self.session.query(Product).filter_by(PRid=prid).first()
 
     @close_session
     def get_prmainpic_by_prid(self, prid):
@@ -96,7 +95,19 @@ class SProduct(SBase):
 
     @close_session
     def get_product_baid_by_prid(self, prid):
+        """通过prid获取商品关联的所有专题"""
         return self.session.query(ProductBigActivity).filter(ProductBigActivity.PRid == prid).all()
+
+    @close_session
+    def get_productbigactivity_by_filter(self, pbfilter, pbinfo):
+        """修改商品与专题的单条关联"""
+        return self.session.query(ProductBigActivity).filter_by(**pbfilter).update(pbinfo)
+
+    @close_session
+    def del_productbigactivity_by_filter(self, pbfilter):
+        """删除商品与专题的单条关联"""
+        return self.session.query(ProductBigActivity).filter_by(**pbfilter).delete()
+
 
 
 if __name__ == '__main__':
