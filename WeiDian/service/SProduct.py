@@ -90,8 +90,8 @@ class SProduct(SBase):
             Product.PRoductId == productid, Product.PRstatus == 1, Product.PRisdelete == False).first()
 
     @close_session
-    def get_product_target_by_productid(self, productid):
-        return self.session.query(ProductTarget).filter(ProductTarget.PRid == productid).all()
+    def get_product_target_by_prid(self, prid):
+        return self.session.query(ProductTarget).filter(ProductTarget.PRid == prid).all()
 
     @close_session
     def get_product_baid_by_prid(self, prid):

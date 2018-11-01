@@ -244,7 +244,7 @@ class BaseProductControl():
 
     def fill_prtarget(self, product):
         prid = product.PRid
-        target_list = [target.PRtarget for target in self.sproduct.get_product_target_by_productid(prid)]
+        target_list = [target.PRtarget for target in self.sproduct.get_product_target_by_prid(prid)]
         # if '101' in target_list:
         product.PRtarget = target_list
         return product

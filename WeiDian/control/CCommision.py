@@ -30,7 +30,7 @@ class CCommision(object):
                 'sold_income': self._user_commision(usid, 0),  # 销售佣金
                 'invite_open': self._user_commision(usid, 10),  # 邀请开店佣金
                 'fans_outincome': self._user_commision(usid, 20),   # 专粉支出佣金
-                'group_income': self._user_commision(usid, 30),  # 团队佣金
+                'group_income': self._team_commision(usid),  # 团队佣金
                 'remain': self._remain_commision(usid),   # 余额
                 'reward_income': self._user_commision(usid, 40),  # 奖励佣金
                 'priview': self._privew_commision(usid),  # 预估到帐
@@ -78,13 +78,7 @@ class CCommision(object):
         priview_mount = sum(Decimal(x.UCPnums) for x in commsion_privews) if commsion_privews else 0
         return float(priview_mount)
 
-
-
-
-
-
-
-
-
-
-
+    def _team_commision(self, usid):
+        team_commision = self.scommion.get_teamcommision_by_usid(usid)
+        team_amout = sum(Decimal(x.TCtotal) for x in team_commision) if team_commision else 0
+        return float(team_amout)

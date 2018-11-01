@@ -559,6 +559,12 @@ class COrder():
         if order.OIpaystatus not in [5, 12]:
             raise NOT_FOUND(u'订单未发货或已收货')
         order_product_list = self.sorder.get_orderproductinfo_by_oiid(oiid)
+        # todo 二三级合伙人升级操作
+        if not is_admin():
+            biglist = filter(self.check_big, order_product_list)  # 校验订单是否包含大礼包
+            self.upgrade_user(data, biglist)  # 如果是大礼包而且当前用户不是店主，则升级为初级合伙人，并且指派上级
+        # todo 团队佣金累加计算 按月累计 逻辑有问题待重新规划
+
         with self.sorder.auto_commit() as session:
             if len(filter(lambda x: x.OPIstatus in [0], order_product_list)):
                 raise PARAMS_MISS(u'部分商品未发货')
@@ -570,12 +576,13 @@ class COrder():
             session.query(OrderProductInfo).filter(OrderProductInfo.OIid == oiid).update({
                 'OPIstatus': 2  # 交易成功
             })
-            # 佣金到帐
+            # 佣金到帐 开店上级佣金
             order_products = session.query(OrderProductInfo).filter(OrderProductInfo.OIid == oiid).all()
             for order_product in order_products:
                 user_commsion_previews = session.query(UserCommisionPriview).filter(
                     UserCommisionPriview.OPIid == order_product.OPIid,
-                    UserCommisionPriview.UCPstatus == 0
+                    UserCommisionPriview.UCPstatus == 0,
+                    UserCommisionPriview.UCtype == 0,
                 ).all()  # 预估佣金
                 for user_commsion_preview in user_commsion_previews:
                     user_commsion_preview.UCPstatus = 10  # 设置为已到帐
@@ -598,6 +605,35 @@ class COrder():
                         'USid': usid
                     })
                     add_list.append(new_commsion_flow)
+
+                user_commsion_previews = session.query(UserCommisionPriview).filter(
+                    UserCommisionPriview.OPIid == order_product.OPIid,
+                    UserCommisionPriview.UCPstatus == 0,
+                    UserCommisionPriview.UCtype == 1,
+                ).all()  # 预估专粉佣金
+                for user_commsion_preview in user_commsion_previews:
+                    user_commsion_preview.UCPstatus = 10  # 设置为已到帐
+                    usid = user_commsion_preview.USid
+                    user_commsion = session.query(UserCommision).filter(UserCommision.USid == usid).first()
+                    if user_commsion:
+                        user_commsion.UCnum += user_commsion_preview.UCPnums
+                        user_commsion.UCtotal += user_commsion_preview.UCtotal
+                    else:
+                        new_user_commsion = UserCommision.create({
+                            'UCid': str(uuid.uuid4()),
+                            'USid': usid,
+                            'UCnum': user_commsion_preview.UCPnums
+                        })  # 佣金到帐
+                        add_list.append(new_user_commsion)
+                    # 佣金流水表
+                    new_commsion_flow = UserCommisionFlow.create({
+                        'UCfid': str(uuid.uuid4()),
+                        'UCFnums': user_commsion_preview.UCPnums,
+                        'USid': usid,
+                        'UCFtype': 20
+                    })
+                    add_list.append(new_commsion_flow)
+
             session.add_all(add_list)
 
         response = import_status('confirm_order_success', 'OK')
@@ -1062,42 +1098,56 @@ class COrder():
         return 'is_gift' if gift else 'is_own'
 
     def _caculate_commison_by_profit(self, profict, usid, opiid, nums):
-        # 三级佣金计算
+        # 佣金收益计算
         user = self.suser.get_user_by_user_id(usid)
         profict = Decimal(str(profict * nums))
         p = Partner()
         commissions = []
         if user and user.UPPerd:
+            # 专粉佣金计算
             user_order_count = self.sorder.get_sell_ordercount_by_item_status(usid)
-            commission_without_ordercount = profict * Decimal(str(p.one_level_divide))   # 上一级佣金, 未根据订单数量加成
+            commission_without_ordercount = profict * Decimal(str(p.one_level_divide))  # 上一级佣金, 未根据订单数量加成
             commsion_price = self._caculate_devite_rate(commission_without_ordercount, user_order_count)
             commsion_dict = {
                 'UCPid': str(uuid.uuid4()),
                 'OPIid': opiid,
                 'USid': user.UPPerd,
                 'UCPnums': commsion_price,
+                'UCtype': 1
+            }
+            commissions.append(commsion_dict)
+
+            if not user.USshopkeeper:
+                return commissions
+            # 三级佣金计算
+            # commsion_price = commission_without_ordercount
+            commsion_dict = {
+                'UCPid': str(uuid.uuid4()),
+                'OPIid': opiid,
+                'USid': user.USshopkeeper,
+                'UCPnums': commission_without_ordercount,
             }
             commissions.append(commsion_dict)
             user_upperd = self.suser.get_user_by_user_id(user.UPPerd)
             if user_upperd and user_upperd.UPPerd:
                 commission_without_ordercount = profict * Decimal(str(p.two_level_divide))  # 上两级级佣金, 未根据订单数量加成
-                commsion_price = self._caculate_devite_rate(commission_without_ordercount, user_order_count)
+                # commsion_price = self._caculate_devite_rate(commission_without_ordercount, user_order_count)
                 commsion_dict = {
                     'UCPid': str(uuid.uuid4()),
                     'OPIid': opiid,
-                    'USid': user_upperd.UPPerd,
-                    'UCPnums': commsion_price,
+                    'USid': user_upperd.USshopkeeper,
+                    'UCPnums': commission_without_ordercount,
                 }
                 commissions.append(commsion_dict)
                 user_upper_s_upperd = self.suser.get_user_by_user_id(user_upperd.UPPerd)
                 if user_upper_s_upperd and user_upper_s_upperd.UPPerd:
                     commission_without_ordercount = profict * Decimal(str(p.three_level_divide))  # 上3级佣金, 未根据订单数量加成
-                    commsion_price = self._caculate_devite_rate(commission_without_ordercount, user_order_count)
+                    # commsion_price = self._caculate_devite_rate(commission_without_ordercount, user_order_count)
                     commsion_dict = {
                         'UCPid': str(uuid.uuid4()),
                         'OPIid': opiid,
-                        'USid': user_upperd.UPPerd,
-                        'UCPnums': commsion_price,
+                        'USid': user_upperd.USshopkeeper,
+                        'UCPnums': commission_without_ordercount,
                     }
                     commissions.append(commsion_dict)
 
@@ -1105,12 +1155,22 @@ class COrder():
 
     @staticmethod
     def _caculate_devite_rate(item, user_order_count):
-        if 0 <= user_order_count <= 4:
-            rate = Decimal('1.04')
-        elif 5 <= user_order_count <= 19:
-            rate = Decimal('1.07')
+        if not user_order_count:
+            user_order_count = 0
+        p = Partner()
+        level1_max = p.get_item('level_limit_1', 'max')
+        level1_min = p.get_item('level_limit_1', 'min')
+        level2_max = p.get_item('level_limit_2', 'max')
+        level2_min = p.get_item('level_limit_2', 'min')
+
+        if int(level1_min) <= user_order_count <= int(level1_max):
+            level_rate = p.get_item('level_limit_1', 'profit')
+        elif int(level2_min) <= user_order_count <= int(level2_max):
+            level_rate = p.get_item('level_limit_2', 'profit')
         else:
-            rate = Decimal('1.1')
+            level_rate = p.get_item('level_limit_3', 'profit')
+
+        rate = Decimal('1') + Decimal(str(level_rate)) / 100
         return float(round(item * rate, 2))
 
     def pay_error(self):
@@ -1121,3 +1181,23 @@ class COrder():
             "return_msg": "OK"
         }
 
+    def check_big(self, orderproduct):
+        # productsku = self.sproduct
+        # product = self.sproduct.get_prmainpic_by_prid(orderproduct.PRid)
+        # if not product:
+        #     raise SYSTEM_ERROR(u"数据库异常")
+        prtarget_list = self.sproduct.get_product_target_by_prid(orderproduct.PRid)
+        prtarget_list = [prtarget.PRtarget for prtarget in prtarget_list]
+        return '101' in prtarget_list
+
+    def upgrade_user(self, data, biglist):
+        """如果是大礼包订单则升级该用户并且指派上级"""
+        if not biglist:
+            return
+        USshopkeeper = data.get("usshopkeeper")
+        user = dict(USshopkeeper=USshopkeeper, USlevel=1)
+        logger.debug('start upgrad user %s, params is %s', request.user.USname, user)
+        update_result = self.suser.update_user(request.user.id, user)
+        if not update_result:
+            logger.error('update user error, check database')
+            raise SYSTEM_ERROR
