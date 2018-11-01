@@ -3,6 +3,7 @@ import sys
 import os
 
 from WeiDian.config.enums import activity_edit_status
+from WeiDian.models.model import ProductTarget
 from flask import request
 import re
 import json
@@ -37,6 +38,10 @@ class CProduct(BaseProductControl):
         self.cuser = CUser()
         from WeiDian.service.SBigActivity import SBigActivity
         self.sbigactivity = SBigActivity()
+        from WeiDian.service.STopNav import STopNav
+        self.stopnav = STopNav()
+        from WeiDian.service.SOrder import SOrder
+        self.sorder = SOrder()
         self.empty = ['', [], {}, None]
         # 后续修改
         self.partner = Partner()
@@ -277,10 +282,10 @@ class CProduct(BaseProductControl):
             if product.PRtarget:
                 isbig = True if product.PRtarget[0] == '101' else False
             product.fill(isbig, 'isbig')
-            pv = product.PRfakeviewnum or product.PRviewnum
+            pv = product.PRviewnum
             product.fill(pv, 'pv')
-            salesvolume = product.PRsalefakenum or product.PRsalesvolume
-            transform = float(salesvolume)/int(pv)
+            salesvolume = product.PRsalesvolume
+            transform = salesvolume/float(pv)
             ortransform = "%.2f%%" % (transform * 100)
             product.fill(ortransform, 'ortransform')
             product.fill(product.prbaid, 'prbaid')
@@ -298,7 +303,54 @@ class CProduct(BaseProductControl):
         return data
 
     @verify_token_decorator
+    def update_product_relate_prtarget(self):
+        """商品池修改商品与模块的关联"""
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'请使用管理员账号重新登录')
+        data = request.json
+        logger.debug("update product relate prtarget data is %s", data)
+        prid = data.get('prid')
+        prtargets = data.get('prtarget')
+        if prtargets:
+            if len(prtargets) > 3:
+                raise SYSTEM_ERROR(u'每个商品最多只能关联三个模块')
+            ptid = str(uuid.uuid1())
+            if '101' in prtargets:
+                del_info = self.sproduct.del_product_target_by_filter({"PRid": prid})
+                logger.debug("del prtarget relation success before add operation, del count: %s", del_info)
+                self.sproduct.add_model("ProductTarget", ** {
+                    'PTid': ptid,
+                    'PRid': prid,
+                    'PRtarget': '101'
+                })
+            else:
+                topnav_list = self.stopnav.get_all_topnav()
+                tnid_list = []
+                [tnid_list.append(topnav.TNid) for topnav in topnav_list]
+                with self.sproduct.auto_commit() as session:
+                    model_beans = []
+                    for targetid in prtargets:
+                        if str(targetid) not in tnid_list:
+                            raise PARAMS_MISS(u'prtarget参数错误，未找到要关联的模块')
+                        prtarget_dict = dict(
+                            PTid=str(uuid.uuid4()),
+                            PRid=prid,
+                            PRtarget=targetid
+                        )
+                        prtarget_info = ProductTarget.create(prtarget_dict)
+                        model_beans.append(prtarget_info)
+                    session.query(ProductTarget).filter(ProductTarget.PRid == prid).delete()
+                    session.add_all(model_beans)
+        elif prtargets == []:
+            del_info = self.sproduct.del_product_target_by_filter({"PRid": prid})
+            logger.debug("del prtarget relation success this is none list: %s", del_info)
+        response = import_status("update_success", "OK")
+        response['data'] = {'prid': prid}
+        return response
+
+    @verify_token_decorator
     def get_product_relate_bigactivity(self):
+        """商品池获取商品与专题的关联详情"""
         if not is_admin():
             raise AUTHORITY_ERROR(u'请使用管理员账号重新登录')
         prid = request.args.to_dict().get('prid')
@@ -311,7 +363,8 @@ class CProduct(BaseProductControl):
                 'pbid': prbaid.PBid,
                 'baid': prbaid.BAid,
                 'claimid': "73cfdf7a-130a-4a73-b180-d87efba872cd",
-                'clainname': "这是用户名称"
+                'clainname': "这是用户名称",
+                'updatetime': "2018-11-01 15:48:00"
             }
             # todo 创建记录表/从操作记录表查询 运营id
             # todo 商品上架状态已有，推文上下架状态待添加
@@ -323,39 +376,54 @@ class CProduct(BaseProductControl):
 
     @verify_token_decorator
     def update_product_relate_bigactivity(self):
+        """商品池修改商品与专题的关联"""
+        # todo 增加日志记录
         if not is_admin():
             raise AUTHORITY_ERROR(u'请使用管理员账号重新登录')
         data = request.json
+        logger.debug("update product relate bigactivity data is %s", data)
         pbid = data.get('pbid')
         baid = data.get('baid')
         prid = data.get('prid')
         option = data.get('option')
         if not re.match(r'^[0-2]$', str(option)):
             raise PARAMS_MISS(u'option 参数异常')
-        if baid not in self.empty:
+        if baid == '':
+            raise PARAMS_MISS(u'baid 参数异常')
+        elif baid not in self.empty:
             bigact = self.sbigactivity.get_one_big_act(baid)
             if not bigact:
                 raise NOT_FOUND(u'输入的关联专题不存在')
-        if prid not in self.empty:
+        if prid == '':
+            raise PARAMS_MISS(u'prid 参数异常')
+        elif prid not in self.empty:
             product = self.sproduct.get_product_by_prid(prid)
             if not product:
                 raise NOT_FOUND(u'商品信息不存在')
-        if str(option) == '0':
+        if str(option) == '0':  # 0 删除
             parameter_required('pbid')
             del_info = self.sproduct.del_productbigactivity_by_filter({'PBid': pbid})
             if not del_info:
                 raise NOT_FOUND(u'错误，未找到要删除的关联专题')
-        elif str(option) == '1':
+        elif str(option) == '1':  # 1 添加
             parameter_required('prid', 'baid')
+            prbaid_list = self.sproduct.get_product_baid_by_prid(prid)
+            if prbaid_list:
+                logger.debug("exist prbaid count is %s", len(prbaid_list))
+                if len(prbaid_list) >= 3:
+                    raise SYSTEM_ERROR(u'每个商品最多只能关联三个专题')
+                for prbaid in prbaid_list:
+                    if baid == prbaid.BAid:
+                        raise SYSTEM_ERROR(u'已与此专题进行过关联')
             pbid = str(uuid.uuid1())
             self.sproduct.add_model('ProductBigActivity', **{
                 'PBid': pbid,
                 'PRid': prid,
                 'BAid': baid
-            })
-        elif str(option) == '2':
+                })
+        elif str(option) == '2':  # 2 修改
             parameter_required('pbid', 'baid')
-            pbact = self.sproduct.get_productbigactivity_by_filter({'PBid': pbid}, {'BAid': baid})
+            pbact = self.sproduct.update_productbigactivity_by_filter({'PBid': pbid}, {'BAid': baid})
             if not pbact:
                 raise NOT_FOUND(u'修改失败')
         response = import_status("update_success", "OK")

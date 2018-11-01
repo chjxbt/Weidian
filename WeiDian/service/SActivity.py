@@ -116,7 +116,10 @@ class SActivity(SBase):
             prid = cur_activity.AClinkvalue
             product = self.session.query(Product).filter_by(PRid=prid).first()
             if product:
-                return product.PRsalesvolume
+                if product.PRsalefakenum:
+                    return product.PRsalefakenum
+                else:
+                    return product.PRsalesvolume
             else:
                 print '无此商品, 销量查询无效'
                 return 0

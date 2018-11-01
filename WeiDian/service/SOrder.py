@@ -147,6 +147,10 @@ class SOrder(SBase):
             OrderInfo.OIid == oiid).all()
 
     @close_session
+    def get_orderproduct_by_prid(self, prid):
+        return self.session.query(OrderProductInfo).filter(OrderProductInfo.PRid == prid).all()
+
+    @close_session
     def get_orderproductinfo_by_oiid(self, oiid):
         return self.session.query(
             OrderProductInfo).filter_by(OIid=oiid).all()

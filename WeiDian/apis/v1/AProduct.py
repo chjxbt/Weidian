@@ -21,6 +21,7 @@ class AProduct(Resource):
             'update_product': 'self.cproduct.update_product()',
             'update_product_image': 'self.cproduct.update_product_image()',
             'update_product_bigactivity': 'self.cproduct.update_product_relate_bigactivity()',
+            'update_product_prtarget': 'self.cproduct.update_product_relate_prtarget()',
         }
         res = eval(apis[product])
         return jsonify(res)
@@ -33,6 +34,7 @@ class AProduct(Resource):
             "get_one_by_productid": "self.cproduct.get_one_by_productid()",
             "get_list": "self.cproduct.get_product_pools()",
             "get_product_bigactivity": "self.cproduct.get_product_relate_bigactivity()",
+            "get_product_prtarget": "self.cproduct.get_product_relate_prtarget()",
         }
         res = eval(apis[product])
         return jsonify(res)

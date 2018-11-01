@@ -25,6 +25,10 @@ class STopNav(SBase):
             TopNav.TSort).all()
 
     @close_session
+    def get_all_tnid(self):
+        return self.session.query(TopNav).filter(TopNav.Tisdelete == False).all()
+
+    @close_session
     def get_list_by_parentid(self, tnparentid=0):
         return self.session.query(TopNav).filter_by(Tisdelete=False, TNparentid=tnparentid).order_by(TopNav.TSort).all()
 

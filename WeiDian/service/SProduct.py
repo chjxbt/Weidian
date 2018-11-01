@@ -94,12 +94,22 @@ class SProduct(SBase):
         return self.session.query(ProductTarget).filter(ProductTarget.PRid == prid).all()
 
     @close_session
+    def del_product_target_by_filter(self, ptfilter):
+        """删除商品与模块的单条关联"""
+        return self.session.query(ProductTarget).filter_by(**ptfilter).delete()
+
+    @close_session
+    def update_product_target_by_filter(self, ptfilter, ptinfo):
+        """修改商品与专题的单条关联"""
+        return self.session.query(ProductTarget).filter_by(**ptfilter).update(ptinfo)
+
+    @close_session
     def get_product_baid_by_prid(self, prid):
         """通过prid获取商品关联的所有专题"""
         return self.session.query(ProductBigActivity).filter(ProductBigActivity.PRid == prid).all()
 
     @close_session
-    def get_productbigactivity_by_filter(self, pbfilter, pbinfo):
+    def update_productbigactivity_by_filter(self, pbfilter, pbinfo):
         """修改商品与专题的单条关联"""
         return self.session.query(ProductBigActivity).filter_by(**pbfilter).update(pbinfo)
 
