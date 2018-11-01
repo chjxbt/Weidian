@@ -31,13 +31,23 @@
             <template slot-scope="scope">
               <img class="product-img" :src="scope.row.prmainpic">
             </template></el-table-column>
-          <el-table-column prop="prTarget" label="所在模块" width="100"></el-table-column>
-          <el-table-column prop="prBaid" label="所在专题"></el-table-column>
+          <el-table-column prop="prTarget" label="所在模块" width="100">
+            <template slot-scope="scope">
+              <el-button class="blue-btn" type="text" size="small" @click="target(scope)">
+                <div class="text-btn" v-for="item in scope.row.prTarget">{{item}}</div>
+              </el-button>
+            </template>
+          </el-table-column>
+          <el-table-column prop="prBaid" label="所在专题">
+            <template slot-scope="scope">
+              <el-button class="blue-btn" type="text" size="small" @click="baid(scope)">{{scope.row.prBaid}}</el-button>
+            </template>
+          </el-table-column>
           <el-table-column prop="zh_activitystatus" label="单品推文内容状态"></el-table-column>
           <el-table-column prop="productid" label="商家编码"></el-table-column>
           <el-table-column prop="" label="sku" width="80">
             <template slot-scope="scope">
-              <el-button class="blue-btn" type="text" size="small" @click="sku(scope)">商品详情</el-button>
+              <el-button class="blue-btn" type="text" size="small" @click="sku(scope)">单品详情</el-button>
             </template>
           </el-table-column>
           <el-table-column prop="pv" label="pv"></el-table-column>
@@ -67,8 +77,54 @@
         <Pagination class="page-box" :total="total_page" @pageChange="pageChange"></Pagination>
       </div>
 
-      <!--商品sku-->
-      <el-dialog title="商品SKU" :visible.sync="skuDialog" width="8rem">
+      <!--单品所在模块-->
+      <el-dialog title="单品所在模块" :visible.sync="targetDialog" width="6rem">
+        <el-checkbox-group class="check-box-list" v-model="targetList" @change="checkBoxChange">
+          <el-checkbox class="check-box" v-for="item in tabList" :key="item.tnname" :label="item.tnname"></el-checkbox>
+        </el-checkbox-group>
+        <el-radio class="radio-target" v-model="targetRadio" label="101" @change="radioChange">大礼包</el-radio>
+
+        <div slot="footer" class="dialog-footer">
+          <div class="dialog-text">注意：一个单品最多可同时存在于三个模块下，且模块与大礼包不共存</div>
+          <el-button class="at-img-dialog-btn" @click="targetDialog = false">取消</el-button>
+          <el-button class="at-img-dialog-btn btn-color" type="primary" @click="saveTarget">保存</el-button>
+        </div>
+      </el-dialog>
+
+      <!--单品所属专题-->
+      <el-dialog title="单品所属专题" :visible.sync="baidDialog" width="8rem">
+        <div class="content-table" style="margin: -0.3rem 0 -0.2rem 0">
+          <el-table :data="baidList" stripe style="width: 100%" v-loading="baidLoading">
+            <el-table-column prop="baid" label="专题ID" width="420">
+              <template slot-scope="scope">
+                <div v-if="scope.row.disabled == '0'">{{scope.row.baid}}</div>
+                <el-select v-if="scope.row.disabled == '1' || scope.row.disabled == '2'" v-model="scope.row.baid" filterable placeholder="请选择专题" size="small" style="width: 2.8rem;">
+                  <el-option v-for="item in baList" :key="item.baid" :label="item.baid" :value="item.baid"></el-option>
+                </el-select>
+              </template>
+            </el-table-column>
+            <!--<el-table-column prop="claimid" label="运营ID" width="290"></el-table-column>-->
+            <el-table-column prop="clainname" label="运营名称"></el-table-column>
+            <el-table-column prop="updatetime" label="操作时间"></el-table-column>
+            <el-table-column fixed="right" label="管理" width="120">
+              <template slot-scope="scope">
+                <el-button type="text" size="small" @click="updateBa(scope, 3)" v-if="scope.row.disabled == '0'">编辑</el-button>
+                <el-button type="text" size="small" @click="updateBa(scope, 0)" v-if="scope.row.disabled == '0'">删除</el-button>
+                <el-button type="text" size="small" @click="updateBa(scope, 2)" v-if="scope.row.disabled == '1'">保存</el-button>
+                <el-button type="text" size="small" @click="updateBa(scope, 1)" v-if="scope.row.disabled == '2'">添加</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+        <div slot="footer" class="dialog-footer">
+          <div class="dialog-text">注意：一个单品最多可同时存在于三个专题下</div>
+          <el-button class="at-img-dialog-btn" @click="closeBaDialog">关闭</el-button>
+          <el-button class="at-img-dialog-btn btn-color" type="primary" @click="addBaid" v-if="baidList.length < 3">添加绑定</el-button>
+        </div>
+      </el-dialog>
+
+      <!--单品sku-->
+      <el-dialog title="单品SKU" :visible.sync="skuDialog" width="8rem">
         <div class="content-table" style="margin: -0.3rem 0 0 0">
           <el-table :data="skuList" border style="width: 100%" v-loading="skuLoading" height="550">
             <el-table-column prop="pskalias" label="SKU别名"></el-table-column>
@@ -82,8 +138,8 @@
         </div>
       </el-dialog>
 
-      <!--商品操作记录-->
-      <el-dialog title="商品操作记录" :visible.sync="recordsDialog" width="7rem">
+      <!--单品操作记录-->
+      <el-dialog title="单品操作记录" :visible.sync="recordsDialog" width="7rem">
         <!--<div class="content-table" style="margin-bottom: -0.2rem">
           <el-table :data="recordList" border style="width: 100%" v-loading="recordLoading">
             <el-table-column prop="usname" label="用户名"></el-table-column>
@@ -94,7 +150,6 @@
           </el-table>
           <Pagination class="page-box" :total="total_page" @pageChange="pageChangeR"></Pagination>
         </div>-->
-
         <div slot="footer" class="dialog-footer">
           <el-button class="at-img-dialog-btn btn-color" type="primary" @click="recordsDialog = false">关闭</el-button>
         </div>
@@ -114,24 +169,33 @@
     name: "product",
     data() {
       return {
-        name: '商品管理',
+        name: '单品管理',
         isSearch: false,              // 是否正在搜索
         keyword: '',                  // 搜索关键词
         createTime: [],               // 创建时间
         leftPrice: "",                // 价格区间 - 低价
         rightPrice: "",               // 价格区间 - 高价
-        productList: [],              // 商品管理的list
-        productLoading: false,        // 商品管理表格加载中
+        productList: [],              // 单品管理的list
+        productLoading: false,        // 单品管理表格加载中
         page_size: 4,                // 每页请求的数量
         page_num: 1,                  // 第几页
         total_page: 1,                // 总页数
         tabList: [],                  // 顶部所有导航list
-        skuDialog: false,             // 商品sku的dialog
-        skuList: [],                  // 商品sku的list
-        skuLoading: false,            // 商品sku的表格加载中
-        recordsDialog: false,         // 商品操作记录的dialog
-        recordsList: [],              // 商品操作记录的list
-        recordsLoading: false,        // 商品操作记录的表格加载中
+        targetDialog: false,          // 所在模块的dialog
+        targetList: [],               // 所在模块的list
+        targetRadio: "",              // 为101是大礼包
+        baidDialog: false,            // 所属专题的dialog
+        baidList: [],                 // 所属专题的list
+        baidLoading: false,           // 所属专题表格加载中
+        baidValue: "",                // 选择的专题id
+        baList: [],                   // 专题list
+        skuDialog: false,             // 单品sku的dialog
+        skuList: [],                  // 单品sku的list
+        skuLoading: false,            // 单品sku的表格加载中
+        recordsDialog: false,         // 单品操作记录的dialog
+        recordsList: [],              // 单品操作记录的list
+        recordsLoading: false,        // 单品操作记录的表格加载中
+        scope: { },                   // 暂存单品的scope
       }
     },
     components:{ pageTitle, Pagination },
@@ -140,32 +204,172 @@
       pageChange(v) {
         this.page_num = v;
         if(this.isSearch) {
-          this.getProduct(this.page_num, this.keyword);      // 获取商品list
+          this.getProduct(this.page_num, this.keyword);      // 获取单品list
         }else {
-          this.getProduct();      // 获取商品list
+          this.getProduct();      // 获取单品list
         }
       },
-      // 顶部查找商品的按钮
+      // 顶部查找单品的按钮
       searchProduct() {
         // console.log(this.keyword != "", this.createTime.length != 0, this.leftPrice != "", this.rightPrice != "");
         if(this.keyword != "" || this.createTime.length != 0 || this.leftPrice != "" || this.rightPrice != "") {
           this.isSearch = true;
-          this.getProduct(1, 'search');      // 获取商品list
+          this.getProduct(1, 'search');      // 获取单品list
         }else {
-          this.getProduct();      // 获取商品list
+          this.getProduct();      // 获取单品list
         }
       },
-      // 顶部取消查找商品的按钮
+      // 顶部取消查找单品的按钮
       cancelSearch() {
         if(this.isSearch) {
           this.keyword = "";
           this.createTime = [];
           this.leftPrice = "";
           this.rightPrice = "";
-          this.getProduct();      // 获取商品list
+          this.getProduct();      // 获取单品list
         }
       },
-      // 商品sku
+      // 编辑单品所在的模块
+      target(scope) {
+        this.scope = scope;
+        this.targetDialog = true;
+        if(this.productList[scope.$index].prTarget[0] == "大礼包") {
+          this.targetRadio = "101";
+          this.targetList = [];
+        }else {
+          this.targetList = this.productList[scope.$index].prTarget;
+          this.targetRadio = "";
+        }
+      },
+      // CheckBox变化时
+      checkBoxChange(v) {
+        if(v.length != 0) {
+          this.targetRadio = "";
+        }
+      },
+      // radio变化时
+      radioChange(v) {
+        if(v == "101") {
+          this.targetList = [];
+        }
+      },
+      // 保存单品所绑定的模块
+      saveTarget() {
+        if(this.targetList.length > 3) {
+          this.$message({ message: "一个单品最多可同时存在于三个模块下", type: 'warning' });
+        }else {
+          let params = { prid: this.scope.row.prid, prtarget: [] };
+          if(this.targetRadio) {
+            params.prtarget = [this.targetRadio];
+          }else {
+            for(let i = 0; i < this.targetList.length; i ++) {
+              for(let j = 0; j < this.tabList.length; j ++) {
+                if(this.targetList[i] == this.tabList[j].tnname) {
+                  params.prtarget.push(this.tabList[j].tnid);
+                }
+              }
+            }
+          }
+          console.log(params);
+          axios.post(api.update_p_p + "?token=" + localStorage.getItem("token"), params).then(res=>{
+            if(res.data.status == 200){
+              this.$message({ message: res.data.message, type: 'success', duration: 1500 });
+            }else{
+              this.$message({ message: res.data.message, type: 'error', duration: 1500 });
+            }
+          });
+        }
+      },
+      // 编辑单品所绑定的专题
+      baid(scope) {
+        this.scope = scope;
+        this.baidDialog = true;
+        this.baidLoading = true;
+        // 获取当前单品绑定的专题
+        let params = { token: localStorage.getItem("token"), prid: scope.row.prid };
+        axios.get(api.get_p_b, { params: params }).then(res => {
+          if(res.data.status == 200) {
+            // console.log(res.data.data);
+            this.baidList = res.data.data;
+            for(let i = 0; i < this.baidList.length; i ++) {
+              this.baidList[i].disabled = "0";
+            }
+            this.baidLoading = false;
+          }else{
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+          }
+        });
+
+        // 获取所有专题供添加专题绑定时选择
+        axios.get(api.get_bigactivitys + "?token=" + localStorage.getItem("token")).then(res => {
+          if(res.data.status == 200) {
+            // console.log(res.data.data);
+            this.baList = res.data.data;
+          }else{
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+          }
+        });
+      },
+      // 编辑或删除专题的绑定
+      updateBa(scope, operate) {
+        let params = { };
+        if(operate == 0) {           // 删除专题的绑定
+          this.$confirm("此操作将解除单品与该专题的绑定，是否继续?", '提示',
+            {confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'}).then(() => {
+            params = { pbid: scope.row.pbid, option: operate };
+            axios.post(api.update_p_b + "?token=" + localStorage.getItem("token"), params).then(res=>{
+              if(res.data.status == 200){
+                this.baidList.splice(scope.$index, 1);
+                this.$message({ message: res.data.message, type: 'success', duration: 1500 });
+              }else{
+                this.$message({ message: res.data.message, type: 'error', duration: 1500 });
+              }
+            });
+          }).catch(() => {  });
+        }else if(operate == 1) {    // 添加专题绑定
+          if(scope.row.baid == "") {
+            this.$message({ message: "请选择专题再添加", type: 'warning', duration: 1500 });
+          }else {
+            params = { prid: this.scope.row.prid, baid: scope.row.baid, option: operate };
+            axios.post(api.update_p_b + "?token=" + localStorage.getItem("token"), params).then(res=>{
+              if(res.data.status == 200){
+                this.$message({ message: res.data.message, type: 'success', duration: 1500 });
+                this.baidList[scope.$index].disabled = "0";
+              }else{
+                this.$message({ message: res.data.message, type: 'error', duration: 1500 });
+              }
+            });
+          }
+        }else if(operate == 2) {    // 保存编辑的专题绑定
+          params = { pbid: scope.row.pbid, baid: scope.row.baid, option: operate };
+          axios.post(api.update_p_b + "?token=" + localStorage.getItem("token"), params).then(res=>{
+            if(res.data.status == 200){
+              this.baidList[scope.$index].disabled = "0";
+              this.baidList = this.baidList.concat();
+              this.$message({ message: res.data.message, type: 'success', duration: 1500 });
+            }else{
+              this.$message({ message: res.data.message, type: 'error', duration: 1500 });
+            }
+          });
+        }else if(operate == 3) {    // 编辑专题按钮的点击事件
+          scope.row.disabled = "1";
+        }
+      },
+      // 关闭绑定专题的dialog
+      closeBaDialog() {
+        this.baidDialog = false;
+        this.productList[this.scope.$index].prBaid = this.baidList.length;
+        this.productList = this.productList.concat();
+      },
+      // 添加专题按钮
+      addBaid() {
+        let index = this.baidList.length;
+        this.baidList[index] = {};
+        this.baidList[index].baid = "";
+        this.baidList[index].disabled = "2";
+        this.baidList = this.baidList.concat();
+      },
+      // 单品sku
       sku(scope) {
         // console.log(scope.row);
         this.skuDialog = true;
@@ -174,7 +378,6 @@
         axios.get(api.get_one, { params: params }).then(res => {
           if(res.data.status == 200) {
             this.skuList = res.data.data.sku;
-            this.total_page = Math.ceil(res.data.count / this.page_size);
 
             for(let i = 0; i < this.skuList.length; i ++) {
               this.skuList[i].pskproperKey = "";
@@ -184,15 +387,8 @@
                   this.skuList[i].pskproperKey = this.skuList[i].pskproperkey[j].key + "：" + this.skuList[i].pskproperkey[j].value + "，";
                 }
               }
-              console.log(this.skuList[i].pskproperKey);
-
             }
-
-
-
             this.skuLoading = false;
-
-            console.log(res.data.data.sku[0].pskproperkey);
           }else{
             this.$message({ type: 'error', message: res.data.message, duration: 1500 });
           }
@@ -207,7 +403,7 @@
         }else if(operate == "cancel") {
           msg = "取消认领";
         }
-        this.$confirm("此操作将" + msg + "该商品对应的推文，是否继续?", '提示',
+        this.$confirm("此操作将" + msg + "该单品对应的推文，是否继续?", '提示',
           {confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'}).then(() => {
           /*let params = { rptid: scope.row.rptid };
           axios.post(api.del_rewardpacket + '?token=' + localStorage.getItem('token'), params).then(res=>{
@@ -220,19 +416,19 @@
           });*/
         }).catch(() => {  });
       },
-      // 查看商品操作记录
+      // 查看单品操作记录
       searchRecords(scope) {
         console.log(scope.row);
         this.recordsDialog = true;
       },
-      // 编辑商品
+      // 编辑单品
       editProduct(scope) {
         console.log(scope.row);
       },
-      // 删除商品
+      // 删除单品
       deleteProduct(scope) {
         console.log(scope.row);
-        this.$confirm("此操作将删除该商品，是否继续?", '提示',
+        this.$confirm("此操作将删除该单品，是否继续?", '提示',
           {confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'}).then(() => {
           /*let params = { rptid: scope.row.rptid };
           axios.post(api.del_rewardpacket + '?token=' + localStorage.getItem('token'), params).then(res=>{
@@ -245,7 +441,7 @@
           });*/
         }).catch(() => {  });
       },
-      // 获取商品list
+      // 获取单品list
       getProduct(page_num, operate) {
         this.productLoading = true;
         let params = {
@@ -291,9 +487,9 @@
                 // 判断一些参数
                 for(let i = 0; i < this.productList.length; i ++) {
                   // 所在模块
-                  this.productList[i].prTarget = "";
+                  this.productList[i].prTarget = [];
                   if(this.productList[i].prtarget.length == 0) {
-                    this.productList[i].prTarget = "无";
+                    this.productList[i].prTarget = ["无"];
                   }
                   for(let j = 0; j < this.productList[i].prtarget.length; j ++) {
 
@@ -307,30 +503,17 @@
                       }
                     }
                     // 拼接所有模块
-                    this.productList[i].prTarget = this.productList[i].prTarget + this.productList[i].prtarget[j];
-                    if(j < (this.productList[i].prtarget.length - 1)) {
-                      this.productList[i].prTarget = this.productList[i].prTarget + "，";
-                    }
+                    this.productList[i].prTarget.push(this.productList[i].prtarget[j])
                   }
 
-                  // 所在专题id
-                  this.productList[i].prBaid = "";
-                  if(this.productList[i].prbaid.length == 0) {
-                    this.productList[i].prBaid = "无";
-                  }
-                  for(let j = 0; j < this.productList[i].prbaid.length; j ++) {
-                    // 拼接所有专题id
-                    this.productList[i].prBaid = this.productList[i].prBaid + this.productList[i].prbaid[j];
-                    if(j < (this.productList[i].prbaid.length - 1)) {
-                      this.productList[i].prBaid = this.productList[i].prBaid + "，";
-                    }
-                  }
+                  // 所在专题id的条数
+                  this.productList[i].prBaid = this.productList[i].prbaid.length;
 
-                  // 如果还没有认领该商品推文，则运营id显示无
+                  // 如果还没有认领该单品推文，则运营id显示无
                   if(!this.productList[i].isclaim) {
                     this.productList[i].claimid = "无";
                   }
-                  // 如果还没有认领该商品推文，则运营id显示无
+                  // 如果还没有认领该单品推文，则运营id显示无
                   if(this.productList[i].isbig) {
                     this.productList[i].isbig = "是";
                   }else if(!this.productList[i].isbig) {
@@ -360,7 +543,7 @@
       },
     },
     mounted() {
-      this.getProduct();      // 获取商品list
+      this.getProduct();      // 获取单品list
     }
   }
 </script>
@@ -429,6 +612,9 @@
         }
         .blue-btn {
           color: #66B1FF;
+          .text-btn {
+            line-height: 0.15rem;
+          }
         }
         .page-box {
           text-align: right;
@@ -437,10 +623,28 @@
       }
     }
   }
-
+  .check-box-list {
+    display: flex;
+    flex-wrap: wrap;
+    margin: -0.2rem 0 0 0;
+    .check-box {
+      width: 25%;
+      margin: 2% 0 0 8%;
+    }
+  }
+  .radio-target {
+    margin: 6% 0 0 8%;
+  }
   .dialog-footer {
-    text-align: right;
+    display: flex;
     margin: 0.1rem 0.1rem 0 0;
+    .dialog-text {
+      flex: 1;
+      text-align: left;
+      font-size: 0.1rem;
+      line-height: 0.22rem;
+      letter-spacing: 0.4px;
+    }
     .at-img-dialog-btn {
       padding: 0.05rem 0.1rem;
       font-size: 14px;

@@ -86,7 +86,10 @@ const api={
 
   get_product: title + 'product/get_all',                   // 模糊搜索商品 - 全部商品
   get_list: title + 'product/get_list',                     // 获取商品池商品list
-  get_one: title + 'product/get_one',                       // 获取商品池商品list
+  get_one: title + 'product/get_one',                       // 获取单条商品--商品详情页
+  get_p_b: title + 'product/get_product_bigactivity',       // 获取所在专题详情 - 商品池
+  update_p_b: title + 'product/update_product_bigactivity', // 更新商品所在专题 - 商品池
+  update_p_p: title + 'product/update_product_prtarget',    // 更新商品所在模块 - 商品池
 };
 
 export default api
