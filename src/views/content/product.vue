@@ -258,22 +258,28 @@
         if(this.targetList.length > 3) {
           this.$message({ message: "一个单品最多可同时存在于三个模块下", type: 'warning' });
         }else {
+          let prTarget = [];
           let params = { prid: this.scope.row.prid, prtarget: [] };
           if(this.targetRadio) {
             params.prtarget = [this.targetRadio];
+            prTarget.push("大礼包");
           }else {
             for(let i = 0; i < this.targetList.length; i ++) {
               for(let j = 0; j < this.tabList.length; j ++) {
                 if(this.targetList[i] == this.tabList[j].tnname) {
                   params.prtarget.push(this.tabList[j].tnid);
+                  prTarget.push(this.tabList[j].tnname);
                 }
               }
             }
           }
-          console.log(params);
+          // console.log(params);
           axios.post(api.update_p_p + "?token=" + localStorage.getItem("token"), params).then(res=>{
             if(res.data.status == 200){
               this.$message({ message: res.data.message, type: 'success', duration: 1500 });
+              this.targetDialog = false;
+              this.productList[this.scope.$index].prTarget = prTarget;
+              this.productList = this.productList.concat();
             }else{
               this.$message({ message: res.data.message, type: 'error', duration: 1500 });
             }
