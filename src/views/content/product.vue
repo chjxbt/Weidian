@@ -125,10 +125,10 @@
 
       <!--单品sku-->
       <el-dialog title="单品SKU" :visible.sync="skuDialog" width="8rem">
-        <div class="content-table" style="margin: -0.3rem 0 0 0">
-          <el-table :data="skuList" border style="width: 100%" v-loading="skuLoading" height="550">
+        <div class="content-table" style="margin: -0.3rem 0 0.1rem 0">
+          <el-table :data="skuList" border stripe style="width: 100%" v-loading="skuLoading" :default-sort="{ prop: 'pskproperKey', order: 'ascending' }" height="400">
             <el-table-column prop="pskalias" label="SKU别名"></el-table-column>
-            <el-table-column prop="pskproperKey" label="SKU" width="200"></el-table-column>
+            <el-table-column prop="pskproperKey" label="SKU" sortable align="left" width="200"></el-table-column>
             <el-table-column prop="pskpurchase" label="进货价"></el-table-column>
             <el-table-column prop="pskprice" label="售价"></el-table-column>
             <el-table-column prop="pskprofict" label="支出佣金"></el-table-column>
@@ -480,6 +480,7 @@
             // 获取所有导航栏
             axios.get(api.get_all_topnav, { params: params }).then(res => {
               if(res.data.status == 200) {
+                this.tabList = [];
                 for(let i = 0; i < res.data.data.length; i ++) {
                   if(res.data.data[i].tnname == "素材圈") {
                     for(let j = 0; j < res.data.data[i].sub.length; j ++) {
