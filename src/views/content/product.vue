@@ -139,10 +139,11 @@
       </el-dialog>
 
       <!--单品操作记录-->
-      <el-dialog title="单品操作记录" :visible.sync="recordDialog" width="7rem">
+      <el-dialog title="单品操作记录" :visible.sync="recordDialog" width="8rem">
         <div class="content-table" style="margin: -0.3rem 0 0 0">
           <el-table :data="recordList" border style="width: 100%" v-loading="recordLoading">
             <el-table-column prop="poraction" label="操作内容"></el-table-column>
+            <el-table-column prop="portarget" label="对应ID" width="290"></el-table-column>
             <el-table-column prop="suname" label="操作人"></el-table-column>
             <el-table-column prop="porcreatetime" label="操作时间"></el-table-column>
           </el-table>
