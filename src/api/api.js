@@ -90,6 +90,7 @@ const api={
   get_p_b: title + 'product/get_product_bigactivity',       // 获取所在专题详情 - 商品池
   update_p_b: title + 'product/update_product_bigactivity', // 更新商品所在专题 - 商品池
   update_p_p: title + 'product/update_product_prtarget',    // 更新商品所在模块 - 商品池
+  get_product_record: title + 'product/get_product_record', // 获取商品操作记录
 };
 
 export default api

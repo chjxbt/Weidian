@@ -63,7 +63,7 @@
           <el-table-column prop="prcreatetime" label="创建日期" width="100"></el-table-column>
           <el-table-column prop="" label="操作记录" width="80">
             <template slot-scope="scope">
-              <el-button class="blue-btn" type="text" size="small" @click="searchRecords(scope)">查看</el-button>
+              <el-button class="blue-btn" type="text" size="small" @click="searchRecord(scope, 1)">查看</el-button>
             </template>
           </el-table-column>
           <el-table-column fixed="right" label="管理" width="90">
@@ -139,19 +139,14 @@
       </el-dialog>
 
       <!--单品操作记录-->
-      <el-dialog title="单品操作记录" :visible.sync="recordsDialog" width="7rem">
-        <!--<div class="content-table" style="margin-bottom: -0.2rem">
+      <el-dialog title="单品操作记录" :visible.sync="recordDialog" width="7rem">
+        <div class="content-table" style="margin: -0.3rem 0 0 0">
           <el-table :data="recordList" border style="width: 100%" v-loading="recordLoading">
-            <el-table-column prop="usname" label="用户名"></el-table-column>
-            <el-table-column prop="rewardname" label="优惠券"></el-table-column>
-            <el-table-column prop="ranumber" label="数量（张）" width="100"></el-table-column>
-            <el-table-column prop="susername" label="操作人"></el-table-column>
-            <el-table-column prop="rgrcreatetime" label="操作时间" width="160"></el-table-column>
+            <el-table-column prop="poraction" label="操作内容"></el-table-column>
+            <el-table-column prop="suname" label="操作人"></el-table-column>
+            <el-table-column prop="porcreatetime" label="操作时间"></el-table-column>
           </el-table>
           <Pagination class="page-box" :total="total_page" @pageChange="pageChangeR"></Pagination>
-        </div>-->
-        <div slot="footer" class="dialog-footer">
-          <el-button class="at-img-dialog-btn btn-color" type="primary" @click="recordsDialog = false">关闭</el-button>
         </div>
       </el-dialog>
 
@@ -192,9 +187,9 @@
         skuDialog: false,             // 单品sku的dialog
         skuList: [],                  // 单品sku的list
         skuLoading: false,            // 单品sku的表格加载中
-        recordsDialog: false,         // 单品操作记录的dialog
-        recordsList: [],              // 单品操作记录的list
-        recordsLoading: false,        // 单品操作记录的表格加载中
+        recordDialog: false,         // 单品操作记录的dialog
+        recordList: [],              // 单品操作记录的list
+        recordLoading: false,        // 单品操作记录的表格加载中
         scope: { },                   // 暂存单品的scope
       }
     },
@@ -208,6 +203,10 @@
         }else {
           this.getProduct();      // 获取单品list
         }
+      },
+      // 单品操作记录分页点击方法
+      pageChangeR(v) {
+        this.searchRecord(this.scope, v);       // 查看单品操作记录
       },
       // 顶部查找单品的按钮
       searchProduct() {
@@ -423,9 +422,23 @@
         }).catch(() => {  });
       },
       // 查看单品操作记录
-      searchRecords(scope) {
-        console.log(scope.row);
-        this.recordsDialog = true;
+      searchRecord(scope, page_num) {
+        this.scope = scope;
+        this.recordDialog = true;
+        let params = {
+          token: localStorage.getItem("token"),
+          prid: scope.row.prid,
+          page_num: page_num,
+          page_size: 10
+        };
+        axios.get(api.get_product_record, { params: params }).then(res => {
+          if(res.data.status == 200) {
+            this.recordList = res.data.data;
+            this.total_page = Math.ceil(res.data.count / 10);
+          }else{
+            this.$message({ type: 'error', message: res.data.message, duration: 1500 });
+          }
+        });
       },
       // 编辑单品
       editProduct(scope) {
@@ -645,6 +658,7 @@
   .dialog-footer {
     display: flex;
     margin: 0.1rem 0.1rem 0 0;
+    justify-content: flex-end;
     .dialog-text {
       flex: 1;
       text-align: left;
