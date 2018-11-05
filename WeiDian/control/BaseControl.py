@@ -289,7 +289,7 @@ class BaseProductControl():
         # 粉丝页面显示本身价格和店主价, 以及相关商品推荐(规则?)
         prkeeperprice = product.PRprice * (1 - self.partner.one_level_divide)
         product.prkeeperprice = ('%.2f' % prkeeperprice)
-        prsavemonty = product.PRprice - prkeeperprice
+        prsavemonty = product.PRprice - float(prkeeperprice)
         product.prsavemonty = ('%.2f' % prsavemonty)
         product.add('prkeeperprice', 'prsavemonty')
         return product

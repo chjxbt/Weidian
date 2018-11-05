@@ -30,6 +30,11 @@ class SProductSkuKey(SBase):
             ProductSkuKey.PSKid==pskid, ProductSkuKey.PSisdelete != 0).first()
 
     @close_session
+    def update_sku_price_by_filter(self, psfilter, prinfo):
+        """根据条件更新sku内字段"""
+        return self.session.query(ProductSkuKey).filter_by(**psfilter).update(prinfo)
+
+    @close_session
     def get_true_price(self, pskid=None, partner=False):
         """获取真实价格"""
         psk = self.session.query(ProductSkuKey).filter(
@@ -44,6 +49,6 @@ class SProductSkuKey(SBase):
 
     @close_session
     def update_product_sku(self, skuid, prid, ps):
-        return self.session.query(ProductSkuKey).filter(ProductSkuKey.PSskuid == skuid, ProductSkuKey. PRid == prid).update(ps)
+        return self.session.query(ProductSkuKey).filter(ProductSkuKey.PSskuid == skuid, ProductSkuKey.PRid == prid).update(ps)
 
 

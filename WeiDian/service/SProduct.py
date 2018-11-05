@@ -2,7 +2,7 @@
 import sys
 import os
 from SBase import SBase, close_session
-from WeiDian.models.model import Product, RecommendProduct, ProductTarget, ProductBigActivity
+from WeiDian.models.model import Product, RecommendProduct, ProductTarget, ProductBigActivity, ProductOperationRecord
 from sqlalchemy import or_
 
 sys.path.append(os.path.dirname(os.getcwd()))
@@ -29,20 +29,29 @@ class SProduct(SBase):
         return product_list
 
     @close_session
-    def get_product_filter(self, kw=None, isdelete=False, status=None, page=None, count=None):
+    def update_product_info_by_filter(self, prfilter, prinfo):
+        """根据条件更新商品信息"""
+        return self.session.query(Product).filter_by(**prfilter).update(prinfo)
+
+    @close_session
+    def get_product_filter(self, kw=None, time_start=None, time_end=None, isdelete=False, status=None, page=None, count=None):
         """模糊搜索商品名字"""
         if kw == None:
             return self.session.query(Product).filter_without_none(
                 Product.PReditstate == 1,
                 Product.PRstatus == status,
-                Product.PRisdelete == isdelete).all_with_page(page, count)
+                Product.PRisdelete == isdelete
+            ).gt(Product.PRcreatetime == time_start).lt(Product.PRcreatetime == time_end).all_with_page(page, count)
         else:
             return self.session.query(Product).filter_without_none(
                 Product.PReditstate == 1,
                 Product.PRstatus == status,
-                Product.PRisdelete == isdelete
-            ).filter(or_(Product.PRname.like("%{0}%".format(kw)), Product.PRtitle.like("%{0}%".format(kw)),
-                         Product.PRoductId.like("%{0}%".format(kw)))).all_with_page(page, count)
+                Product.PRisdelete == isdelete,
+            ).filter(or_(Product.PRname.like("%{0}%".format(kw)),
+                         Product.PRtitle.like("%{0}%".format(kw)),
+                         Product.PRoductId.like("%{0}%".format(kw)),
+                         Product.SUmodifyid.like("%{0}%".format(kw)))
+            ).gt(Product.PRcreatetime == time_start).lt(Product.PRcreatetime == time_end).all_with_page(page, count)
 
     @close_session
     def get_product_list_by_reid(self, reid):
@@ -109,6 +118,11 @@ class SProduct(SBase):
         return self.session.query(ProductBigActivity).filter(ProductBigActivity.PRid == prid).all()
 
     @close_session
+    def get_single_productbigactivity_by_filter(self, pbfilter):
+        """获取商品与专题的单条关联"""
+        return self.session.query(ProductBigActivity).filter_by(**pbfilter).first()
+
+    @close_session
     def update_productbigactivity_by_filter(self, pbfilter, pbinfo):
         """修改商品与专题的单条关联"""
         return self.session.query(ProductBigActivity).filter_by(**pbfilter).update(pbinfo)
@@ -118,6 +132,17 @@ class SProduct(SBase):
         """删除商品与专题的单条关联"""
         return self.session.query(ProductBigActivity).filter_by(**pbfilter).delete()
 
+    @close_session
+    def get_product_operation_record(self, page_num, page_size, prid=None):
+        """获取商品操作记录"""
+        return self.session.query(ProductOperationRecord).filter_without_none(
+            ProductOperationRecord.PRid == prid).order_by(
+            ProductOperationRecord.PORcreatetime.desc()).all_with_page(page_num, page_size)
+
+    @close_session
+    def get_singel_record_by_filter(self, prfilter):
+        """根据条件获取单条记录"""
+        return self.session.query(ProductOperationRecord).filter_by(**prfilter).first()
 
 
 if __name__ == '__main__':

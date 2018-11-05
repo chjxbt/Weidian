@@ -42,6 +42,8 @@ class CProduct(BaseProductControl):
         self.stopnav = STopNav()
         from WeiDian.service.SOrder import SOrder
         self.sorder = SOrder()
+        from WeiDian.service.SSuperUser import SSuperUser
+        self.ssuperuser = SSuperUser()
         self.empty = ['', [], {}, None]
         # 后续修改
         self.partner = Partner()
@@ -194,7 +196,6 @@ class CProduct(BaseProductControl):
         update_result = self.sproduct.update_product_by_productid(productid, product)
         if not update_result:
             raise SYSTEM_ERROR(u'服务器繁忙')
-
         return import_status('update_product_success', 'OK')
 
     # 更新商品
@@ -244,12 +245,6 @@ class CProduct(BaseProductControl):
         args = request.args.to_dict()
         logger.debug("Get Commodity Pools data is %s", args)
         page, count = self.cuser.get_pagesize_pagenum(args)
-        price_start = args.get('price_start')
-        if price_start:
-            price_start = int(price_start)
-        price_end = args.get('price_end')
-        if price_end:
-            price_end = int(price_end)
         time_start = args.get('time_start')
         if time_start:
             time_start = get_db_time_str(time_start)
@@ -267,7 +262,7 @@ class CProduct(BaseProductControl):
             isdelete = True
         else:
             isdelete = None
-        product_list = self.sproduct.get_product_filter(kw, isdelete, status, page, count)
+        product_list = self.sproduct.get_product_filter(kw, time_start, time_end, isdelete, status, page, count)
         for product in product_list:
             self.sproduct.update_view_num(product.PRid)
             self.fill_prbaid(product)
@@ -275,9 +270,18 @@ class CProduct(BaseProductControl):
             if product.PRcreatetime:
                 prcreatetime = get_web_time_str(product.PRcreatetime)
                 product.fill(prcreatetime, 'prcreatetime')
-            isclaim = True if product.SUmodifyid else False
-            product.fill(product.SUmodifyid, "claimid")
+            if product.SUmodifyid:
+                isclaim = True
+                canclaim = True if product.SUmodifyid == request.user.id else False
+                caneditact = True if product.SUmodifyid == request.user.id else False
+            else:
+                isclaim = False
+                canclaim = True
+                caneditact = False
+            product.fill(product.SUmodifyid or '', "claimid")
             product.fill(isclaim, "isclaim")
+            product.fill(canclaim, "canclaim")
+            product.fill(caneditact, "caneditact")
             isbig = False
             if product.PRtarget:
                 isbig = True if product.PRtarget[0] == '101' else False
@@ -285,22 +289,167 @@ class CProduct(BaseProductControl):
             pv = product.PRviewnum
             product.fill(pv, 'pv')
             salesvolume = product.PRsalesvolume
-            transform = salesvolume/float(pv)
+            transform = 0 if pv == 0 else salesvolume / float(pv)
             ortransform = "%.2f%%" % (transform * 100)
             product.fill(ortransform, 'ortransform')
+            refund_list = self.sorder.get_refund_product()
+            redfund_num = 0
+            if refund_list:
+                for refund in refund_list:
+                    refund_product = self.sorder.get_orderproductinfo_by_opiid(refund.OPIid)
+                    if refund_product:
+                        redfund_num = redfund_num + refund_product.OPIproductnum
+            refundrate_f = 0 if salesvolume == 0 else redfund_num / float(salesvolume)
+            refundrate = "%.2f%%" % (refundrate_f * 100)
+            product.fill(refundrate, 'refundrate')
             product.fill(product.prbaid, 'prbaid')
             product.fill(product.PRstatus, 'prstatus')
-            #todo 推文编辑状态
             activitystatus = 0
+            acid = None
+            ac_list = self.sactivity.get_acid_by_filterid(
+                {'AClinkvalue': product.PRid, 'ACSkipType': 2, 'ACisdelete': False})
+            if ac_list not in self.empty:
+                for act in ac_list:
+                    temp_num = -1 if act.ACeditstatus is None else act.ACeditstatus
+                    activitystatus = temp_num + 1
+                    acid = act.ACid
             zh_activitystatus = activity_edit_status.get(str(activitystatus))
             product.fill(activitystatus, 'activitystatus')
             product.fill(zh_activitystatus, 'zh_activitystatus')
-
+            product.fill(acid, 'acid')
         data = import_status('get_product_list_success', 'OK')
         data['data'] = product_list
         data["count"] = request.all_count
         data["page_count"] = request.page_count
         return data
+
+    @verify_token_decorator
+    def update_sku_price(self):
+        """更新sku里的售价/进价/利润"""
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'请使用管理员账号重新登录')
+        data = request.json
+        pskid = data.get('pskid')
+        parameter_required('pskid')
+        logger.debug("update sku price data is %s", data)
+        sku_info = self.sproductskukey.get_psk_by_pskid(pskid)
+        if not sku_info:
+            raise NOT_FOUND(u'没有找到相应的sku')
+        price_dict = {
+            "PSKprice": data.get('pskprice'),
+            "PSKprofict": data.get('pskprofict'),
+            "PSKpurchase": data.get('pskpurchase')
+        }
+        price_dict = {k: v for k, v in price_dict.items() if v not in self.empty}
+        if price_dict not in self.empty:
+            up_info = self.sproductskukey.update_sku_price_by_filter({'PSKid': pskid}, price_dict)
+            if not up_info:
+                raise SYSTEM_ERROR(u'更新数据错误')
+        # 操作日志
+        operation_dict = {"PSKprice": u'更新售价',
+                          "PSKprofict": u'更新利润',
+                          "PSKpurchase": u'更新进货价'
+                          }
+        if price_dict not in self.empty:
+            for i in price_dict.keys():
+                self.__make_product_recording(sku_info.PRid, sku_info.PSskuid, operation_dict[i])
+        response = import_status("update_success", "OK")
+        response['data'] = {'pskid': pskid}
+        return response
+
+    @verify_token_decorator
+    def shelf_product_and_claim_act(self):
+        """商品上下架/删除商品/推文认领"""
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'请使用管理员账号重新登录')
+        data = request.json
+        logger.debug("shelf product and claim act data is %s", data)
+        prid = data.get('prid')
+        parameter_required('prid')
+        shelf = data.get('shelf')  # 0 下架 1 上架
+        claim = data.get('claim')  # 0 取消认领 1 认领推文
+        prdel = data.get('prdel')  # 1 删除
+        modifyid = None
+        if shelf not in self.empty and claim not in self.empty:
+            raise PARAMS_MISS(u'参数错误，只能进行一项操作')
+        pr_info = self.sproduct.get_product_by_prid(prid)
+        if not pr_info:
+            raise NOT_FOUND(u'无该商品信息')
+        if pr_info.PRisdelete == True:
+            raise NOT_FOUND(u'数据错误，该商品已被删除')
+        if shelf not in self.empty:
+            if not re.match(r'^[0-1]$', str(shelf)):
+                raise PARAMS_MISS(u'shelf, 参数异常')
+            if pr_info.PRstatus == int(shelf):
+                raise SYSTEM_ERROR(u'已完成上/下架操作')
+            upinfo = self.sproduct.update_product_info_by_filter(
+                    {'PRid': prid},
+                    {'PRmodifytime': get_db_time_str(),
+                     'PRstatus': int(shelf)
+                     })
+            if not upinfo:
+                raise SYSTEM_ERROR(u'更新数据错误')
+            # 操作日志
+            shelf_operation = u'上架商品' if str(shelf) == '1' else u'下架商品'
+            self.__make_product_recording(prid, prid, shelf_operation)
+        if claim not in self.empty:
+            if not re.match(r'^[0-1]$', str(claim)):
+                raise PARAMS_MISS(u'claim, 参数异常')
+            if pr_info.SUmodifyid:
+                if pr_info.SUmodifyid != request.user.id:
+                    raise SYSTEM_ERROR(u'该推文已被其他运营认领')
+                else:
+                    if str(claim) == '1':
+                        raise SYSTEM_ERROR(u'您已完成认领')
+            else:
+                if str(claim) == '0':
+                    raise SYSTEM_ERROR(u'您没有认领该商品的关联推文，不能进行解除操作')
+            modifyid = request.user.id if str(claim) == '1' else None
+            upinfo = self.sproduct.update_product_info_by_filter(
+                    {'PRid': prid},
+                    {'PRmodifytime': get_db_time_str(),
+                     'SUmodifyid': modifyid
+                     })
+            if not upinfo:
+                raise SYSTEM_ERROR(u'更新数据错误')
+            # 操作日志
+            operation = u'认领推文' if str(claim) == '1' else u'解除推文认领'
+            self.__make_product_recording(prid, prid, operation)
+        if prdel not in self.empty:
+            if str(prdel) == '1':
+                update_result = self.sproduct.update_product_info_by_filter({'PRid': prid}, {
+                    "PRisdelete": True, 'PRmodifytime': get_db_time_str()})
+                if not update_result:
+                    raise SYSTEM_ERROR(u'删除数据错误')
+                # 操作日志
+                self.__make_product_recording(prid, prid, u'删除商品')
+        response = import_status("update_success", "OK")
+        response['data'] = {'prid': prid,
+                            'claimid': modifyid or ''}
+        return response
+
+    @verify_token_decorator
+    def get_product_operation_record(self):
+        """获取商品操作记录"""
+        if not is_admin():
+            raise AUTHORITY_ERROR(u'请使用管理员账号重新登录')
+        args = request.args.to_dict()
+        prid = args.get('prid')
+        page_num, page_size = self.cuser.get_pagesize_pagenum(args)
+        record_list = self.sproduct.get_product_operation_record(page_num, page_size, prid)
+        if record_list:
+            for record in record_list:
+                portarget = record.PRid if not record.PORtarget else record.PORtarget
+                record.PORcreatetime = get_web_time_str(record.PORcreatetime)
+                suser = self.ssuperuser.get_one_super_by_suid(record.SUid)
+                suname = suser.SUname if suser else ''
+                record.fill(suname, 'suname')
+                record.fill(portarget, 'portarget')
+        response = import_status("messages_get_item_ok", "OK")
+        response['data'] = record_list
+        response['page_count'] = request.page_count
+        response['count'] = request.all_count
+        return response
 
     @verify_token_decorator
     def update_product_relate_prtarget(self):
@@ -323,6 +472,8 @@ class CProduct(BaseProductControl):
                     'PRid': prid,
                     'PRtarget': '101'
                 })
+                # 操作记录
+                self.__make_product_recording(prid, prid, u'更改为大礼包商品')
             else:
                 topnav_list = self.stopnav.get_all_tnid()
                 tnid_list = []
@@ -339,9 +490,20 @@ class CProduct(BaseProductControl):
                         )
                         prtarget_info = ProductTarget.create(prtarget_dict)
                         model_beans.append(prtarget_info)
+                        # 操作记录
+                        self.__make_product_recording(prid, targetid, u'更改模块关联')
                     session.query(ProductTarget).filter(ProductTarget.PRid == prid).delete()
                     session.add_all(model_beans)
         elif prtargets == []:
+            # 操作记录
+            try:
+                target_info = self.sproduct.get_product_target_by_prid(prid)
+                if target_info:
+                    for tgid in target_info:
+                        self.__make_product_recording(prid, tgid.PRtarget, u'解除模块关联')
+            except Exception as e:
+                logger.exception("not found prtargetid ,error is %s", e)
+                self.__make_product_recording(prid, prid, u'解除模块关联')
             del_info = self.sproduct.del_product_target_by_filter({"PRid": prid})
             logger.debug("del prtarget relation success this is none list: %s", del_info)
         response = import_status("update_success", "OK")
@@ -358,17 +520,23 @@ class CProduct(BaseProductControl):
         logger.debug("get product relate bigactivity PRID is %s", prid)
         prbaids = self.sproduct.get_product_baid_by_prid(prid)
         list_baid = []
+        suid = ''
+        suname = u'批量导入'
+        updatetime = ''
         for prbaid in prbaids:
+            record_info = self.sproduct.get_singel_record_by_filter({'PRid': prid, 'PORtarget': prbaid.BAid})
+            if record_info:
+                suid = record_info.SUid
+                suser_info = self.ssuperuser.get_one_super_by_suid(suid)
+                suname = suser_info.SUname if suser_info else ''
+                updatetime = get_web_time_str(record_info.PORcreatetime)
             dict_baid = {
                 'pbid': prbaid.PBid,
                 'baid': prbaid.BAid,
-                'claimid': "73cfdf7a-130a-4a73-b180-d87efba872cd",
-                'clainname': "这是用户名称",
-                'updatetime': "2018-11-01 15:48:00"
+                'claimid': suid,
+                'clainname': suname,
+                'updatetime': updatetime
             }
-            # todo 创建记录表/从操作记录表查询 运营id
-            # todo 商品上架状态已有，推文上下架状态待添加
-            # todo 整体商品修改
             list_baid.append(dict_baid)
         response = import_status("messages_get_item_ok", "OK")
         response['data'] = list_baid
@@ -377,7 +545,6 @@ class CProduct(BaseProductControl):
     @verify_token_decorator
     def update_product_relate_bigactivity(self):
         """商品池修改商品与专题的关联"""
-        # todo 增加日志记录
         if not is_admin():
             raise AUTHORITY_ERROR(u'请使用管理员账号重新登录')
         data = request.json
@@ -402,6 +569,10 @@ class CProduct(BaseProductControl):
                 raise NOT_FOUND(u'商品信息不存在')
         if str(option) == '0':  # 0 删除
             parameter_required('pbid')
+            # 操作记录
+            pbinfo = self.sproduct.get_single_productbigactivity_by_filter({'PBid': pbid})
+            if pbinfo:
+                self.__make_product_recording(pbinfo.PRid, pbinfo.BAid, u'解除专题关联')
             del_info = self.sproduct.del_productbigactivity_by_filter({'PBid': pbid})
             if not del_info:
                 raise NOT_FOUND(u'错误，未找到要删除的关联专题')
@@ -421,11 +592,17 @@ class CProduct(BaseProductControl):
                 'PRid': prid,
                 'BAid': baid
                 })
+            # 操作记录
+            self.__make_product_recording(prid, baid, u'添加专题关联')
         elif str(option) == '2':  # 2 修改
             parameter_required('pbid', 'baid')
             pbact = self.sproduct.update_productbigactivity_by_filter({'PBid': pbid}, {'BAid': baid})
             if not pbact:
                 raise NOT_FOUND(u'修改失败')
+            # 操作记录
+            pbinfo = self.sproduct.get_single_productbigactivity_by_filter({'PBid': pbid})
+            if pbinfo:
+                self.__make_product_recording(pbinfo.PRid, baid, u'修改专题关联')
         response = import_status("update_success", "OK")
         response['data'] = {'pbid': pbid}
         return response
@@ -527,3 +704,14 @@ class CProduct(BaseProductControl):
         data = import_status('get_product_success', 'OK')
         data['data'] = product
         return data
+
+    def __make_product_recording(self, prid, portarget, poraction):
+        """创建商品操作记录"""
+        self.sproduct.add_model('ProductOperationRecord', **{
+            'PORid': str(uuid.uuid1()),
+            'PRid': prid,
+            'PORcreatetime': get_db_time_str(),
+            'SUid': request.user.id,
+            'PORtarget': portarget,
+            'PORaction': poraction
+        })

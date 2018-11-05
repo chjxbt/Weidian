@@ -183,6 +183,11 @@ class SOrder(SBase):
         return self.session.query(OrderProductResend).filter(OrderProductResend.OPIid == opiid).first()
 
     @close_session
+    def get_refund_product(self):
+        """获取所有退货"""
+        return self.session.query(OrderProductResend).filter(OrderProductResend.OPRtype == 0).all()
+
+    @close_session
     def update_orderproductinfo_by_opiid(self, opiid, data):
         """根据opiid更新订单中的商品信息"""
         return self.session.query(OrderProductInfo).filter(

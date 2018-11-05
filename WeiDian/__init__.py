@@ -1,13 +1,14 @@
 # -*- coding:utf8 -*-
+import platform
+import logging
+import os
 from datetime import date, datetime
-
+from decimal import Decimal
 from flask import Flask as _Flask
 from flask.json import JSONEncoder as _JSONEncoder
 from flask.wrappers import Request as _Request
 
-import platform
-import logging
-import os
+
 logger = logging.getLogger(__name__)
 logger.setLevel(level=logging.DEBUG)
 
@@ -51,11 +52,13 @@ class JSONEncoder(_JSONEncoder):
         if isinstance(o, datetime):
             # 也可以序列化时间类型的对象
             return o.strftime('%Y-%m-%d %H:%M:%S')
+        if isinstance(o, Decimal):
+            return Decimal(o)
         if isinstance(o, type):
             raise o()
         if isinstance(o, HTTPException):
             raise o
-        raise Exception(o + 'is not jsonserializer')
+        raise Exception(str(o) + 'is not jsonserializer')
 
 
 class Request(_Request):

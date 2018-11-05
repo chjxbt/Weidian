@@ -2,7 +2,7 @@
 from datetime import datetime
 
 from sqlalchemy.dialects.mysql import LONGTEXT
-from sqlalchemy import Column, create_engine, Integer, String, Text, Float, Boolean, orm, DateTime
+from sqlalchemy import Column, create_engine, Integer, String, Text, Float, Boolean, orm, DateTime, DECIMAL
 from WeiDian.config import dbconfig as cfg
 from WeiDian.models.base_model import BaseModel, auto_createtime
 import json
@@ -24,8 +24,7 @@ class Activity(BaseModel):
     """
     __tablename__ = 'activity'
     ACid = Column(String(64), primary_key=True)
-    # PRid = Column(String(64))  # 活动商品id
-    BAid = Column(String(64))  # 二跳页id
+    BAid = Column(String(64))  # 该推文所属专题id
     SUid = Column(String(64), nullable=False)  # 发布者(超级用户才可以发布)
     ACtype = Column(Integer, default=0)  # 活动分类, 具体分类如下
     # {0 普通动态, 1 满减, 2 满赠, 3 优惠券, 4 砍价, 5 拼团, 6 单品优惠券, 7 一元秒杀, 8 前几分钟半价, 9 限时抢, 10 X元X件}
@@ -44,9 +43,9 @@ class Activity(BaseModel):
     ACisdelete = Column(Boolean, default=False)  # 是否删除
     ACistop = Column(Boolean, default=False)  # 是否置顶
     ACtitle = Column(Text)  # 活动标题（公告、教程页）
-
-    AClinkvalue = Column(String(64), default=0)
-    ACSkipType = Column(Integer, default=0)  # 跳转类型{0:无跳转类型, 1:专题, 2:商品}}
+    ACeditstatus = Column(Integer, default=0)  # 推文状态{0:草稿, 1:上架, 2:下架}
+    AClinkvalue = Column(String(64), default=0)  # 具体跳转的id
+    ACSkipType = Column(Integer, default=0)  # 跳转类型{0:无跳转类型, 1:专题, 2:商品}
 
 
     @orm.reconstructor
@@ -64,7 +63,8 @@ class Activity(BaseModel):
             'ACisended',
             'TopnavId',
             'ACtitle',
-            'ACSkipType'
+            'ACSkipType',
+            'ACeditstatus'
         ]
 
 
@@ -224,7 +224,7 @@ class ProductSkuKey(BaseModel):
     _PSKproperkey = Column(Text, nullable=False)  # 商品sku属性的key, json
     PSKproductnum = Column(Integer, nullable=False)  # 库存
     PSKalias = Column(String(64), nullable=False)  # 商品别名
-    PSKprice = Column(Float, default=0.00)  # 价格
+    PSKprice = Column(DECIMAL(precision=28, scale=2), default=0.00)  # 价格
     PSKprofict = Column(Float, default=5, comment=u'利润')
     PSKpurchase = Column(Float, comment=u'进货价')
     PSKpostfee = Column(Float, nullable=False)  # 物流费
@@ -281,6 +281,21 @@ class ProductImage(BaseModel):
     @orm.reconstructor
     def __init__(self):
         self.fields = self.all
+
+
+class ProductOperationRecord(BaseModel):
+    """商品操作记录"""
+    __tablename__ = 'productoperationrecord'
+    PORid = Column(String(64), primary_key=True)
+    PRid = Column(String(64), nullable=False)     # 商品id
+    PORcreatetime = Column(String(14))            # 修改时间
+    SUid = Column(String(64), nullable=False)     # 运营id
+    PORtarget = Column(String(64))                # 操作对象id
+    PORaction = Column(String(64))                # 具体操作
+
+    @orm.reconstructor
+    def __init__(self):
+        self.fields = ['PRid', 'PORcreatetime', 'SUid', 'PORaction']
 
 
 class ProductTarget(BaseModel):
