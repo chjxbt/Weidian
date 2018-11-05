@@ -610,11 +610,17 @@ class CProduct(BaseProductControl):
     def get_product_list(self):
         args = request.args.to_dict()
         logger.debug("get product list args is %s", args)
-        page = int(args.get('page_num', 1))  # 页码
-        count = int(args.get('page_size', 15))  # 取出条数
+        page = args.get('page_num')  # 页码
+        count = args.get('page_size')  # 取出条数
+        page = 1 if page in self.empty else int(page)
+        count = 15 if count in self.empty else int(count)
+        time_start = None
+        time_end = None
         kw = args.get('kw')
         if kw not in ['', None]:
             kw = kw.encode('utf8')
+        else:
+            kw = None
         status = args.get('status')
         status = 1 if status in self.empty else int(status)
         try:
@@ -622,7 +628,7 @@ class CProduct(BaseProductControl):
             isdelete = False if isdelete else True
         except Exception as e:
             isdelete = None
-        product_list = self.sproduct.get_product_filter(kw, isdelete, status, page, count)
+        product_list = self.sproduct.get_product_filter(kw, time_start, time_end, isdelete, status, page, count)
         for product in product_list:
             self.sproduct.update_view_num(product.PRid)
         data = import_status('get_product_list_success', 'OK')
