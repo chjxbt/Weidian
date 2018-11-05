@@ -9,8 +9,8 @@
         </div>
         <div class="search-group">
           <div class="group-title">创建时间：</div>
-          <el-date-picker v-model="createTime" type="daterange" start-placeholder="开始日期" range-separator="至"
-                          end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss" style="width: 2.5rem;" size="mini">
+          <el-date-picker v-model="createTime" type="datetimerange" start-placeholder="开始日期" range-separator="至"
+                          end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss" style="width: 3.2rem;" size="mini">
           </el-date-picker>
         </div>
         <div class="search-btn cancel-btn" @click="cancelSearch">取 消</div>
@@ -661,12 +661,11 @@
         border-radius: 0.1rem;
         .search-group {
           display: flex;
-          margin: 0.1rem 0.6rem 0 0;
+          margin: 0.1rem 0.3rem 0 0;
           .group-title {
-            width: 0.8rem;
+            width: 0.65rem;
             font-size: 0.12rem;
             line-height: 0.2rem;
-            /*margin-right: 0.1rem;*/
           }
           .search-input {
             width: 2.3rem;
@@ -682,7 +681,7 @@
           text-align: center;
           padding: 0.03rem 0.15rem;
           border-radius: 0.1rem;
-          margin: 0.09rem 0 0 0.4rem;
+          margin: 0.09rem 0 0 0.2rem;
           color: #ffffff;
           background-color: #9fd0bf;
         }
