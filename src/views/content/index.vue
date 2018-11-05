@@ -6,7 +6,7 @@
       <p class="m-form-label" style="margin-bottom: 0.2rem">专题管理</p>
       <div class="content-table">
         <el-table :data="bannerList" border style="width: 100%" v-loading="bannerLoading">
-          <el-table-column prop="baid" label="Id" width="300"></el-table-column>
+          <el-table-column prop="baid" label="ID" width="300"></el-table-column>
           <el-table-column prop="batext" label="专题名称" width="150">
             <template slot-scope="scope">
               <el-input v-model="scope.row.batext" placeholder="请输入专题名称" :disabled="scope.row.disabled"></el-input>
@@ -58,16 +58,19 @@
               </el-switch>
             </template>
           </el-table-column>
-          <el-table-column fixed="right" label="管理" width="220">
+          <el-table-column prop="basort" label="顺序" width="73">
+            <template slot-scope="scope">
+              <el-input v-model="scope.row.basort" :disabled="scope.row.disabled"></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column fixed="right" label="管理" width="120">
             <template slot-scope="scope">
               <el-button @click="editClick(scope, 'banner')" type="text" size="small" v-if="scope.row.addSaveEdit== '3'">编辑</el-button>
               <el-button @click="saveClick(scope, 'banner')" type="text" size="small" v-if="scope.row.addSaveEdit == '2'">保存</el-button>
               <el-button @click="addBannerClick(scope)" type="text" size="small" v-if="scope.row.addSaveEdit == '1'">上传</el-button>
-              <el-button type="text" size="small">|</el-button>
               <el-button type="text" size="small" @click="deleteBanner(scope)" v-if="scope.row.addSaveEdit != '1'">删除</el-button>
               <el-button type="text" size="small" @click="cancelAdd(scope)" v-if="scope.row.addSaveEdit == '1'">取消</el-button>
-              <el-button type="text" size="small" v-if="scope.row.addSaveEdit != '1'">|</el-button>
-              <el-button type="text" size="small" @click="upBanner(scope)" v-if="scope.row.addSaveEdit != '1'" :disabled="scope.$index == '0'">上移</el-button>
+              <!--<el-button type="text" size="small" @click="upBanner(scope)" v-if="scope.row.addSaveEdit != '1'" :disabled="scope.$index == '0'">上移</el-button>-->
             </template>
           </el-table-column>
         </el-table>
@@ -608,15 +611,17 @@
             batext: banner.batext,
             bastarttime: banner.activityTime[0],
             baendtime: banner.activityTime[1],
-            baisdisplay: banner.baisdisplay
+            baisdisplay: banner.baisdisplay,
+            basort: banner.basort
           };
           axios.post(api.update_bact + '?token=' + localStorage.getItem('token') + "&baid=" + banner.baid, params).then(res=>{
             if(res.data.status == 200){
               this.$message({ message: "保存成功", type: 'success', duration: 1500 });
+              this.getBanner();     // 获取专题
 
-              this.bannerList[scope.$index].disabled = true;
+              /*this.bannerList[scope.$index].disabled = true;
               this.bannerList[scope.$index].addSaveEdit = "3";
-              this.bannerList = this.bannerList.concat();
+              this.bannerList = this.bannerList.concat();*/
             }else{
               this.$message({ type: 'error', message: res.data.message, duration: 1500 });
             }
@@ -1320,10 +1325,8 @@
         this.activityJumpToProductList = [];
         // this.activityJumpToValue = "";
         if(newValue == "2") {
-          // this.activityJumpToValue = "请输入关键词搜索商品";
           this.getJumpTo("product", "activity");     // 获取所有商品
         }else if(newValue == "1") {
-          // this.activityJumpToValue = "请选择专题";
           this.getJumpTo("banner", "activity");     // 获取所有专题
         }else if(newValue == "") {
 
