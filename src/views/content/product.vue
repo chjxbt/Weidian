@@ -46,6 +46,7 @@
           </el-table-column>
           <el-table-column prop="pv" label="pv"></el-table-column>
           <el-table-column prop="ortransform" label="转化" width="80"></el-table-column>
+          <el-table-column prop="refundrate" label="退货率" width="80"></el-table-column>
           <el-table-column prop="prStatus" label="单品状态" width="80"></el-table-column>
           <el-table-column prop="isclaim" label="认领推文" width="80">
             <template slot-scope="scope">
@@ -60,7 +61,6 @@
               <el-button class="blue-btn" type="text" size="small" @click="searchRecord(scope, 1)">查看</el-button>
             </template>
           </el-table-column>
-          <el-table-column prop="refundrate" label="退货率" width="80"></el-table-column>
           <el-table-column fixed="right" label="管理" width="90">
             <template slot-scope="scope">
               <el-button type="text" size="small" v-if="scope.row.prstatus == '0'" @click="editProduct(scope, '1')">上架</el-button>
@@ -531,11 +531,11 @@
         console.log(scope.row);
         this.$confirm("此操作将删除该单品，是否继续?", '提示',
           {confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'}).then(() => {
-          let params = { prid: scope.row.prid };
+          let params = { prid: scope.row.prid, prdel: "1" };
           axios.post(api.shelf_product_or_claim_act + '?token=' + localStorage.getItem('token'), params).then(res=>{
             if(res.data.status == 200){
               this.$message({ message: res.data.message, type: 'success', duration: 1500 });
-              this.collectionList.splice(scope.$index, 1);
+              this.productList.splice(scope.$index, 1);
             }else{
               this.$message({ message: res.data.message, type: 'error', duration: 1500 });
             }
