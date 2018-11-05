@@ -5,7 +5,7 @@
       <div class="search-box">
         <div class="search-group">
           <div class="group-title">关键词：</div>
-          <el-input class="search-input" v-model="keyword" placeholder="单品名称/单品标题/商家编码" size="mini" clearable></el-input>
+          <el-input class="search-input" v-model="keyword" placeholder="运营ID/单品名称/商家编码" size="mini" clearable></el-input>
         </div>
         <div class="search-group">
           <div class="group-title">创建时间：</div>
@@ -13,19 +13,13 @@
                           end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss" style="width: 2.5rem;" size="mini">
           </el-date-picker>
         </div>
-        <div class="search-group">
-          <div class="group-title">价格区间：</div>
-          <el-input class="price-input" v-model="leftPrice" placeholder="最低价" size="mini" clearable disabled></el-input>
-          <div class="middle-symbol">~</div>
-          <el-input class="price-input" v-model="rightPrice" placeholder="最高价" size="mini" clearable disabled></el-input>
-        </div>
         <div class="search-btn cancel-btn" @click="cancelSearch">取 消</div>
         <div class="search-btn" @click="searchProduct">搜 索</div>
       </div>
 
       <div class="content-table">
         <el-table :data="productList" border stripe style="width: 100%" v-loading="productLoading">
-          <el-table-column prop="claimid" label="运营ID" width="70"></el-table-column>
+          <el-table-column prop="claimid" label="运营ID" width="160"></el-table-column>
           <el-table-column  prop="prtitle" label="单品名称" width="200"></el-table-column>
           <el-table-column prop="prmainpic" label="单品缩略图" width="100">
             <template slot-scope="scope">
@@ -52,11 +46,11 @@
           </el-table-column>
           <el-table-column prop="pv" label="pv"></el-table-column>
           <el-table-column prop="ortransform" label="转化" width="80"></el-table-column>
-          <el-table-column prop="prstatus" label="单品状态" width="80"></el-table-column>
+          <el-table-column prop="prStatus" label="单品状态" width="80"></el-table-column>
           <el-table-column prop="isclaim" label="认领推文" width="80">
             <template slot-scope="scope">
-              <el-button class="blue-btn" type="text" size="small" v-if="!scope.row.isclaim" @click="claimActivity(scope, 'done')">认领</el-button>
-              <el-button class="blue-btn" type="text" size="small" v-if="scope.row.isclaim" @click="claimActivity(scope, 'cancel')">取消认领</el-button>
+              <el-button class="blue-btn" type="text" size="small" v-if="!scope.row.isclaim" :disabled="!scope.row.canclaim" @click="claimActivity(scope, '1')">认领</el-button>
+              <el-button class="blue-btn" type="text" size="small" v-if="scope.row.isclaim" :disabled="!scope.row.canclaim" @click="claimActivity(scope, '0')">取消认领</el-button>
             </template>
           </el-table-column>
           <el-table-column prop="isbig" label="大礼包" width="70"></el-table-column>
@@ -66,9 +60,11 @@
               <el-button class="blue-btn" type="text" size="small" @click="searchRecord(scope, 1)">查看</el-button>
             </template>
           </el-table-column>
+          <el-table-column prop="refundrate" label="退货率" width="80"></el-table-column>
           <el-table-column fixed="right" label="管理" width="90">
             <template slot-scope="scope">
-              <el-button type="text" size="small" @click="editProduct(scope)">编辑</el-button>
+              <el-button type="text" size="small" v-if="scope.row.prstatus == '0'" @click="editProduct(scope, '1')">上架</el-button>
+              <el-button type="text" size="small" v-if="scope.row.prstatus == '1'" @click="editProduct(scope, '0')">下架</el-button>
               <el-button type="text" size="small" @click="deleteProduct(scope)">删除</el-button>
             </template>
           </el-table-column>
@@ -93,7 +89,7 @@
 
       <!--单品所属专题-->
       <el-dialog title="单品所属专题" :visible.sync="baidDialog" width="8rem">
-        <div class="content-table" style="margin: -0.3rem 0 -0.2rem 0">
+        <div class="content-table" style="margin: -0.3rem 0 0 0">
           <el-table :data="baidList" stripe style="width: 100%" v-loading="baidLoading">
             <el-table-column prop="baid" label="专题ID" width="420">
               <template slot-scope="scope">
@@ -127,13 +123,35 @@
       <el-dialog title="单品SKU" :visible.sync="skuDialog" width="8rem">
         <div class="content-table" style="margin: -0.3rem 0 0.1rem 0">
           <el-table :data="skuList" border stripe style="width: 100%" v-loading="skuLoading" :default-sort="{ prop: 'pskproperKey', order: 'ascending' }" height="400">
-            <el-table-column prop="pskalias" label="SKU别名"></el-table-column>
-            <el-table-column prop="pskproperKey" label="SKU" sortable align="left" width="200"></el-table-column>
-            <el-table-column prop="pskpurchase" label="进货价"></el-table-column>
-            <el-table-column prop="pskprice" label="售价"></el-table-column>
-            <el-table-column prop="pskprofict" label="支出佣金"></el-table-column>
-            <el-table-column prop="pskpostfee" label="物流费"></el-table-column>
-            <el-table-column prop="pskproductnum" label="库存"></el-table-column>
+            <el-table-column prop="psskuid" label="SKUID" width="80"></el-table-column>
+            <el-table-column prop="pskalias" label="SKU别名" width="100"></el-table-column>
+            <el-table-column prop="pskpostfee" label="物流费" width="70"></el-table-column>
+            <el-table-column prop="pskproductnum" label="库存" width="70"></el-table-column>
+            <el-table-column prop="pskproperKey" label="SKU组合" sortable align="left" width="300"></el-table-column>
+            <el-table-column prop="pskprice" label="售价" width="100">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.pskprice" v-if="scope.row.edit" placeholder="售价"></el-input>
+                <div v-if="!scope.row.edit">{{scope.row.pskprice}}</div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="pskpurchase" label="进货价" width="100">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.pskpurchase" v-if="scope.row.edit" placeholder="售价"></el-input>
+                <div v-if="!scope.row.edit">{{scope.row.pskpurchase}}</div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="pskprofict" label="利润" width="100">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.pskprofict" v-if="scope.row.edit" placeholder="售价"></el-input>
+                <div v-if="!scope.row.edit">{{scope.row.pskprofict}}</div>
+              </template>
+            </el-table-column>
+            <el-table-column fixed="right" label="管理" width="80">
+              <template slot-scope="scope">
+                <el-button type="text" size="small" v-if="!scope.row.edit" @click="updateSku(scope, 'edit')">编辑</el-button>
+                <el-button type="text" size="small" v-if="scope.row.edit" @click="updateSku(scope, 'save')">保存</el-button>
+              </template>
+            </el-table-column>
           </el-table>
         </div>
       </el-dialog>
@@ -169,8 +187,6 @@
         isSearch: false,              // 是否正在搜索
         keyword: '',                  // 搜索关键词
         createTime: [],               // 创建时间
-        leftPrice: "",                // 价格区间 - 低价
-        rightPrice: "",               // 价格区间 - 高价
         productList: [],              // 单品管理的list
         productLoading: false,        // 单品管理表格加载中
         page_size: 4,                // 每页请求的数量
@@ -211,8 +227,8 @@
       },
       // 顶部查找单品的按钮
       searchProduct() {
-        // console.log(this.keyword != "", this.createTime.length != 0, this.leftPrice != "", this.rightPrice != "");
-        if(this.keyword != "" || this.createTime.length != 0 || this.leftPrice != "" || this.rightPrice != "") {
+        // console.log(this.keyword != "", this.createTime.length != 0);
+        if(this.keyword != "" || this.createTime.length != 0) {
           this.isSearch = true;
           this.getProduct(1, 'search');      // 获取单品list
         }else {
@@ -224,8 +240,6 @@
         if(this.isSearch) {
           this.keyword = "";
           this.createTime = [];
-          this.leftPrice = "";
-          this.rightPrice = "";
           this.getProduct();      // 获取单品list
         }
       },
@@ -361,6 +375,30 @@
           scope.row.disabled = "1";
         }
       },
+      // 编辑sku中的价格
+      updateSku(scope, operate) {
+        if(operate == "edit") {
+          scope.row.edit = true;
+          this.skuList = this.skuList.concat();
+        }else if(operate == "save") {
+          let params = {
+            pskid: scope.row.pskid,
+            pskprice: scope.row.pskprice,
+            pskprofict: scope.row.pskprofict,
+            pskpurchase: scope.row.pskpurchase
+          };
+          // console.log(params);
+          axios.post(api.update_sku_price + "?token=" + localStorage.getItem("token"), params).then(res=>{
+            if(res.data.status == 200){
+              this.$message({ message: res.data.message, type: 'success', duration: 1500 });
+              scope.row.edit = false;
+              this.skuList = this.skuList.concat();
+            }else{
+              this.$message({ message: res.data.message, type: 'error', duration: 1500 });
+            }
+          });
+        }
+      },
       // 关闭绑定专题的dialog
       closeBaDialog() {
         this.baidDialog = false;
@@ -386,6 +424,7 @@
             this.skuList = res.data.data.sku;
 
             for(let i = 0; i < this.skuList.length; i ++) {
+              this.skuList[i].edit = false;
               this.skuList[i].pskproperKey = "";
               for(let j = 0; j < this.skuList[i].pskproperkey.length; j ++) {
                 this.skuList[i].pskproperKey = this.skuList[i].pskproperKey + this.skuList[i].pskproperkey[j].key + "：" + this.skuList[i].pskproperkey[j].value;
@@ -402,25 +441,39 @@
       },
       // 认领推文 - 取消认领
       claimActivity(scope, operate) {
-        console.log(scope.row);
-        let msg = "";
-        if(operate == "done") {
-          msg = "认领";
-        }else if(operate == "cancel") {
-          msg = "取消认领";
+        if(scope.row.canclaim) {
+          let msg = "";
+          let claim = "";
+          if (operate == "1") {
+            msg = "认领";
+            claim = operate;
+          } else if (operate == "0") {
+            msg = "取消认领";
+            claim = operate;
+          }
+          this.$confirm("此操作将" + msg + "该单品对应的推文，是否继续?", '提示',
+            {confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'}).then(() => {
+            let params = {prid: scope.row.prid, claim: claim};
+            axios.post(api.shelf_product_or_claim_act + '?token=' + localStorage.getItem('token'), params).then(res => {
+              if (res.data.status == 200) {
+                this.$message({message: res.data.message, type: 'success', duration: 1500});
+
+                // 改变认领推文 - 取消认领后要改变相应字段
+                if (operate == "1") {
+                  scope.row.isclaim = true;
+                  scope.row.claimid = res.data.data.claimid;
+                } else if (operate == "0") {
+                  scope.row.isclaim = false;
+                  scope.row.claimid = "无";
+                }
+              } else {
+                this.$message({message: res.data.message, type: 'error', duration: 1500});
+              }
+            });
+          }).catch(() => {  });
+        }else {
+          this.$message({message: "当前用户不可执行该操作", type: 'warning', duration: 1500});
         }
-        this.$confirm("此操作将" + msg + "该单品对应的推文，是否继续?", '提示',
-          {confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'}).then(() => {
-          /*let params = { rptid: scope.row.rptid };
-          axios.post(api.del_rewardpacket + '?token=' + localStorage.getItem('token'), params).then(res=>{
-            if(res.data.status == 200){
-              this.$message({ message: res.data.message, type: 'success', duration: 1500 });
-              this.collectionList.splice(scope.$index, 1);
-            }else{
-              this.$message({ message: res.data.message, type: 'error', duration: 1500 });
-            }
-          });*/
-        }).catch(() => {  });
       },
       // 查看单品操作记录
       searchRecord(scope, page_num) {
@@ -441,24 +494,52 @@
           }
         });
       },
-      // 编辑单品
-      editProduct(scope) {
-        console.log(scope.row);
+      // 编辑单品状态 - 上下架
+      editProduct(scope, operate) {
+        let msg = "";
+        let shelf = "";
+        if(operate == "1") {
+          msg = "上架";
+          shelf = operate;
+        }else if(operate == "0") {
+          msg = "下架";
+          shelf = operate;
+        }
+        this.$confirm("此操作将" + msg + "该单品，是否继续?", '提示',
+          {confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'}).then(() => {
+          let params = { prid: scope.row.prid, shelf: shelf };
+          axios.post(api.shelf_product_or_claim_act + '?token=' + localStorage.getItem('token'), params).then(res=>{
+            if(res.data.status == 200){
+              this.$message({ message: res.data.message, type: 'success', duration: 1500 });
+
+              // 改变单品状态后要改变相应字段
+              if(operate == "1") {
+                scope.row.prstatus = "1";
+                scope.row.prStatus = "正常";
+              }else if(operate == "0") {
+                scope.row.prstatus = "0";
+                scope.row.prStatus = "已下架";
+              }
+            }else{
+              this.$message({ message: res.data.message, type: 'error', duration: 1500 });
+            }
+          });
+        }).catch(() => {  });
       },
       // 删除单品
       deleteProduct(scope) {
         console.log(scope.row);
         this.$confirm("此操作将删除该单品，是否继续?", '提示',
           {confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'}).then(() => {
-          /*let params = { rptid: scope.row.rptid };
-          axios.post(api.del_rewardpacket + '?token=' + localStorage.getItem('token'), params).then(res=>{
+          let params = { prid: scope.row.prid };
+          axios.post(api.shelf_product_or_claim_act + '?token=' + localStorage.getItem('token'), params).then(res=>{
             if(res.data.status == 200){
               this.$message({ message: res.data.message, type: 'success', duration: 1500 });
               this.collectionList.splice(scope.$index, 1);
             }else{
               this.$message({ message: res.data.message, type: 'error', duration: 1500 });
             }
-          });*/
+          });
         }).catch(() => {  });
       },
       // 获取单品list
@@ -477,12 +558,6 @@
           if(this.createTime.length != 0) {
             params.time_start = this.createTime[0];
             params.time_end = this.createTime[1];
-          }
-          if(this.leftPrice != "") {
-            params.price_start = this.leftPrice;
-          }
-          if(this.rightPrice != "") {
-            params.price_end = this.rightPrice;
           }
         }
         // console.log(params);
@@ -542,11 +617,11 @@
                   }
                   // 单品状态   0 下架, 1 正常, 2 禁用
                   if(this.productList[i].prstatus == "0") {
-                    this.productList[i].prstatus = "下架";
+                    this.productList[i].prStatus = "已下架";
                   }else if(this.productList[i].prstatus == "1") {
-                    this.productList[i].prstatus = "正常";
+                    this.productList[i].prStatus = "正常";
                   }else if(this.productList[i].prstatus == "2") {
-                    this.productList[i].prstatus = "禁用";
+                    this.productList[i].prStatus = "禁用中";
                   }
                 }
                 // 数据刷新，刷新视图
@@ -588,20 +663,13 @@
           display: flex;
           margin: 0.1rem 0.6rem 0 0;
           .group-title {
-            width: 0.6rem;
+            width: 0.8rem;
             font-size: 0.12rem;
             line-height: 0.2rem;
-            margin-right: 0.1rem;
+            /*margin-right: 0.1rem;*/
           }
           .search-input {
             width: 2.3rem;
-          }
-          .price-input {
-            width: 1rem;
-          }
-          .middle-symbol {
-            margin: 0 0.1rem;
-            line-height: 0.22rem;
           }
         }
         .search-btn {
@@ -621,7 +689,7 @@
         .cancel-btn {
           color: #000000;
           background-color: #DBDCDC;
-          margin-left: 1.5rem;
+          margin-left: 0.5rem;
         }
       }
 

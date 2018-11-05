@@ -91,6 +91,8 @@ const api={
   update_p_b: title + 'product/update_product_bigactivity', // 更新商品所在专题 - 商品池
   update_p_p: title + 'product/update_product_prtarget',    // 更新商品所在模块 - 商品池
   get_product_record: title + 'product/get_product_record', // 获取商品操作记录
+  shelf_product_or_claim_act: title + 'product/shelf_product_or_claim_act', // 商品上下架 / 认领推文 - 商品池
+  update_sku_price: title + 'product/update_sku_price',     // 更新sku里的价格 - 商品池
 };
 
 export default api
