@@ -399,7 +399,6 @@ class CUser():
         pagenum, pagesize = self.get_pagesize_pagenum(data)
 
         user_list, count = self.suser.get_all_user(pagesize, pagenum)
-        # count = self.suser.get_all_user_count()
         map(self.fill_user_level, user_list)
         map(self.fill_user_perd, user_list)
         # map(self.fill_user_sub, user_list)

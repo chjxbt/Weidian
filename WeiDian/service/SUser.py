@@ -59,10 +59,6 @@ class SUser(SBase):
             page_size).all(), self.session.query(User).count()
 
     @close_session
-    def get_all_user_count(self):
-        return self.session.query(User).count()
-
-    @close_session
     def get_sub_user(self, upperd, page_size, page_num):
         return self.session.query(User).filter(User.UPPerd == upperd).offset(
             page_size * (page_num - 1)).limit(page_size).all(),\
@@ -75,6 +71,22 @@ class SUser(SBase):
 
     @close_session
     def get_user_by_phone_or_name(self, usfilter):
-        """条件筛选用户"""
+        """或条件筛选用户"""
         return self.session.query(User).filter(or_(*usfilter)).all()
 
+    @close_session
+    def get_all_partner_by_filter(self, page_num, page_size, kw=None):
+        """获取所有合伙人"""
+        if kw is None:
+            return (self.session.query(User).filter(User.USlevel > 0)
+                    .offset(page_size * (page_num - 1)).limit(page_size).all(),
+                    self.session.query(User).filter(User.USlevel > 0).count())
+        else:
+            return (self.session.query(User).filter(or_(
+                User.USname.like("%{0}%".format(kw)),
+                User.USphone.like("%{0}%".format(kw)))
+            ).filter(User.USlevel > 0).offset(page_size * (page_num - 1)).limit(page_size).all(),
+                    self.session.query(User).filter(or_(
+                        User.USname.like("%{0}%".format(kw)),
+                        User.USphone.like("%{0}%".format(kw)))
+                    ).filter(User.USlevel > 0).count())

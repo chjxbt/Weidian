@@ -34,7 +34,7 @@ class SBigActivity(SBase):
     @close_session
     def get_one_big_act(self, baid):
         """获取单个专题内容"""
-        return self.session.query(BigActivity).filter(BigActivity.BAid == baid).first()
+        return self.session.query(BigActivity).filter(BigActivity.BAid == baid, BigActivity.BAisdelete == False).first()
 
     @close_session
     def get_big_act_by_filter(self, bact_filter):
@@ -43,5 +43,5 @@ class SBigActivity(SBase):
 
     @close_session
     def update_bigact(self, baid, bigact):
-        """修改专题"""
+        """根据baid修改专题"""
         return self.session.query(BigActivity).filter(BigActivity.BAid == baid).update(bigact)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
-from WeiDian.models.model import UserCommisionPriview, UserCommision, UserCommisionFlow, TeamCommision
+from WeiDian.models.model import UserCommisionPriview, UserCommision, UserCommisionFlow, TeamCommision, CommisionToCash
 from WeiDian.service.SBase import SBase, close_session
 
 
@@ -27,5 +27,11 @@ class SCommision(SBase):
         return self.session.query(UserCommisionFlow).filter_by(**args).all()
 
     @close_session
-    def get_teamcommision_by_usid(self, usid, args=None):
-        return self.session.query(TeamCommision).filter(TeamCommision.USid == usid).filter(*args).all()
+    def get_teamcommision_by_usid(self, usid):
+        """团队佣金"""
+        return self.session.query(TeamCommision).filter(TeamCommision.USid == usid).all()
+
+    @close_session
+    def get_extractcommision_by_filter(self, ecfilter):
+        """正提取佣金"""
+        return self.session.query(CommisionToCash).filter_by(**ecfilter).all()

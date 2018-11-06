@@ -1154,7 +1154,7 @@ class UserCommision(BaseModel):
     UCid = Column(String(64), primary_key=True)
     USid = Column(String(64), nullable=False, comment=u'用户')
     UCnum = Column(Float, default=0, comment=u'余额')
-    UCtotal = Column(Float, default=0, comment=u'总获得, 只做加法运算')
+    UCtotal = Column(DECIMAL(precision=28, scale=4), default=0, comment=u'总获得, 只做加法运算')
 
 
 class UserCommisionPriview(BaseModel):
@@ -1175,7 +1175,7 @@ class UserCommisionFlow(BaseModel):
     UCfid = Column(String(64), primary_key=True)
     USid = Column(String(64), comment=u'用户')
     UCFnums = Column(Float, comment=u'金额')
-    UCFtype = Column(Integer, default=0, comment=u'佣金来源: 0: 销售获得, 10 邀请开店, 20: 转粉支出, 30 团队佣金 40 奖励佣金')
+    UCFtype = Column(Integer, default=0, comment=u'佣金来源: 0: 销售获得, 10 邀请开店, 20: 专粉支出, 30 团队佣金 40 奖励佣金')
     UCFtime = Column(DateTime, default=datetime.now, comment=u'时间')
 
 
@@ -1183,20 +1183,24 @@ class CommisionToCash(BaseModel):
     """用户佣金提现"""
     __tablename__ = 'commiontocash'
     CTCid = Column(String(64), primary_key=True)
+    USid = Column(String(64), nullable=False, comment=u'用户')
     CTCtime = Column(DateTime, default=datetime.now, comment=u'申请时间')
     CTCamount = Column(Integer, nullable=False, comment=u'金额')
     CTCtowxacount = Column(Boolean, default=False, comment=u'是否提款到微信,如为false提款到银行卡')
     CTCname = Column(String(16), nullable=False, comment=u'姓名')
     CTCbankname = Column(String(64), nullable=False, comment=u'银行')
     CTCbankaddress = Column(String(125), comment=u'开户行')
+    CTCstatus = Column(Integer, default=0, comment=u'申请提现审核状态 {0: 审核中, 1:允许, 2:拒绝}')
+    CTCrefusereason = Column(String(125), comment=u'拒绝理由')
 
 
 class TeamCommision(BaseModel):
+    """团队佣金"""
     __tablename__ = 'teamcommision'
     TCid = Column(String(64), primary_key=True)
-    USid = Column(String(64), primary_key=True)
-    TCtotal = Column(Float, default=0, comment=u'团队总额')
-    TCtime = Column(DateTime, default=datetime.now(), comment=u'时间')
+    USid = Column(String(64), nullable=False)
+    TCtotal = Column(DECIMAL(precision=28, scale=4), default=0, comment=u'团队总额')
+    TCtime = Column(DateTime, default=datetime.now, comment=u'时间')
 
 
 # class PersonalInfo(BaseModel)

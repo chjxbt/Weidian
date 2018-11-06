@@ -12,6 +12,7 @@ from WeiDian.common.timeformat import get_db_time_str, format_for_db, get_web_ti
 from WeiDian.common.token_required import verify_token_decorator, is_admin
 from WeiDian.config.response import TOKEN_ERROR, SYSTEM_ERROR, AUTHORITY_ERROR, PARAMS_ERROR, NOT_FOUND
 from WeiDian.control.BaseControl import BaseActivityControl
+from WeiDian.models.model import BigActivity
 from flask import request
 sys.path.append(os.path.dirname(os.getcwd()))
 
@@ -87,10 +88,11 @@ class CBigActivity(BaseActivityControl):
 
     @verify_token_decorator
     def get_bigactivity_list(self):
-        """获取专题列表"""
-        if not hasattr(request, 'user'):
-            raise TOKEN_ERROR(u"未登录/token错误")
+        """后台获取专题列表"""
+        if not is_admin():
+            raise TOKEN_ERROR(u"请使用管理员账号重新登录")
         args = request.args.to_dict()
+        logger.debug("get bigactivitys args is %s", args)
         BAtype = args.get('type')  # 0 图片, 1 非图片
         try:
             big_act_list = self.sbigactivity.get_big_act_list(BAtype)
@@ -286,48 +288,43 @@ class CBigActivity(BaseActivityControl):
 
     @verify_token_decorator
     def update_bigactivity(self):
-        """修改专题"""
+        """后台修改专题"""
         if not is_admin():
-            raise AUTHORITY_ERROR(u'非管理员权限')
+            raise AUTHORITY_ERROR(u'请使用管理员账号重新登录')
         args = request.args.to_dict()
         logger.info("update big act args is %s", args)
         data = request.json
         logger.info("update big act data is %s", data)
         parameter_required('baid')
         baid = args.get('baid')
-        try:
-            # update_act = self.sbigactivity.get_one_big_act(baid)
-            # if update_act:
-            upinfo = {
-                "BAtext": data.get('batext'),
-                "BAimage": data.get('baimage'),
-                "BAstarttime": get_db_time_str(data.get("bastarttime")),
-                "BAendtime": get_db_time_str(data.get("baendtime")),
-                "BAsort": data.get('basort'),
-                "BAisdisplay": data.get('baisdisplay'),
-                "BAisdelete": data.get('baisdelete')
-            }
-            upinfo = {k: v for k, v in upinfo.items() if v not in self.empty}
-            from WeiDian.models.model import BigActivity
-            bact_change = self.sbigactivity.get_big_act_by_filter({BigActivity.BAid == baid})
-            if not bact_change:
-                raise SYSTEM_ERROR(u'数据错误，无此专题')
-            if data.get('basort'):
-                bact_changed = self.sbigactivity.get_big_act_by_filter({BigActivity.BAsort == data.get('basort')})
-                if bact_changed:
-                    print str(bact_changed.BAid)
-                    print str(bact_change.BAsort)
-                    self.sbigactivity.update_bigact(bact_changed.BAid, {"BAsort": bact_change.BAsort})
+        update_act = self.sbigactivity.get_one_big_act(baid)
+        if not update_act:
+            raise NOT_FOUND(u'该专题不存在或已被删除')
+        upinfo = {
+            "BAtext": data.get('batext'),
+            "BAimage": data.get('baimage'),
+            "BAstarttime": get_db_time_str(data.get("bastarttime")),
+            "BAendtime": get_db_time_str(data.get("baendtime")),
+            "BAsort": data.get('basort'),
+            "BAisdisplay": data.get('baisdisplay'),
+            "BAisdelete": data.get('baisdelete')
+        }
+        upinfo = {k: v for k, v in upinfo.items() if v not in self.empty}
+        if data.get('basort'):
+            bact_changed = self.sbigactivity.get_big_act_by_filter({BigActivity.BAsort == data.get('basort')})
+            if bact_changed:
+                print str(bact_changed.BAid)
+                print str(update_act.BAsort)
+                self.sbigactivity.update_bigact(bact_changed.BAid, {"BAsort": update_act.BAsort})
 
-            self.sbigactivity.update_bigact(baid, upinfo)
-            response = import_status("update_bigact_success", "OK")
-            response["data"] = {
-                "baid": baid
-            }
-            return response
-        except:
-            logger.exception("update bigact error")
-            return SYSTEM_ERROR(u"系统繁忙")
+        up_info = self.sbigactivity.update_bigact(baid, upinfo)
+        if not up_info:
+            raise SYSTEM_ERROR(u'更新数据错误')
+        response = import_status("update_bigact_success", "OK")
+        response["data"] = {
+            "baid": baid
+        }
+        return response
 
 
 
