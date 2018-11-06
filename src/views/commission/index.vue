@@ -22,7 +22,7 @@
         <div class="search-box">
           <div class="search-group">
             <div class="group-title">关键词：</div>
-            <el-input class="search-input" v-model="keywords" placeholder="请输入用户名或手机号搜索" size="mini" clearable></el-input>
+            <el-input class="search-input" v-model="keywords" placeholder="请输入用户名或手机号搜索" size="mini"></el-input>
           </div>
           <div class="search-group">
             <div class="group-title">时间段：</div>

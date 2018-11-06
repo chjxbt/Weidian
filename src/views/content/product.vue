@@ -5,7 +5,7 @@
       <div class="search-box">
         <div class="search-group">
           <div class="group-title">关键词：</div>
-          <el-input class="search-input" v-model="keyword" placeholder="运营ID/单品名称/商家编码" size="mini" clearable></el-input>
+          <el-input class="search-input" v-model="keyword" placeholder="运营ID/单品名称/商家编码" size="mini"></el-input>
         </div>
         <div class="search-group">
           <div class="group-title">创建时间：</div>
