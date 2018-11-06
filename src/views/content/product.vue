@@ -216,7 +216,7 @@
       pageChange(v) {
         this.page_num = v;
         if(this.isSearch) {
-          this.getProduct(this.page_num, this.keyword);      // 获取单品list
+          this.getProduct(this.page_num, 'search');      // 获取单品list
         }else {
           this.getProduct();      // 获取单品list
         }
@@ -230,7 +230,7 @@
         // console.log(this.keyword != "", this.createTime.length != 0);
         if(this.keyword != "" || this.createTime.length != 0) {
           this.isSearch = true;
-          this.getProduct(1, 'search');      // 获取单品list
+          this.getProduct(this.page_num, 'search');      // 获取单品list
         }else {
           this.getProduct();      // 获取单品list
         }
@@ -238,9 +238,10 @@
       // 顶部取消查找单品的按钮
       cancelSearch() {
         if(this.isSearch) {
+          this.isSearch = false;
           this.keyword = "";
           this.createTime = [];
-          this.getProduct();      // 获取单品list
+          this.getProduct(1, 'search');      // 获取单品list
         }
       },
       // 编辑单品所在的模块
