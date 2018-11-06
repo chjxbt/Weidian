@@ -93,6 +93,8 @@ const api={
   get_product_record: title + 'product/get_product_record', // 获取商品操作记录
   shelf_product_or_claim_act: title + 'product/shelf_product_or_claim_act', // 商品上下架 / 认领推文 - 商品池
   update_sku_price: title + 'product/update_sku_price',     // 更新sku里的价格 - 商品池
+
+  get_comm_list: title + 'commision/get_comm_list',         // 店主佣金数据展示
 };
 
 export default api

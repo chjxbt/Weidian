@@ -74,7 +74,7 @@
       "MNicon":"icon-commission",
       "children":[
         {
-          "MNname":"佣金管理",
+          "MNname":"佣金概况",
           "MNurl":"index",
           "MNicon":"none"
         },
