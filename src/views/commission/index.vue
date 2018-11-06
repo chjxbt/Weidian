@@ -92,7 +92,7 @@
         console.log(this.keywords != "", this.createTime.length != 0);
         if(this.keywords != "" || this.createTime.length != 0) {
           this.isSearch = true;
-          this.getOwner(this.owner_page_num, 'search'); // 获取店主佣金数据
+          this.getOwner(1, 'search'); // 获取店主佣金数据
         }else {
           this.getOwner();            // 获取店主佣金数据
         }
