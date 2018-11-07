@@ -143,8 +143,6 @@
         arr[i].active = true;
         this.page = arr[i].name;
         this.tab_list = [].concat(arr);
-
-        console.log(this.page);
       },
     },
     mounted() {
