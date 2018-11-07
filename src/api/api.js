@@ -95,6 +95,7 @@ const api={
   update_sku_price: title + 'product/update_sku_price',     // 更新sku里的价格 - 商品池
 
   get_comm_list: title + 'commision/get_comm_list',         // 店主佣金数据展示
+  get_comm_overview: title + 'commision/get_comm_overview', // 获取佣金概况
 };
 
 export default api

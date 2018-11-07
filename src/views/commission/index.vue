@@ -8,20 +8,14 @@
           <div class="search-btn" @click="">下载报表</div>
         </div>-->
         <el-table :data="outList" border style="width: 100%" v-loading="outLoading">
-          <el-table-column prop="product" label="平台商品佣金支出"></el-table-column>
-          <el-table-column prop="product" label="邀请开店支出"></el-table-column>
-          <el-table-column prop="product" label="周周奖"></el-table-column>
-          <el-table-column prop="product" label="额外奖励"></el-table-column>
-          <el-table-column prop="product" label="专粉佣金支出"></el-table-column>
-          <el-table-column prop="product" label="新店主任务佣金支出"></el-table-column>
-          <el-table-column fixed="right" label="管理">
-            <template slot-scope="scope">
-              <el-button type="text" size="small" @click="">编辑</el-button>
-            </template>
-          </el-table-column>
+          <el-table-column prop="levelname" label=""></el-table-column>
+          <el-table-column prop="sold_income" label="平台商品佣金支出"></el-table-column>
+          <el-table-column prop="invite_open" label="邀请开店支出"></el-table-column>
+          <el-table-column prop="week_reward" label="周周奖"></el-table-column>
+          <el-table-column prop="reward_income" label="额外奖励"></el-table-column>
+          <el-table-column prop="fans_outincome" label="专粉佣金支出"></el-table-column>
+          <el-table-column prop="novice_reward" label="新店主任务佣金支出"></el-table-column>
         </el-table>
-
-        <Pagination class="page-box" :total="total_page" @pageChange="pageChange"></Pagination>
       </div>
 
 
@@ -69,8 +63,6 @@
         outList: [],             // 佣金概况的list
         outLoading: false,       // 佣金概况表格加载中
         page_size: 10,                  // 每页请求的数量
-        page_num: 1,                    // 第几页
-        total_page: 1,                  // 总页数
         keywords: "",                   // 关键词 - 店主数据表
         createTime: [],                 // 时间段 - 店主数据表
         ownerList: [],                  // 店主数据lsit - 店主数据表
@@ -82,10 +74,6 @@
     },
     components:{ pageTitle, Pagination },
     methods:{
-      // 分页点击方法
-      pageChange(v) {
-        this.page_num = v;
-      },
       // 分页点击方法 - 店主数据表
       ownerChange(v) {
         this.owner_page_num = v;
@@ -117,15 +105,8 @@
       // 获取支出数据
       getOut() {
         this.outLoading = true;
-        let params = {
-          token: localStorage.getItem("token"),
-          page_num: this.page_num,
-          page_size: this.page_size
-        };
-        console.log(params);
-        axios.get(api.get_comm_list, { params: params }).then(res => {
+        axios.get(api.get_comm_overview + "?token=" + localStorage.getItem("token")).then(res => {
           if(res.data.status == 200) {
-            this.total_page = Math.ceil(res.data.count / this.page_size);
             this.outList = res.data.data;
             this.outLoading = false;
           }else{
@@ -164,7 +145,7 @@
       }
     },
     mounted() {
-      // this.getOut();            // 获取支出数据
+      this.getOut();            // 获取支出数据
       this.getOwner();          // 获取店主佣金数据
     }
   }
