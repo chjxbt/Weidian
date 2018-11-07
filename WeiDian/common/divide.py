@@ -2,8 +2,9 @@
 import sys
 import os
 import ConfigParser
-sys.path.append(os.path.dirname(os.getcwd()))
 from WeiDian import logger
+sys.path.append(os.path.dirname(os.getcwd()))
+
 
 class Partner(object):
     """佣金分成设置, 后续设置"""
@@ -20,6 +21,7 @@ class Partner(object):
     def one_level_divide(self, raw):
         self.cf.set('divide', 'one_level', raw)
         self.write_file()
+
     @property
     def two_level_divide(self):
         return float(self.cf.get('divide', 'two_level'))

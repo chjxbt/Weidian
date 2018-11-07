@@ -681,6 +681,7 @@ class User(BaseModel):
     unionid = Column(String(255))                # 绑定公众号会出现
     accesstoken = Column(String(255))            # 微信token
     subscribe = Column(Integer)                  # 是否关注公众号
+    USisfreeze = Column(Boolean, default=False)  # 被冻结（不能提现）
 
     @orm.reconstructor
     @auto_createtime
@@ -1124,8 +1125,8 @@ class PartnerSellOrinviteMount(BaseModel):
     __tablename__ = 'PartnerSellOrinviteMount'
     PSOMid = Column(String(64), primary_key=True)
     USid = Column(String(64), comment=u'用户')
-    sellorinvitemount = Column(Float, comment=u'销售额或者邀请人数')
-    PSIMid = Column(String(64), comment=u'销售额或邀请.活动id')
+    sellorinvitemount = Column(Float, comment=u'销售额')
+    PSIMid = Column(String(64), comment=u'销售额.活动id')
 
 
 class PartnerSellOrInviteMatch(BaseModel):
@@ -1136,10 +1137,10 @@ class PartnerSellOrInviteMatch(BaseModel):
     PSIMlevel = Column(Integer, default=1, comment=u'针对合伙人级别')
     PSIMstarttime = Column(String(16), nullable=False, comment=u'活动起始时间')
     PSIMendtime = Column(String(16), nullable=False, comment=u'活动结束时间')
-    PSIMrule = Column(Text, comment=u'奖励各个级别规则,格式{1: 122, 2: 5000, 3: 10000}')
-    PSIfavor = Column(Text, comment=u'额外奖励{1: 22, 2: 5000, 3:1000}')
+    PSIMrule = Column(Text, comment=u'奖励各个级别规则,格式{1: 122, 2: 5000, 3: 10000}')  # 奖励条件
+    PSIfavor = Column(Text, comment=u'额外奖励{1: 0.9, 2: 0.5, 3:0.66}')  # 额外奖励存比例，为实际销售额的比例
     PSIMfavortime = Column(String(16), comment=u'奖励发放时间')
-    PSIMtype = Column(String(8), default=u'sell', comment=u'活动类型: sell, invite')
+    PSIMtype = Column(String(8), default=u'sell', comment=u'活动类型: sell, extra')  # 活动分类:周周奖/额外活动
     PSIMisclose = Column(Boolean, default=False, comment=u'是否关闭')
     PSIMisdelete = Column(Boolean, default=False, comment=u'是否删除')
 
@@ -1175,7 +1176,7 @@ class UserCommisionFlow(BaseModel):
     UCfid = Column(String(64), primary_key=True)
     USid = Column(String(64), comment=u'用户')
     UCFnums = Column(Float, comment=u'金额')
-    UCFtype = Column(Integer, default=0, comment=u'佣金来源: 0: 销售获得, 10 邀请开店, 20: 专粉支出, 30 团队佣金 40 奖励佣金')
+    UCFtype = Column(Integer, default=0, comment=u'佣金来源: 0: 销售获得, 10 邀请开店, 20: 专粉支出, 30 团队佣金 40 周周奖 41 额外奖励 45 新店主任务奖励（做完任务后的佣金加成） ')
     UCFtime = Column(DateTime, default=datetime.now, comment=u'时间')
 
 

@@ -90,3 +90,10 @@ class SUser(SBase):
                         User.USname.like("%{0}%".format(kw)),
                         User.USphone.like("%{0}%".format(kw)))
                     ).filter(User.USlevel > 0).count())
+
+    @close_session
+    def get_all_user_without_pagecut(self, usfilter=None):
+        if usfilter is None:
+            return self.session.query(User).all()
+        else:
+            return self.session.query(User).filter_without_none(*usfilter).all()

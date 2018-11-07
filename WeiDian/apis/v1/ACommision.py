@@ -11,7 +11,15 @@ class ACommision(Resource):
 
     def get(self, comm):
         apis = {
-            'get_comm_list': "self.ccommision.get_commsion_list()"
+            "get_comm_list": "self.ccommision.get_commsion_list()",
+            "get_comm_overview": "self.ccommision.get_commission_overview()",
+        }
+        res = eval(apis[comm])
+        return jsonify(res)
+
+    def post(self, comm):
+        apis = {
+            "set_commission": "self.ccommision.set_commission()"
         }
         res = eval(apis[comm])
         return jsonify(res)

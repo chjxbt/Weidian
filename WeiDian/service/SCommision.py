@@ -22,9 +22,10 @@ class SCommision(SBase):
         ).first()
 
     @close_session
-    def get_usercommsion_flow_filter(self, args):
+    def get_usercommsion_flow_filter(self, args, time_start=None, time_end=None):
         """佣金流水记录"""
-        return self.session.query(UserCommisionFlow).filter_by(**args).all()
+        return self.session.query(UserCommisionFlow).filter_by(**args).gt(
+            UserCommisionFlow.UCFtime == time_start).lt(UserCommisionFlow.UCFtime == time_end).all()
 
     @close_session
     def get_teamcommision_by_usid(self, usid):
