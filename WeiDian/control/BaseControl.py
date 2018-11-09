@@ -377,8 +377,8 @@ class BaseShoppingCart(BaseProductControl):
                 return cart
             sku.add('PSKproperkey')
             # 价格计算, 合伙人优惠
-            cart.PRprice = sku.PSKprice * \
-                Partner().one_level_divide if is_partner() else sku.PSKprice
+            cart.PRprice = float(sku.PSKprice) * \
+                Partner().one_level_divide if is_partner() else float(sku.PSKprice)
             cart.subtotal = cart.PRprice * cart.SCnums
             cart.current_sku = sku
             cart.add('current_sku', 'subtotal')
@@ -420,7 +420,7 @@ class BaseShoppingCart(BaseProductControl):
             cart_list)
         if not has_price:
             return 0
-        total = sum([x.current_sku.PSKprice * x.SCnums +
+        total = sum([float(x.current_sku.PSKprice * x.SCnums) +
                      x.current_sku.PSKpostfee for x in has_price])
         return total
 

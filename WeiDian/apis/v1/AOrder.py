@@ -25,6 +25,7 @@ class AOrder(Resource):
             'delete_order': 'self.corder.delete_order()',
             'cancle_order': 'self.corder.cancle_order()',
             'pay_order': 'self.corder.pay_order()',
+            'pay_error': 'self.corder.pay_callback()',  # 微信支付回调接口
          }
         res = eval(apis[order])
         return jsonify(res)
